@@ -1,0 +1,22 @@
+{
+  "sourceLocale": "en",
+  "baseLocale": "en-simple",
+  "locales": {
+    "en-simple": {
+      "name": "English (simple)",
+      "nativeName": "English (simple)",
+      "role": "base",
+      "maxChars": 90,
+      "status": "in-progress",
+      "notes": "Child-friendly retelling written from the public-domain 1865 text. Every other locale is translated from this, not from the original."
+    },
+    "ja": {
+      "name": "Japanese",
+      "nativeName": "日本語",
+      "role": "translation",
+      "maxChars": 44,
+      "status": "in-progress",
+      "notes": "Lower-primary reading level: mostly kana, spaces between phrases, simple kanji only."
+    }
+  }
+}

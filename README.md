@@ -33,9 +33,39 @@ See:
 - [`docs/scene-shot-model.md`](docs/scene-shot-model.md)
 - [`docs/poc/rabbit-hole.md`](docs/poc/rabbit-hole.md)
 
+## Engineering
+
+The site is a static, multi-page build: plain HTML documents, hand-written CSS,
+TypeScript, GSAP for scroll-driven timelines, and cross-document View Transitions
+for smooth moves between pages. Output uses relative paths, so the same build runs
+at a domain root or in a subdirectory. Pull requests get a Vercel preview;
+production is built and deployed by the host from a separate branch.
+
+- [`docs/frontend-architecture.md`](docs/frontend-architecture.md) — stack, pages, routing
+- [`docs/code-conventions.md`](docs/code-conventions.md) — HTML, CSS, TypeScript
+- [`docs/performance-budget.md`](docs/performance-budget.md) — budgets, Core Web Vitals, comfort modes
+- [`docs/assets-and-audio.md`](docs/assets-and-audio.md) — generated images and music, synthesized sound
+- [`docs/testing.md`](docs/testing.md) — what is proven automatically, and what by hand
+- [`docs/deployment.md`](docs/deployment.md) — preview and production
+- [`CLAUDE.md`](CLAUDE.md) — the short list of rules, and where each decision lives
+
+## Rights and licensing
+
+This repository is **private** and the work in it is **proprietary**. No open-source
+licence is granted, there is no `LICENSE` file on purpose, and `package.json`
+declares `"private": true` with `"license": "UNLICENSED"`. All rights to the code,
+the retelling, the translations, the artwork, and the music are reserved by the
+author.
+
+The one exception is the material the project builds on: the 1865 text of *Alice's
+Adventures in Wonderland* is in the public domain, and its provenance is documented
+in [`text/raw/SOURCE.md`](text/raw/SOURCE.md) and [`CREDITS.md`](CREDITS.md). Being
+private changes nothing about crediting it.
+
 ## Status
 
-Specification / PoC planning.
+Specification complete for the text layer and the engineering baseline. The first
+implementation milestone is the Rabbit Hole PoC, issue #1.
 
 ## Text and translation
 

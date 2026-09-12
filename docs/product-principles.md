@@ -91,7 +91,23 @@ Current default direction:
 
 ### No framework tax without a reason
 
-This is primarily an interactive single-page experience, not a data-heavy application.
+This is an interactive scroll-driven experience, not a data-heavy application.
+
+**Amended.** This section previously called the project "primarily an interactive
+single-page experience". The experience is now several documents with smooth
+transitions between them, so that a visitor can move between parts of the story
+without carrying the whole site in one page. The change is recorded here, in the
+document that owns it, rather than inside an engineering document.
+
+Two rules keep that from weakening the narrative contract:
+
+- **A document boundary is not a Scene boundary.** Scenes are narrative and
+  spatial units; documents are a delivery decision. One document may host several
+  Scenes, and the first implementation does exactly that.
+- **Scroll-only must still traverse the whole story.** Wherever a document
+  boundary exists, ordinary downward scrolling crosses it and ordinary upward
+  scrolling returns to where the visitor left, with progression reconstructed.
+  A boundary that can only be crossed by clicking a link is not acceptable.
 
 The initial implementation should prefer a small static front-end stack. A framework should be added only if a concrete need appears that is harder to solve cleanly without it.
 

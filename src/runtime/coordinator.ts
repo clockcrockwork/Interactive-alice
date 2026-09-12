@@ -17,6 +17,15 @@
 
 import { SceneDriver, type SceneDriverOptions } from './scene-driver.ts';
 
+/**
+ * Whether an element is in the viewport, on the same terms as a threshold-0
+ * `IntersectionObserver`: any part of it overlapping, and a box to overlap with.
+ */
+function onScreen(element: HTMLElement): boolean {
+  const box = element.getBoundingClientRect();
+  return box.bottom > 0 && box.top < innerHeight && box.width > 0 && box.height > 0;
+}
+
 export class SceneCoordinator {
   readonly #drivers: SceneDriver[];
   /** Which scenes are on screen, by the observer's reckoning. */
@@ -65,6 +74,23 @@ export class SceneCoordinator {
   mount(): void {
     for (const driver of this.#drivers) {
       driver.mount();
+    }
+
+    // Decide who is on screen before anyone runs a frame.
+    //
+    // An intersection callback for the initial observation does not arrive until
+    // after this frame's animation callbacks, so a scene left `active` here would
+    // run one frame before being told it is three viewports below the fold. The
+    // geometry is already known, so it is read once and the observer below only
+    // has to maintain the answer.
+    for (const driver of this.#drivers) {
+      const visible = onScreen(driver.stage);
+      this.#visible.set(driver, visible);
+      if (visible) {
+        driver.resume();
+      } else {
+        driver.suspend();
+      }
     }
     this.#mounted = true;
 

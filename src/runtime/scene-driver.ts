@@ -21,13 +21,13 @@ import {
 } from './context.ts';
 import { Lifecycle } from './lifecycle.ts';
 import {
-  activeSpan,
   clamp,
   composeShots,
   type Direction,
   directionOf,
   type ShotSpan,
   type Span,
+  spanStates,
   VELOCITY_EPSILON,
   velocityOf,
 } from './progress.ts';
@@ -41,8 +41,8 @@ export interface SceneSnapshot {
   /** The shot that owns this progress. Exactly one, always. */
   shot: string | undefined;
   /**
-   * Every render-active shot in progression order: the primary, and the one
-   * handing over to it while an overlap lasts. One entry, or two.
+   * Every render-active shot in **progression order**, so during a handover the
+   * outgoing shot comes first and the primary second. One entry, or two.
    */
   shots: string[];
   beat: string | undefined;
@@ -116,19 +116,23 @@ export class SceneDriver {
   }
 
   /**
-   * Prepares the scene, without attaching to anything.
+   * Prepares the scene, without attaching to anything and without starting it.
    *
    * The caller must have put the page into its staged mode already: the track's
    * height comes from CSS that only applies in that mode, so measuring before it is
    * applied reads the flow layout and gets the scroll distance wrong. `attachStory`
    * owns that ordering, and the coordinator owns every listener.
+   *
+   * It stops at `mounted` on purpose. Whether this scene is on screen is a fact
+   * about the document, so the coordinator decides it and then resumes or suspends;
+   * going straight to `active` here would make every scene on the page run for the
+   * frame before the first intersection callback arrives, which is one frame of
+   * work by a scene that is nowhere near the viewport.
    */
   mount(): void {
     this.#lifecycle.to('mounted');
     this.#quality = initialQuality();
     this.measure();
-    this.#lifecycle.to('active');
-    this.resync();
   }
 
   /** Asks for a frame that treats the position it reads as a jump, not as travel. */
@@ -234,7 +238,11 @@ export class SceneDriver {
       velocity: this.#velocity,
       shot: composition.primary,
       shots: composition.active,
-      beat: activeSpan(this.#progress, this.#options.beats)?.id,
+      // The beat the document is showing, which is the last one at the scene's end
+      // rather than none: the same rule the stage writes into the markup, so the
+      // snapshot and the page cannot disagree about what a reader is looking at.
+      beat: spanStates(this.#progress, this.#options.beats).find((beat) => beat.state === 'active')
+        ?.id,
       viewport: readViewport(),
       reducedMotion: prefersReducedMotion(),
       quality: this.#quality,

@@ -91,6 +91,22 @@
     will-change: auto;
   }
 
+  /*
+   * The last beat of a scene holds instead of fading out.
+   *
+   * A beat fades out because another one is taking over. The last beat of a scene
+   * has nothing to take over from it, and its stage stays in the viewport for a
+   * further viewport after the scene's progress reaches 1 — so fading it out on its
+   * own span ends the scene on an empty stage, and ends the document on one. A
+   * reader who scrolls to the end should find the last thing they read.
+   *
+   * Structural rather than a second shot list: the last beat of the last shot is
+   * the last beat of the scene, and the document already says which that is.
+   */
+  .story[data-mode="scene"] .shot:last-of-type .beat:last-of-type:has(.line) {
+    opacity: min(calc(var(--progress, 0) * 5), 1);
+  }
+
   /* A textless beat stages nothing yet; it still holds its share of the scroll. */
   .story[data-mode="scene"] .beat:not(:has(.line)) {
     opacity: 0;
@@ -110,6 +126,10 @@
       /* Comfortable version: the same reveal, without the drift. */
       translate: none;
       opacity: min(calc(var(--progress, 0) * 8), calc((1 - var(--progress, 0)) * 8), 1);
+    }
+
+    .story[data-mode="scene"] .shot:last-of-type .beat:last-of-type:has(.line) {
+      opacity: min(calc(var(--progress, 0) * 8), 1);
     }
   }
 }

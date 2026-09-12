@@ -18,7 +18,7 @@ that property and on the contracts around it, and leaves taste to human review.
 | Unit | Vitest | every PR | pure logic: progress mapping, the pacing plan, lifecycle transitions, capability selection, text resolution |
 | Browser, fast | Playwright, desktop Chromium | every PR | every page in the generated manifest loads, each scene reaches start and end, no console, page or request errors |
 | Browser, full | Playwright, Chromium desktop and phone, Firefox, WebKit (`npm run test:e2e:full`) | interaction milestones and before a release | shot boundaries, reverse reconstruction, resize, portrait, keyboard, reduced motion, degraded modes, locales, back-navigation restore |
-| Accessibility | axe inside Playwright, plus explicit assertions | every PR, on load | semantics, labels, focus order, contrast where measurable |
+| Accessibility | axe inside Playwright, plus explicit assertions | every PR, on load and mid-scene | semantics, labels, focus order, contrast where measurable; and that a staged scene keeps its whole chapter readable |
 | Visual | Playwright screenshots at named checkpoints | opt-in, after art stabilizes | that a deliberate composition has not silently changed |
 | Performance | traces, size output, Lighthouse | milestones | see `performance-budget.md`; evidence, not pass/fail in CI |
 
@@ -135,6 +135,19 @@ is flaky and the visual layer is worthless:
    rather than for a timeout. The scene runtime takes this over when it lands, and
    the snapshot above becomes the richer form of the same idea.
 
+### Hiding is an accessibility decision
+
+A staged scene shows one beat at a time and hides the rest, and *how* it hides them
+decides whether a screen reader still has the story. `opacity` leaves the text in the
+accessibility tree; `visibility` and `display` take it out. The difference does not
+show at progress 0, where most of a scene is in one state anyway, so the check drives
+each scene into the middle of itself and counts the readable lines again.
+
+This exists because the rule was broken once and nearly shipped: hiding inactive
+shots with `visibility: hidden` removed two thirds of the chapter, and the only thing
+that failed was a load-time assertion in an unrelated spec, which would not have
+fired had the rule applied to one state rather than two.
+
 ## 4. What is not automated
 
 Feel, art direction, and whether a scene is worth exploring. Real-device
@@ -181,9 +194,17 @@ Since the two-scene work, and on both the desktop and phone Chromium projects:
   zero, after which scrolling reads as movement again. This could not be shown at all
   with one scene per document: that document ended a viewport before its only scene
   did, so nothing ever went off screen;
-- **the cost of a second scene**: one scroll listener, one resize listener and one
-  frame per scroll event for the whole document, counted by instrumenting the page
-  before its script runs.
+- **the cost of a second scene**: one scroll listener and one resize listener for
+  the whole document, and at most one runtime callback in any animation frame —
+  counted by instrumenting the page before its script runs, and tallying callbacks
+  against the distinct frames they ran in, so the assertion is rate-independent. Not
+  one frame per scroll event: velocity decay asks for more, on purpose;
+- **the lifecycle a scene starts in**: on the first frame the runtime exists, the
+  scene on screen is `active` and the one below the fold is already `suspended`. An
+  observer's first callback arrives after that frame's animation callbacks, so this
+  is the one moment at which a scene could run from off screen;
+- **the end of a scene**: the last beat still owns the scene's end, and a scene whose
+  last beat carries text does not finish on an empty stage.
 
 Still to come with the scenes they belong to: depth bands, the FX layer, the optional
 interaction, audio, and back-navigation restore across a document boundary.

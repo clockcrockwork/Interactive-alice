@@ -120,7 +120,10 @@ for (const entry of parts) {
       }
     });
 
-    test(`${entry.url} ${sceneId}: reconstructs a handover scrolled backwards`, async ({
+    // Named for what it does. The seam, not the scrollbar: what is proven is that
+    // the composition is a function of progress and nothing else, arrived at from
+    // either direction. Reversal by real scrolling is covered in handoff.spec.ts.
+    test(`${entry.url} ${sceneId}: reconstructs a handover from either direction`, async ({
       page,
     }) => {
       await page.goto(url);

@@ -33,6 +33,34 @@ export function localProgress(progress: number, start: number, end: number): num
   return clamp((progress - start) / (end - start));
 }
 
+/** A span's state, carrying which span it belongs to. */
+export interface TrackState extends SpanState {
+  id: string;
+}
+
+/**
+ * Every span's state across one contiguous, ordered track.
+ *
+ * Differs from `spanState` in one place, and it is the place that matters: the
+ * last span holds the end of the track. Progress 1 is a track's final frame, not
+ * a frame after it, so the last beat of a scene is still the beat a reader is on
+ * when they reach the bottom, rather than one the document has already finished
+ * with. Without that, a scene ends on an empty stage while its sticky stage is
+ * still in the viewport.
+ */
+export function spanStates(progress: number, spans: readonly Span[]): TrackState[] {
+  const here = clamp(progress);
+  const last = spans.length - 1;
+  return spans.map((span, index) => {
+    const local = localProgress(here, span.start, span.end);
+    // The first span owns everything before the track, the last everything after.
+    if ((index === 0 && here < span.start) || (index === last && here >= span.end)) {
+      return { id: span.id, state: 'active', local };
+    }
+    return { id: span.id, ...spanState(here, span) };
+  });
+}
+
 export function spanState(progress: number, span: Span): SpanState {
   const local = localProgress(progress, span.start, span.end);
   if (progress < span.start) {
@@ -43,17 +71,6 @@ export function spanState(progress: number, span: Span): SpanState {
     return { state: 'after', local };
   }
   return { state: 'active', local };
-}
-
-/**
- * The span covering this progress, or the last one at the very end.
- *
- * Spans are contiguous and ordered, which `check-experience.py` enforces, so a
- * linear scan is both correct and cheap at this size.
- */
-export function activeSpan(progress: number, spans: readonly Span[]): Span | undefined {
-  const found = spans.find((span) => progress >= span.start && progress < span.end);
-  return found ?? (progress >= 1 ? spans.at(-1) : spans[0]);
 }
 
 export function directionOf(delta: number, threshold = 0.0001): Direction {
@@ -132,7 +149,12 @@ export interface ShotComposition {
    * progress value and any non-empty shot list.
    */
   primary: string | undefined;
-  /** Render-active shot ids in progression order: the primary, and an outgoing one. */
+  /**
+   * Render-active shot ids in **progression order**, which during a handover means
+   * the outgoing shot first and the primary second. Said explicitly because the
+   * order is the document's, not a ranking: a renderer must not read position 0 as
+   * "the important one".
+   */
   active: string[];
   /** Every shot's state, in the order the shots were given. */
   states: ShotState[];
@@ -168,14 +190,14 @@ export function renderEnd(shots: readonly ShotSpan[], index: number): number {
  * shot's render span cannot reach past the end of the next shot's span, and a
  * third composition can never join the other two.
  */
-export function composeShots(progress: number, shots: readonly ShotSpan[]): ShotComposition {
+export function shotStates(progress: number, shots: readonly ShotSpan[]): ShotState[] {
   // Progress outside 0..1 is not a position a reader can be in; the driver clamps
-  // for the same reason. Clamping here keeps this total, so `primary` is defined
-  // for every input rather than only for the ones the driver happens to produce.
+  // for the same reason. Clamping here keeps this total, so exactly one shot is
+  // the primary for every input rather than only for the ones the driver produces.
   const here = clamp(progress);
   const last = shots.length - 1;
 
-  const states = shots.map((shot, index): ShotState => {
+  return shots.map((shot, index): ShotState => {
     const stop = renderEnd(shots, index);
     const core = localProgress(here, shot.start, shot.end);
     const handoff = stop > shot.end ? localProgress(here, shot.end, stop) : 0;
@@ -195,7 +217,18 @@ export function composeShots(progress: number, shots: readonly ShotSpan[]): Shot
     }
     return { id: shot.id, state, core, handoff };
   });
+}
 
+/**
+ * The same states, plus the summary of them a snapshot reports.
+ *
+ * Kept apart from `shotStates` because the summary allocates two arrays and a
+ * scan that the per-frame path never looks at: the stage only needs each shot's
+ * own state, and the cost of building a summary it discards would grow with
+ * shots times scenes on every frame.
+ */
+export function composeShots(progress: number, shots: readonly ShotSpan[]): ShotComposition {
+  const states = shotStates(progress, shots);
   return {
     primary: states.find((shot) => shot.state === 'active')?.id,
     active: states

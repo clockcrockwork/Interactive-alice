@@ -41,7 +41,15 @@ const pastScene = async (page: Page, scene: string): Promise<number> => {
   const limit = await page.evaluate(
     () => document.documentElement.scrollHeight - window.innerHeight,
   );
-  return Math.min(top + height + 16, limit);
+  const target = top + height + 16;
+  if (target > limit) {
+    // The document cannot scroll far enough, which is the normal case for the
+    // last scene on a page. Clamping would return a position where the scene is
+    // still visible, and the caller's wait for `suspended` would then time out
+    // blaming the runtime for a question this helper could not ask.
+    throw new Error(`${scene} is the last scene on this page; it never leaves the viewport`);
+  }
+  return target;
 };
 
 test('the story declares a document with two scenes in it', () => {
@@ -103,6 +111,38 @@ for (const entry of shared) {
     await expect(page.evaluate(() => window.__alice?.snapshot('no-such-scene'))).rejects.toThrow(
       /no scene no-such-scene/,
     );
+  });
+
+  test(`${entry.url} starts with only the scene on screen running`, async ({ page }) => {
+    // Read on the first frame, before any intersection callback can have arrived:
+    // the initial observation is delivered after this frame's animation callbacks,
+    // so a scene that waited for it would have run a frame from off screen.
+    await page.addInitScript(() => {
+      // Watch every frame from before the page's script runs, and record the very
+      // first one on which the runtime exists. Animation callbacks run before
+      // intersection observations are delivered, so this is the state the runtime
+      // reached on its own, without the observer having said anything yet.
+      const look = () => {
+        const probe = window.__alice;
+        if (!probe) {
+          requestAnimationFrame(look);
+          return;
+        }
+        (window as unknown as { __first?: unknown }).__first = probe
+          .snapshot()
+          .map((snapshot) => `${snapshot.scene}=${snapshot.state}`);
+      };
+      requestAnimationFrame(look);
+    });
+    await page.goto(url);
+    await expect
+      .poll(() => page.evaluate(() => (window as { __first?: unknown }).__first))
+      .toEqual([`${first}=active`, `${second}=suspended`]);
+
+    // And it stays that way, rather than being corrected a frame later.
+    expect(await stateOf(page, first)).toBe('active');
+    expect(await stateOf(page, second)).toBe('suspended');
+    expect(await progressOf(page, second)).toBe(0);
   });
 
   test(`${entry.url} suspends a scene once it is off screen, and stops advancing it`, async ({

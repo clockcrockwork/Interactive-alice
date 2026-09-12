@@ -230,15 +230,27 @@ an implementation detail:
    loop for the whole page, in `coordinator.ts`. A driver keeps its geometry, its
    progress and its lifecycle and is handed frames; it does not go looking for them.
    The cost of a second scene is a second measurement per resize, not a second
-   listener and a second loop competing for the same frame. Measured: 167 scroll
-   events over a two-scene document produced 167 runtime frame requests, not 334.
-7. **Visibility is the stage's, not the scene element's.** The coordinator observes
-   each scene's sticky stage, which is the box the composition occupies and the same
-   box `measure` derives the scroll mapping from. Today's geometry makes the stage's
-   intersection window identical to the scene element's, so this is not a correction
-   of a live difference: it is that lifecycle and progress should answer to one piece
-   of geometry. Give a scene anything outside its track, or a track any padding, and
-   only the stage still means "on screen".
+   listener and a second loop competing for the same frame.
+
+   Stated precisely, because it is easy to state too strongly: **one loop for the
+   document, and at most one runtime callback in any animation frame.** It is *not*
+   one frame per scroll event. Velocity decays after scrolling stops, and the driver
+   keeps asking for frames until it settles, which is deliberate — a scene that reads
+   speed must see it fall to zero rather than hold the last value. What must never
+   happen is two callbacks in the same frame because the page has two scenes.
+7. **Visibility is the stage's, not the scene element's, and it is decided before
+   anything runs.** The coordinator observes each scene's sticky stage, which is the
+   box the composition occupies and the same box `measure` derives the scroll mapping
+   from. Today's geometry makes the stage's intersection window identical to the scene
+   element's, so this is not a correction of a live difference: it is that lifecycle
+   and progress should answer to one piece of geometry. Give a scene anything outside
+   its track, or a track any padding, and only the stage still means "on screen".
+
+   A driver stops at `mounted` and the coordinator resumes or suspends it from the
+   stage's geometry, synchronously, before any frame runs. An observer's first
+   callback is delivered *after* that frame's animation callbacks, so a driver that
+   started `active` would run one frame from three viewports below the fold before
+   being told where it was.
 
 Two more things are decided rather than fixed. **`direction` means reader movement.**
 A progress value that arrives without anyone scrolling — the first sync after mounting,
@@ -266,6 +278,16 @@ can do is move their own copy of the animation. It stays out of the way otherwis
 since nothing installs without the query. Before the first public release this is
 re-decided, and the alternatives are a build-time flag that drops the seam from the
 production bundle, or a key the query has to carry.
+
+Two seams are named but deliberately not built, so that the first scene needing
+them does not discover them. An **incoming** shot has no way to know a handover is
+under way or how long it lasts: `--handoff` is written on the outgoing shot only,
+and the tail length is a fact about the mapping that CSS cannot see. And there is
+no JavaScript hook for **per-shot renderer activation**: a Canvas or WebGL shot
+would today have to watch its own element's attributes to learn when to start and
+stop. `ShotState` is already the shape such a hook would carry, and `Stage` already
+computes the transitions; what is missing is somewhere to send them. Both are for
+the change that first needs them, not before.
 
 Both of the items that were open here are now closed, and the answers are the two
 above plus `overlap` in the scene schema. A published page carries two scenes, the

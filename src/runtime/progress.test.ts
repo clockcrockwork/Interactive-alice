@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  activeSpan,
   clamp,
   composeShots,
   directionOf,
@@ -9,6 +8,7 @@ import {
   type ShotSpan,
   type Span,
   spanState,
+  spanStates,
   VELOCITY_EPSILON,
   velocityOf,
 } from './progress.ts';
@@ -60,22 +60,53 @@ describe('spanState', () => {
   });
 });
 
-describe('activeSpan', () => {
+describe('spanStates', () => {
+  const activeOf = (progress: number) =>
+    spanStates(progress, spans).find((span) => span.state === 'active')?.id;
+
   it('finds the span covering progress', () => {
-    expect(activeSpan(0, spans)?.id).toBe('a');
-    expect(activeSpan(0.25, spans)?.id).toBe('b');
-    expect(activeSpan(0.74, spans)?.id).toBe('b');
-    expect(activeSpan(0.75, spans)?.id).toBe('c');
+    expect(activeOf(0)).toBe('a');
+    expect(activeOf(0.25)).toBe('b');
+    expect(activeOf(0.74)).toBe('b');
+    expect(activeOf(0.75)).toBe('c');
   });
 
   it('holds the last span at the end, and the first before the start', () => {
-    expect(activeSpan(1, spans)?.id).toBe('c');
-    expect(activeSpan(1.5, spans)?.id).toBe('c');
-    expect(activeSpan(-0.2, spans)?.id).toBe('a');
+    // A track's end is the last span's final frame, not a frame after it: the
+    // last beat of a scene is still the one a reader is on at the bottom.
+    expect(activeOf(1)).toBe('c');
+    expect(activeOf(1.5)).toBe('c');
+    expect(activeOf(-0.2)).toBe('a');
+  });
+
+  it('names exactly one active span at every progress', () => {
+    for (let progress = -0.1; progress <= 1.1; progress += 0.01) {
+      const active = spanStates(progress, spans).filter((span) => span.state === 'active');
+      expect(active, `at ${progress}`).toHaveLength(1);
+    }
+  });
+
+  it('agrees with spanState everywhere except the track’s own end', () => {
+    for (const progress of [0, 0.1, 0.25, 0.5, 0.75, 0.99]) {
+      const states = spanStates(progress, spans);
+      for (const [index, span] of spans.entries()) {
+        expect(states[index]?.state, `${span.id} at ${progress}`).toBe(
+          spanState(progress, span).state,
+        );
+      }
+    }
+    // The one difference, and the reason this function exists.
+    expect(spanState(1, spans[2] as Span).state).toBe('after');
+    expect(spanStates(1, spans)[2]?.state).toBe('active');
+  });
+
+  it('reports local progress alongside the state', () => {
+    expect(spanStates(0.5, spans)[1]?.local).toBeCloseTo(0.5, 12);
+    expect(spanStates(1, spans)[2]?.local).toBe(1);
   });
 
   it('has nothing to return without spans', () => {
-    expect(activeSpan(0.5, [])).toBeUndefined();
+    expect(spanStates(0.5, [])).toEqual([]);
   });
 });
 

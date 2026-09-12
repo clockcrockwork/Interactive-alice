@@ -7,7 +7,7 @@
  */
 
 import type { RuntimeContext } from './context.ts';
-import { composeShots, type ShotSpan, type Span, spanState } from './progress.ts';
+import { type ShotSpan, type Span, shotStates, spanStates } from './progress.ts';
 
 export interface StageUnit {
   element: HTMLElement;
@@ -38,8 +38,9 @@ export class Stage {
   readonly #scene: HTMLElement;
   readonly #shots: readonly ShotUnit[];
   readonly #beats: readonly StageUnit[];
-  /** The shot spans on their own, so a frame does not rebuild the array to read them. */
+  /** The spans on their own, so a frame does not rebuild the arrays to read them. */
   readonly #shotSpans: readonly ShotSpan[];
+  readonly #beatSpans: readonly Span[];
   // Keyed by element: a shot and a beat may legally share an id, and keying by id
   // would let one of them swallow the other's updates.
   readonly #last = new WeakMap<HTMLElement, string>();
@@ -49,27 +50,43 @@ export class Stage {
     this.#shots = units.shots;
     this.#beats = units.beats;
     this.#shotSpans = units.shots.map((unit) => unit.span);
+    this.#beatSpans = units.beats.map((unit) => unit.span);
   }
 
   apply(context: RuntimeContext): void {
-    this.#scene.style.setProperty('--scene-progress', round(context.progress));
-    this.#scene.dataset.direction = String(context.direction);
-    this.#scene.dataset.quality = context.quality;
+    // The scene's own values go through the same guard as its units, so a frame
+    // that changes nothing writes nothing anywhere.
+    const sceneKey = `${round(context.progress)}:${context.direction}:${context.quality}`;
+    if (this.#last.get(this.#scene) !== sceneKey) {
+      this.#last.set(this.#scene, sceneKey);
+      this.#scene.style.setProperty('--scene-progress', round(context.progress));
+      this.#scene.dataset.direction = String(context.direction);
+      this.#scene.dataset.quality = context.quality;
+    }
 
     // One pass over the shots, deriving every state from this progress alone. No
     // shot is told that another is handing over to it: both read the same value.
-    const composition = composeShots(context.progress, this.#shotSpans);
+    // `shotStates` rather than `composeShots`, because the stage wants each shot's
+    // own state and never the summary the snapshot reports.
+    const shots = shotStates(context.progress, this.#shotSpans);
     for (const [index, unit] of this.#shots.entries()) {
-      const shot = composition.states[index];
+      const shot = shots[index];
       if (!shot) {
         continue;
       }
       this.#write(unit.element, shot.state, shot.core, shot.handoff);
     }
 
-    for (const unit of this.#beats) {
-      const { state, local } = spanState(context.progress, unit.span);
-      this.#write(unit.element, state, local);
+    // Beats go through the same track rule, so the last beat of a scene is still
+    // the active one when a reader reaches the end rather than one the document
+    // has finished with while its stage is still on screen.
+    const beats = spanStates(context.progress, this.#beatSpans);
+    for (const [index, unit] of this.#beats.entries()) {
+      const beat = beats[index];
+      if (!beat) {
+        continue;
+      }
+      this.#write(unit.element, beat.state, beat.local);
     }
   }
 
@@ -110,9 +127,12 @@ export function readShots(scene: HTMLElement): ShotUnit[] {
   return [...scene.querySelectorAll<HTMLElement>('.shot')].map((element) => {
     const span = readSpan(element, element.dataset.shot, '.shot');
     const declared = element.dataset.overlap;
-    const overlap = declared === undefined ? 0 : Number(declared);
-    if (Number.isNaN(overlap) || overlap < 0 || overlap > 1) {
-      throw new Error(`.shot ${span.id} has an overlap outside 0..1: ${declared}`);
+    // Parsed strictly rather than coerced. `Number('')` is 0, so an attribute that
+    // is present but empty would otherwise read as a hard cut and the composition
+    // would quietly differ from its mapping.
+    const overlap = declared === undefined ? 0 : Number.parseFloat(declared);
+    if (declared?.trim() === '' || !Number.isFinite(overlap) || overlap < 0 || overlap > 1) {
+      throw new Error(`.shot ${span.id} has an unusable overlap: ${JSON.stringify(declared)}`);
     }
     return { element, span: { ...span, overlap } };
   });

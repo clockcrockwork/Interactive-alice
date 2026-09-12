@@ -1,4 +1,4 @@
-import { execFileSync, spawnSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -245,20 +245,53 @@ describe('overlap and the pacing plan', () => {
     );
   });
 
+  it('refuses an explicit zero there too, on the same terms as the checker', () => {
+    // Presence, not value. A shot with nothing after it should not be talking
+    // about handing over at all, and the data checker already reads it that way.
+    expect(() => overlapsOf(withOverlap([undefined, undefined, 0]))).toThrow(
+      /no following shot to hand over to/,
+    );
+  });
+
   it('refuses a value the runtime could not honour', () => {
     expect(() => overlapsOf(withOverlap([1.5]))).toThrow(/outside 0\.\.1/);
+    expect(() => overlapsOf(withOverlap([-0.1]))).toThrow(/outside 0\.\.1/);
+  });
+
+  it('refuses anything that is not a number, rather than coercing it', () => {
+    // Nothing validates a scene file against its schema at build time, so a
+    // non-number reaching here is possible. `null`, `false` and a numeric string
+    // all survive a comparison against 0 and 1; none of them is an overlap.
+    for (const value of [null, false, true, '0.5', Number.NaN, []]) {
+      expect(
+        () => overlapsOf(withOverlap([value as unknown as number])),
+        `${JSON.stringify(value)} was accepted`,
+      ).toThrow(/not a number|outside 0\.\.1/);
+    }
   });
 });
 
 /**
- * The same two rules, as the data gate states them.
+ * The positional rule, as the data gate itself states it.
  *
- * The build refuses a bad mapping because a remote build runs no Python; the
- * checker refuses one because that is where a contributor meets it first. Both
- * halves are asserted here so neither can be quietly dropped.
+ * The schema owns the type and the range; "the last shot may not declare one" is
+ * not expressible in JSON Schema, so it lives in `check-experience.py` and in
+ * `overlapsOf`. This calls the checker's own function rather than paraphrasing the
+ * rule, because a paraphrase cannot catch the two drifting apart — which is
+ * exactly what happened when the build accepted an explicit zero the checker
+ * rejected.
  */
-describe('the data checker on overlap', () => {
-  const checkWith = (scene: unknown) => {
+describe('the data checker and the build agree on overlap', () => {
+  const shots = (...overlaps: (number | undefined)[]) => ({
+    shots: overlaps.map((overlap, index) => ({
+      id: `s${index}`,
+      ...(overlap === undefined ? {} : { overlap }),
+      beats: [{ id: `b${index}`, segments: [] }],
+    })),
+  });
+
+  /** Errors the real `check_shots` reports for a scene. */
+  const checkerErrors = (scene: unknown): string[] => {
     const [python, ...args] = pythonCommand();
     if (!python) {
       throw new Error('no Python interpreter');
@@ -267,55 +300,71 @@ describe('the data checker on overlap', () => {
     try {
       const file = join(directory, 'scene.json');
       writeFileSync(file, JSON.stringify(scene), 'utf8');
-      const result = spawnSync(
-        python,
-        [
-          ...args,
-          '-c',
+      return JSON.parse(
+        execFileSync(
+          python,
           [
-            'import importlib.util, json, sys',
-            'spec = importlib.util.spec_from_file_location("chk", sys.argv[1])',
-            'chk = importlib.util.module_from_spec(spec)',
-            'spec.loader.exec_module(chk)',
-            'scene = json.load(open(sys.argv[2], encoding="utf-8"))',
-            'schema = chk.load(chk.SCHEMA_DIR / "experience-scene.schema.json")',
-            'print(json.dumps(chk.validate(scene, schema, "scene.json")))',
-          ].join('\n'),
-          join(root, 'scripts', 'check-experience.py'),
-          file,
-        ],
-        { encoding: 'utf8' },
-      );
-      return { schema: JSON.parse(result.stdout) as string[] };
+            ...args,
+            '-c',
+            [
+              'import importlib.util, json, sys',
+              'spec = importlib.util.spec_from_file_location("chk", sys.argv[1])',
+              'chk = importlib.util.module_from_spec(spec)',
+              'spec.loader.exec_module(chk)',
+              'scene = json.load(open(sys.argv[2], encoding="utf-8"))',
+              'errors = []',
+              'chk.check_shots(scene, "scene.json", errors)',
+              'print(json.dumps(errors))',
+            ].join('\n'),
+            join(root, 'scripts', 'check-experience.py'),
+            file,
+          ],
+          { encoding: 'utf8' },
+        ),
+      ) as string[];
     } finally {
       rmSync(directory, { recursive: true, force: true });
     }
   };
 
-  const scene = {
-    id: 'checked',
-    shots: [
-      { id: 'first', beats: [{ id: 'a', segments: [] }] },
-      { id: 'last', beats: [{ id: 'b', segments: [] }] },
-    ],
+  /** Whether the build's half of the same rule rejects a scene. */
+  const buildRejects = (scene: { shots: unknown[] }): boolean => {
+    try {
+      overlapsOf({ id: 'checked', ...scene } as unknown as SceneMapping);
+      return false;
+    } catch {
+      return true;
+    }
   };
 
-  it('accepts an overlap inside 0..1', () => {
-    const relaxed = JSON.parse(JSON.stringify(scene));
-    relaxed.shots[0].overlap = 0.5;
-    expect(checkWith(relaxed).schema).toEqual([]);
-  });
+  const cases: { label: string; scene: ReturnType<typeof shots>; rejected: boolean }[] = [
+    { label: 'no overlap anywhere', scene: shots(undefined, undefined), rejected: false },
+    {
+      label: 'an overlap on a shot that has a next one',
+      scene: shots(0.5, undefined),
+      rejected: false,
+    },
+    {
+      label: 'the maximum on a shot that has a next one',
+      scene: shots(1, undefined),
+      rejected: false,
+    },
+    { label: 'an overlap on the last shot', scene: shots(undefined, 0.5), rejected: true },
+    { label: 'an explicit zero on the last shot', scene: shots(undefined, 0), rejected: true },
+    { label: 'an overlap on the only shot', scene: shots(0.5), rejected: true },
+  ];
 
-  it('rejects one outside 0..1 by schema', () => {
-    const wide = JSON.parse(JSON.stringify(scene));
-    wide.shots[0].overlap = 1.5;
-    expect(checkWith(wide).schema.join(' ')).toMatch(/above the maximum/);
-  });
+  for (const { label, scene, rejected } of cases) {
+    it(`${rejected ? 'rejects' : 'accepts'} ${label}, on both sides`, () => {
+      expect(checkerErrors(scene).length > 0, 'the data checker').toBe(rejected);
+      expect(buildRejects(scene), 'the build').toBe(rejected);
+    });
+  }
 
-  it('rejects the story’s own last shots, if one ever grew an overlap', () => {
-    // Read from the repository rather than restated: this is the real mapping.
-    for (const scene of scenes.values()) {
-      expect(scene.shots.at(-1)?.overlap, `${scene.id}`).toBeUndefined();
+  it('leaves the story’s own mappings valid', () => {
+    for (const [id, scene] of scenes) {
+      expect(checkerErrors(scene), id).toEqual([]);
+      expect(() => overlapsOf(scene), id).not.toThrow();
     }
   });
 });

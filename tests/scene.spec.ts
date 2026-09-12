@@ -109,7 +109,10 @@ for (const entry of parts) {
       await page.goto(url);
       await focusScene(page, sceneId);
 
-      for (const point of [0.05, 0.2, 0.45, 0.7, 0.95]) {
+      // 1 included on purpose: it is the only value at which the snapshot and the
+      // markup can disagree, because it is the only one where a span has ended
+      // while the stage that shows it is still in the viewport.
+      for (const point of [0, 0.05, 0.2, 0.45, 0.7, 0.95, 1]) {
         await page.evaluate(
           ([scene, value]) => window.__alice?.setProgress(scene as string, value as number),
           [sceneId, point] as const,
@@ -160,6 +163,48 @@ for (const entry of parts) {
       expect(after.beat).toBe(before.beat);
     });
   }
+
+  test(`${entry.url} ends every scene on something to read`, async ({ page }) => {
+    await page.goto(url);
+
+    for (const sceneId of scenes) {
+      await holdAt(page, sceneId, 1);
+
+      // A beat fades out because the next one is taking over. The last beat of a
+      // scene has nothing taking over from it, and its stage is still on screen,
+      // so the scene must not end on an empty stage.
+      const painted = await page
+        .locator(`.scene[data-scene="${sceneId}"] .beat`)
+        .evaluateAll((nodes) =>
+          nodes
+            .filter((node) => {
+              const shot = node.closest('.shot');
+              return (
+                node.querySelector('.line') !== null &&
+                Number(getComputedStyle(node).opacity) > 0.02 &&
+                shot !== null &&
+                Number(getComputedStyle(shot).opacity) > 0.02
+              );
+            })
+            .map((node) => node.getAttribute('data-beat')),
+        );
+      const last = await page
+        .locator(`.scene[data-scene="${sceneId}"] .beat`)
+        .last()
+        .evaluate((node) => ({
+          beat: node.dataset.beat,
+          state: node.dataset.state,
+          hasText: node.querySelector('.line') !== null,
+        }));
+
+      // The last beat still owns the scene's end, whether or not it carries text.
+      expect(last.state, `${sceneId} last beat`).toBe('active');
+      expect(await progression(page, sceneId).then((state) => state.beat)).toBe(last.beat);
+      if (last.hasText) {
+        expect(painted, `${sceneId} ends on an empty stage`).toContain(last.beat);
+      }
+    }
+  });
 
   test(`${entry.url} reaches both ends by scrolling alone`, async ({ page }) => {
     await page.goto(url);

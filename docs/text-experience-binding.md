@@ -123,7 +123,8 @@ and both checkers validate against the schema files rather than restating them.
    shot's span for which this one stays on screen after handing over. Like `weight`
    it is progress-neutral, but unlike `weight` it does not enter the pacing formula
    at all — §4's spans are the same with it and without it. The last shot may not
-   carry one. The semantics are in [`scene-shot-model.md`](scene-shot-model.md) §4.
+   carry the property at all, `0` included. The semantics are in
+   [`scene-shot-model.md`](scene-shot-model.md) §4.
 
 ## 4. Pacing: weight times reading load
 

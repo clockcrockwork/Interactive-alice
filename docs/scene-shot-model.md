@@ -125,9 +125,19 @@ The runtime must therefore avoid assuming that exactly one Shot owns the viewpor
 
 A Shot mapping may carry an optional `overlap`, a number from 0 to 1. It is the
 share of the **next** Shot's span for which this one keeps drawing after handing
-over. `0` is a hard cut and is the default. The last Shot has nothing to hand over
-to, so it may not carry one; the schema, the data checker and the build each refuse
-it.
+over. `0` is a hard cut and is the default.
+
+The last Shot has nothing to hand over to, so it may not carry one — and the rule is
+about the **property being there**, not its value: `"overlap": 0` on the last Shot is
+a mapping saying something it cannot mean, and is refused too. Where each half of
+that is enforced matters, because the two halves run at different times:
+
+- the **schema** owns the type and the range, and validates the file;
+- the **positional** rule cannot be written in JSON Schema, so `check-experience.py`
+  enforces it in the data gate and `overlapsOf` enforces it during a build. A remote
+  build runs no Python and does not validate scene files against their schema, so the
+  build re-checks the type as well rather than trusting it: `null` and `false` both
+  survive a comparison against 0 and 1, and neither is an overlap.
 
 Two values follow from it, and the difference matters:
 
@@ -136,7 +146,9 @@ Two values follow from it, and the difference matters:
   the Beats, and the narrative text;
 - the **render-active** Shots are the primary plus, during an overlap, the one still
   handing over to it. One or two, never three: an overlap may not exceed 1, so a
-  Shot's render span cannot reach past the end of the next Shot's span.
+  Shot's render span cannot reach past the end of the next Shot's span. They are
+  reported in progression order, so during a handover the outgoing Shot comes first
+  — document order, not a ranking.
 
 What an overlap deliberately does **not** do: it moves no boundary, changes no
 Beat's owner, alters no staging weight, and adds nothing to the Scene's scroll
@@ -148,6 +160,18 @@ The whole of it is a pure function of progress — `composeShots` in
 `src/runtime/progress.ts` — so scrolling backwards through a handover reconstructs
 exactly the state scrolling forwards produced. Nothing remembers having crossed a
 boundary, which is what makes reverse traversal correct rather than merely tested.
+
+### Where a Scene ends
+
+Progress 1 is a Scene's final frame, not a frame after it, and a Scene's sticky stage
+stays in the viewport for a further viewport of scrolling after its progress reaches
+1. So the last Shot and the last Beat both hold the end rather than passing out of
+their spans into nothing.
+
+For a Beat this also means it does not fade out: a Beat fades because the next one is
+taking over, and the last Beat of a Scene has nothing taking over from it. Without
+that, every Scene ends on an empty stage while the stage is still on screen, and the
+document ends on one for a reader who simply scrolled to the bottom.
 
 ## 5. "Camera" does not require 3D
 

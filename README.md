@@ -18,6 +18,7 @@ The target is the **Deploy Now Contest 2026 Grand Prix**. Monthly awards are not
 - **Rich does not mean heavy.** The experience may be visually dense and technically ambitious, but it must remain responsive and degrade gracefully on weaker devices.
 - **Progressive enhancement.** Advanced effects may differ by device capability. Losing WebGL, motion permission, hover, or a specific browser API must not make the story unusable.
 - **Scene-based composition.** Each story scene can choose the rendering technique best suited to it instead of forcing the whole site through one renderer.
+- **Scenes are not fixed camera shots.** A single story scene may contain multiple shots / segments with different framing, angle, perspective, movement axis, focal subject, or renderer while remaining one continuous scroll-driven scene.
 - **Multilingual by structure.** Scene logic and visible text must remain separable so that languages can be added without rebuilding animation logic.
 - **Original visual identity.** The project will build its own Alice and Wonderland visual language rather than imitate modern copyrighted adaptations.
 
@@ -27,7 +28,9 @@ The first implementation target is the **Rabbit Hole PoC**. It exists to prove t
 
 See:
 
+- [`docs/implementation-charter.md`](docs/implementation-charter.md) — fixed decisions, implementation boundaries, and agent authority.
 - [`docs/product-principles.md`](docs/product-principles.md)
+- [`docs/scene-shot-model.md`](docs/scene-shot-model.md)
 - [`docs/poc/rabbit-hole.md`](docs/poc/rabbit-hole.md)
 
 ## Status

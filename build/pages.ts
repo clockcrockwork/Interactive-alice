@@ -93,7 +93,17 @@ function renderScene(
     );
   });
 
-  return `    <div class="scene" data-scene="${sceneId}">\n${shots.join('\n')}\n    </div>`;
+  // The track gives the scene its scroll distance; the stage holds the composition in
+  // the viewport. Both are inert until the runtime attaches.
+  return [
+    `    <div class="scene" data-scene="${sceneId}">`,
+    '      <div class="scene__track" data-scene-track>',
+    '        <div class="scene__stage" data-scene-stage>',
+    shots.join('\n'),
+    '        </div>',
+    '      </div>',
+    '    </div>',
+  ].join('\n');
 }
 
 function renderPart(project: Project, partId: string, locale: string, scenes: string[]): string {

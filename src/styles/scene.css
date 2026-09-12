@@ -1,0 +1,81 @@
+@layer scene {
+  /*
+   * Without the runtime the page is an ordinary document and these rules do nothing.
+   * The runtime sets data-mode="scene" once it has attached, which is what turns the
+   * flowing text into a staged scene.
+   */
+  .story[data-mode="scene"] .scene {
+    /* Art-directed scroll distance: one base length for every language. */
+    --scene-length: 500svh;
+    position: relative;
+  }
+
+  .story[data-mode="scene"] .scene__track {
+    block-size: var(--scene-length);
+  }
+
+  .story[data-mode="scene"] .scene__stage {
+    position: sticky;
+    inset-block-start: 0;
+    display: grid;
+    block-size: 100svh;
+    place-items: center;
+    overflow: clip;
+  }
+
+  .story[data-mode="scene"] .shot {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    margin: 0;
+    place-items: center;
+  }
+
+  .story[data-mode="scene"] .beat {
+    position: absolute;
+    inline-size: min(100%, var(--measure));
+    margin: 0;
+    padding-inline: var(--space-2);
+    /* Fades in over the first fifth of its span and out over the last. */
+    opacity: min(calc(var(--progress, 0) * 5), calc((1 - var(--progress, 0)) * 5), 1);
+    translate: 0 calc((0.5 - var(--progress, 0)) * 4rem);
+    will-change: opacity, translate;
+  }
+
+  .story[data-mode="scene"] .beat[data-state="before"],
+  .story[data-mode="scene"] .beat[data-state="after"] {
+    opacity: 0;
+    will-change: auto;
+  }
+
+  /* A textless beat stages nothing yet; it still holds its share of the scroll. */
+  .story[data-mode="scene"] .beat:not(:has(.line)) {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .story[data-mode="scene"] .beat {
+      /* Comfortable version: the same reveal, without the drift. */
+      translate: none;
+      opacity: min(calc(var(--progress, 0) * 8), calc((1 - var(--progress, 0)) * 8), 1);
+    }
+  }
+}
+
+@layer utilities {
+  .debug-overlay {
+    position: fixed;
+    z-index: 9;
+    inset-block-start: var(--space-1);
+    inset-inline-start: var(--space-1);
+    padding: var(--space-1);
+    border-radius: 4px;
+    background: color-mix(in oklab, var(--ground-deep) 88%, transparent);
+    color: var(--ground);
+    font-family: ui-monospace, monospace;
+    font-size: 0.72rem;
+    line-height: 1.45;
+    white-space: pre;
+    pointer-events: none;
+  }
+}

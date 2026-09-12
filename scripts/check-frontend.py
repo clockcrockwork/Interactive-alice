@@ -38,7 +38,9 @@ ALLOW = re.compile(r"check-frontend:\s*allow\s+([a-z-]+)")
 CJK = re.compile(r"[぀-ヿ一-鿿]")
 ABSOLUTE = re.compile(r"""(?:src|href)\s*=\s*["']/|url\(\s*/|from\s+["']/""")
 SCROLL_READ = re.compile(r"window\.(?:scrollY|pageYOffset)|documentElement\.scrollTop")
-INLINE_STYLE = re.compile(r"\.style\.(?!setProperty)[A-Za-z]")
+# An assignment to a style property. Reading one, or calling getPropertyValue and
+# friends, is fine; writing a property other than a custom one is what GSAP owns.
+INLINE_STYLE = re.compile(r"\.style\.(?!setProperty|getPropertyValue|removeProperty)[A-Za-z_$][\w$]*\s*=")
 SET_PROPERTY_VAR = re.compile(r"setProperty\(\s*['\"]--")
 # A layout-triggering property, wherever it sits on the line.
 LAYOUT_PROPS = re.compile(
@@ -80,8 +82,7 @@ def check_code(path: Path, text: str, ids: set[str], problems: list[str]) -> Non
             if SCROLL_READ.search(line) and "runtime" not in path.parts and not allowed(line, "scroll-read"):
                 report(problems, path, number, "scroll-read",
                        "take progress from the runtime context, not from the window")
-            if (INLINE_STYLE.search(line) and not SET_PROPERTY_VAR.search(line)
-                    and not allowed(line, "inline-style")):
+            if INLINE_STYLE.search(line) and not allowed(line, "inline-style"):
                 report(problems, path, number, "inline-style",
                        "write a CSS custom property; GSAP owns the properties it animates")
             if "addEventListener('unload'" in line.replace('"', "'") and not allowed(line, "bfcache"):

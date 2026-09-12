@@ -103,7 +103,18 @@ quality, which is a human read.
 Automation supplements the manual acceptance that `docs/poc/rabbit-hole.md`
 requires. It never replaces it.
 
-## 5. Ownership
+## 5. What the runtime tests cover today
+
+Per part page, in both locales: reconstruction at every shot boundary and at both
+ends, agreement between the snapshot and the markup about the active shot and beat,
+reaching both ends by scrolling alone, a resize at mid-scene leaving the composition
+intact, the reduced-motion variant dropping the drift and lowering the quality tier,
+and the page staying a readable document with JavaScript disabled.
+
+Still to come with the scenes they belong to: depth bands, the FX layer, the optional
+interaction, audio, and back-navigation restore across a document boundary.
+
+## 6. Ownership
 
 The `test-engineer` agent owns the design and maintenance of these suites. Anyone
 implementing runtime behaviour runs the applicable tests and updates them in the

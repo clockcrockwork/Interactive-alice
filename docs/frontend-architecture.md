@@ -18,11 +18,23 @@
 Vite (multi-page build)
 TypeScript
 HTML + CSS, hand-written, no UI framework
-GSAP + ScrollTrigger for scroll-driven timelines
+A sticky track for pinning, and one rAF loop for progress: no pinning library
+GSAP where a Shot needs a real timeline, added when that Shot exists
 Canvas 2D / WebGL only inside the Shot that needs it
 Biome for lint and format
-Playwright for smoke tests and screenshots
+Vitest for the pure layer, Playwright for the browser layer
 ```
+
+### Why no pinning library yet
+
+A tall track plus `position: sticky` gives the scene its scroll distance and holds the
+composition in the viewport, so the runtime only has to read one scroll offset and
+remap it. That is about twenty lines, it costs nothing, it survives scroll
+restoration, and it is deterministic enough to test headlessly.
+
+GSAP earns its place when a Shot needs sequenced, eased, interruptible timelines, and
+it is added then, with the budget cost stated in that pull request. Until then it is
+not a dependency: an unused 50 KB in the lockfile is a promise nobody checked.
 
 No site framework and no UI framework. Vite's multi-page mode takes several HTML
 entry points and emits plain static files, which is all "SSG" has to mean for
@@ -158,14 +170,32 @@ device-motion work a Shot introduces. The scene must stay complete when each is
 missing. Nothing in the guaranteed path may depend on a feature outside the
 Baseline target.
 
-## 7. Testing and tooling
+## 7. What the runtime owns
+
+`src/runtime/` holds the parts every scene shares:
+
+| Module | Responsibility |
+| --- | --- |
+| `progress.ts` | the pure arithmetic: clamping, local progress, span state, direction, velocity |
+| `context.ts` | what a scene is told: progress, direction, velocity, viewport, reduced motion, quality tier, optional-layer flags |
+| `lifecycle.ts` | idle, mounted, active, suspended, destroyed, and the moves that are refused |
+| `scene-driver.ts` | scroll to progress, the frame loop, measurement on resize, suspend off-screen, remeasure on `pageshow` |
+| `stage.ts` | writes state onto the document as data attributes and custom properties |
+| `probe.ts` | the test seam, attached on `?probe=1` or in development |
+| `debug-overlay.ts` | development-only overlay, dropped from production bundles |
+
+Two rules hold the division: a scene never reads the scroll position or measures the
+window, and the runtime never decides what anything looks like. Appearance is CSS
+reacting to `--scene-progress`, `--progress` and `data-state`.
+
+## 8. Testing and tooling
 
 Testing layers, the runtime's testability requirements, and who owns them are in
 [`testing.md`](testing.md). Lint, format and conventions are in
 [`code-conventions.md`](code-conventions.md). Build and publication are in
 [`deployment.md`](deployment.md).
 
-## 8. Open questions, deliberately unanswered here
+## 9. Open questions, deliberately unanswered here
 
 - the Scene runtime's exact interfaces, which issue #1 owns;
 - whether any Shot needs WebGL, which profiling decides;

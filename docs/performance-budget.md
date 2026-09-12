@@ -30,7 +30,7 @@ one scene page. Shared chunks count once.
 | --- | --- | --- |
 | HTML | ≤ 20 KB | includes the page's own inlined text |
 | CSS | ≤ 30 KB | tokens plus the scene's own sheet |
-| JS, first load | ≤ 120 KB | split roughly: GSAP + ScrollTrigger ≈ 50 KB, runtime ≈ 25 KB, the scene ≈ 45 KB |
+| JS, first load | ≤ 120 KB | today: runtime ≈ 3 KB and no library. If a Shot later needs GSAP, about 50 KB of this budget goes to it, leaving roughly 25 KB for the runtime and 45 KB for scenes |
 | images, critical | ≤ 400 KB | what the first viewport needs; AVIF first is a measurement, not a law, since its decode can be slower than WebP on low-end phones |
 | images, whole scene | ≤ 1.5 MB | lazily loaded, not in the critical path |
 | audio per scene | ≤ 700 KB | BGM loop, fetched after the first interaction |
@@ -44,18 +44,19 @@ exceeded silently.
 Assets for the *next* scene never count against the current page, and never load
 before the current scene is interactive.
 
-### First baseline
+### Baseline
 
-The scaffolding, before any scene animation, GSAP, or art:
+With the scene runtime in place, before any placeholder art, FX layer, or audio:
 
 | Page | HTML | CSS | JS |
 | --- | --- | --- | --- |
 | `/` | 0.4 KB | 0.7 KB | none |
-| `/ja/rabbit-hole/` | 2.3 KB | 0.7 KB | 0.4 KB |
-| `/en-simple/rabbit-hole/` | 2.1 KB | 0.7 KB | 0.4 KB |
+| `/<locale>/` | 0.4 KB | 0.7 KB | none |
+| `/<locale>/rabbit-hole/` | 2.2–2.4 KB | 1.3 KB | 2.2 KB |
 
-Gzip, from the build's own size report. Every later figure is compared against
-this, so growth has a cause rather than a surprise.
+Gzip, from the build's own size report. The scaffolding alone was 0.4 KB of JS, so the
+runtime cost 1.8 KB. Every later figure is compared against this, so growth has a
+cause rather than a surprise.
 
 ## 3. Keeping interaction responsive
 

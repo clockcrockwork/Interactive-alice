@@ -8,7 +8,7 @@
 
 import type { SceneDriver } from './scene-driver.ts';
 
-const FIELDS = ['progress', 'shot', 'beat', 'direction', 'velocity', 'quality'] as const;
+const FIELDS = ['progress', 'beat', 'direction', 'velocity', 'quality'] as const;
 
 export function installDebugOverlay(drivers: readonly SceneDriver[]): () => void {
   const panel = document.createElement('aside');
@@ -25,8 +25,14 @@ export function installDebugOverlay(drivers: readonly SceneDriver[]): () => void
           return `${field} ${typeof value === 'number' ? value.toFixed(3) : String(value)}`;
         });
         const { width, height, dpr } = snapshot.viewport;
+        // The whole render-active set, not only the primary: during an overlap the
+        // difference between one shot and two is the thing being looked at.
+        const shots = snapshot.shots
+          .map((id) => (id === snapshot.shot ? id : `${id} (outgoing)`))
+          .join(' + ');
         return [
           `${snapshot.scene} · ${snapshot.state}${snapshot.overridden ? ' · held' : ''}`,
+          `shots ${shots}`,
           ...values,
           `viewport ${width}×${height} @${dpr}`,
           `reduced motion ${snapshot.reducedMotion}`,

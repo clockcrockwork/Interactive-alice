@@ -11,7 +11,8 @@ import { installProbe } from '../runtime/probe.ts';
 import '../styles/scene.css';
 
 const story = document.querySelector<HTMLElement>('.story');
-const drivers = story ? attachStory(story) : [];
+const coordinator = story ? attachStory(story) : undefined;
+const drivers = coordinator?.drivers ?? [];
 
 installProbe(drivers);
 

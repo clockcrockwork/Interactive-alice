@@ -10,6 +10,7 @@ between the two layers rather than the staging itself:
   * when documents (parts) are declared, each scene belongs to exactly one, in order
   * shot and beat ids are unique inside their own namespace in a scene; a shot and a
     beat may share a name, since a beat is addressed as scene/shot/beat
+  * only a shot with a following shot may declare an overlap to hand over to it
   * every referenced segment id exists in some chapter structure
   * a segment is referenced at most once in the whole story
   * references never run backwards against the text's reading order, across
@@ -174,11 +175,21 @@ def main() -> int:
 
         shot_ids: set[str] = set()
         beat_ids: set[str] = set()
+        last_shot = len(scene["shots"]) - 1
 
-        for shot in scene["shots"]:
+        for index, shot in enumerate(scene["shots"]):
             if shot["id"] in shot_ids:
                 errors.append(f"{label}: duplicate shot id {shot['id']!r}")
             shot_ids.add(shot["id"])
+
+            # The schema already bounds the value to 0..1. What it cannot express is
+            # that an overlap is a handover, so the shot with nothing after it has
+            # nothing to hand over to and may not claim one.
+            if index == last_shot and "overlap" in shot:
+                errors.append(
+                    f"{label}: the last shot {shot['id']!r} declares an overlap, "
+                    "but it has no following shot to hand over to"
+                )
 
             for beat in shot["beats"]:
                 where = f"{label} {shot['id']}/{beat['id']}"

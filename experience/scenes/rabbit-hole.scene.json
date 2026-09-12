@@ -7,6 +7,7 @@
       "id": "threshold",
       "devLabel": "entry and tunnel",
       "weight": 1.2,
+      "overlap": 0.35,
       "beats": [
         {
           "id": "jump-in",
@@ -27,6 +28,7 @@
       "id": "primary-fall",
       "devLabel": "the well opens out",
       "weight": 1.0,
+      "overlap": 0.25,
       "beats": [
         {
           "id": "slow-or-deep",
@@ -50,6 +52,7 @@
       "id": "alice-focus",
       "devLabel": "changed angle, Alice talking to herself",
       "weight": 1.0,
+      "overlap": 0.3,
       "beats": [
         {
           "id": "brave-at-home",

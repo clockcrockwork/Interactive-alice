@@ -1,9 +1,15 @@
 /**
- * Turns scrolling into scene progress, and owns the frame loop.
+ * Turns scrolling into one scene's progress.
  *
  * A tall track gives the scene its scroll distance and a sticky stage holds the
  * composition in the viewport, so pinning is CSS and this only has to read a scroll
  * offset. Layout is measured on resize, never per frame.
+ *
+ * A driver owns one scene and nothing beyond it. Listening to the document, and
+ * deciding which scenes are worth a frame, belongs to `SceneCoordinator`: a page
+ * may host several scenes, and one scroll listener and one frame loop for all of
+ * them is the only version of that which stays within the frame budget. See
+ * docs/frontend-architecture.md §7.
  */
 
 import {
@@ -17,8 +23,10 @@ import { Lifecycle } from './lifecycle.ts';
 import {
   activeSpan,
   clamp,
+  composeShots,
   type Direction,
   directionOf,
+  type ShotSpan,
   type Span,
   VELOCITY_EPSILON,
   velocityOf,
@@ -30,7 +38,13 @@ export interface SceneSnapshot {
   progress: number;
   direction: Direction;
   velocity: number;
+  /** The shot that owns this progress. Exactly one, always. */
   shot: string | undefined;
+  /**
+   * Every render-active shot in progression order: the primary, and the one
+   * handing over to it while an overlap lasts. One entry, or two.
+   */
+  shots: string[];
   beat: string | undefined;
   viewport: { width: number; height: number; dpr: number };
   reducedMotion: boolean;
@@ -43,7 +57,7 @@ export interface SceneDriverOptions {
   track: HTMLElement;
   /** The sticky element. Its height is the part of the track that does not travel. */
   stage: HTMLElement;
-  shots: readonly Span[];
+  shots: readonly ShotSpan[];
   beats: readonly Span[];
   onUpdate: (context: RuntimeContext) => void;
 }
@@ -51,6 +65,8 @@ export interface SceneDriverOptions {
 export class SceneDriver {
   readonly #options: SceneDriverOptions;
   readonly #lifecycle = new Lifecycle();
+  /** How this scene asks the document's loop for a frame. */
+  readonly #requestFrame: () => void;
   #top = 0;
   #distance = 1;
   #progress = 0;
@@ -70,84 +86,55 @@ export class SceneDriver {
    * one does. See docs/frontend-architecture.md §7.
    */
   #resync = true;
-  #frame = 0;
   #lastTime = 0;
   #quality: QualityTier = 'full';
   #effects = true;
   #audio = false;
-  #observer: IntersectionObserver | undefined;
-  #resizeObserver: ResizeObserver | undefined;
-  readonly #onScroll = () => this.#request();
-  readonly #onResize = () => {
-    this.measure();
-    this.#resyncNext();
-  };
-  readonly #onPageShow = () => {
-    // Back from the back/forward cache: the viewport may differ and the scroll
-    // position is restored, so remeasure before trusting anything.
-    this.measure();
-    this.resume();
-  };
-  readonly #onPageHide = () => this.suspend();
 
-  constructor(options: SceneDriverOptions) {
+  constructor(options: SceneDriverOptions, requestFrame: () => void) {
     this.#options = options;
+    this.#requestFrame = requestFrame;
   }
 
   get lifecycle(): Lifecycle {
     return this.#lifecycle;
   }
 
+  get track(): HTMLElement {
+    return this.#options.track;
+  }
+
   /**
-   * Attaches to the document.
+   * The sticky stage: the box the composition actually occupies.
+   *
+   * This is what the coordinator watches for visibility, and it is the same box
+   * `measure` derives the scroll mapping from, so a scene's lifecycle and its
+   * progress are answering to one piece of geometry rather than two.
+   */
+  get stage(): HTMLElement {
+    return this.#options.stage;
+  }
+
+  /**
+   * Prepares the scene, without attaching to anything.
    *
    * The caller must have put the page into its staged mode already: the track's
    * height comes from CSS that only applies in that mode, so measuring before it is
    * applied reads the flow layout and gets the scroll distance wrong. `attachStory`
-   * owns that ordering.
+   * owns that ordering, and the coordinator owns every listener.
    */
   mount(): void {
     this.#lifecycle.to('mounted');
     this.#quality = initialQuality();
     this.measure();
-
-    // Layout can still move under us: a late font swap shifts what sits above the
-    // track, and a container query or an orientation change resizes it.
-    this.#resizeObserver = new ResizeObserver(() => {
-      this.measure();
-      this.#resyncNext();
-    });
-    this.#resizeObserver.observe(this.#options.track);
-    void document.fonts?.ready.then(() => {
-      this.measure();
-      this.#resyncNext();
-    });
-
-    addEventListener('scroll', this.#onScroll, { passive: true });
-    addEventListener('resize', this.#onResize, { passive: true });
-    addEventListener('pageshow', this.#onPageShow);
-    addEventListener('pagehide', this.#onPageHide);
-
-    // Off-screen scenes do no work; this is the suspend rule, not an optimization.
-    this.#observer = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          this.resume();
-        } else {
-          this.suspend();
-        }
-      }
-    });
-    this.#observer.observe(this.#options.scene);
-
     this.#lifecycle.to('active');
-    this.#resyncNext();
+    this.resync();
   }
 
   /** Asks for a frame that treats the position it reads as a jump, not as travel. */
-  #resyncNext(): void {
+  resync(): void {
     this.#resync = true;
-    this.#request(true);
+    this.#requestFrame();
   }
 
   /**
@@ -169,10 +156,6 @@ export class SceneDriver {
     if (this.#lifecycle.can('suspended')) {
       this.#lifecycle.to('suspended');
     }
-    if (this.#frame) {
-      cancelAnimationFrame(this.#frame);
-      this.#frame = 0;
-    }
     // Nothing is moving while suspended, and the clock must not carry the pause into
     // the first sample after resuming.
     this.#lastTime = 0;
@@ -193,19 +176,11 @@ export class SceneDriver {
     // Always read the real position afterwards. The page may have scrolled while this
     // scene was off-screen or in the back/forward cache, so the held value is what the
     // seam asked for, never evidence of where the document now is.
-    this.#resyncNext();
+    this.resync();
   }
 
   destroy(): void {
     this.suspend();
-    removeEventListener('scroll', this.#onScroll);
-    removeEventListener('resize', this.#onResize);
-    removeEventListener('pageshow', this.#onPageShow);
-    removeEventListener('pagehide', this.#onPageHide);
-    this.#observer?.disconnect();
-    this.#observer = undefined;
-    this.#resizeObserver?.disconnect();
-    this.#resizeObserver = undefined;
     this.#lifecycle.to('destroyed');
   }
 
@@ -228,7 +203,7 @@ export class SceneDriver {
 
   releaseProgress(): void {
     this.#override = undefined;
-    this.#resyncNext();
+    this.resync();
   }
 
   setFlags(flags: { effects?: boolean; audio?: boolean; quality?: QualityTier }): void {
@@ -250,13 +225,15 @@ export class SceneDriver {
   }
 
   snapshot(): SceneSnapshot {
+    const composition = composeShots(this.#progress, this.#options.shots);
     return {
       scene: this.#options.scene.dataset.scene ?? '',
       state: this.#lifecycle.state,
       progress: this.#progress,
       direction: this.#direction,
       velocity: this.#velocity,
-      shot: activeSpan(this.#progress, this.#options.shots)?.id,
+      shot: composition.primary,
+      shots: composition.active,
       beat: activeSpan(this.#progress, this.#options.beats)?.id,
       viewport: readViewport(),
       reducedMotion: prefersReducedMotion(),
@@ -265,17 +242,14 @@ export class SceneDriver {
     };
   }
 
-  #request(force = false): void {
-    if (!this.#lifecycle.running || this.#frame) {
-      return;
-    }
-    this.#frame = requestAnimationFrame((time) => {
-      this.#frame = 0;
-      this.#tick(time, force);
-    });
-  }
-
-  #tick(time: number, force: boolean): void {
+  /**
+   * Advances this scene by one frame. Returns true while it still wants another.
+   *
+   * Only the coordinator calls this, and only while the scene is active, so a
+   * suspended scene's progress cannot move: it is not that its updates are
+   * discarded, it is that nothing reads the scroll position on its behalf.
+   */
+  tick(time: number): boolean {
     const progress = this.#override ?? clamp((scrollY - this.#top) / this.#distance);
 
     if (this.#resync) {
@@ -285,7 +259,7 @@ export class SceneDriver {
       this.#publish(progress, true);
       // `#neutral` cleared the clock, so the next sample measures from there: the
       // gap this frame closed must not become speed on the frame after it either.
-      return;
+      return false;
     }
 
     const seconds = this.#lastTime ? (time - this.#lastTime) / 1000 : 0;
@@ -295,17 +269,17 @@ export class SceneDriver {
     this.#direction = directionOf(delta);
     this.#velocity = velocityOf(this.#velocity, delta, seconds);
 
-    if (force || delta !== 0 || this.#velocity !== 0) {
-      this.#publish(progress, force);
+    if (delta !== 0 || this.#velocity !== 0) {
+      this.#publish(progress, false);
     }
 
     // Keep going while velocity is still decaying, so a scene that reads speed sees
     // it settle to zero rather than holding the last value after scrolling stops.
     if (Math.abs(this.#velocity) > VELOCITY_EPSILON) {
-      this.#request();
-    } else {
-      this.#lastTime = 0;
+      return true;
     }
+    this.#lastTime = 0;
+    return false;
   }
 
   #publish(progress: number, force: boolean): void {

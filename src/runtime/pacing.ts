@@ -113,3 +113,33 @@ export function planScene(
     mean,
   };
 }
+
+/**
+ * The overlap each shot carries into the next, in shot order, validated.
+ *
+ * Overlap is progress-neutral: nothing above reads it, so a scene's spans are the
+ * same whether its shots overlap or not, and adding one to a mapping cannot move a
+ * boundary, change a beat's owner, or lengthen the scene. It is read here only
+ * because the build has to write it into the markup.
+ *
+ * The invariant lives on both sides of the boundary on purpose.
+ * `scripts/check-experience.py` refuses a bad mapping in the data gate, and this
+ * refuses one during a build, which is the half a remote build without the Python
+ * checkers actually runs.
+ */
+export function overlapsOf(scene: SceneMapping): number[] {
+  const last = scene.shots.length - 1;
+  return scene.shots.map((shot, index) => {
+    const overlap = shot.overlap ?? 0;
+    if (index === last && overlap !== 0) {
+      throw new Error(
+        `${scene.id}: the last shot ${shot.id} declares an overlap of ${overlap}, ` +
+          'but it has no following shot to hand over to',
+      );
+    }
+    if (!(overlap >= 0 && overlap <= 1)) {
+      throw new Error(`${scene.id}: shot ${shot.id} has an overlap outside 0..1: ${overlap}`);
+    }
+    return overlap;
+  });
+}

@@ -11,6 +11,7 @@ import type { Page, Route } from '@playwright/test';
 import { expect, test } from '@playwright/test';
 import { generatePagesFrom } from '../build/pages.ts';
 import { loadProject } from '../build/project.ts';
+import { geometryOf, progressOf, sampleOf, stateOf } from './drive.ts';
 import { pageGraph } from './manifest.ts';
 
 const parts = pageGraph().filter((page) => page.kind === 'part');
@@ -31,46 +32,6 @@ async function serveRewritten(page: Page, url: string, rewrite: (html: string) =
     },
   );
 }
-
-const progressOf = (page: Page, scene: string) =>
-  page.evaluate((id) => window.__alice?.snapshot(id)[0]?.progress ?? -1, scene);
-
-const sampleOf = (page: Page, scene: string) =>
-  page.evaluate((id) => {
-    const snapshot = window.__alice?.snapshot(id)[0];
-    return {
-      progress: snapshot?.progress ?? -1,
-      direction: snapshot?.direction ?? 9,
-      velocity: snapshot?.velocity ?? 9,
-    };
-  }, scene);
-
-const stateOf = (page: Page, scene: string) =>
-  page.evaluate((id) => window.__alice?.snapshot(id)[0]?.state ?? '', scene);
-
-/**
- * Where this scene starts scrolling and how far it travels, read from the document.
- *
- * The runtime measures the same way, so a scroll target computed from this lands on
- * the progress it names; a page-relative guess would be off by whatever sits above
- * the track.
- */
-const geometryOf = (page: Page, scene: string) =>
-  page.evaluate((id) => {
-    const track = document.querySelector<HTMLElement>(
-      `.scene[data-scene="${id}"] [data-scene-track]`,
-    );
-    const stage = document.querySelector<HTMLElement>(
-      `.scene[data-scene="${id}"] [data-scene-stage]`,
-    );
-    if (!track || !stage) {
-      return { top: 0, travel: 1 };
-    }
-    return {
-      top: track.getBoundingClientRect().top + window.scrollY,
-      travel: track.getBoundingClientRect().height - stage.getBoundingClientRect().height,
-    };
-  }, scene);
 
 for (const entry of parts) {
   const url = `${entry.url}?probe=1`;

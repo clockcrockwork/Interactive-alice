@@ -5,12 +5,16 @@
     {
       "id": "rabbit-hole",
       "file": "experience/scenes/rabbit-hole.scene.json"
+    },
+    {
+      "id": "hall-of-doors",
+      "file": "experience/scenes/hall-of-doors.scene.json"
     }
   ],
   "parts": [
     {
       "id": "rabbit-hole",
-      "scenes": ["rabbit-hole"]
+      "scenes": ["rabbit-hole", "hall-of-doors"]
     }
   ]
 }

@@ -192,7 +192,8 @@ Baseline target.
 | `progress.ts` | the pure arithmetic: clamping, local progress, span state, direction, velocity |
 | `context.ts` | what a scene is told: progress, direction, velocity, viewport, reduced motion, quality tier, optional-layer flags |
 | `lifecycle.ts` | idle, mounted, active, suspended, destroyed, and the moves that are refused |
-| `scene-driver.ts` | scroll to progress, the frame loop, measurement on resize, suspend off-screen, remeasure on `pageshow` |
+| `scene-driver.ts` | one scene: scroll to progress, its own measurement, its lifecycle, the seam |
+| `coordinator.ts` | the document: one scroll listener, one frame loop, one intersection observer, one resize observer, for every scene on the page |
 | `stage.ts` | writes state onto the document as data attributes and custom properties |
 | `attach.ts` | the attach order: staged mode, flush layout, then measure and mount; marks `data-degraded` when it has to fall back |
 | `probe.ts` | the test seam, attached on `?probe=1` or in development |
@@ -202,7 +203,7 @@ Two rules hold the division: a scene never reads the scroll position or measures
 window, and the runtime never decides what anything looks like. Appearance is CSS
 reacting to `--scene-progress`, `--progress` and `data-state`.
 
-Five contracts are now fixed, and changing them is a deliberate decision rather than
+Seven contracts are now fixed, and changing them is a deliberate decision rather than
 an implementation detail:
 
 1. **Attach order.** Staged mode is applied, layout is flushed, and only then does a
@@ -224,6 +225,20 @@ an implementation detail:
 5. **The probe addresses scenes by id.** `setProgress(sceneId, progress)`,
    `snapshot(sceneId?)`, `scenes()`. A document may host several scenes, and driving
    them all to one progress is a state real scrolling never produces.
+6. **The document owns the listening, a scene owns itself.** One scroll listener, one
+   resize listener, one `IntersectionObserver`, one `ResizeObserver` and one frame
+   loop for the whole page, in `coordinator.ts`. A driver keeps its geometry, its
+   progress and its lifecycle and is handed frames; it does not go looking for them.
+   The cost of a second scene is a second measurement per resize, not a second
+   listener and a second loop competing for the same frame. Measured: 167 scroll
+   events over a two-scene document produced 167 runtime frame requests, not 334.
+7. **Visibility is the stage's, not the scene element's.** The coordinator observes
+   each scene's sticky stage, which is the box the composition occupies and the same
+   box `measure` derives the scroll mapping from. Today's geometry makes the stage's
+   intersection window identical to the scene element's, so this is not a correction
+   of a live difference: it is that lifecycle and progress should answer to one piece
+   of geometry. Give a scene anything outside its track, or a track any padding, and
+   only the stage still means "on screen".
 
 Two more things are decided rather than fixed. **`direction` means reader movement.**
 A progress value that arrives without anyone scrolling — the first sync after mounting,
@@ -234,6 +249,15 @@ state: no scene has yet needed to know *why* progress jumped, so `RuntimeContext
 not carry a `discontinuous` flag. The first renderer with a real need for the reason
 is what adds one.
 
+A third thing is decided rather than fixed. **A scene is suspended when its stage is
+off screen, and resumes onto geometry.** Nothing ticks a suspended scene, so its
+progress cannot advance while it is away; coming back, it reads the real scroll
+position and publishes it as a jump, with `direction` and `velocity` of zero, after
+which ordinary scrolling reads as movement again. Two scenes in one document overlap
+for one viewport's worth of scrolling, because each sticky stage is entering as the
+other leaves, and that window is the handoff: no coordination produces it, their
+geometry does.
+
 And **the probe ships in production**: `?probe=1` installs a debug surface on the live site, and that is accepted for the
 proof of concept with its limits written down. It can set progress, read a snapshot
 and switch optional layers off. It reads and writes no credential, storage or
@@ -243,13 +267,13 @@ since nothing installs without the query. Before the first public release this i
 re-decided, and the alternatives are a build-time flag that drops the seam from the
 production bundle, or a key the query has to carry.
 
-Still open, and fair for the PoC to change: how two scenes in one document hand over
-to each other, and how an overlapping transition between shots is represented. Both
-change data shapes, so they are decided before the staging work rather than during it.
-The runtime already drives several scenes per document, each with its own driver and
-its own suspension, but no published page carries two scenes yet: treat multi-scene
-support as implemented and not yet proven end to end until the two-scene fixture
-lands with that work.
+Both of the items that were open here are now closed, and the answers are the two
+above plus `overlap` in the scene schema. A published page carries two scenes, the
+handoff happens by scroll alone in both directions, and a scene that leaves the
+viewport really does suspend — which a one-scene document could not show, because its
+document ended a viewport before its only scene did. There is still no story-global
+progress and no plan to add one: each scene divides its own 0..1, and the coordinator
+arbitrates lifecycle, never progression.
 
 ## 8. Testing and tooling
 
@@ -264,5 +288,5 @@ Testing layers, the runtime's testability requirements, and who owns them are in
 - whether any Shot needs WebGL, which profiling decides;
 - where the document boundaries fall once there is more than one part;
 - whether a later boundary justifies a same-document transition;
-- the two items named above: scene-to-scene handoff inside one document, and how
-  overlapping shots are expressed in the mapping.
+- whether a scene ever needs to know that its neighbour is close, for preloading.
+  Nothing needs it yet, so the coordinator does not offer it.

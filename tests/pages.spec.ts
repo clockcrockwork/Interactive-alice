@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { locales, pageGraph, sentencesOf } from './manifest.ts';
+import { locales, pageGraph, sceneOf, sentencesOf } from './manifest.ts';
 
 const pages = pageGraph();
 
@@ -104,24 +104,70 @@ for (const entry of pages.filter((page) => page.kind === 'part')) {
     expect(whiteSpace).toBe(significant === 'true' ? 'break-spaces' : 'normal');
   });
 
-  test(`${entry.url} covers the scene once with its spans`, async ({ page }) => {
+  /**
+   * Each scene divides its own 0..1, and every scene on the page starts again at 0.
+   *
+   * Scoped per scene deliberately. A document may host several scenes, and their
+   * spans are not one continuous ruler: there is no story-global progress, so
+   * reading every `.shot` on the page as one sequence would be measuring a value
+   * this project does not have. See docs/frontend-architecture.md §3.
+   */
+  test(`${entry.url} gives every scene its own 0..1`, async ({ page }) => {
     await page.goto(entry.url);
 
-    for (const selector of ['.shot', '.beat']) {
-      const spans = await page.locator(selector).evaluateAll((nodes) =>
-        nodes.map((node) => ({
-          start: Number(node.getAttribute('data-start')),
-          end: Number(node.getAttribute('data-end')),
-        })),
-      );
-      expect(spans[0]?.start).toBe(0);
-      expect(spans.at(-1)?.end).toBeCloseTo(1, 5);
-      for (const [index, span] of spans.entries()) {
-        expect(span.end).toBeGreaterThan(span.start);
-        if (index > 0) {
-          expect(span.start).toBeCloseTo(spans[index - 1]?.end ?? -1, 6);
+    for (const sceneId of entry.scenes ?? []) {
+      for (const selector of ['.shot', '.beat']) {
+        const spans = await page
+          .locator(`.scene[data-scene="${sceneId}"] ${selector}`)
+          .evaluateAll((nodes) =>
+            nodes.map((node) => ({
+              start: Number(node.getAttribute('data-start')),
+              end: Number(node.getAttribute('data-end')),
+            })),
+          );
+        expect(spans.length, `${sceneId} has no ${selector}`).toBeGreaterThan(0);
+        expect(spans[0]?.start, `${sceneId} ${selector}`).toBe(0);
+        expect(spans.at(-1)?.end, `${sceneId} ${selector}`).toBeCloseTo(1, 5);
+        for (const [index, span] of spans.entries()) {
+          expect(span.end).toBeGreaterThan(span.start);
+          if (index > 0) {
+            expect(span.start).toBeCloseTo(spans[index - 1]?.end ?? -1, 6);
+          }
         }
       }
+    }
+  });
+
+  /**
+   * Overlap is written where the mapping declares it, and nowhere else.
+   *
+   * The value on the page is the only copy the runtime reads, so a missing or
+   * invented attribute is a composition that silently differs from its mapping.
+   */
+  test(`${entry.url} carries the overlap its mapping declares`, async ({ page }) => {
+    await page.goto(entry.url);
+
+    for (const sceneId of entry.scenes ?? []) {
+      const shots = await page
+        .locator(`.scene[data-scene="${sceneId}"] .shot`)
+        .evaluateAll((nodes) =>
+          nodes.map((node) => ({
+            id: node.getAttribute('data-shot'),
+            overlap: node.getAttribute('data-overlap'),
+          })),
+        );
+      const declared = sceneOf(sceneId).shots.map((shot) => shot.overlap);
+      expect(shots.map((shot) => shot.id)).toEqual(sceneOf(sceneId).shots.map((shot) => shot.id));
+      for (const [index, shot] of shots.entries()) {
+        const expected = declared[index];
+        if (expected === undefined) {
+          expect(shot.overlap, `${sceneId}/${shot.id}`).toBeNull();
+        } else {
+          expect(Number(shot.overlap), `${sceneId}/${shot.id}`).toBeCloseTo(expected, 6);
+        }
+      }
+      // The last shot has nothing to hand over to, on any page.
+      expect(shots.at(-1)?.overlap).toBeNull();
     }
   });
 }

@@ -1,10 +1,11 @@
-import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { pythonCommand } from '../../build/python.mjs';
-import { planScene, type SceneMapping, type ScenePlan } from './pacing.ts';
+import { overlapsOf, planScene, type SceneMapping, type ScenePlan } from './pacing.ts';
 
 const root = fileURLToPath(new URL('../..', import.meta.url));
 const read = (...parts: string[]): unknown =>
@@ -193,6 +194,128 @@ describe('a scene that stages no text', () => {
         expect(plan[key][index]?.start).toBeCloseTo(span.start, 12);
         expect(plan[key][index]?.end).toBeCloseTo(span.end, 12);
       }
+    }
+  });
+});
+
+/**
+ * Overlap is a rendering fact, not a pacing one.
+ *
+ * The claim is that adding an overlap to a mapping cannot move a boundary, change
+ * what a beat owns, or lengthen a scene. That is worth asserting rather than
+ * assuming, because the two are read from the same file and a future change could
+ * quietly couple them.
+ */
+describe('overlap and the pacing plan', () => {
+  const mapping: SceneMapping = {
+    id: 'paced',
+    shots: [
+      { id: 'first', weight: 2, beats: [{ id: 'a', segments: [] }] },
+      { id: 'middle', beats: [{ id: 'b', weight: 3, segments: [] }] },
+      { id: 'last', beats: [{ id: 'c', segments: [] }] },
+    ],
+  } as SceneMapping;
+
+  /** A copy with overlaps set by position; the schema shape is a tuple, not a list. */
+  const withOverlap = (values: (number | undefined)[]): SceneMapping => {
+    const copy = JSON.parse(JSON.stringify(mapping)) as SceneMapping;
+    for (const [index, value] of values.entries()) {
+      const shot = copy.shots[index];
+      if (shot && value !== undefined) {
+        shot.overlap = value;
+      }
+    }
+    return copy;
+  };
+
+  const overlapped = withOverlap([0.6, 1]);
+
+  it('leaves every span exactly where it was', () => {
+    expect(planScene(overlapped, 'en-simple', {})).toEqual(planScene(mapping, 'en-simple', {}));
+  });
+
+  it('reads back the overlaps it was given, and zero for a shot without one', () => {
+    expect(overlapsOf(overlapped)).toEqual([0.6, 1, 0]);
+    expect(overlapsOf(mapping)).toEqual([0, 0, 0]);
+  });
+
+  it('refuses an overlap on the shot that has nothing to hand over to', () => {
+    expect(() => overlapsOf(withOverlap([undefined, undefined, 0.1]))).toThrow(
+      /no following shot to hand over to/,
+    );
+  });
+
+  it('refuses a value the runtime could not honour', () => {
+    expect(() => overlapsOf(withOverlap([1.5]))).toThrow(/outside 0\.\.1/);
+  });
+});
+
+/**
+ * The same two rules, as the data gate states them.
+ *
+ * The build refuses a bad mapping because a remote build runs no Python; the
+ * checker refuses one because that is where a contributor meets it first. Both
+ * halves are asserted here so neither can be quietly dropped.
+ */
+describe('the data checker on overlap', () => {
+  const checkWith = (scene: unknown) => {
+    const [python, ...args] = pythonCommand();
+    if (!python) {
+      throw new Error('no Python interpreter');
+    }
+    const directory = mkdtempSync(join(tmpdir(), 'alice-overlap-'));
+    try {
+      const file = join(directory, 'scene.json');
+      writeFileSync(file, JSON.stringify(scene), 'utf8');
+      const result = spawnSync(
+        python,
+        [
+          ...args,
+          '-c',
+          [
+            'import importlib.util, json, sys',
+            'spec = importlib.util.spec_from_file_location("chk", sys.argv[1])',
+            'chk = importlib.util.module_from_spec(spec)',
+            'spec.loader.exec_module(chk)',
+            'scene = json.load(open(sys.argv[2], encoding="utf-8"))',
+            'schema = chk.load(chk.SCHEMA_DIR / "experience-scene.schema.json")',
+            'print(json.dumps(chk.validate(scene, schema, "scene.json")))',
+          ].join('\n'),
+          join(root, 'scripts', 'check-experience.py'),
+          file,
+        ],
+        { encoding: 'utf8' },
+      );
+      return { schema: JSON.parse(result.stdout) as string[] };
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
+  };
+
+  const scene = {
+    id: 'checked',
+    shots: [
+      { id: 'first', beats: [{ id: 'a', segments: [] }] },
+      { id: 'last', beats: [{ id: 'b', segments: [] }] },
+    ],
+  };
+
+  it('accepts an overlap inside 0..1', () => {
+    const relaxed = JSON.parse(JSON.stringify(scene));
+    relaxed.shots[0].overlap = 0.5;
+    expect(checkWith(relaxed).schema).toEqual([]);
+  });
+
+  it('rejects one outside 0..1 by schema', () => {
+    const wide = JSON.parse(JSON.stringify(scene));
+    wide.shots[0].overlap = 1.5;
+    expect(checkWith(wide).schema.join(' ')).toMatch(/above the maximum/);
+  });
+
+  it('rejects the story’s own last shots, if one ever grew an overlap', () => {
+    // Read from the repository rather than restated: this is the real mapping.
+    for (const scene of scenes.values()) {
+      expect(scene.shots.at(-1)?.overlap, `${scene.id}`).toBeUndefined();
     }
   });
 });

@@ -121,6 +121,34 @@ During an overlap, two Shot render states may be active simultaneously.
 
 The runtime must therefore avoid assuming that exactly one Shot owns the viewport at every instant.
 
+### How an overlap is expressed
+
+A Shot mapping may carry an optional `overlap`, a number from 0 to 1. It is the
+share of the **next** Shot's span for which this one keeps drawing after handing
+over. `0` is a hard cut and is the default. The last Shot has nothing to hand over
+to, so it may not carry one; the schema, the data checker and the build each refuse
+it.
+
+Two values follow from it, and the difference matters:
+
+- the **primary** Shot is the one whose own span contains the current progress.
+  There is always exactly one, and it is the Shot that owns the Scene's progress,
+  the Beats, and the narrative text;
+- the **render-active** Shots are the primary plus, during an overlap, the one still
+  handing over to it. One or two, never three: an overlap may not exceed 1, so a
+  Shot's render span cannot reach past the end of the next Shot's span.
+
+What an overlap deliberately does **not** do: it moves no boundary, changes no
+Beat's owner, alters no staging weight, and adds nothing to the Scene's scroll
+distance. The pacing plan is identical with and without it. It is a rendering fact
+about a transition, not a second pacing model, and it is not the beginning of a
+timeline DSL: there is no easing, no transition type, and no registry of them.
+
+The whole of it is a pure function of progress — `composeShots` in
+`src/runtime/progress.ts` — so scrolling backwards through a handover reconstructs
+exactly the state scrolling forwards produced. Nothing remembers having crossed a
+boundary, which is what makes reverse traversal correct rather than merely tested.
+
 ## 5. "Camera" does not require 3D
 
 A camera-angle change is an experience concept, not a Three.js requirement.

@@ -91,7 +91,10 @@ The full suite covers, per scene:
   `performance-budget.md` §3;
 - interruption: a scene suspended by `pagehide` or by leaving the viewport holds a
   seam value without drawing, and on return publishes it **and** re-reads the real
-  scroll position, so a held value can never survive as the document's position;
+  scroll position, so a held value can never survive as the document's position.
+  The consequence for a test is that the seam cannot drive a scene that is off
+  screen, which is the rule rather than a limitation: a test that wants to hold one
+  scene at a value scrolls to it first, as `focusScene` in `tests/drive.ts` does;
 - degradation: a story page whose scene markup cannot be driven carries
   `data-degraded` and stays a readable document, rather than failing silently. One
   broken scene among several is the same case: staging is all or nothing per
@@ -159,6 +162,28 @@ manifest entry has a file, that the home page links language entries rather than
 documents, that the generated tree is materialized whole with nothing stale left
 behind, and that an unfinished translation removes pages instead of breaking the build
 while a missing base locale refuses to build at all.
+
+Since the two-scene work, and on both the desktop and phone Chromium projects:
+
+- **shot overlap** (`tests/overlap.spec.ts`): that a handover really does put two
+  shots on screen while exactly one of them owns the scene, that a hard cut puts one,
+  that the outgoing shot is painted and partly faded by its own handoff value, and
+  that walking a handover backwards reproduces the states walking it forwards did,
+  element for element. Which handovers exist is read from the mapping, so a scene
+  whose overlaps change extends the suite rather than breaking it;
+- **two scenes in one document** (`tests/handoff.spec.ts`): reaching the second by
+  scrolling and the first again by scrolling back; each scene keeping its own 0..1
+  with nothing shared between them; the probe still answering per scene;
+- **real off-screen suspension**, through a real `IntersectionObserver` rather than a
+  fake one or a direct lifecycle call. A scene that leaves the viewport reaches
+  `suspended`, its progress then does not move however far the document scrolls, and
+  coming back it resynchronises from geometry with `direction` and `velocity` of
+  zero, after which scrolling reads as movement again. This could not be shown at all
+  with one scene per document: that document ended a viewport before its only scene
+  did, so nothing ever went off screen;
+- **the cost of a second scene**: one scroll listener, one resize listener and one
+  frame per scroll event for the whole document, counted by instrumenting the page
+  before its script runs.
 
 Still to come with the scenes they belong to: depth bands, the FX layer, the optional
 interaction, audio, and back-navigation restore across a document boundary.

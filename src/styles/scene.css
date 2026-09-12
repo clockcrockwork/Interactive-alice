@@ -31,6 +31,49 @@
     place-items: center;
   }
 
+  /*
+   * Placeholder composition, so a shot is a thing on screen that can hand over to
+   * another one rather than an empty box around its text. A depth wash positioned
+   * by the shot's own progress: different shots read differently at the same
+   * instant because their progress differs, which is what makes an overlap
+   * visible. The visual direction has not started; see docs/implementation-charter.md §9.
+   */
+  .story[data-mode="scene"] .shot::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      130% 90% at 50% calc(85% - var(--progress, 0) * 70%),
+      color-mix(in oklab, var(--ground-deep) 30%, transparent),
+      transparent 72%
+    );
+  }
+
+  /*
+   * A shot nobody is looking at paints nothing.
+   *
+   * Faded rather than hidden, as beats are. Narrative text stays in the document in
+   * reading order and stays in the accessibility tree, so a screen reader still has
+   * the whole chapter; `visibility: hidden` would take most of it away. See
+   * docs/performance-budget.md §5.
+   */
+  .story[data-mode="scene"] .shot[data-state="before"],
+  .story[data-mode="scene"] .shot[data-state="after"] {
+    opacity: 0;
+  }
+
+  /*
+   * The handover. `--handoff` runs 0 to 1 across the outgoing shot's overlap alone,
+   * so the shot that is leaving keeps travelling while the next one is already the
+   * primary, instead of being cut at the boundary. It is 0 for a shot with no
+   * overlap, which never reaches this state anyway.
+   */
+  .story[data-mode="scene"] .shot[data-state="outgoing"] {
+    opacity: calc(1 - var(--handoff, 0));
+    scale: calc(1 + var(--handoff, 0) * 0.14);
+    will-change: opacity, scale;
+  }
+
   .story[data-mode="scene"] .beat {
     position: absolute;
     inline-size: min(100%, var(--measure));
@@ -54,6 +97,15 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    /*
+     * The handover still happens and still takes the same distance: two shots on
+     * screen, one giving way to the other. What goes is the push towards the
+     * reader, which is the part that reads as movement through space.
+     */
+    .story[data-mode="scene"] .shot[data-state="outgoing"] {
+      scale: none;
+    }
+
     .story[data-mode="scene"] .beat {
       /* Comfortable version: the same reveal, without the drift. */
       translate: none;

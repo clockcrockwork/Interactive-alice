@@ -44,8 +44,10 @@
 - Ordinary modules and functions. A class when something genuinely holds state
   for a lifetime, which a Scene does and a helper does not.
 - `strict` on. No `any`; `unknown` plus a narrowing function at boundaries.
-- Types describe data that exists: the mapping file's shape is generated from the
-  JSON Schemas rather than retyped by hand, so the schema stays the single source.
+- Types describe data that exists: every data shape comes from `schema/` through
+  `npm run types:schema`, which writes `src/types/schema.ts`. Derive element types
+  from those (`type ShotMapping = SceneMapping['shots'][number]`) rather than
+  retyping a schema by hand, and never edit the generated file.
 - No global event bus, no dependency injection container, no state library. A
   scene receives the runtime context as an argument.
 - Every listener, timer, observer and rAF handle is owned by the thing that
@@ -92,6 +94,12 @@ review.
 - **Suppressions need a reason.** A `biome-ignore` carries a comment explaining
   why; a rule turned off in the config carries the same in the config. A
   suppression with no reason is a review comment.
+- **Generated data is not formatted by Biome.** `text/**`, `experience/**`,
+  `schema/**` and `tests/fixtures/**` are written by Python tooling, so Biome's
+  formatter is disabled for them in `biome.json` while its linter stays on. Without
+  that, the two generators fight: a Python rewrite reflows the file, the next
+  `npm run lint` fails, and the pacing fixture's regenerate-and-diff check and the
+  format check can contradict each other outright.
 - **HTML.** Biome lints HTML, and its HTML *formatter* is experimental and opt-in.
   The project either enables it explicitly and pins it, or states that HTML
   formatting is a deliberate exception. It does not claim Biome formats everything.

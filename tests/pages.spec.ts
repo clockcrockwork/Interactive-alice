@@ -1,56 +1,72 @@
 import { expect, test } from '@playwright/test';
+import { locales, pageGraph } from './manifest.ts';
 
-const LOCALES = ['en-simple', 'ja'] as const;
-const PART = 'rabbit-hole';
+const pages = pageGraph();
 
-test('the home page offers every locale', async ({ page }) => {
-  const errors: string[] = [];
-  page.on('console', (message) => message.type() === 'error' && errors.push(message.text()));
-  page.on('pageerror', (error) => errors.push(error.message));
-
-  await page.goto('./');
-  for (const locale of LOCALES) {
-    await expect(page.locator(`a[lang="${locale}"]`)).toHaveAttribute(
-      'href',
-      `./${locale}/${PART}/`,
-    );
-  }
-  expect(errors).toEqual([]);
-});
-
-for (const locale of LOCALES) {
-  test(`${locale}: the part page loads its scene in reading order`, async ({ page }) => {
+for (const page of pages) {
+  test(`${page.url} loads without errors`, async ({ page: browserPage }) => {
     const errors: string[] = [];
-    page.on('console', (message) => message.type() === 'error' && errors.push(message.text()));
-    page.on('pageerror', (error) => errors.push(error.message));
+    browserPage.on(
+      'console',
+      (message) => message.type() === 'error' && errors.push(message.text()),
+    );
+    browserPage.on('pageerror', (error) => errors.push(error.message));
+    browserPage.on('requestfailed', (request) =>
+      errors.push(`${request.method()} ${request.url()} failed`),
+    );
 
-    await page.goto(`./${locale}/${PART}/`);
-
-    const story = page.locator('.story');
-    await expect(story).toHaveAttribute('data-locale', locale);
-    await expect(story).toHaveAttribute('data-ready', 'true');
-    await expect(page.locator('h1')).not.toBeEmpty();
-
-    await expect(page.locator('.scene[data-scene="rabbit-hole"] .shot')).toHaveCount(5);
-    await expect(page.locator('.beat')).toHaveCount(21);
-    await expect(page.locator('.line')).toHaveCount(44);
-
-    const segments = await page
-      .locator('.line')
-      .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-segment')));
-    expect(segments[0]).toBe('ch01.s0200');
-    expect(segments.at(-1)).toBe('ch01.s0630');
-    expect([...segments].sort()).toEqual(segments);
-
-    // Every sentence carries text in this locale, and no line is empty.
-    const lines = await page.locator('.line').allInnerTexts();
-    expect(lines.filter((line) => line.trim().length === 0)).toEqual([]);
-
+    await browserPage.goto(page.url);
+    await expect(browserPage.locator('h1')).not.toBeEmpty();
     expect(errors).toEqual([]);
   });
+}
 
-  test(`${locale}: shot and beat spans cover the scene once, in order`, async ({ page }) => {
-    await page.goto(`./${locale}/${PART}/`);
+test('the home page links to every locale entry', async ({ page }) => {
+  await page.goto('./');
+  for (const locale of locales()) {
+    await expect(page.locator(`a[lang="${locale}"]`)).toHaveAttribute('href', `./${locale}/`);
+  }
+});
+
+for (const entry of pages.filter((page) => page.kind === 'locale')) {
+  test(`${entry.url} lists this language's documents`, async ({ page }) => {
+    await page.goto(entry.url);
+    await expect(page.locator('.entry')).toHaveAttribute('data-locale', entry.locale ?? '');
+
+    const parts = pages.filter(
+      (candidate) => candidate.kind === 'part' && candidate.locale === entry.locale,
+    );
+    await expect(page.locator('.entry__parts a')).toHaveCount(parts.length);
+    for (const part of parts) {
+      await expect(page.locator(`.entry__parts a[href="./${part.part}/"]`)).toHaveCount(1);
+    }
+  });
+}
+
+for (const entry of pages.filter((page) => page.kind === 'part')) {
+  test(`${entry.url} presents its scene in reading order`, async ({ page }) => {
+    await page.goto(entry.url);
+
+    const story = page.locator('.story');
+    await expect(story).toHaveAttribute('data-locale', entry.locale ?? '');
+    await expect(story).toHaveAttribute('data-ready', 'true');
+
+    await expect(page.locator('.shot')).toHaveCount(entry.shots ?? 0);
+    await expect(page.locator('.beat')).toHaveCount(entry.beats ?? 0);
+    await expect(page.locator('.line')).toHaveCount(entry.segments?.length ?? 0);
+
+    // The order the data says, not an incidental sort of the ids.
+    const rendered = await page
+      .locator('.line')
+      .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-segment')));
+    expect(rendered).toEqual(entry.segments);
+
+    const lines = await page.locator('.line').allInnerTexts();
+    expect(lines.filter((line) => line.trim().length === 0)).toEqual([]);
+  });
+
+  test(`${entry.url} covers the scene once with its spans`, async ({ page }) => {
+    await page.goto(entry.url);
 
     for (const selector of ['.shot', '.beat']) {
       const spans = await page.locator(selector).evaluateAll((nodes) =>

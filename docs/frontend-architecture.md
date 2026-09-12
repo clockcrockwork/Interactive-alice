@@ -142,10 +142,15 @@ formula.
 ## 6. Browser support: a fixed Baseline target
 
 The support contract is **Baseline Widely available as of 2026-09-01**, not a
-hand-written browser list. It is a checkable definition rather than an argument,
-it is encoded in the project's browserslist configuration so the build targets
-it, and the date is fixed so the target does not move underneath the project. It
-moves when someone changes it deliberately, in this document.
+hand-written browser list: a checkable definition rather than an argument.
+
+It is encoded as the build's transform target, `build.target:
+'baseline-widely-available'` in `vite.config.ts`, set explicitly rather than left to
+a default. The date is pinned by the exact Vite version in `package.json`, since
+that version owns the feature-to-browser mapping, so a Vite upgrade has to confirm
+the target in the same pull request. There is no browserslist configuration, because
+nothing in this stack reads one: Vite owns the transform and Biome does not consult
+it. Adding one would be decoration that can silently disagree with the real target.
 
 Anything newer is progressive enhancement, and the documented exceptions are
 cross-document View Transitions, the Speculation Rules API, and any WebGL or

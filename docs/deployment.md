@@ -79,15 +79,34 @@ preview exercise the same output.
 On every pull request:
 
 ```text
+npm run types:schema   # then a diff check: the types still match schema/
 npm run lint           # Biome check: format and lint, fails on any diagnostic
 npm run typecheck
+npm test               # Vitest unit layer
 npm run build          # also prints bundle and media sizes
-npm run test           # Vitest unit layer
-npm run test:e2e       # Playwright, Chromium subset
+npm run test:e2e       # Playwright, desktop Chromium; needs the build above
 python3 scripts/check-text.py
 python3 scripts/check-experience.py
 python3 scripts/check-frontend.py   # the project's own invariants
+python3 scripts/show-scene.py rabbit-hole --plan --json   # then a diff check on the fixture
 ```
+
+The two diff checks matter as much as the tests: they are what stop the generated
+types and the pacing fixture from drifting away from their sources.
+
+`npm run test:e2e` serves the existing `dist/`, so the build has to come first. The
+wider browser pass, desktop and phone Chromium plus Firefox and WebKit, is
+`npm run test:e2e:full`, and it belongs to interaction milestones and releases
+rather than to every pull request.
+
+### CI is paused for September 2026
+
+GitHub-hosted runner minutes for this account are exhausted, so every queued run
+fails in about two seconds with no steps and no logs: the jobs never reach a
+runner. Nothing is wrong with the workflow. Until the allowance resets, the gate is
+this same list of commands run locally, and a pull request says which of them were
+run. Do not read a red check on a pull request from this period as a test failure,
+and do not read a green local run as proof that CI passes.
 
 The build's size output is the budget record. A pull request that grows a budget
 in [`performance-budget.md`](performance-budget.md) says so in its description;

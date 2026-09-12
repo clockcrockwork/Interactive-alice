@@ -22,12 +22,19 @@ export default defineConfig({
     launchOptions: executablePath ? { executablePath } : {},
     trace: 'retain-on-failure',
   },
-  projects: [
-    { name: 'chromium-desktop', use: { ...devices['Desktop Chrome'] } },
-    { name: 'chromium-phone', use: { ...devices['Pixel 7'] } },
-  ],
+  // Per pull request: desktop Chromium only, to keep the gate fast. The wider pass
+  // belongs to interaction milestones and releases: PW_FULL=1 npm run test:e2e.
+  projects: process.env.PW_FULL
+    ? [
+        { name: 'chromium-desktop', use: { ...devices['Desktop Chrome'] } },
+        { name: 'chromium-phone', use: { ...devices['Pixel 7'] } },
+        { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+        { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+      ]
+    : [{ name: 'chromium-desktop', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
-    command: 'npm run build && npm run preview -- --port 4173 --strictPort',
+    // Serves the existing dist/. Build first: npm run build && npm run test:e2e.
+    command: 'npm run preview -- --port 4173 --strictPort',
     url: 'http://localhost:4173/',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

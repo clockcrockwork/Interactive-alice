@@ -1,6 +1,10 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.5.13/schema.json",
-  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
   "files": {
     "includes": ["**", "!dist", "!src/generated", "!text/raw"]
   },
@@ -12,19 +16,45 @@
   },
   "linter": {
     "enabled": true,
-    "rules": { "preset": "recommended" }
+    "rules": {
+      "preset": "recommended"
+    }
   },
   "javascript": {
-    "formatter": { "quoteStyle": "single", "semicolons": "always" }
+    "formatter": {
+      "quoteStyle": "single",
+      "semicolons": "always"
+    }
   },
   "json": {
-    "formatter": { "enabled": true }
+    "formatter": {
+      "enabled": true
+    }
   },
   "css": {
-    "formatter": { "enabled": true },
-    "linter": { "enabled": true }
+    "formatter": {
+      "enabled": true
+    },
+    "linter": {
+      "enabled": true
+    }
   },
   "html": {
-    "formatter": { "enabled": false }
-  }
+    "formatter": {
+      "enabled": false
+    }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "text/**/*.json",
+        "experience/**/*.json",
+        "schema/**/*.json",
+        "tests/fixtures/**/*.json"
+      ],
+      "formatter": {
+        "enabled": false
+      }
+    }
+  ]
 }

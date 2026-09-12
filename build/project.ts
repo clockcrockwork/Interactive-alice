@@ -9,36 +9,20 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { SceneMapping } from '../src/runtime/pacing.ts';
+import type {
+  ChapterStructureFile,
+  ExperienceStoryFile,
+  LocaleChapterFile,
+  LocaleRegistry,
+} from '../src/types/schema.ts';
 
-export interface LocaleSettings {
-  name: string;
-  nativeName: string;
-  role: 'base' | 'translation';
-  maxChars: number;
-  status: 'in-progress' | 'complete';
-  dir: 'ltr' | 'rtl';
-  lineBreak: 'auto' | 'loose' | 'normal' | 'strict';
-  significantSpaces: boolean;
-  notes?: string;
-}
-
-export interface SegmentMeta {
-  id: string;
-  section: string;
-  kind: 'narration' | 'dialogue' | 'thought' | 'sound';
-  speaker?: string;
-}
-
-export interface ChapterText {
-  title: string;
-  sections: Record<string, string>;
-  segments: Record<string, string>;
-}
-
-export interface Part {
-  id: string;
-  scenes: string[];
-}
+// Every shape below comes from schema/, generated into src/types/schema.ts by
+// npm run types:schema. Nothing here retypes a schema by hand.
+export type LocaleSettings = LocaleRegistry['locales'][string];
+export type SegmentMeta = ChapterStructureFile['segments'][number];
+export type ChapterText = LocaleChapterFile;
+export type Part = NonNullable<ExperienceStoryFile['parts']>[number];
+export type StoryFile = ExperienceStoryFile;
 
 export interface Project {
   locales: Record<string, LocaleSettings>;
@@ -68,13 +52,8 @@ export function chaptersOf(scene: SceneMapping): number[] {
 }
 
 export function loadProject(root: string): Project {
-  const localeFile = read(root, 'text', 'locales.json') as {
-    locales: Record<string, LocaleSettings>;
-  };
-  const story = read(root, 'experience', 'story.json') as {
-    scenes: { id: string; file: string }[];
-    parts?: Part[];
-  };
+  const localeFile = read(root, 'text', 'locales.json') as LocaleRegistry;
+  const story = read(root, 'experience', 'story.json') as StoryFile;
 
   const scenes = new Map<string, SceneMapping>();
   for (const entry of story.scenes) {
@@ -92,10 +71,8 @@ export function loadProject(root: string): Project {
   const text = new Map<string, Map<number, ChapterText>>();
   for (const chapter of chapters) {
     const name = `ch${String(chapter).padStart(2, '0')}`;
-    const file = read(root, 'text', 'story', `${name}.structure.json`) as {
-      segments: SegmentMeta[];
-    };
-    structure.set(chapter, file.segments);
+    const file = read(root, 'text', 'story', `${name}.structure.json`) as ChapterStructureFile;
+    structure.set(chapter, [...file.segments]);
 
     for (const locale of Object.keys(localeFile.locales)) {
       const byChapter = text.get(locale) ?? new Map<number, ChapterText>();

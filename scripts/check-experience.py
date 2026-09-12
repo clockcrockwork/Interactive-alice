@@ -87,42 +87,37 @@ def check_text_layer(errors: list[str]) -> None:
 
 
 def check_parts(story: dict, errors: list[str]) -> None:
-    """Documents group scenes; the grouping must cover every scene once, in story order."""
+    """Documents group scenes. Flattened, they must be exactly the story's scenes, in order."""
     parts = story.get("parts")
     if not parts:
         return
 
     order = [entry["id"] for entry in story["scenes"]]
-    seen_parts: set[str] = set()
-    claimed: dict[str, str] = {}
-    first_positions: list[int] = []
+    flattened = [scene_id for part in parts for scene_id in part["scenes"]]
 
+    seen_parts: set[str] = set()
     for part in parts:
         if part["id"] in seen_parts:
             errors.append(f"story.json: duplicate part id {part['id']!r}")
         seen_parts.add(part["id"])
-        positions = []
-        for scene_id in part["scenes"]:
-            if scene_id not in order:
-                errors.append(f"story.json: part {part['id']!r} names unknown scene {scene_id!r}")
-                continue
-            if scene_id in claimed:
-                errors.append(
-                    f"story.json: scene {scene_id!r} is in both {claimed[scene_id]!r} and {part['id']!r}"
-                )
-                continue
-            claimed[scene_id] = part["id"]
-            positions.append(order.index(scene_id))
-        if positions:
-            first_positions.append(min(positions))
 
+    # Specific diagnostics first, because "not equal" alone is hard to act on.
+    for scene_id in flattened:
+        if scene_id not in order:
+            errors.append(f"story.json: parts name unknown scene {scene_id!r}")
     for scene_id in order:
-        if scene_id not in claimed:
+        count = flattened.count(scene_id)
+        if count == 0:
             errors.append(f"story.json: scene {scene_id!r} is in no part, so it has no page")
+        elif count > 1:
+            errors.append(f"story.json: scene {scene_id!r} is in {count} parts; it belongs to one")
 
-    for earlier, later in zip(first_positions, first_positions[1:]):
-        if later < earlier:
-            errors.append("story.json: parts are not in story order")
+    # Then the whole contract in one comparison: same scenes, same order, no extras.
+    if flattened != order and not errors:
+        errors.append(
+            "story.json: the parts' scenes are not the story's scenes in order: "
+            f"{flattened} against {order}"
+        )
 
 
 def main() -> int:

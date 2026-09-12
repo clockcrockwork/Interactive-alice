@@ -16,9 +16,9 @@ that property and on the contracts around it, and leaves taste to human review.
 | Layer | Tool | Runs | Proves |
 | --- | --- | --- | --- |
 | Unit | Vitest | every PR | pure logic: progress mapping, the pacing plan, lifecycle transitions, capability selection, text resolution |
-| Browser, fast | Playwright, Chromium | every PR | every page loads, each scene reaches start and end, no console or page errors |
-| Browser, full | Playwright, Chromium + Firefox + WebKit | interaction milestones and before a release | shot boundaries, reverse reconstruction, resize, portrait, keyboard, reduced motion, degraded modes, locales, back-navigation restore |
-| Accessibility | axe inside Playwright, plus explicit assertions | every PR at stable checkpoints | semantics, labels, focus order, contrast where measurable |
+| Browser, fast | Playwright, desktop Chromium | every PR | every page in the generated manifest loads, each scene reaches start and end, no console, page or request errors |
+| Browser, full | Playwright, Chromium desktop and phone, Firefox, WebKit (`npm run test:e2e:full`) | interaction milestones and before a release | shot boundaries, reverse reconstruction, resize, portrait, keyboard, reduced motion, degraded modes, locales, back-navigation restore |
+| Accessibility | axe inside Playwright, plus explicit assertions | every PR, on load | semantics, labels, focus order, contrast where measurable |
 | Visual | Playwright screenshots at named checkpoints | opt-in, after art stabilizes | that a deliberate composition has not silently changed |
 | Performance | traces, size output, Lighthouse | milestones | see `performance-budget.md`; evidence, not pass/fail in CI |
 
@@ -48,7 +48,13 @@ as data attributes, so the browser never recomputes them. CI regenerates the fix
 divergence into a failed check. When the formula changes deliberately, the fixture
 changes in the same commit.
 
-### Browser layer
+### The browser layer follows the data
+
+`npm run build` writes `src/generated/manifest.json`: every page the data produced,
+and for a part page its shots, beats and the segment ids in the order the page must
+present them. The browser tests read it, so adding a locale or a part extends the
+suite with no test edit, and "reading order" is compared against the data rather
+than against an incidental sort of the ids.
 
 The full suite covers, per scene:
 
@@ -82,6 +88,10 @@ is flaky and the visual layer is worthless:
 5. **State can be serialized.** The debug overlay's values come from one
    inspectable snapshot: progress, direction, active shot and beat, viewport, DPR,
    reduced motion, quality tier. The determinism test compares snapshots.
+6. **A ready signal exists.** The story page sets `data-ready` on its `.story`
+   element once the page's script has run, so a test can wait for something real
+   rather than for a timeout. The scene runtime takes this over when it lands, and
+   the snapshot above becomes the richer form of the same idea.
 
 ## 4. What is not automated
 

@@ -54,17 +54,22 @@ python3 scripts/show-scene.py rabbit-hole --plan    # derived progress ranges
 ```
 
 ```
-npm run dev          # Vite dev server; pages are generated from data on start
-npm run build        # static output in dist/, with size report
-npm run lint         # biome check: format and lint, fails on any diagnostic
+npm run dev           # Vite dev server; pages regenerate when text/ or experience/ changes
+npm run build         # static output in dist/, with size report
+npm run lint          # biome check: format and lint, fails on any diagnostic
 npm run typecheck
-npm test             # Vitest unit layer
-npm run test:e2e     # Playwright, desktop and phone viewports
-npm run plan:fixture # regenerate the pacing golden fixture
+npm test              # Vitest unit layer
+npm run test:e2e      # Playwright, desktop Chromium; build first, it serves dist/
+npm run test:e2e:full # adds phone, Firefox and WebKit; for milestones
+npm run types:schema  # regenerate src/types/schema.ts from schema/
+npm run plan:fixture  # regenerate the pacing golden fixture
 ```
 
-npm only: the production host does not support pnpm or yarn. CI runs all of the
-above (`.github/workflows/checks.yml`).
+npm only: the production host does not support pnpm or yarn.
+
+**CI is paused for September 2026**: the account's runner minutes are exhausted, so
+queued runs fail in seconds without starting. Run the gate locally and say so in the
+pull request; see `docs/deployment.md` §4.
 
 ## Where decisions live
 

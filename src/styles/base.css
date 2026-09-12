@@ -16,8 +16,11 @@
   }
 
   html[data-line-break="strict"] {
+    /* Japanese carries authored phrase spaces, so keep breaking conservative and
+       let only an over-long single token break. */
     line-break: strict;
-    overflow-wrap: anywhere;
+    word-break: normal;
+    overflow-wrap: break-word;
   }
 
   body {

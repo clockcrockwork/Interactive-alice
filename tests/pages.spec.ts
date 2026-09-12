@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { locales, pageGraph } from './manifest.ts';
+import { locales, pageGraph, sentencesOf } from './manifest.ts';
 
 const pages = pageGraph();
 
@@ -63,6 +63,35 @@ for (const entry of pages.filter((page) => page.kind === 'part')) {
 
     const lines = await page.locator('.line').allInnerTexts();
     expect(lines.filter((line) => line.trim().length === 0)).toEqual([]);
+  });
+
+  test(`${entry.url} renders the authored text exactly, spacing included`, async ({ page }) => {
+    await page.goto(entry.url);
+
+    const authored = sentencesOf(entry.locale ?? '', entry.segments ?? []);
+    const rendered = await page
+      .locator('.line')
+      .evaluateAll((nodes) =>
+        Object.fromEntries(
+          nodes.map((node) => [node.getAttribute('data-segment') ?? '', node.textContent ?? '']),
+        ),
+      );
+
+    // Exact equality, not a normalized comparison: a language that authors its own
+    // phrase spacing must not have it trimmed, collapsed, or re-wrapped away.
+    for (const id of entry.segments ?? []) {
+      expect(rendered[id], `${id} was altered on the way to the page`).toBe(authored[id]);
+    }
+
+    // And the policy that protects it comes from the registry, not from a language.
+    const significant = await page.evaluate(
+      () => document.documentElement.dataset.significantSpaces,
+    );
+    const whiteSpace = await page
+      .locator('.line')
+      .first()
+      .evaluate((node) => getComputedStyle(node).whiteSpace);
+    expect(whiteSpace).toBe(significant === 'true' ? 'break-spaces' : 'normal');
   });
 
   test(`${entry.url} covers the scene once with its spans`, async ({ page }) => {

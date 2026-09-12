@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { escapeHtml, generatePages, writePages } from './pages.ts';
+import { escapeHtml, generatePages, generatePagesFrom, writePages } from './pages.ts';
 import { loadProject } from './project.ts';
 
 // A URL pathname is not a filesystem path on Windows; go through the helper.
@@ -11,6 +11,35 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const project = loadProject(root);
 const { pages, manifest } = generatePages(root);
 const locales = Object.keys(project.locales);
+
+/** The same project, with one locale's chapter text taken away. */
+function withoutText(locale: string, chapter: number) {
+  const project = loadProject(root);
+  project.text.get(locale)?.delete(chapter);
+  return project;
+}
+
+describe('publishability', () => {
+  it('skips a part a translation is not ready for, and does not link it', () => {
+    const { pages, manifest, skipped } = generatePagesFrom(withoutText('ja', 1));
+
+    expect(pages.some((page) => page.path.startsWith('ja/'))).toBe(false);
+    expect(manifest.pages.some((page) => page.locale === 'ja')).toBe(false);
+    expect(skipped).toEqual([{ locale: 'ja', part: 'rabbit-hole', chapters: [1] }]);
+
+    const home = pages.find((page) => page.path === 'index.html');
+    expect(home?.html).not.toContain('href="./ja/"');
+    // The language that does have text is unaffected.
+    expect(home?.html).toContain('href="./en-simple/"');
+    expect(pages.some((page) => page.path === 'en-simple/rabbit-hole/index.html')).toBe(true);
+  });
+
+  it('refuses to build when the base locale is missing text', () => {
+    expect(() => generatePagesFrom(withoutText('en-simple', 1))).toThrow(
+      /base locale en-simple has no text for chapter\(s\) 1/,
+    );
+  });
+});
 
 describe('the page graph', () => {
   it('has the three levels the architecture specifies', () => {

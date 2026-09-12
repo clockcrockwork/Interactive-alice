@@ -21,10 +21,10 @@ jobs:
       - run: python3 scripts/check-text.py
       - run: python3 scripts/check-experience.py
       - run: python3 scripts/check-frontend.py
-      - name: the pacing fixture still matches the reference
+      - name: the pacing fixture still matches the reference, for every scene
         run: |
-          python3 scripts/show-scene.py rabbit-hole --plan --json > tests/fixtures/rabbit-hole.plan.json
-          git diff --exit-code -- tests/fixtures/rabbit-hole.plan.json
+          python3 scripts/show-scene.py --all --plan --json > tests/fixtures/plans.json
+          git diff --exit-code -- tests/fixtures/plans.json
 
   frontend:
     name: lint, typecheck, build, test

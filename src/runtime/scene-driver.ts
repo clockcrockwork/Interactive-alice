@@ -57,6 +57,7 @@ export class SceneDriver {
   #direction: Direction = 0;
   #velocity = 0;
   #override: number | undefined;
+  #deferredPublish = false;
   #frame = 0;
   #lastTime = 0;
   #quality: QualityTier = 'full';
@@ -161,10 +162,17 @@ export class SceneDriver {
   }
 
   resume(): void {
-    if (this.#lifecycle.can('active')) {
-      this.#lifecycle.to('active');
-      this.#request(true);
+    if (!this.#lifecycle.can('active')) {
+      return;
     }
+    this.#lifecycle.to('active');
+    if (this.#deferredPublish) {
+      // Whatever the seam set while we were suspended reaches the document once, now.
+      this.#deferredPublish = false;
+      this.#publish(this.#override ?? this.#progress, true);
+      return;
+    }
+    this.#request(true);
   }
 
   destroy(): void {
@@ -180,10 +188,19 @@ export class SceneDriver {
     this.#lifecycle.to('destroyed');
   }
 
-  /** Test and debug seam: hold progress at a value until released. */
+  /**
+   * Test and debug seam: hold progress at a value until released.
+   *
+   * A suspended scene keeps the value but draws nothing, so the seam cannot make an
+   * off-screen scene render; the held value is published once on resume.
+   */
   setProgress(progress: number): void {
     this.#override = clamp(progress);
-    this.#publish(this.#override, true);
+    if (this.#lifecycle.running) {
+      this.#publish(this.#override, true);
+    } else {
+      this.#deferredPublish = true;
+    }
   }
 
   releaseProgress(): void {
@@ -195,7 +212,11 @@ export class SceneDriver {
     this.#effects = flags.effects ?? this.#effects;
     this.#audio = flags.audio ?? this.#audio;
     this.#quality = flags.quality ?? this.#quality;
-    this.#publish(this.#progress, true);
+    if (this.#lifecycle.running) {
+      this.#publish(this.#progress, true);
+    } else {
+      this.#deferredPublish = true;
+    }
   }
 
   snapshot(): SceneSnapshot {

@@ -14,8 +14,12 @@ Two modes, both development aids:
         the reference implementation a Scene runtime should match.
 
     python3 scripts/show-scene.py rabbit-hole --plan --json
-        the same plan as JSON, one entry per locale, including beat spans. This is
-        the golden fixture the runtime's unit test compares itself against; see
+        the same plan as JSON, one entry per locale, including beat spans.
+
+    python3 scripts/show-scene.py --all --plan --json
+        every scene in experience/story.json, for every locale that has text for the
+        chapters it stages. This is the golden fixture the runtime's unit test compares
+        itself against, and it covers scenes that cross a chapter boundary; see
         docs/testing.md.
 """
 
@@ -64,6 +68,20 @@ def locale_text(locale: str, chapters: set[int]) -> dict[str, str]:
             raise SystemExit(f"{locale} has no text for chapter {chapter}")
         text.update(load(path)["segments"])
     return text
+
+
+def has_text(locale: str, chapters: set[int]) -> bool:
+    """Whether this language has been translated as far as these chapters."""
+    return all(
+        (REPO_ROOT / "text" / "locales" / locale / f"ch{chapter:02d}.json").exists()
+        for chapter in chapters
+    )
+
+
+def every_scene() -> list[dict]:
+    """Scene files in story order, so nothing keeps a second list of scenes."""
+    story = load(REPO_ROOT / "experience" / "story.json")
+    return [load(REPO_ROOT / entry["file"]) for entry in story["scenes"]]
 
 
 def show(scene: dict, locale: str) -> None:
@@ -130,6 +148,18 @@ def plan(scene: dict, locale: str) -> dict:
     }
 
 
+def plans_for(scenes: list[dict]) -> list[dict]:
+    """Every scene and locale pair that can be planned today, in a stable order."""
+    locales = list(load(REPO_ROOT / "text" / "locales.json")["locales"])
+    out = []
+    for scene in scenes:
+        chapters = chapters_of(scene)
+        for locale in locales:
+            if has_text(locale, chapters):
+                out.append(plan(scene, locale))
+    return out
+
+
 def show_plan(scene: dict, as_json: bool) -> None:
     locales = list(load(REPO_ROOT / "text" / "locales.json")["locales"])
     plans = {locale: plan(scene, locale) for locale in locales}
@@ -162,11 +192,24 @@ def show_plan(scene: dict, as_json: bool) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("scene", help="scene id, as listed in experience/story.json")
+    parser.add_argument(
+        "scene", nargs="?", help="scene id, as listed in experience/story.json"
+    )
+    parser.add_argument("--all", action="store_true", help="every scene in story order")
     parser.add_argument("--locale", default="en-simple", help="locale directory under text/locales/")
     parser.add_argument("--plan", action="store_true", help="print progress ranges instead of text")
     parser.add_argument("--json", action="store_true", help="with --plan, emit JSON for the fixture")
     args = parser.parse_args()
+
+    if args.all:
+        if not args.plan:
+            raise SystemExit("--all is for plans: pass --plan, and usually --json")
+        plans = plans_for(every_scene())
+        print(json.dumps(plans, indent=2) if args.json else plans)
+        return 0
+
+    if not args.scene:
+        raise SystemExit("name a scene, or pass --all --plan --json")
 
     scene = find_scene(args.scene)
     if args.plan:

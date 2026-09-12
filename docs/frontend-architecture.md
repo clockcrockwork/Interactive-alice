@@ -77,6 +77,14 @@ adding a locale adds pages without anyone editing a page matrix, and a Scene
 cannot drift between the mapping and the file tree. There is no hand-maintained
 `pages/<locale>/<scene>/` directory of entry files.
 
+The generated tree is materialized whole on every build: it is cleared first, so a
+removed locale or part cannot leave a page behind that the dev server still serves.
+
+Which pages exist also depends on how far each translation has come. A part is
+generated for a language only when every chapter it stages has text there; the base
+locale is a hard error instead. The rule and its reasoning live in
+[`text-pipeline.md`](text-pipeline.md), because it is a property of the text layer.
+
 ### Crossing a document boundary with scroll alone
 
 Where a boundary exists, scroll must cross it in both directions, because scroll

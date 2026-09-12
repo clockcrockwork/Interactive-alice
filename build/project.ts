@@ -6,7 +6,7 @@
  * docs/text-experience-binding.md and docs/frontend-architecture.md §3.
  */
 
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { SceneMapping } from '../src/runtime/pacing.ts';
 import type {
@@ -25,6 +25,8 @@ export type Part = NonNullable<ExperienceStoryFile['parts']>[number];
 export type StoryFile = ExperienceStoryFile;
 
 export interface Project {
+  /** The retelling every translation works from; missing text here is a hard error. */
+  baseLocale: string;
   locales: Record<string, LocaleSettings>;
   parts: Part[];
   scenes: Map<string, SceneMapping>;
@@ -76,12 +78,19 @@ export function loadProject(root: string): Project {
 
     for (const locale of Object.keys(localeFile.locales)) {
       const byChapter = text.get(locale) ?? new Map<number, ChapterText>();
-      byChapter.set(chapter, read(root, 'text', 'locales', locale, `${name}.json`) as ChapterText);
+      const file = join(root, 'text', 'locales', locale, `${name}.json`);
+      // A translation may legitimately be behind: text/ is authored chapter by
+      // chapter, so a missing file is data, not a failure. Who may be missing what is
+      // decided when pages are generated.
+      if (existsSync(file)) {
+        byChapter.set(chapter, JSON.parse(readFileSync(file, 'utf8')) as ChapterText);
+      }
       text.set(locale, byChapter);
     }
   }
 
   return {
+    baseLocale: localeFile.baseLocale,
     locales: localeFile.locales,
     // Declared, never inferred: the schema requires parts for exactly this reason.
     parts: story.parts,

@@ -19,3 +19,15 @@ export const locales = (): string[] =>
   pageGraph()
     .filter((page) => page.kind === 'locale')
     .map((page) => page.locale ?? '');
+
+/** The sentences a locale actually authored, straight from the text layer. */
+export function sentencesOf(locale: string, segmentIds: readonly string[]): Record<string, string> {
+  const chapters = new Set(segmentIds.map((id) => id.slice(2, 4)));
+  const text: Record<string, string> = {};
+  for (const chapter of chapters) {
+    const file = join(import.meta.dirname, '..', 'text', 'locales', locale, `ch${chapter}.json`);
+    const parsed = JSON.parse(readFileSync(file, 'utf8')) as { segments: Record<string, string> };
+    Object.assign(text, parsed.segments);
+  }
+  return text;
+}

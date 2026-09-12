@@ -126,6 +126,22 @@ the set stays small and visible; there are four per language today.
 The checker reports an untranslated chapter as a `todo:` line rather than an
 error, so a language can ship chapter by chapter.
 
+### What an unfinished translation means for the site
+
+Publishability is derived from this layer, not declared by a flag:
+
+- a **part** is generated for a language when every chapter its scenes stage has text
+  in that language;
+- a language that is behind simply has fewer pages. Its story entry links only the
+  parts that exist, and a language with no readable part is not linked from the home
+  page at all;
+- the **base locale** is the exception: missing text there is a hard error, since
+  there is nothing for the other languages to be translated from;
+- the build logs every part it skipped and why, so a gap is visible rather than quiet.
+
+So adding a scene that stages chapter 2 never breaks the English build because the
+Japanese chapter 2 is still being written.
+
 ## 5. Adding a chapter
 
 1. Read the original in `text/raw/`.

@@ -69,6 +69,17 @@
     text-wrap: pretty;
   }
 
+  /*
+   * Some languages author their own spacing: Japanese puts spaces between phrases so a
+   * new reader can chunk a line. Those spaces are content, so they are preserved and
+   * the line is not re-balanced, which would move them. The locale registry decides,
+   * not the language.
+   */
+  html[data-significant-spaces="true"] .line {
+    white-space: break-spaces;
+    text-wrap: initial;
+  }
+
   .line[data-kind="dialogue"],
   .line[data-kind="thought"] {
     font-style: italic;

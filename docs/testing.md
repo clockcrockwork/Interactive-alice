@@ -40,11 +40,17 @@ browser:
 drift unless something compares them, and the symptom would be text appearing at
 the wrong moment in one language only.
 
-So the Python side emits a machine-readable plan (`--plan --json`), that output is
-committed as a **golden fixture** in `tests/fixtures/`, and a unit test asserts the
-TypeScript implementation produces it to within a tolerance far finer than a pixel
-of scroll. The TypeScript side runs at build time, writing the spans into the markup
-as data attributes, so the browser never recomputes them. CI regenerates the fixture and fails on a diff, which turns a silent
+So the Python side emits a machine-readable plan (`--all --plan --json`), that output
+is committed as a **golden fixture** in `tests/fixtures/plans.json`, and a unit test
+asserts the TypeScript implementation produces it to within a tolerance far finer than
+a pixel of scroll. The TypeScript side runs at build time, writing the spans into the
+markup as data attributes, so the browser never recomputes them.
+
+The fixture covers **every scene the story lists**, for every language that has text
+for the chapters that scene stages, and the test fails if a scene has no reference plan
+at all. Neither side keeps its own list of scenes or chapters: both read
+`experience/story.json` and collect chapters from the segment ids, so a scene that
+crosses a chapter boundary is covered the day it is added. CI regenerates the fixture and fails on a diff, which turns a silent
 divergence into a failed check. When the formula changes deliberately, the fixture
 changes in the same commit.
 
@@ -116,6 +122,12 @@ after scrolling stops, reaching both ends by scrolling alone, a resize at mid-sc
 leaving the composition intact, the reduced-motion variant dropping the drift and
 lowering the quality tier, and the page staying a readable document with JavaScript
 disabled.
+
+The unit layer also covers the page graph: that the three page levels exist, that each
+manifest entry has a file, that the home page links language entries rather than
+documents, that the generated tree is materialized whole with nothing stale left
+behind, and that an unfinished translation removes pages instead of breaking the build
+while a missing base locale refuses to build at all.
 
 Still to come with the scenes they belong to: depth bands, the FX layer, the optional
 interaction, audio, and back-navigation restore across a document boundary.

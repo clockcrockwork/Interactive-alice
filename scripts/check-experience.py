@@ -8,7 +8,8 @@ between the two layers rather than the staging itself:
   * every file matches its schema in schema/
   * every scene listed in experience/story.json exists and agrees on its id
   * when documents (parts) are declared, each scene belongs to exactly one, in order
-  * shot and beat ids are unique inside a scene
+  * shot and beat ids are unique inside their own namespace in a scene; a shot and a
+    beat may share a name, since a beat is addressed as scene/shot/beat
   * every referenced segment id exists in some chapter structure
   * a segment is referenced at most once in the whole story
   * references never run backwards against the text's reading order, across
@@ -198,14 +199,6 @@ def main() -> int:
                     else:
                         owners[segment_id] = where
                         stream.append(((chapter, order.index(segment_id)), segment_id, where))
-
-        # Shot and beat ids share one namespace for anything that addresses a unit,
-        # so a shot and a beat in the same scene must not answer to the same name.
-        for clash in sorted(shot_ids & beat_ids):
-            errors.append(
-                f"{label}: {clash!r} is both a shot id and a beat id; "
-                "give one of them another name"
-            )
 
     # Reading order must hold across the whole story, in story.json scene order.
     for (earlier_key, earlier_id, _), (later_key, later_id, later_where) in zip(stream, stream[1:]):

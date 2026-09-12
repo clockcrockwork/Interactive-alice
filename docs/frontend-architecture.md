@@ -181,12 +181,30 @@ Baseline target.
 | `lifecycle.ts` | idle, mounted, active, suspended, destroyed, and the moves that are refused |
 | `scene-driver.ts` | scroll to progress, the frame loop, measurement on resize, suspend off-screen, remeasure on `pageshow` |
 | `stage.ts` | writes state onto the document as data attributes and custom properties |
+| `attach.ts` | the attach order: staged mode, flush layout, then measure and mount |
 | `probe.ts` | the test seam, attached on `?probe=1` or in development |
 | `debug-overlay.ts` | development-only overlay, dropped from production bundles |
 
 Two rules hold the division: a scene never reads the scroll position or measures the
 window, and the runtime never decides what anything looks like. Appearance is CSS
 reacting to `--scene-progress`, `--progress` and `data-state`.
+
+Three contracts are now fixed, and changing them is a deliberate decision rather than
+an implementation detail:
+
+1. **Attach order.** Staged mode is applied, layout is flushed, and only then does a
+   driver measure. The track's scroll distance comes from CSS that applies only in
+   staged mode, so measuring first reads the flow layout. `attachStory` owns this.
+2. **Travel comes from the elements.** The driver measures the track and the sticky
+   stage, never `innerHeight`, so CSS stays the only place that picks a viewport unit.
+   A phone's retracting toolbar moves `innerHeight` but not the stage.
+3. **The probe addresses scenes by id.** `setProgress(sceneId, progress)`,
+   `snapshot(sceneId?)`, `scenes()`. A document may host several scenes, and driving
+   them all to one progress is a state real scrolling never produces.
+
+Still open, and fair for the PoC to change: how two scenes in one document hand over
+to each other, and how an overlapping transition between shots is represented. Both
+change data shapes, so they are decided before the staging work rather than during it.
 
 ## 8. Testing and tooling
 
@@ -200,4 +218,6 @@ Testing layers, the runtime's testability requirements, and who owns them are in
 - the Scene runtime's exact interfaces, which issue #1 owns;
 - whether any Shot needs WebGL, which profiling decides;
 - where the document boundaries fall once there is more than one part;
-- whether a later boundary justifies a same-document transition.
+- whether a later boundary justifies a same-document transition;
+- the two items named above: scene-to-scene handoff inside one document, and how
+  overlapping shots are expressed in the mapping.

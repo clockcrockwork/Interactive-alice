@@ -4,7 +4,11 @@
   "title": "Experience story file",
   "description": "The runtime Scene order for the whole story, and optionally how those scenes are grouped into documents. Holds no visible text.",
   "type": "object",
-  "required": ["story", "scenes"],
+  "required": [
+    "story",
+    "scenes",
+    "parts"
+  ],
   "additionalProperties": false,
   "properties": {
     "$schema": {
@@ -21,7 +25,10 @@
       "description": "Scenes in story order.",
       "items": {
         "type": "object",
-        "required": ["id", "file"],
+        "required": [
+          "id",
+          "file"
+        ],
         "additionalProperties": false,
         "properties": {
           "id": {
@@ -38,10 +45,13 @@
     "parts": {
       "type": "array",
       "minItems": 1,
-      "description": "Documents, in story order. A part hosts one or more scenes; a document boundary is a delivery decision, never a scene boundary. See docs/frontend-architecture.md.",
+      "description": "Documents, in story order. A part hosts one or more scenes; a document boundary is a delivery decision, never a scene boundary. Required: every scene belongs to exactly one document, and that grouping is declared rather than inferred. See docs/frontend-architecture.md.",
       "items": {
         "type": "object",
-        "required": ["id", "scenes"],
+        "required": [
+          "id",
+          "scenes"
+        ],
         "additionalProperties": false,
         "properties": {
           "id": {

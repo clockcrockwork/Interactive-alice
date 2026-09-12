@@ -83,7 +83,8 @@ export function loadProject(root: string): Project {
 
   return {
     locales: localeFile.locales,
-    parts: story.parts ?? story.scenes.map((entry) => ({ id: entry.id, scenes: [entry.id] })),
+    // Declared, never inferred: the schema requires parts for exactly this reason.
+    parts: story.parts,
     scenes,
     structure,
     text,

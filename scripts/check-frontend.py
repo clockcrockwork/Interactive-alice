@@ -60,6 +60,21 @@ def shot_and_beat_ids() -> set[str]:
     return ids
 
 
+GENERATED = REPO_ROOT / "src" / "generated"
+
+
+SCENES = REPO_ROOT / "src" / "scenes"
+
+
+def is_scene_code(path: Path) -> bool:
+    return path.is_relative_to(SCENES)
+
+
+def is_generated(path: Path) -> bool:
+    """Only this one tree is build output; everything else is hand-written."""
+    return path.is_relative_to(GENERATED)
+
+
 def allowed(line: str, rule: str) -> bool:
     match = ALLOW.search(line)
     return bool(match) and match.group(1) == rule
@@ -72,14 +87,16 @@ def report(problems: list[str], path: Path, number: int, rule: str, message: str
 def check_code(path: Path, text: str, ids: set[str], problems: list[str]) -> None:
     in_keyframes = 0
     for number, line in enumerate(text.splitlines(), start=1):
-        if path.suffix in {".ts", ".css"} and CJK.search(line) and not allowed(line, "prose"):
+        if CJK.search(line) and not allowed(line, "prose"):
             report(problems, path, number, "prose",
                    "narrative text belongs in text/locales/, referenced by segment id")
         if ABSOLUTE.search(line) and not allowed(line, "absolute-path"):
             report(problems, path, number, "absolute-path",
                    "use a relative URL or import the asset through the bundler")
         if path.suffix == ".ts":
-            if SCROLL_READ.search(line) and "runtime" not in path.parts and not allowed(line, "scroll-read"):
+            # Only scene code is bound by this: the runtime is where scroll is read,
+            # and a browser test drives the window on purpose.
+            if is_scene_code(path) and SCROLL_READ.search(line) and not allowed(line, "scroll-read"):
                 report(problems, path, number, "scroll-read",
                        "take progress from the runtime context, not from the window")
             if INLINE_STYLE.search(line) and not allowed(line, "inline-style"):
@@ -128,7 +145,7 @@ def main() -> int:
         for path in root.rglob("*")
         # Generated pages are build output, derived from the mapping rather than a
         # second copy of it, so they are not hand-written code to police.
-        if path.suffix in {".ts", ".css", ".html"} and path.is_file() and "generated" not in path.parts
+        if path.suffix in {".ts", ".css", ".html"} and path.is_file() and not is_generated(path)
     ]
     for path in sorted(files):
         check_code(path, path.read_text(encoding="utf-8"), ids, problems)

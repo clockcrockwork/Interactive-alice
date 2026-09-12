@@ -16,10 +16,10 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test --project=chromium-desktop",
     "plan:fixture": "python3 scripts/show-scene.py rabbit-hole --plan --json > tests/fixtures/rabbit-hole.plan.json",
     "types:schema": "node build/generate-types.mjs && biome check --write src/types/schema.ts",
-    "test:e2e:full": "PW_FULL=1 playwright test"
+    "test:e2e:full": "playwright test"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

@@ -235,11 +235,11 @@ export interface ExperienceStoryFile {
     }[],
   ];
   /**
-   * Documents, in story order. A part hosts one or more scenes; a document boundary is a delivery decision, never a scene boundary. See docs/frontend-architecture.md.
+   * Documents, in story order. A part hosts one or more scenes; a document boundary is a delivery decision, never a scene boundary. Required: every scene belongs to exactly one document, and that grouping is declared rather than inferred. See docs/frontend-architecture.md.
    *
    * @minItems 1
    */
-  parts?: [
+  parts: [
     {
       /**
        * URL segment for this document.

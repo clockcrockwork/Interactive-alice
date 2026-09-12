@@ -6,6 +6,7 @@ import {
   localProgress,
   type Span,
   spanState,
+  VELOCITY_EPSILON,
   velocityOf,
 } from './progress.ts';
 
@@ -85,14 +86,32 @@ describe('directionOf', () => {
 });
 
 describe('velocityOf', () => {
-  it('smooths towards the instantaneous value', () => {
-    const first = velocityOf(0, 0.1, 0.1, 1);
-    expect(first).toBeCloseTo(1, 10);
-    const eased = velocityOf(0, 0.1, 0.1, 0.5);
-    expect(eased).toBeCloseTo(0.5, 10);
+  it('moves towards the instantaneous value, by a time constant in seconds', () => {
+    // instant = 0.1 / 0.1 = 1; alpha = 1 - exp(-0.1 / 0.12)
+    const expected = 1 - Math.exp(-0.1 / 0.12);
+    expect(velocityOf(0, 0.1, 0.1)).toBeCloseTo(expected, 10);
+  });
+
+  it('follows closely with a short time constant and lags with a long one', () => {
+    expect(velocityOf(0, 0.1, 0.1, 0.001)).toBeCloseTo(1, 6);
+    expect(velocityOf(0, 0.1, 0.1, 10)).toBeLessThan(0.02);
+  });
+
+  it('settles at the same place whatever the frame rate', () => {
+    // One 100 ms frame against four 25 ms frames, same scroll speed.
+    const single = velocityOf(0, 0.1, 0.1);
+    let stepped = 0;
+    for (let i = 0; i < 4; i += 1) {
+      stepped = velocityOf(stepped, 0.025, 0.025);
+    }
+    expect(stepped).toBeCloseTo(single, 2);
   });
 
   it('keeps the previous value when no time has passed', () => {
     expect(velocityOf(0.4, 0.2, 0)).toBe(0.4);
+  });
+
+  it('lets a tiny residue settle to zero rather than lingering', () => {
+    expect(velocityOf(VELOCITY_EPSILON / 2, 0, 0.016)).toBe(0);
   });
 });

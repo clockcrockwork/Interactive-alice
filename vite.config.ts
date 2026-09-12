@@ -28,13 +28,22 @@ export default defineConfig({
         for (const dir of dataDirs) {
           server.watcher.add(dir);
         }
-        server.watcher.on('change', (file) => {
+        // A new locale or chapter file is an add, a removed one an unlink; watching
+        // only change would make regeneration depend on which file you saved last.
+        let pending: ReturnType<typeof setTimeout> | undefined;
+        const regenerate = (file: string): void => {
           if (!dataDirs.some((dir) => file.startsWith(dir))) {
             return;
           }
-          writePages(root, generated);
-          server.hot.send({ type: 'full-reload' });
-        });
+          clearTimeout(pending);
+          pending = setTimeout(() => {
+            writePages(root, generated);
+            server.hot.send({ type: 'full-reload' });
+          }, 50);
+        };
+        for (const event of ['add', 'change', 'unlink'] as const) {
+          server.watcher.on(event, regenerate);
+        }
       },
     },
   ],

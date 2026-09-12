@@ -66,19 +66,22 @@ export function directionOf(delta: number, threshold = 0.0001): Direction {
   return 0;
 }
 
+/** Below this, velocity is noise and the runtime lets it settle to zero. */
+export const VELOCITY_EPSILON = 0.0005;
+
 /**
  * Smoothed progress per second, so a scene can react to speed without chasing the
  * jitter of a single frame.
+ *
+ * Smoothing is a time constant in seconds, not a per-frame factor, so a 120 Hz
+ * display and a 60 Hz one settle at the same rate.
  */
-export function velocityOf(
-  previous: number,
-  delta: number,
-  seconds: number,
-  smoothing = 0.2,
-): number {
+export function velocityOf(previous: number, delta: number, seconds: number, tau = 0.12): number {
   if (seconds <= 0) {
     return previous;
   }
   const instant = delta / seconds;
-  return previous + (instant - previous) * clamp(smoothing);
+  const alpha = 1 - Math.exp(-seconds / Math.max(tau, 1e-6));
+  const next = previous + (instant - previous) * alpha;
+  return Math.abs(next) < VELOCITY_EPSILON ? 0 : next;
 }

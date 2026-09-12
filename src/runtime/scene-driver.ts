@@ -20,6 +20,7 @@ import {
   type Direction,
   directionOf,
   type Span,
+  VELOCITY_EPSILON,
   velocityOf,
 } from './progress.ts';
 
@@ -40,6 +41,8 @@ export interface SceneSnapshot {
 export interface SceneDriverOptions {
   scene: HTMLElement;
   track: HTMLElement;
+  /** The sticky element. Its height is the part of the track that does not travel. */
+  stage: HTMLElement;
   shots: readonly Span[];
   beats: readonly Span[];
   onUpdate: (context: RuntimeContext) => void;
@@ -60,6 +63,7 @@ export class SceneDriver {
   #effects = true;
   #audio = false;
   #observer: IntersectionObserver | undefined;
+  #resizeObserver: ResizeObserver | undefined;
   readonly #onScroll = () => this.#request();
   readonly #onResize = () => {
     this.measure();
@@ -81,10 +85,30 @@ export class SceneDriver {
     return this.#lifecycle;
   }
 
+  /**
+   * Attaches to the document.
+   *
+   * The caller must have put the page into its staged mode already: the track's
+   * height comes from CSS that only applies in that mode, so measuring before it is
+   * applied reads the flow layout and gets the scroll distance wrong. `attachStory`
+   * owns that ordering.
+   */
   mount(): void {
     this.#lifecycle.to('mounted');
     this.#quality = initialQuality();
     this.measure();
+
+    // Layout can still move under us: a late font swap shifts what sits above the
+    // track, and a container query or an orientation change resizes it.
+    this.#resizeObserver = new ResizeObserver(() => {
+      this.measure();
+      this.#request(true);
+    });
+    this.#resizeObserver.observe(this.#options.track);
+    void document.fonts?.ready.then(() => {
+      this.measure();
+      this.#request(true);
+    });
 
     addEventListener('scroll', this.#onScroll, { passive: true });
     addEventListener('resize', this.#onResize, { passive: true });
@@ -107,12 +131,19 @@ export class SceneDriver {
     this.#request(true);
   }
 
-  /** Reads layout once, so the frame loop never has to. */
+  /**
+   * Reads layout once, so the frame loop never has to.
+   *
+   * The travel is the track's height minus the sticky stage's height, both measured
+   * from the elements themselves. Subtracting `innerHeight` instead would mix units:
+   * the stage is sized in CSS, and on a phone with a retracting toolbar the window's
+   * height is the large viewport while the stage may be the small one.
+   */
   measure(): void {
-    const rect = this.#options.track.getBoundingClientRect();
-    const viewport = readViewport();
-    this.#top = rect.top + scrollY;
-    this.#distance = Math.max(rect.height - viewport.height, 1);
+    const track = this.#options.track.getBoundingClientRect();
+    const stage = this.#options.stage.getBoundingClientRect();
+    this.#top = track.top + scrollY;
+    this.#distance = Math.max(track.height - stage.height, 1);
   }
 
   suspend(): void {
@@ -123,6 +154,10 @@ export class SceneDriver {
       cancelAnimationFrame(this.#frame);
       this.#frame = 0;
     }
+    // Nothing is moving while suspended, and the clock must not carry the pause into
+    // the first sample after resuming.
+    this.#lastTime = 0;
+    this.#velocity = 0;
   }
 
   resume(): void {
@@ -140,6 +175,8 @@ export class SceneDriver {
     removeEventListener('pagehide', this.#onPageHide);
     this.#observer?.disconnect();
     this.#observer = undefined;
+    this.#resizeObserver?.disconnect();
+    this.#resizeObserver = undefined;
     this.#lifecycle.to('destroyed');
   }
 
@@ -198,6 +235,14 @@ export class SceneDriver {
 
     if (force || delta !== 0 || this.#velocity !== 0) {
       this.#publish(progress, force);
+    }
+
+    // Keep going while velocity is still decaying, so a scene that reads speed sees
+    // it settle to zero rather than holding the last value after scrolling stops.
+    if (Math.abs(this.#velocity) > VELOCITY_EPSILON) {
+      this.#request();
+    } else {
+      this.#lastTime = 0;
     }
   }
 

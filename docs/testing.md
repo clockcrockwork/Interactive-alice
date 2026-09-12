@@ -76,8 +76,10 @@ The full suite covers, per scene:
 These are runtime requirements, not test tricks. Without them the browser layer
 is flaky and the visual layer is worthless:
 
-1. **Progress can be set.** A development-only way to jump to a normalized
-   progress value, and to a named shot or beat, without synthesizing scroll.
+1. **Progress can be set, per scene.** A way to jump one named scene to a normalized
+   progress value without synthesizing scroll: `setProgress(sceneId, progress)`.
+   Driving every scene on a page to the same value is not a state scrolling produces,
+   so the seam does not offer it as a default.
 2. **Randomness is controllable.** Seeded, or disabled, through one switch. An
    unseeded particle field cannot be compared between runs.
 3. **Time is not a hidden input.** Progression-critical state depends on progress,
@@ -105,11 +107,15 @@ requires. It never replaces it.
 
 ## 5. What the runtime tests cover today
 
-Per part page, in both locales: reconstruction at every shot boundary and at both
-ends, agreement between the snapshot and the markup about the active shot and beat,
-reaching both ends by scrolling alone, a resize at mid-scene leaving the composition
-intact, the reduced-motion variant dropping the drift and lowering the quality tier,
-and the page staying a readable document with JavaScript disabled.
+Per part page and per scene on it, in both locales: that the page exposes exactly the
+scenes the data declares, that **real scroll to the midpoint of the track reads as a
+midpoint** (the ends alone cannot catch a wrong scroll distance, because clamping
+hides it), reconstruction at every shot boundary and at both ends, agreement between
+the snapshot and the markup about the active shot and beat, velocity settling to zero
+after scrolling stops, reaching both ends by scrolling alone, a resize at mid-scene
+leaving the composition intact, the reduced-motion variant dropping the drift and
+lowering the quality tier, and the page staying a readable document with JavaScript
+disabled.
 
 Still to come with the scenes they belong to: depth bands, the FX layer, the optional
 interaction, audio, and back-navigation restore across a document boundary.

@@ -1,8 +1,13 @@
+import { existsSync, mkdtempSync, readdirSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { escapeHtml, generatePages } from './pages.ts';
+import { escapeHtml, generatePages, writePages } from './pages.ts';
 import { loadProject } from './project.ts';
 
-const root = new URL('..', import.meta.url).pathname;
+// A URL pathname is not a filesystem path on Windows; go through the helper.
+const root = fileURLToPath(new URL('..', import.meta.url));
 const project = loadProject(root);
 const { pages, manifest } = generatePages(root);
 const locales = Object.keys(project.locales);
@@ -49,6 +54,21 @@ describe('the page graph', () => {
       expect(page?.html).toContain(`data-locale="${entry.locale}"`);
       expect(page?.html).toContain(`lang="${entry.locale}"`);
     }
+  });
+
+  it('materializes the whole tree and leaves nothing stale behind', () => {
+    const out = mkdtempSync(join(tmpdir(), 'alice-pages-'));
+    writePages(root, out);
+    const before = readdirSync(out).sort();
+
+    // A page from an earlier run, for a locale or part that no longer exists.
+    const stale = join(out, 'xx-old');
+    writeFileSync(join(out, 'stale.html'), '<!doctype html>', 'utf8');
+    writePages(root, out);
+
+    expect(existsSync(join(out, 'stale.html'))).toBe(false);
+    expect(existsSync(stale)).toBe(false);
+    expect(readdirSync(out).sort()).toEqual(before);
   });
 
   it('escapes text before inlining it, so a sentence cannot close a tag', () => {

@@ -6,7 +6,7 @@
  * mapping. See docs/frontend-architecture.md §3.
  */
 
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { planScene, type ScenePlan } from '../src/runtime/pacing.ts';
 import { chaptersOf, loadProject, type Project, type SegmentMeta } from './project.ts';
@@ -292,6 +292,10 @@ export function generatePages(root: string): PageGraph {
  */
 export function writePages(root: string, outDir: string): string[] {
   const { pages, manifest } = generatePages(root);
+  // Nothing but generated output lives here, so clearing it first is what keeps a
+  // removed locale or part from leaving a page behind that the dev server still serves.
+  rmSync(outDir, { recursive: true, force: true });
+  mkdirSync(outDir, { recursive: true });
   const written: string[] = [];
   for (const page of pages) {
     const file = join(outDir, page.path);

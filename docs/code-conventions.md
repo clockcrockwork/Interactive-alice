@@ -5,7 +5,9 @@
 ## 1. HTML
 
 - Write semantic elements first and reach for `div` when nothing else fits.
-  A scene is `<main>`; narrative sentences are real text nodes, not decorations.
+  **One `<main>` per document**, since a document may host several scenes: a scene is
+  a section inside it, not a second `<main>`. Narrative sentences are real text nodes,
+  not decorations.
 - One `h1` per page, headings in order, no skipped levels.
 - Decorative layers are `aria-hidden="true"`. Interactive props are real buttons.
 - Every image has an `alt` that says what it contributes, or `alt=""` when it is

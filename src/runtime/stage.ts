@@ -20,7 +20,9 @@ const round = (value: number): string => value.toFixed(3);
 export class Stage {
   readonly #scene: HTMLElement;
   readonly #units: readonly StageUnit[];
-  readonly #last = new Map<string, string>();
+  // Keyed by element: a shot and a beat may legally share an id, and keying by id
+  // would let one of them swallow the other's updates.
+  readonly #last = new WeakMap<HTMLElement, string>();
 
   constructor(scene: HTMLElement, units: readonly StageUnit[]) {
     this.#scene = scene;
@@ -35,10 +37,10 @@ export class Stage {
     for (const unit of this.#units) {
       const { state, local } = spanState(context.progress, unit.span);
       const key = `${state}:${round(local)}`;
-      if (this.#last.get(unit.span.id) === key) {
+      if (this.#last.get(unit.element) === key) {
         continue;
       }
-      this.#last.set(unit.span.id, key);
+      this.#last.set(unit.element, key);
       unit.element.dataset.state = state;
       unit.element.style.setProperty('--progress', round(local));
     }

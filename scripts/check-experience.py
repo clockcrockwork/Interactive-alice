@@ -90,6 +90,8 @@ def check_parts(story: dict, errors: list[str]) -> None:
     """Documents group scenes. Flattened, they must be exactly the story's scenes, in order."""
     parts = story.get("parts")
     if not parts:
+        # The schema requires parts; this only runs if schema validation was skipped.
+        errors.append("story.json: parts are required, so every scene has a document")
         return
 
     order = [entry["id"] for entry in story["scenes"]]
@@ -196,6 +198,14 @@ def main() -> int:
                     else:
                         owners[segment_id] = where
                         stream.append(((chapter, order.index(segment_id)), segment_id, where))
+
+        # Shot and beat ids share one namespace for anything that addresses a unit,
+        # so a shot and a beat in the same scene must not answer to the same name.
+        for clash in sorted(shot_ids & beat_ids):
+            errors.append(
+                f"{label}: {clash!r} is both a shot id and a beat id; "
+                "give one of them another name"
+            )
 
     # Reading order must hold across the whole story, in story.json scene order.
     for (earlier_key, earlier_id, _), (later_key, later_id, later_where) in zip(stream, stream[1:]):

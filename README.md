@@ -28,6 +28,7 @@ The first implementation target is the **Rabbit Hole PoC**. It exists to prove t
 
 See:
 
+- [`docs/implementation-charter.md`](docs/implementation-charter.md) — fixed decisions, implementation boundaries, and agent authority.
 - [`docs/product-principles.md`](docs/product-principles.md)
 - [`docs/scene-shot-model.md`](docs/scene-shot-model.md)
 - [`docs/poc/rabbit-hole.md`](docs/poc/rabbit-hole.md)

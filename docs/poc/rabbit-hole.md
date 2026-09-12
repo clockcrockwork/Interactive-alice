@@ -1,5 +1,7 @@
 # Rabbit Hole PoC specification
 
+> Implementation boundary: follow [`../implementation-charter.md`](../implementation-charter.md). The Acceptance Criteria in this document remain authoritative for the PoC; ordinary repository structure and implementation details are agent-owned unless explicitly constrained here.
+
 ## 1. Purpose
 
 The Rabbit Hole PoC is the first executable proof of Interactive Alice.

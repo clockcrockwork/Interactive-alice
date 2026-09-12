@@ -15,7 +15,10 @@
  */
 
 import { spawnSync } from 'node:child_process';
+import { realpathSync } from 'node:fs';
+import { resolve } from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 
 /** Tried in order. Only these may carry arguments; an override never does. */
 const CANDIDATES = [['python3'], ['python'], ['py', '-3']];
@@ -27,8 +30,17 @@ export function pythonCommand() {
     return resolved;
   }
   const override = process.env.PYTHON?.trim();
-  const candidates = override ? [[override], ...CANDIDATES] : CANDIDATES;
-  for (const candidate of candidates) {
+  if (override) {
+    // An override is a decision, not a hint: if it does not run, say so rather than
+    // quietly using a different interpreter than the one that was asked for.
+    const probe = spawnSync(override, ['--version'], { stdio: 'ignore' });
+    if (probe.status !== 0) {
+      throw new Error(`PYTHON is set to ${override}, which did not run`);
+    }
+    resolved = [override];
+    return resolved;
+  }
+  for (const candidate of CANDIDATES) {
     const [command, ...args] = candidate;
     const probe = spawnSync(command, [...args, '--version'], { stdio: 'ignore' });
     if (probe.status === 0) {
@@ -37,14 +49,40 @@ export function pythonCommand() {
     }
   }
   throw new Error(
-    'no Python interpreter found: tried PYTHON, python3, python and py -3. ' +
-      'Python runs the checkers and the reference pacing implementation; see docs/testing.md.',
+    'no Python interpreter found: tried python3, python and py -3, and PYTHON is not ' +
+      'set. Python runs the checkers and the reference pacing implementation; see ' +
+      'docs/testing.md.',
   );
+}
+
+/**
+ * Whether this file was run as the command, rather than imported.
+ *
+ * Comparing the module URL with `process.argv[1]` as text is wrong: a URL escapes
+ * what a path does not, so a repository under a directory with a space in its name
+ * would never match, and the wrapper would exit 0 without running anything. A
+ * checker that silently does nothing is worse than one that fails.
+ */
+function runDirectly() {
+  const entry = process.argv[1];
+  if (!entry) {
+    return false;
+  }
+  const self = fileURLToPath(import.meta.url);
+  const resolved = resolve(entry);
+  if (self === resolved) {
+    return true;
+  }
+  try {
+    return realpathSync(self) === realpathSync(resolved);
+  } catch {
+    return false;
+  }
 }
 
 // Run as a command: pass everything through, including the exit code, so this is
 // invisible in a pipeline.
-if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/'))) {
+if (runDirectly()) {
   const [command, ...args] = pythonCommand();
   const run = spawnSync(command, [...args, ...process.argv.slice(2)], { stdio: 'inherit' });
   process.exit(run.status ?? 1);

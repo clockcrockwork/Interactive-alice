@@ -53,12 +53,13 @@ is compared against the baseline, so growth has a cause rather than a surprise.
 
 | Page | HTML | CSS | JS baseline | JS current |
 | --- | --- | --- | --- | --- |
-| `/` | 0.4 KB | 0.7 KB | none | none |
-| `/<locale>/` | 0.4 KB | 0.7 KB | none | none |
-| `/<locale>/rabbit-hole/` | 2.2–2.4 KB | 1.3 KB | 2.2 KB | 2.7 KB |
+| `/` | 0.4 KB | 0.8 KB | none | none |
+| `/<locale>/` | 0.5 KB | 0.8 KB | none | none |
+| `/<locale>/rabbit-hole/` | 2.2–2.4 KB | 1.4 KB | 2.2 KB | 2.7 KB |
 
-The scaffolding alone was 0.4 KB of JS, so the runtime cost 1.8 KB to begin with. The
-0.5 KB since then bought the suspend and resume correction, the observable degraded
+The scaffolding alone was 0.4 KB of JS, so the runtime cost 1.8 KB to begin with. CSS
+gained 0.06 KB for the availability notes on the entry and home pages. The 0.5 KB of
+JS since the baseline bought the suspend and resume correction, the observable degraded
 mode, and the per-scene probe. Against the 120 KB budget in §2 this is noise, but it
 is recorded rather than rounded away: a runtime that grows every review round is worth
 noticing early.

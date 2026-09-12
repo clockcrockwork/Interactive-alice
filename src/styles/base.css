@@ -48,6 +48,7 @@
 }
 
 @layer layout {
+  .entry,
   .home,
   .story {
     max-inline-size: var(--measure);
@@ -56,12 +57,34 @@
     padding-inline: var(--space-2);
   }
 
-  .home__locales {
+  .home__locales,
+  .entry__parts {
     display: grid;
     gap: var(--space-2);
     padding: 0;
     list-style: none;
     font-size: 1.25rem;
+  }
+
+  /*
+   * A language or a part that cannot be read yet says so, on its own line under the
+   * name it belongs to. Smaller and quieter than the name, never a colour alone: the
+   * words carry the meaning, so this still reads without them.
+   */
+  .home__locale,
+  .entry__part {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .home__status,
+  .entry__part-status {
+    color: var(--ink-soft);
+    font-size: 0.875rem;
+  }
+
+  .entry__part[data-available="false"] .entry__part-title {
+    color: var(--ink-soft);
   }
 
   .line {

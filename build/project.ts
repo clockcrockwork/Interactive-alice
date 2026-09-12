@@ -16,6 +16,7 @@ import type {
   LocaleRegistry,
   LocaleUIStrings,
 } from '../src/types/schema.ts';
+import { assertValid } from './schema.ts';
 
 // Every shape below comes from schema/, generated into src/types/schema.ts by
 // npm run types:schema. Nothing here retypes a schema by hand.
@@ -88,6 +89,10 @@ export function loadProject(root: string): Project {
       );
     }
     const file = JSON.parse(readFileSync(path, 'utf8')) as LocaleUIStrings;
+    // Shape first: a missing key here only shows up on the page that needs it, which
+    // may be a page nobody is looking at today. The checker refuses the same file;
+    // this is the half of that contract a remote build actually runs.
+    assertValid(file, read(root, 'schema', 'ui-strings.schema.json'), `${locale}/ui.json`);
     if (file.locale !== locale) {
       throw new Error(`text/locales/${locale}/ui.json says locale ${file.locale}`);
     }

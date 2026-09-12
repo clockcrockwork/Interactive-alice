@@ -240,7 +240,13 @@ test.describe('a language that is behind', () => {
     if (!html) {
       throw new Error(`the generator produced no ${path}`);
     }
-    await serveRewritten(page, url, () => html.html);
+    // The generator writes the pre-build stylesheet path; the published page carries
+    // the hashed one. Take it from the real response so this page is styled the way a
+    // reader would see it, which is what makes a layout assertion mean anything.
+    await serveRewritten(page, url, (published) => {
+      const link = /<link rel="stylesheet"[^>]*>/.exec(published)?.[0];
+      return link ? html.html.replace(/<link rel="stylesheet"[^>]*\/?>/, link) : html.html;
+    });
   };
 
   test('says on its entry why a part cannot be read, and does not link it', async ({ page }) => {
@@ -258,6 +264,14 @@ test.describe('a language that is behind', () => {
     const title = item.locator('.entry__part-title');
     await expect(title).toHaveAttribute('lang', 'en-simple');
     await expect(title).toHaveAttribute('dir', 'ltr');
+
+    // Laid out, not merely present: the note sits under the title rather than running
+    // into it, and both have a box a reader can see.
+    const titleBox = await title.boundingBox();
+    const statusBox = await item.locator('.entry__part-status').boundingBox();
+    expect(titleBox?.height ?? 0).toBeGreaterThan(0);
+    expect(statusBox?.height ?? 0).toBeGreaterThan(0);
+    expect(statusBox?.y ?? 0).toBeGreaterThanOrEqual((titleBox?.y ?? 0) + (titleBox?.height ?? 0));
   });
 
   test('says on the home page that it cannot be read yet, and still links it', async ({ page }) => {
@@ -275,6 +289,11 @@ test.describe('a language that is behind', () => {
     const full = page.locator('.home__locale[data-locale="en-simple"]');
     await expect(full).toHaveAttribute('data-availability', 'full');
     await expect(full.locator('.home__status')).toHaveCount(0);
+
+    const linkBox = await item.locator('a').boundingBox();
+    const statusBox = await item.locator('.home__status').boundingBox();
+    expect(statusBox?.height ?? 0).toBeGreaterThan(0);
+    expect(statusBox?.y ?? 0).toBeGreaterThanOrEqual((linkBox?.y ?? 0) + (linkBox?.height ?? 0));
   });
 });
 

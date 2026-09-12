@@ -21,9 +21,8 @@ So production is an **artifact deploy**: `npm run build` runs here, and the resu
 (`lolipop deploy --project <id>`; the framework is chosen when the project is
 created). The site is plain files either way, so nothing about the output changes.
 
-The host's CLI needs Node 22.12.0 or newer to run. That is release tooling, not this
-project's runtime, so it does not narrow `engines`; the `.nvmrc` pin satisfies it
-anyway.
+The host's CLI needs Node 22.12.0 or newer to run, which is the same floor the build
+toolchain already has (§5).
 
 Two consequences that shape everything below:
 
@@ -169,8 +168,13 @@ in [`testing.md`](testing.md) must be current.
 
 ```text
 .nvmrc                 22            local shells, and CI via node-version-file
-package.json engines   >=22 <23      every host that installs before it builds
+package.json engines   >=22.12 <23   every host that installs before it builds
 ```
+
+The floor is 22.12 rather than 22.0 because that is what the toolchain actually
+needs: Vite 8 declares `^20.19.0 || >=22.12.0`, and the host's deploy CLI wants the
+same. `.nvmrc` names the major and so resolves to the newest 22 release, which
+satisfies it.
 
 Three environments read one of those two files and never compare notes, so
 `npm run check:frontend` fails if they stop naming the same major
@@ -185,6 +189,7 @@ Why 22 rather than the newer line:
 - while CI is paused, the local run is the whole gate, and it runs 22. Pinning a
   version nothing in the project actually executes would mean the pin is never tested;
 - nothing in the toolchain needs 24, and `@types/node` is on the 22 line;
+- what the toolchain does need is 22.12, which `engines` says exactly;
 - Node 22 is in maintenance LTS, supported until 2027-04-30, well past this proof of
   concept. Node 24 is the current active LTS, so this is a compatibility-leaning
   choice made with its end date known, not a claim that 22 is the newer line.

@@ -176,6 +176,27 @@ describe('publishability', () => {
   });
 });
 
+describe('naming a part', () => {
+  it('uses the first chapter any of its scenes reads, not only the first scene', () => {
+    // A scene that stages no text is a legal composition, and a part that opens with
+    // one still has a name.
+    const project = loadProject(root);
+    const staging: SceneMapping = {
+      id: 'overture',
+      shots: [{ id: 'only', beats: [{ id: 'hold', segments: [] }] }],
+    };
+    project.scenes.set('overture', staging);
+    project.parts = [{ id: 'rabbit-hole', scenes: ['overture', 'rabbit-hole'] }];
+
+    const entry =
+      generatePagesFrom(project).pages.find((page) => page.path === 'ja/index.html')?.html ?? '';
+    const title = project.text.get('ja')?.get(1)?.title ?? '';
+
+    expect(title).toBeTruthy();
+    expect(entry).toContain(title);
+  });
+});
+
 describe('the page graph', () => {
   it('has the three levels the architecture specifies', () => {
     const kinds = manifest.pages.map((page) => page.kind);

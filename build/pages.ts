@@ -176,11 +176,23 @@ ${body}
 `;
 }
 
-function partHeading(project: Project, locale: string, scenes: string[]): string {
-  const scene = project.scenes.get(scenes[0] ?? '');
-  const chapter = scene ? chaptersOf(scene)[0] : undefined;
-  const text = chapter ? project.text.get(locale)?.get(chapter) : undefined;
-  return text?.title ?? PROJECT_NAME;
+/**
+ * What to call a part in one language: the title of the first chapter it draws on.
+ *
+ * Every scene of the part is considered, not only the first. A scene may legitimately
+ * stage no text at all, and a part that opens with one still has a name — the chapter
+ * its next scene reads from.
+ */
+function partHeading(project: Project, locale: string, scenes: readonly string[]): string {
+  for (const sceneId of scenes) {
+    const scene = project.scenes.get(sceneId);
+    const chapter = scene ? chaptersOf(scene)[0] : undefined;
+    const text = chapter === undefined ? undefined : project.text.get(locale)?.get(chapter);
+    if (text) {
+      return text.title;
+    }
+  }
+  return PROJECT_NAME;
 }
 
 /**

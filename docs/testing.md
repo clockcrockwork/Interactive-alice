@@ -100,9 +100,10 @@ The full suite covers, per scene:
   logical layout is proven before a right-to-left language is registered rather than
   after;
 - a language that is behind: the real generator is run over a project with a chapter
-  removed and its pages are served at their own addresses, so the entry's unavailable
-  part and the home page's note are covered in a browser without publishing a fake
-  language;
+  removed and its pages are served at their own addresses, carrying the published
+  stylesheet, so the entry's unavailable part and the home page's note are covered in
+  a browser — including that each note is laid out under the name it belongs to
+  rather than merely present in the markup — without publishing a fake language;
 - a jump is not movement: after a restore or a seam jump, `direction` and `velocity`
   are zero, and real scrolling afterwards reads as real scrolling again;
 - no console errors, unhandled rejections, or failed requests in any of the above.

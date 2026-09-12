@@ -24,6 +24,9 @@ the browser, readable in several languages, aimed at phones as well as desktops.
    test suite is incomplete. See `docs/testing.md`.
 10. **Motion and sound can be paused.** Looping animation and music need a visible
     pause control, not only a mute.
+11. **Private and proprietary.** No `LICENSE` file, no open-source licence, and
+    `package.json` stays `"private": true` with `"license": "UNLICENSED"`. Credit
+    for the public-domain source text is unaffected; see `CREDITS.md`.
 
 ## Browser support target
 

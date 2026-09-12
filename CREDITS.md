@@ -41,3 +41,10 @@ end of the story:
 > Interactive Alice.
 
 Translators and contributors are credited here as they join.
+
+## Rights
+
+The repository is private and the work is proprietary: no open-source licence is
+granted over this project's own code, retelling, translations, artwork, or music,
+and all rights to them are reserved by the author. That is separate from, and does
+not extend to, the public-domain 1865 text this project is built on.

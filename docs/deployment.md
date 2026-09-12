@@ -104,6 +104,8 @@ in [`testing.md`](testing.md) must be current.
 
 - npm, because the host's build supports nothing else. `package-lock.json` is
   committed and CI installs with `npm ci`.
+- `package.json` carries `"private": true` and `"license": "UNLICENSED"`: the
+  repository is private and nothing here is published to a registry.
 - Node is pinned in `.nvmrc`, and CI reads the pin rather than naming a version.
 - Biome is pinned exactly; an upgrade is its own pull request, with the diff it
   causes.

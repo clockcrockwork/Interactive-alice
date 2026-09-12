@@ -1,5 +1,7 @@
 # Scene / shot / beat composition model
 
+> Implementation note: this document defines conceptual guarantees, not a required class hierarchy. See [`implementation-charter.md`](implementation-charter.md). Agents may choose the actual data structures, module boundaries, names, and renderer composition as long as these guarantees and the Acceptance Criteria are preserved.
+
 ## 1. Why this exists
 
 Interactive Alice must not assume that one story scene is shown from one fixed composition or one camera angle.

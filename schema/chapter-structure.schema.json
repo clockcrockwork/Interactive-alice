@@ -2,16 +2,17 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/clockcrockwork/Interactive-alice/schema/chapter-structure.schema.json",
   "title": "Chapter structure file",
-  "description": "Language-neutral narrative skeleton for one chapter: scene order, segment order, and who is speaking. Carries no visible text, so scene logic can be built against it without depending on a language.",
+  "description": "Language-neutral narrative skeleton for one chapter: story-section order, segment order, and who is speaking. Carries no visible text. A story section is a division of the TEXT, not a runtime Scene; Scene / Shot / Beat composition lives in experience/ and is documented in docs/text-experience-binding.md.",
   "type": "object",
-  "required": ["chapter", "sourceFile", "scenes", "segments"],
+  "required": ["chapter", "sourceFile", "sections", "segments"],
   "additionalProperties": false,
   "properties": {
     "chapter": { "type": "integer", "minimum": 1, "maximum": 12 },
     "sourceFile": { "type": "string", "description": "Path to the original public-domain chapter this was adapted from." },
-    "scenes": {
+    "sections": {
       "type": "array",
       "minItems": 1,
+      "description": "Story sections in reading order. A section groups consecutive segments of the text; it does not describe how they are staged.",
       "items": {
         "type": "object",
         "required": ["id"],
@@ -22,13 +23,14 @@
     "segments": {
       "type": "array",
       "minItems": 1,
+      "description": "Segments in reading order. One segment is one short sentence: the narrative atom that the experience displays, reads aloud, highlights, and translates.",
       "items": {
         "type": "object",
-        "required": ["id", "scene", "kind"],
+        "required": ["id", "section", "kind"],
         "additionalProperties": false,
         "properties": {
           "id": { "type": "string", "pattern": "^ch[0-9]{2}\\.s[0-9]{4}$" },
-          "scene": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "section": { "type": "string", "pattern": "^[a-z0-9-]+$" },
           "kind": { "enum": ["narration", "dialogue", "thought", "sound"] },
           "speaker": { "type": "string", "pattern": "^[a-z0-9-]+$" }
         }

@@ -85,6 +85,15 @@ Do not block this PoC on:
 
 ## 5. Scene model
 
+### Narrative text
+
+The Rabbit Hole's text is already mapped: `experience/scenes/rabbit-hole.scene.json`
+assigns chapter 1 segments `ch01.s0200`–`ch01.s0630` to five shots, with two
+textless beats for the dream transition and the exit handoff. Read segment ids
+from that file and resolve the words per language; do not embed prose in motion
+code. The contract is [`../text-experience-binding.md`](../text-experience-binding.md),
+and the shot split there is an initial mapping that PoC work may adjust.
+
 ### Scroll is the authoritative progression source
 
 The Rabbit Hole owns a normalized scene progress value:

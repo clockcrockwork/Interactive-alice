@@ -2,17 +2,17 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/clockcrockwork/Interactive-alice/schema/locale-chapter.schema.json",
   "title": "Locale chapter file",
-  "description": "Visible text for one chapter in one language. Segment ids and their order are owned by the matching text/story/chNN.structure.json file.",
+  "description": "Visible text for one chapter in one language. Segment ids, their order, and the story sections are owned by the matching text/story/chNN.structure.json file.",
   "type": "object",
-  "required": ["locale", "chapter", "title", "scenes", "segments"],
+  "required": ["locale", "chapter", "title", "sections", "segments"],
   "additionalProperties": false,
   "properties": {
     "locale": { "type": "string", "description": "BCP 47 tag, or a tag plus variant such as en-simple. Must be a key of text/locales.json." },
     "chapter": { "type": "integer", "minimum": 1, "maximum": 12 },
     "title": { "type": "string", "minLength": 1, "description": "Chapter title in this language." },
-    "scenes": {
+    "sections": {
       "type": "object",
-      "description": "Scene id to scene title in this language.",
+      "description": "Story-section id to that section's title in this language. Story sections divide the text and are not runtime Scenes.",
       "additionalProperties": { "type": "string", "minLength": 1 }
     },
     "segments": {

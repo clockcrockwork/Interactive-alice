@@ -3,8 +3,8 @@
 
 Checks performed:
   * every raw chapter file still matches the checksum recorded in its manifest
-  * each chapter structure has unique, ascending segment ids and known scenes
-  * each locale file covers exactly the structure's scenes and segments
+  * each chapter structure has unique, ascending segment ids and known sections
+  * each locale file covers exactly the structure's sections and segments
   * every line of visible text is one short sentence within the locale's budget
 
 Usage:
@@ -80,9 +80,9 @@ def check_chapter(structure_path: Path, config: dict, errors: list[str], notes: 
     chapter = structure["chapter"]
     prefix = f"ch{chapter:02d}"
 
-    scene_ids = [scene["id"] for scene in structure["scenes"]]
-    if len(set(scene_ids)) != len(scene_ids):
-        errors.append(f"{structure_path.name}: duplicate scene ids")
+    section_ids = [section["id"] for section in structure["sections"]]
+    if len(set(section_ids)) != len(section_ids):
+        errors.append(f"{structure_path.name}: duplicate section ids")
 
     seen: list[int] = []
     for segment in structure["segments"]:
@@ -94,8 +94,8 @@ def check_chapter(structure_path: Path, config: dict, errors: list[str], notes: 
         if seen and number <= seen[-1]:
             errors.append(f"{structure_path.name}: segment {segment['id']} is out of order")
         seen.append(number)
-        if segment["scene"] not in scene_ids:
-            errors.append(f"{structure_path.name}: {segment['id']} names unknown scene {segment['scene']!r}")
+        if segment["section"] not in section_ids:
+            errors.append(f"{structure_path.name}: {segment['id']} names unknown section {segment['section']!r}")
         if segment["kind"] in ("dialogue", "thought") and "speaker" not in segment:
             errors.append(f"{structure_path.name}: {segment['id']} is {segment['kind']} but has no speaker")
 
@@ -113,12 +113,10 @@ def check_chapter(structure_path: Path, config: dict, errors: list[str], notes: 
         if doc["chapter"] != chapter:
             errors.append(f"{label}: chapter field says {doc['chapter']!r}")
 
-        missing_scenes = [s for s in scene_ids if s not in doc["scenes"]]
-        extra_scenes = [s for s in doc["scenes"] if s not in scene_ids]
-        for scene in missing_scenes:
-            errors.append(f"{label}: missing scene title {scene}")
-        for scene in extra_scenes:
-            errors.append(f"{label}: unknown scene {scene}")
+        for section in (s for s in section_ids if s not in doc["sections"]):
+            errors.append(f"{label}: missing section title {section}")
+        for section in (s for s in doc["sections"] if s not in section_ids):
+            errors.append(f"{label}: unknown section {section}")
 
         missing = [s for s in structure_segments if s not in doc["segments"]]
         extra = [s for s in doc["segments"] if s not in structure_segments]

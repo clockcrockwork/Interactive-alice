@@ -1,0 +1,6 @@
+{
+  "story": "interactive-alice",
+  "scenes": [
+    { "id": "rabbit-hole", "file": "experience/scenes/rabbit-hole.scene.json" }
+  ]
+}

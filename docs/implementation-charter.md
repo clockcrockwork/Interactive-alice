@@ -15,6 +15,8 @@ Use these documents together:
 - [`product-principles.md`](product-principles.md) — product and experience principles.
 - [`scene-shot-model.md`](scene-shot-model.md) — Scene / Shot / Beat composition and progression model.
 - [`poc/rabbit-hole.md`](poc/rabbit-hole.md) — first executable acceptance criteria.
+- [`text-pipeline.md`](text-pipeline.md) — the narrative text and translation model.
+- [`text-experience-binding.md`](text-experience-binding.md) — how Scenes, Shots and Beats reference narrative text.
 - this document — what is fixed versus what an implementation agent may decide.
 
 For the Rabbit Hole PoC, the explicit Acceptance Criteria in `poc/rabbit-hole.md` and `scene-shot-model.md` are authoritative.
@@ -121,6 +123,8 @@ Do not build a universal renderer abstraction merely to make this theoretically 
 Narrative text, UI text, accessibility text, and scene mechanics must not be fused into one language-specific implementation.
 
 Text should be addressable semantically so that additional languages can be added without rebuilding the interaction engine.
+
+Concretely: narrative text is addressed by stable segment id, a Beat references those ids, and the words themselves are resolved per language at runtime. A story section in the text model is not a runtime Scene. See [`text-experience-binding.md`](text-experience-binding.md).
 
 ### 3.9 Accessibility and comfort are intentional modes
 

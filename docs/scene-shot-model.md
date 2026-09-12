@@ -213,7 +213,25 @@ The Rabbit Hole PoC does not pass unless:
 - [ ] resizing while inside or near a Shot boundary does not leave the Scene in an invalid composition;
 - [ ] adding another Shot later does not require redefining what a Scene means or rewriting global scroll semantics.
 
-## 11. Non-goals
+## 11. Narrative text is referenced, not embedded
+
+A Beat does not contain prose. It names the narrative **segment ids** it
+carries, and the runtime resolves those against the active language.
+
+One segment is one short sentence. A Beat may carry several segments, exactly
+one, or none at all, and a Shot groups whatever its Beats carry. So `Segment`
+in the text sense is not a synonym for `Beat`, and it is unrelated to the
+`Shot / Segment` naming used for composition in this document.
+
+The text's own divisions (its *story sections*) are editorial and do not have to
+line up with Scene boundaries: the Rabbit Hole Scene stages three story
+sections of chapter 1.
+
+The mapping files, their schemas, and the rules are defined in
+[`text-experience-binding.md`](text-experience-binding.md). Scene
+implementations read them; they never hardcode localized prose.
+
+## 12. Non-goals
 
 Do not build:
 

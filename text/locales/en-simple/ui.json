@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../schema/ui-strings.schema.json",
+  "locale": "en-simple",
+  "strings": {
+    "partPending": "Not in this language yet",
+    "localePartial": "Some parts ready",
+    "localeNone": "Not ready yet"
+  }
+}

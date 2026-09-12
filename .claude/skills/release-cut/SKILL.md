@@ -26,9 +26,7 @@ released. While CI is paused, run it locally and say so:
 npm run types:schema   # then check the working tree is unchanged
 npm run lint && npm run typecheck && npm test && npm run build
 npm run test:e2e
-python3 scripts/check-text.py
-python3 scripts/check-experience.py
-python3 scripts/check-frontend.py
+npm run check:data     # the three Python checkers, through the portable launcher
 npm run plan:fixture   # then check the fixture is unchanged
 ```
 
@@ -48,7 +46,8 @@ Then confirm the production constraints:
    is live; it does not itself deploy anything.
 2. Build that exact commit in a clean tree.
 3. Upload the artifact with the host's CLI: `lolipop deploy --project <id>`, from the
-   `dist/` directory. The framework is chosen when the project is created, once.
+   `dist/` directory. The framework is chosen when the project is created, once. The
+   CLI itself needs Node 22.12.0 or newer, which the `.nvmrc` pin satisfies.
 
 Never deploy from a working tree that is not the released commit, and never edit the
 live files by hand.

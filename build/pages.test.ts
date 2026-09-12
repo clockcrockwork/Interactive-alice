@@ -111,7 +111,46 @@ describe('publishability', () => {
         ?.html ?? '';
 
     // An English title inside a right-to-left page must not inherit that direction.
-    expect(entry).toContain('<span lang="en-simple" dir="ltr">');
+    expect(entry).toContain('<span class="entry__part-title" lang="en-simple" dir="ltr">');
+  });
+
+  it('says in this language why a part cannot be read', () => {
+    const project = withPendingFirstPart();
+    const entry =
+      generatePagesFrom(project).pages.find((page) => page.path === 'ja/index.html')?.html ?? '';
+    const strings = project.ui.get('ja');
+
+    // A data attribute is for a machine. A reader needs words, in their language.
+    expect(strings?.partPending).toBeTruthy();
+    expect(entry).toContain(`<span class="entry__part-status">${strings?.partPending}</span>`);
+  });
+
+  it('tells the home page which languages can be read', () => {
+    const partial = withPendingFirstPart();
+    const home =
+      generatePagesFrom(partial).pages.find((page) => page.path === 'index.html')?.html ?? '';
+
+    // Derived from the text, never from the registry's own status field. The words
+    // come from the locale's own file, so this cannot drift from what ships.
+    expect(home).toContain('data-locale="en-simple" data-availability="full"');
+    expect(home).toContain('data-locale="ja" data-availability="partial"');
+    expect(home).toContain(partial.ui.get('ja')?.localePartial ?? '');
+  });
+
+  it('says none at all when a language has no readable part', () => {
+    const none = withoutText('ja', 1);
+    const home =
+      generatePagesFrom(none).pages.find((page) => page.path === 'index.html')?.html ?? '';
+    expect(home).toContain('data-locale="ja" data-availability="none"');
+    expect(home).toContain(none.ui.get('ja')?.localeNone ?? '');
+    // Still linked: the entry exists and explains itself.
+    expect(home).toContain('href="./ja/"');
+  });
+
+  it('refuses to build when a locale has no UI copy', () => {
+    const broken = loadProject(root);
+    broken.ui.delete('ja');
+    expect(() => generatePagesFrom(broken)).toThrow(/no UI strings for ja/);
   });
 
   it('refuses to build when baseLocale does not name a locale in the registry', () => {

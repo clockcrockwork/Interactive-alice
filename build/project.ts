@@ -14,6 +14,7 @@ import type {
   ExperienceStoryFile,
   LocaleChapterFile,
   LocaleRegistry,
+  LocaleUIStrings,
 } from '../src/types/schema.ts';
 
 // Every shape below comes from schema/, generated into src/types/schema.ts by
@@ -23,6 +24,7 @@ export type SegmentMeta = ChapterStructureFile['segments'][number];
 export type ChapterText = LocaleChapterFile;
 export type Part = NonNullable<ExperienceStoryFile['parts']>[number];
 export type StoryFile = ExperienceStoryFile;
+export type UIStrings = LocaleUIStrings['strings'];
 
 export interface Project {
   /** The retelling every translation works from; missing text here is a hard error. */
@@ -34,6 +36,14 @@ export interface Project {
   structure: Map<number, SegmentMeta[]>;
   /** Chapter text by locale, then by chapter number. */
   text: Map<string, Map<number, ChapterText>>;
+  /**
+   * What the site itself says, per locale.
+   *
+   * Required for every locale, unlike chapter text: a language may be behind on the
+   * story, but the words around it cannot be half translated, or a reader meets a
+   * page that cannot explain itself.
+   */
+  ui: Map<string, UIStrings>;
 }
 
 const read = (root: string, ...parts: string[]): unknown =>
@@ -69,6 +79,21 @@ export function loadProject(root: string): Project {
     }
   }
 
+  const ui = new Map<string, UIStrings>();
+  for (const locale of Object.keys(localeFile.locales)) {
+    const path = join(root, 'text', 'locales', locale, 'ui.json');
+    if (!existsSync(path)) {
+      throw new Error(
+        `${locale} has no text/locales/${locale}/ui.json; the UI copy is not optional`,
+      );
+    }
+    const file = JSON.parse(readFileSync(path, 'utf8')) as LocaleUIStrings;
+    if (file.locale !== locale) {
+      throw new Error(`text/locales/${locale}/ui.json says locale ${file.locale}`);
+    }
+    ui.set(locale, file.strings);
+  }
+
   const structure = new Map<number, SegmentMeta[]>();
   const text = new Map<string, Map<number, ChapterText>>();
   for (const chapter of chapters) {
@@ -97,5 +122,6 @@ export function loadProject(root: string): Project {
     scenes,
     structure,
     text,
+    ui,
   };
 }

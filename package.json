@@ -15,11 +15,16 @@
     "format": "biome check --write .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest",
     "test:e2e": "playwright test --project=chromium-desktop",
-    "plan:fixture": "python3 scripts/show-scene.py --all --plan --json > tests/fixtures/plans.json",
+    "test:e2e:full": "playwright test",
     "types:schema": "node build/generate-types.mjs && biome check --write src/types/schema.ts",
-    "test:e2e:full": "playwright test"
+    "plan:fixture": "node build/python.mjs scripts/show-scene.py --all --plan --json > tests/fixtures/plans.json",
+    "check:text": "node build/python.mjs scripts/check-text.py",
+    "check:experience": "node build/python.mjs scripts/check-experience.py",
+    "check:frontend": "node build/python.mjs scripts/check-frontend.py",
+    "check:data": "npm run check:text && npm run check:experience && npm run check:frontend",
+    "scene": "node build/python.mjs scripts/show-scene.py",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

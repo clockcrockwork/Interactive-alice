@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { pythonCommand } from '../../build/python.ts';
+import { pythonCommand } from '../../build/python.mjs';
 import { planScene, type SceneMapping, type ScenePlan } from './pacing.ts';
 
 const root = fileURLToPath(new URL('../..', import.meta.url));

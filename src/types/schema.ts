@@ -338,3 +338,32 @@ export interface LocaleRegistry {
     };
   };
 }
+
+// ui-strings.schema.json
+/**
+ * The words the site itself says in one language, as opposed to the words of the story. Every locale in text/locales.json must have this file in full: a language may be behind on chapters, but the chrome around the story cannot be half translated. Keys are added only when something on screen needs them; see docs/text-pipeline.md.
+ */
+export interface LocaleUIStrings {
+  /**
+   * Optional editor hint; not part of the data.
+   */
+  $schema?: string;
+  /**
+   * Must equal the directory name, so a copied file cannot silently claim another language.
+   */
+  locale: string;
+  strings: {
+    /**
+     * Shown beside a part this language has no text for yet, on the story entry.
+     */
+    partPending: string;
+    /**
+     * Shown beside a language on the home page when some of its parts can be read and some cannot.
+     */
+    localePartial: string;
+    /**
+     * Shown beside a language on the home page when none of its parts can be read yet.
+     */
+    localeNone: string;
+  };
+}

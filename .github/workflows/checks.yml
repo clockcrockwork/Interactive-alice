@@ -15,15 +15,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Node, because the checkers are launched through build/python.mjs, which finds
+      # the interpreter by name rather than assuming one. No npm install is needed:
+      # the checkers and the launcher have no dependencies.
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python3 scripts/check-text.py
-      - run: python3 scripts/check-experience.py
-      - run: python3 scripts/check-frontend.py
+      - run: npm run check:data
       - name: the pacing fixture still matches the reference, for every scene
         run: |
-          python3 scripts/show-scene.py --all --plan --json > tests/fixtures/plans.json
+          npm run plan:fixture
           git diff --exit-code -- tests/fixtures/plans.json
 
   frontend:

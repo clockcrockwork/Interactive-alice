@@ -14,10 +14,10 @@ description: Implement or change a Scene, Shot, or Beat in the experience runtim
 ## Order of work
 
 1. **Start from the mapping, not the code.** Run
-   `python3 scripts/show-scene.py <scene> --locale <locale>` to read what the
+   `npm run scene -- <scene> --locale <locale>` to read what the
    scene actually says, and `--plan` to see the progress ranges it implies.
 2. **Change structure in the mapping file first** when shots or beats move. Then
-   run `python3 scripts/check-experience.py`. Never let code invent a shot the
+   run `npm run check:experience`. Never let code invent a shot the
    mapping does not list.
 3. **Derive ranges; do not type them.** Shot and beat ranges come from
    `weight × locale-normalized reading load`, exactly as `--plan` computes. Total
@@ -46,9 +46,9 @@ description: Implement or change a Scene, Shot, or Beat in the experience runtim
 ## Before pushing
 
 ```
-python3 scripts/check-experience.py
-python3 scripts/check-text.py
-python3 scripts/check-frontend.py
+npm run check:experience
+npm run check:text
+npm run check:frontend
 npm run lint && npm run typecheck && npm run build
 npm run test && npm run test:e2e
 ```

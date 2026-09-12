@@ -21,12 +21,17 @@ So production is an **artifact deploy**: `npm run build` runs here, and the resu
 (`lolipop deploy --project <id>`; the framework is chosen when the project is
 created). The site is plain files either way, so nothing about the output changes.
 
+The host's CLI needs Node 22.12.0 or newer to run. That is release tooling, not this
+project's runtime, so it does not narrow `engines`; the `.nvmrc` pin satisfies it
+anyway.
+
 Two consequences that shape everything below:
 
 - the host runs no install and no build for us, so its Node version does not enter
   this project's toolchain today. Revisit if source builds are ever adopted;
-- **npm only** stays the project's choice. It was originally the host's constraint;
-  now it is simply one package manager, one committed `package-lock.json`, and no
+- **npm only is this project's decision**, not a host constraint. It was recorded as
+  one, and that was wrong: the host's own documentation shows `pnpm` commands in its
+  build examples. One package manager, one committed `package-lock.json`, and no
   reason to add a second.
 
 Adopting a source build later, once the host builds Vite projects, is a deliberate
@@ -110,10 +115,8 @@ npm run typecheck
 npm test               # Vitest unit layer
 npm run build          # also prints bundle and media sizes
 npm run test:e2e       # Playwright, desktop Chromium; needs the build above
-python3 scripts/check-text.py
-python3 scripts/check-experience.py
-python3 scripts/check-frontend.py   # the project's own invariants
-python3 scripts/show-scene.py --all --plan --json        # then a diff check on the fixture
+npm run check:data     # the three Python checkers, through the portable launcher
+npm run plan:fixture   # then a diff check on the fixture
 ```
 
 The two diff checks matter as much as the tests: they are what stop the generated
@@ -146,8 +149,8 @@ in [`testing.md`](testing.md) must be current.
 
 ## 5. Dependencies
 
-- npm, because the host's build supports nothing else. `package-lock.json` is
-  committed and CI installs with `npm ci`.
+- npm, as this project's own choice rather than the host's requirement (§1).
+  `package-lock.json` is committed and CI installs with `npm ci`.
 - `package.json` carries `"private": true` and `"license": "UNLICENSED"`: the
   repository is private and nothing here is published to a registry.
 - Node is pinned in `.nvmrc`, and CI reads the pin rather than naming a version. See
@@ -170,7 +173,7 @@ package.json engines   >=22 <23      every host that installs before it builds
 ```
 
 Three environments read one of those two files and never compare notes, so
-`python3 scripts/check-frontend.py` fails if they stop naming the same major
+`npm run check:frontend` fails if they stop naming the same major
 (`node-pin`). A dashboard setting is not a third source of truth: Vercel's project
 setting currently says `24.x`, and its build log shows the build running on 22
 because `engines` wins. That is the right outcome by accident, and the setting should

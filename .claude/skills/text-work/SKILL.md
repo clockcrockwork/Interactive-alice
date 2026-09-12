@@ -38,7 +38,7 @@ text/characters.json          every speaker a structure file may name
 2. Write `text/story/chNN.structure.json`: story sections, then one-sentence
    segments with `kind` and, for speech and thought, `speaker`.
 3. Write the `en-simple` text, then the translations.
-4. `python3 scripts/check-text.py`
+4. `npm run check:text`
 
 ## Adding a language
 
@@ -46,7 +46,7 @@ text/characters.json          every speaker a structure file may name
    keyword, whether its spaces are content, and its reading level in `notes`.
 2. Add `text/locales/<locale>/chNN.json` for each finished chapter, copying ids
    from the structure.
-3. `python3 scripts/check-text.py` — an untranslated chapter reports as todo, so a
+3. `npm run check:text` — an untranslated chapter reports as todo, so a
    language can ship chapter by chapter.
 
 No change here requires touching `experience/`, and none of it may mention

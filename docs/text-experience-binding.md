@@ -162,7 +162,7 @@ If browser testing later shows one language genuinely reads rushed, adjust with 
 locale-aware reading-rate model. Do not reintroduce unbounded proportional
 scaling from raw character counts.
 
-`python3 scripts/show-scene.py rabbit-hole --plan` prints the ranges for every
+`npm run scene -- rabbit-hole --plan` prints the ranges for every
 locale and is the reference implementation of the formula above. A Scene runtime
 should derive its ranges the same way and must not keep a second shot list.
 
@@ -208,8 +208,8 @@ change silently is the reading order or a published segment id.
 ## 7. Checks
 
 ```
-python3 scripts/check-text.py          # the text layer on its own
-python3 scripts/check-experience.py    # the boundary: references, order, layer separation
+npm run check:text          # the text layer on its own
+npm run check:experience    # the boundary: references, order, layer separation
 ```
 
 Both validate every file against its schema first, then apply the rules above.

@@ -6,8 +6,11 @@
  * stands in for the browser's own behaviour.
  */
 
+import { fileURLToPath } from 'node:url';
 import type { Page, Route } from '@playwright/test';
 import { expect, test } from '@playwright/test';
+import { generatePagesFrom } from '../build/pages.ts';
+import { loadProject } from '../build/project.ts';
 import { pageGraph } from './manifest.ts';
 
 const parts = pageGraph().filter((page) => page.kind === 'part');
@@ -31,6 +34,16 @@ async function serveRewritten(page: Page, url: string, rewrite: (html: string) =
 
 const progressOf = (page: Page, scene: string) =>
   page.evaluate((id) => window.__alice?.snapshot(id)[0]?.progress ?? -1, scene);
+
+const sampleOf = (page: Page, scene: string) =>
+  page.evaluate((id) => {
+    const snapshot = window.__alice?.snapshot(id)[0];
+    return {
+      progress: snapshot?.progress ?? -1,
+      direction: snapshot?.direction ?? 9,
+      velocity: snapshot?.velocity ?? 9,
+    };
+  }, scene);
 
 const stateOf = (page: Page, scene: string) =>
   page.evaluate((id) => window.__alice?.snapshot(id)[0]?.state ?? '', scene);
@@ -133,6 +146,57 @@ test.describe('a document the runtime cannot stage', () => {
   });
 });
 
+/**
+ * `direction` means the way a reader is travelling. A value that arrives without
+ * anyone scrolling is a jump, and a jump has no direction and no speed.
+ */
+for (const entry of parts) {
+  const url = `${entry.url}?probe=1`;
+  const scene = entry.scenes?.[0] ?? '';
+
+  test(`${entry.url} calls a restore a jump, not a reverse`, async ({ page }) => {
+    await page.goto(url);
+    const { top, travel } = await geometryOf(page, scene);
+
+    await page.evaluate((to) => window.scrollTo(0, to), top + travel * 0.8);
+    await expect.poll(() => sampleOf(page, scene).then((s) => s.progress)).toBeCloseTo(0.8, 2);
+
+    // Away, moved, and back: the reader never scrolled upwards.
+    await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+    await page.evaluate((to) => window.scrollTo(0, to), top + travel * 0.1);
+    await page.evaluate(() => window.dispatchEvent(new Event('pageshow')));
+
+    await expect.poll(() => sampleOf(page, scene).then((s) => s.progress)).toBeCloseTo(0.1, 2);
+    const sample = await sampleOf(page, scene);
+    expect(sample.direction).toBe(0);
+    expect(sample.velocity).toBe(0);
+
+    // Real scrolling afterwards reads as real scrolling again.
+    await page.evaluate((to) => window.scrollTo(0, to), top + travel * 0.3);
+    await expect.poll(() => sampleOf(page, scene).then((s) => s.direction)).toBe(1);
+  });
+
+  test(`${entry.url} calls a seam jump a jump too`, async ({ page }) => {
+    await page.goto(url);
+    const { top, travel } = await geometryOf(page, scene);
+    await page.evaluate((to) => window.scrollTo(0, to), top + travel * 0.2);
+    await expect.poll(() => sampleOf(page, scene).then((s) => s.progress)).toBeCloseTo(0.2, 2);
+
+    await page.evaluate((id) => window.__alice?.setProgress(id, 0.7), scene);
+    let sample = await sampleOf(page, scene);
+    expect(sample.progress).toBeCloseTo(0.7, 6);
+    expect(sample.direction).toBe(0);
+    expect(sample.velocity).toBe(0);
+
+    // Releasing the hold returns to the document's own position, also without motion.
+    await page.evaluate((id) => window.__alice?.releaseProgress(id), scene);
+    await expect.poll(() => sampleOf(page, scene).then((s) => s.progress)).toBeCloseTo(0.2, 2);
+    sample = await sampleOf(page, scene);
+    expect(sample.direction).toBe(0);
+    expect(sample.velocity).toBe(0);
+  });
+}
+
 test.describe('a document where only one scene is broken', () => {
   test('stays readable as a whole rather than staging half of it', async ({ page }) => {
     test.skip(!first, 'no part pages in the manifest');
@@ -157,6 +221,60 @@ test.describe('a document where only one scene is broken', () => {
     await expect(lines).toHaveCount(target.segments?.length ?? 0);
     await expect(lines.first()).toBeVisible();
     await expect(lines.last()).toBeVisible();
+  });
+});
+
+test.describe('a language that is behind', () => {
+  // No published page is in this state: both languages are complete today. Rather
+  // than add a fake language to the site, the real generator is run over a project
+  // with one chapter taken away, and its pages are served at their own addresses.
+  const root = fileURLToPath(new URL('..', import.meta.url));
+  const behind = () => {
+    const project = loadProject(root);
+    project.text.get('ja')?.delete(1);
+    return project;
+  };
+
+  const serveGenerated = async (page: Page, path: string, url: string) => {
+    const html = generatePagesFrom(behind()).pages.find((candidate) => candidate.path === path);
+    if (!html) {
+      throw new Error(`the generator produced no ${path}`);
+    }
+    await serveRewritten(page, url, () => html.html);
+  };
+
+  test('says on its entry why a part cannot be read, and does not link it', async ({ page }) => {
+    const strings = behind().ui.get('ja')?.partPending ?? '';
+    await serveGenerated(page, 'ja/index.html', './ja/');
+    await page.goto('./ja/');
+
+    const item = page.locator('.entry__part[data-part="rabbit-hole"]');
+    await expect(item).toHaveAttribute('data-available', 'false');
+    await expect(item.locator('a')).toHaveCount(0);
+    await expect(item.locator('.entry__part-status')).toHaveText(strings);
+
+    // The title it cannot translate yet is shown in the base locale, and carries that
+    // language's own direction rather than inheriting this page's.
+    const title = item.locator('.entry__part-title');
+    await expect(title).toHaveAttribute('lang', 'en-simple');
+    await expect(title).toHaveAttribute('dir', 'ltr');
+  });
+
+  test('says on the home page that it cannot be read yet, and still links it', async ({ page }) => {
+    const strings = behind().ui.get('ja')?.localeNone ?? '';
+    await serveGenerated(page, 'index.html', './');
+    await page.goto('./');
+
+    const item = page.locator('.home__locale[data-locale="ja"]');
+    await expect(item).toHaveAttribute('data-availability', 'none');
+    await expect(item.locator('.home__status')).toHaveText(strings);
+    await expect(item.locator('.home__status')).toHaveAttribute('lang', 'ja');
+    await expect(item.locator('a')).toHaveAttribute('href', './ja/');
+
+    // The complete language says nothing, because there is nothing to warn about.
+    const full = page.locator('.home__locale[data-locale="en-simple"]');
+    await expect(full).toHaveAttribute('data-availability', 'full');
+    await expect(full.locator('.home__status')).toHaveCount(0);
   });
 });
 

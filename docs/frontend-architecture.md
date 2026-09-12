@@ -202,7 +202,7 @@ Two rules hold the division: a scene never reads the scroll position or measures
 window, and the runtime never decides what anything looks like. Appearance is CSS
 reacting to `--scene-progress`, `--progress` and `data-state`.
 
-Three contracts are now fixed, and changing them is a deliberate decision rather than
+Five contracts are now fixed, and changing them is a deliberate decision rather than
 an implementation detail:
 
 1. **Attach order.** Staged mode is applied, layout is flushed, and only then does a
@@ -217,12 +217,24 @@ an implementation detail:
    out of staging would still be laid out as if it were in it. Staging part of a
    document would mean moving the mode onto each scene, in CSS as well as in
    `attach.ts`; that is a change to make deliberately, not by accident.
-4. **The probe addresses scenes by id.** `setProgress(sceneId, progress)`,
+4. **Nothing on screen says a word that is not in the text layer.** Narrative text
+   comes from `text/locales/<locale>/chNN.json`, and the site's own labels from
+   `ui.json` beside it. A template or a runtime that needs a new word adds a key
+   there first; see `docs/text-pipeline.md` §4.
+5. **The probe addresses scenes by id.** `setProgress(sceneId, progress)`,
    `snapshot(sceneId?)`, `scenes()`. A document may host several scenes, and driving
    them all to one progress is a state real scrolling never produces.
 
-A fifth thing is decided rather than fixed: **the probe ships in production**.
-`?probe=1` installs a debug surface on the live site, and that is accepted for the
+Two more things are decided rather than fixed. **`direction` means reader movement.**
+A progress value that arrives without anyone scrolling — the first sync after mounting,
+a return from suspension or the back/forward cache, a seam jump, a release back to the
+real position, a geometry change — is published with `direction` and `velocity` of
+zero rather than the direction of the gap it closed. The driver keeps that as private
+state: no scene has yet needed to know *why* progress jumped, so `RuntimeContext` does
+not carry a `discontinuous` flag. The first renderer with a real need for the reason
+is what adds one.
+
+And **the probe ships in production**: `?probe=1` installs a debug surface on the live site, and that is accepted for the
 proof of concept with its limits written down. It can set progress, read a snapshot
 and switch optional layers off. It reads and writes no credential, storage or
 network, and it cannot change what the page says: the worst a visitor who finds it

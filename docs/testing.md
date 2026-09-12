@@ -46,11 +46,11 @@ asserts the TypeScript implementation produces it to within a tolerance far fine
 a pixel of scroll. The TypeScript side runs at build time, writing the spans into the
 markup as data attributes, so the browser never recomputes them.
 
-The Python interpreter for that comparison is resolved once, from `PYTHON` or the
-usual names, because `python3` is not what it is called everywhere and `npm test` has
-to run on any machine. The maintenance commands in `package.json` still name
-`python3` directly: they are run deliberately by whoever regenerates the fixture, not
-by the gate.
+Nothing names the interpreter. `build/python.mjs` finds it once, from `PYTHON` (a path
+to an executable) or the usual names, and everything that needs Python goes through
+it: the unit test, the npm scripts, the workflow, and the commands in the documents.
+`python3` is not what it is called everywhere, and a gate that passes or fails by
+operating system is not a gate.
 
 A scene that stages no text has no place in that fixture, because no such scene
 exists yet in the story. Its formula is covered instead by a unit test that calls the
@@ -99,6 +99,12 @@ The full suite covers, per scene:
 - a right-to-left rendering of a real page, served with its direction flipped, so
   logical layout is proven before a right-to-left language is registered rather than
   after;
+- a language that is behind: the real generator is run over a project with a chapter
+  removed and its pages are served at their own addresses, so the entry's unavailable
+  part and the home page's note are covered in a browser without publishing a fake
+  language;
+- a jump is not movement: after a restore or a seam jump, `direction` and `velocity`
+  are zero, and real scrolling afterwards reads as real scrolling again;
 - no console errors, unhandled rejections, or failed requests in any of the above.
 
 ## 3. The runtime must be testable on purpose

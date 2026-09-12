@@ -123,7 +123,7 @@ Scrolling backward must rewind the scene cleanly. Core scene state must not depe
 Shot ranges come from the staging weights in the mapping file and the reading
 load of the staged text, per the formula in
 [`../text-experience-binding.md`](../text-experience-binding.md).
-`python3 scripts/show-scene.py rabbit-hole --plan` prints them, currently:
+`npm run scene -- rabbit-hole --plan` prints them, currently:
 
 ```text
 0.000 ─ 0.115  threshold

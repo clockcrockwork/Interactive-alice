@@ -9,14 +9,7 @@
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { planScene, type ScenePlan } from '../src/runtime/pacing.ts';
-import {
-  chaptersOf,
-  type LocaleSettings,
-  loadProject,
-  type Part,
-  type Project,
-  type SegmentMeta,
-} from './project.ts';
+import { chaptersOf, loadProject, type Part, type Project, type SegmentMeta } from './project.ts';
 
 export interface GeneratedPage {
   /** Path relative to the generated root, e.g. "ja/rabbit-hole/index.html". */
@@ -212,6 +205,10 @@ function renderLocaleEntry(
   if (!base) {
     throw new Error(`unknown base locale ${project.baseLocale}`);
   }
+  const strings = project.ui.get(locale);
+  if (!strings) {
+    throw new Error(`no UI strings for ${locale}`);
+  }
   const root = up(2);
   // Story order, always. Translations do not advance front to back, so listing what
   // is ready before what is not would reorder the story itself.
@@ -219,11 +216,12 @@ function renderLocaleEntry(
     .map((part) => {
       const ready = available.has(part.id);
       const body = ready
-        ? `<a href="./${part.id}/">${escapeHtml(partHeading(project, locale, part.scenes))}</a>`
-        : // The title has no translation yet, so it is shown in the base locale, with
-          // that language's own direction: an English title inside a right-to-left
-          // page must not be laid out right to left.
-          `<span lang="${project.baseLocale}" dir="${base.dir}">${escapeHtml(partHeading(project, project.baseLocale, part.scenes))}</span>`;
+        ? `<a class="entry__part-title" href="./${part.id}/">${escapeHtml(partHeading(project, locale, part.scenes))}</a>`
+        : // The title has no translation yet, so it is shown in the base locale with
+          // that language's own direction, and the reason is said in this language:
+          // an attribute is for a machine, and a reader needs words.
+          `<span class="entry__part-title" lang="${project.baseLocale}" dir="${base.dir}">${escapeHtml(partHeading(project, project.baseLocale, part.scenes))}</span>` +
+          `<span class="entry__part-status">${escapeHtml(strings.partPending)}</span>`;
       return `        <li class="entry__part" data-part="${part.id}" data-available="${ready}">${body}</li>`;
     })
     .join('\n');
@@ -233,7 +231,7 @@ function renderLocaleEntry(
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>${PROJECT_NAME}</title>
+    <title>${escapeHtml(settings.nativeName)} · ${PROJECT_NAME}</title>
     <link rel="icon" href="${root}assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="${root}styles/base.css" />
   </head>
@@ -249,16 +247,42 @@ ${links}
 `;
 }
 
-function renderHome(project: Project, locales: readonly string[]): string {
+/** How much of the story one language can be read in today. */
+type Availability = 'full' | 'partial' | 'none';
+
+const availabilityOf = (ready: number, total: number): Availability =>
+  ready === total ? 'full' : ready === 0 ? 'none' : 'partial';
+
+function renderHome(
+  project: Project,
+  entries: readonly { locale: string; available: Part[] }[],
+): string {
   // One directory up from the generated root to the shared stylesheet.
   const root = up(1);
-  const links = locales
-    .map((locale) => [locale, project.locales[locale]] as const)
-    .filter((pair): pair is [string, LocaleSettings] => pair[1] !== undefined)
-    .map(
-      ([locale, settings]) =>
-        `        <li><a href="./${locale}/" lang="${locale}" dir="${settings.dir}">${escapeHtml(settings.nativeName)}</a></li>`,
-    )
+  const links = entries
+    .map(({ locale, available }) => {
+      const settings = project.locales[locale];
+      if (!settings) {
+        throw new Error(`unknown locale ${locale}`);
+      }
+      const strings = project.ui.get(locale);
+      if (!strings) {
+        throw new Error(`no UI strings for ${locale}`);
+      }
+      const state = availabilityOf(available.length, project.parts.length);
+      // A reader should know before clicking. The note is in the language it is
+      // about, so it reads to the person who would choose that language.
+      const note =
+        state === 'full'
+          ? ''
+          : `<span class="home__status" lang="${locale}" dir="${settings.dir}">${escapeHtml(
+              state === 'none' ? strings.localeNone : strings.localePartial,
+            )}</span>`;
+      return (
+        `        <li class="home__locale" data-locale="${locale}" data-availability="${state}">` +
+        `<a href="./${locale}/" lang="${locale}" dir="${settings.dir}">${escapeHtml(settings.nativeName)}</a>${note}</li>`
+      );
+    })
     .join('\n');
 
   return `<!doctype html>
@@ -343,6 +367,13 @@ export function generatePagesFrom(project: Project): PageGraph {
   // Python checkers, so the rule that exactly one language is the base has to hold
   // here too. Two bases would make "missing text is a hard error" depend on which
   // one a reader of the registry happened to mean.
+  // Checked before anything renders, so the failure names the cause rather than
+  // whichever page happened to need the words first.
+  for (const locale of locales) {
+    if (!project.ui.get(locale)) {
+      throw new Error(`no UI strings for ${locale}: text/locales/${locale}/ui.json is required`);
+    }
+  }
   const bases = locales.filter((name) => project.locales[name]?.role === 'base');
   if (bases.length !== 1) {
     throw new Error(
@@ -375,10 +406,7 @@ export function generatePagesFrom(project: Project): PageGraph {
 
   pages.push({
     path: 'index.html',
-    html: renderHome(
-      project,
-      entries.map((e) => e.locale),
-    ),
+    html: renderHome(project, entries),
   });
   manifest.push({ path: 'index.html', url: './', kind: 'home' });
 

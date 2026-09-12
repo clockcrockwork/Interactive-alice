@@ -11,9 +11,7 @@
 <!-- What you ran and what it said. Replace anything that does not apply. -->
 
 ```
-python3 scripts/check-text.py
-python3 scripts/check-experience.py
-python3 scripts/check-frontend.py
+npm run check:data
 npm run lint && npm run typecheck && npm run build
 npm test && npm run test:e2e
 ```

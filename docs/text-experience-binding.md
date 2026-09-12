@@ -134,19 +134,34 @@ shot range           = cumulative shot cost / total cost
 The minimum of one segment-equivalent per beat is what gives a textless beat, or
 a beat holding one short cry, real screen time.
 
-Two consequences matter to an implementer:
+Two things follow, and the difference between them matters:
 
-- **The shape is language-independent.** Normalizing by the locale's mean
-  sentence length means Japanese and English produce nearly the same ranges, so
-  a shot's dramatic proportion does not change with translation.
-- **The length is not.** The same 44 segments are 1660 characters in
-  `en-simple` and 832 in `ja`. Total scroll distance should scale with that
-  absolute figure, which makes pin height and the scroll end value
-  locale-dependent. Resize and layout code must treat them as computed values.
+- **Proportions are text-derived and language-independent.** Normalizing by the
+  locale's own mean sentence length means Japanese and English produce nearly the
+  same ranges, so a shot's dramatic proportion does not change with translation.
+- **Total scroll distance is not text-derived.** It is art-directed and owned by
+  the Scene runtime: one base distance shared by every locale, which the
+  normalized costs above then divide.
+
+Character counts never escape that ratio, because they are not a reading-time
+unit. The same 44 segments are 1660 characters in `en-simple` and 832 in `ja`,
+but one Japanese character carries far more than one English character, and
+English spends characters on spaces and spelling. Scaling physical scroll length
+by that figure would roughly double the English scene for no reading reason, and
+the distortion gets worse for Chinese, Korean or German.
+
+If browser testing later shows one language genuinely reads rushed, adjust with a
+**bounded** factor around the art-directed base, or introduce an explicit
+locale-aware reading-rate model. Do not reintroduce unbounded proportional
+scaling from raw character counts.
 
 `python3 scripts/show-scene.py rabbit-hole --plan` prints the ranges for every
 locale and is the reference implementation of the formula above. A Scene runtime
 should derive its ranges the same way and must not keep a second shot list.
+
+So the ownership line from §3 holds here too: the mapping owns identity and
+progress-neutral weights, and the runtime owns physical distance, easing and
+renderers.
 
 ## 5. Direction of knowledge
 
@@ -205,6 +220,13 @@ No Scene runtime, no TypeScript types, no easing curves, no renderer wiring. The
 PoC implementation owns those and will read these files; see
 [`poc/rabbit-hole.md`](poc/rabbit-hole.md).
 
-Known gaps, not yet addressed: `speaker` values have no character registry, and
-`text/locales.json` does not yet record writing direction or line-break policy
-(the Japanese text's phrase spaces are significant and must not be collapsed).
+Closed since the first draft: `speaker` values are validated against
+[`../text/characters.json`](../text/characters.json), and `text/locales.json` now
+records writing direction, the CSS line-break keyword, and whether spaces inside a
+segment are content. Japanese sets that last flag, so its phrase spaces must never
+be trimmed, collapsed, or re-wrapped.
+
+One honest caveat for a scene that animates per sentence: a segment is one line of
+text and normally one sentence, but a paired or repeated cry is deliberately kept
+as one segment. Four segments per language do that today, and
+`scripts/check-text.py` lists them as todo lines so the set stays visible.

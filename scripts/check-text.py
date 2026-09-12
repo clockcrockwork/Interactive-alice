@@ -2,11 +2,16 @@
 """Validate the text layer: raw sources, chapter structures, and locale files.
 
 Checks performed:
-  * every structure and locale file matches its schema in schema/
+  * every registry, structure and locale file matches its schema in schema/
   * every raw chapter file still matches the checksum recorded in its manifest
-  * each chapter structure has unique, ascending segment ids and known sections
+  * each chapter structure has unique, ascending segment ids, known sections, and
+    speakers that exist in the character registry
   * each locale file covers exactly the structure's sections and segments
-  * every line of visible text is one short sentence within the locale's budget
+  * every line of visible text stays inside the locale's budget and ends a sentence
+
+Segments holding more than one sentence are reported as todo rather than as
+errors: a repeated cry is deliberately one segment, but a scene that animates
+per sentence needs to know which ones they are.
 
 Usage:
     python3 scripts/check-text.py [--quiet]
@@ -29,6 +34,7 @@ RAW_DIR = REPO_ROOT / "text" / "raw"
 STORY_DIR = REPO_ROOT / "text" / "story"
 LOCALES_DIR = REPO_ROOT / "text" / "locales"
 LOCALES_CONFIG = REPO_ROOT / "text" / "locales.json"
+CHARACTERS = REPO_ROOT / "text" / "characters.json"
 SCHEMA_DIR = REPO_ROOT / "schema"
 
 SEGMENT_ID = re.compile(r"^ch(\d{2})\.s(\d{4})$")
@@ -61,12 +67,21 @@ def check_raw(errors: list[str]) -> None:
             )
 
 
-def check_sentence(label: str, text: str, max_chars: int, errors: list[str], sentence: bool = True) -> None:
+def check_sentence(
+    label: str,
+    text: str,
+    max_chars: int,
+    errors: list[str],
+    notes: list[str],
+    sentence: bool = True,
+) -> None:
     """Check one line of visible text; titles are phrases, so they skip the sentence rules."""
     if text != text.strip():
         errors.append(f"{label}: leading or trailing whitespace")
+    if "  " in text:
+        errors.append(f"{label}: double space; spacing inside a segment is content, so keep it single")
     if "\n" in text:
-        errors.append(f"{label}: contains a line break; one segment is one sentence")
+        errors.append(f"{label}: contains a line break; a segment is one line of text")
     if len(text) > max_chars:
         errors.append(f"{label}: {len(text)} characters exceeds the locale budget of {max_chars}")
     if not sentence:
@@ -75,12 +90,16 @@ def check_sentence(label: str, text: str, max_chars: int, errors: list[str], sen
         errors.append(f"{label}: does not end with sentence punctuation")
     internal = [m for m in INTERNAL_END.finditer(text) if not ABBREVIATION.search(text[: m.end()])]
     if internal:
-        # Repeated exclamations of the same short cry are allowed ("Thump! Thump!").
-        if len(text) > 40:
-            errors.append(f"{label}: looks like more than one sentence; split it into two segments")
+        notes.append(f"{label}: holds {len(internal) + 1} sentences")
 
 
-def check_chapter(structure_path: Path, config: dict, errors: list[str], notes: list[str]) -> None:
+def check_chapter(
+    structure_path: Path,
+    config: dict,
+    characters: set[str],
+    errors: list[str],
+    notes: list[str],
+) -> None:
     structure = load(structure_path)
     schema_errors = validate(
         structure, load(SCHEMA_DIR / "chapter-structure.schema.json"), structure_path.name
@@ -110,6 +129,11 @@ def check_chapter(structure_path: Path, config: dict, errors: list[str], notes: 
             errors.append(f"{structure_path.name}: {segment['id']} names unknown section {segment['section']!r}")
         if segment["kind"] in ("dialogue", "thought") and "speaker" not in segment:
             errors.append(f"{structure_path.name}: {segment['id']} is {segment['kind']} but has no speaker")
+        if "speaker" in segment and segment["speaker"] not in characters:
+            errors.append(
+                f"{structure_path.name}: {segment['id']} names speaker {segment['speaker']!r}, "
+                "which is not in text/characters.json"
+            )
 
     structure_segments = [segment["id"] for segment in structure["segments"]]
 
@@ -145,9 +169,9 @@ def check_chapter(structure_path: Path, config: dict, errors: list[str], notes: 
             errors.append(f"{label}: segments are not in structure order")
 
         budget = settings["maxChars"]
-        check_sentence(f"{label} title", doc["title"], budget, errors, sentence=False)
+        check_sentence(f"{label} title", doc["title"], budget, errors, notes, sentence=False)
         for segment_id, text in doc["segments"].items():
-            check_sentence(f"{label} {segment_id}", text, budget, errors)
+            check_sentence(f"{label} {segment_id}", text, budget, errors, notes)
 
 
 def main() -> int:
@@ -156,8 +180,17 @@ def main() -> int:
     args = parser.parse_args()
 
     config = load(LOCALES_CONFIG)
+    characters_doc = load(CHARACTERS)
     errors: list[str] = []
     notes: list[str] = []
+
+    errors += validate(config, load(SCHEMA_DIR / "locales.schema.json"), "text/locales.json")
+    errors += validate(characters_doc, load(SCHEMA_DIR / "characters.schema.json"), "text/characters.json")
+    if errors:
+        for error in errors:
+            print(f"error: {error}", file=sys.stderr)
+        return 1
+    characters = {character["id"] for character in characters_doc["characters"]}
 
     check_raw(errors)
 
@@ -165,7 +198,7 @@ def main() -> int:
     if not structures:
         errors.append("no chapter structure files found in text/story/")
     for structure_path in structures:
-        check_chapter(structure_path, config, errors, notes)
+        check_chapter(structure_path, config, characters, errors, notes)
 
     for note in notes:
         if not args.quiet:

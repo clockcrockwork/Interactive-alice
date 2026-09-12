@@ -137,6 +137,11 @@ Those numbers land close to the curve this document first suggested by hand,
 which is a good sign, but they are output rather than constants: they move when
 the text, a weight, or the active language changes. Do not paste them into code.
 
+The scene's **total** scroll distance is a separate, art-directed decision that
+the runtime owns. Use one base distance for every language for this PoC, let the
+normalized costs divide it, and judge in the browser whether either language
+reads rushed before considering a bounded locale adjustment.
+
 Each shot and beat may remap scene progress into its own local `0..1` interval.
 
 ### Alice anchor

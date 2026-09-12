@@ -85,8 +85,8 @@ def plan(scene: dict, locale: str) -> tuple[list[tuple[str, float, float]], int,
         for segment_id in beat["segments"]
     ]
     # One segment-equivalent is the average staged sentence in this language, so
-    # the shape of the plan stays comparable between languages while the total
-    # reading load, and therefore the scroll distance, does not.
+    # the shape of the plan stays comparable between languages. Character counts
+    # are not comparable across writing systems, so they never leave this ratio.
     mean = sum(len(text[segment_id]) for segment_id in staged) / len(staged)
 
     costs: list[float] = []
@@ -124,8 +124,11 @@ def show_plan(scene: dict) -> None:
     for locale in locales:
         _, total, mean = plans[locale]
         print(f"  {locale}: {total} characters staged, {mean:.1f} per segment on average")
-    print("\n  Ranges are normalized, so the shape is comparable across languages.")
-    print("  Scroll distance should scale with the character count, which is not.")
+    print("\n  Character counts are an authoring statistic, not a reading-time unit:")
+    print("  they are not comparable between writing systems, so they only ever")
+    print("  appear as a ratio against this locale's own mean.")
+    print("  Total scroll distance for the scene is art-directed and runtime-owned,")
+    print("  one base distance shared by every locale. See docs/text-experience-binding.md.")
 
 
 def main() -> int:

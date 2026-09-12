@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/clockcrockwork/Interactive-alice/schema/characters.schema.json",
+  "title": "Character registry",
+  "description": "Every speaker a chapter structure may name. Language-neutral: the id is what the text structure and the runtime use, and the label is for developers. A character's name as a visitor reads it lives inside the localized sentences, not here.",
+  "type": "object",
+  "required": ["characters"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string", "description": "Optional editor hint; not part of the data." },
+    "characters": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "devLabel": { "type": "string", "description": "Development and debug label only." },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}

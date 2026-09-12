@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/clockcrockwork/Interactive-alice/schema/experience-scene.schema.json",
+  "title": "Experience scene file",
+  "description": "Composition plan for one runtime Scene: its Shots, their Beats, and the narrative segment ids each Beat carries. Holds no visible text and no localized strings; text is fetched from text/locales/<locale>/ by segment id at runtime. A scene is not tied to one chapter: the chapters it draws from are derived from the referenced ids. See docs/text-experience-binding.md.",
+  "type": "object",
+  "required": ["id", "shots"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string", "description": "Optional editor hint; not part of the data." },
+    "id": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "Scene id, unique across the story." },
+    "devLabel": { "type": "string", "description": "Development and debug label only. Never shown to a visitor, never translated." },
+    "shots": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Shots in progression order. A Shot is one way of presenting part of the Scene; see docs/scene-shot-model.md.",
+      "items": {
+        "type": "object",
+        "required": ["id", "beats"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "Shot id, unique within the scene." },
+          "devLabel": { "type": "string" },
+          "weight": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "description": "Staging weight: how much longer or shorter this shot should run than its reading load alone would suggest. Relative and progress-neutral, never a scroll distance or a duration. Defaults to 1."
+          },
+          "beats": {
+            "type": "array",
+            "minItems": 1,
+            "description": "Beats in progression order. A Beat is a timing unit; it may carry several segments, one, or none.",
+            "items": {
+              "type": "object",
+              "required": ["id", "segments"],
+              "additionalProperties": false,
+              "properties": {
+                "id": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "Beat id, unique within the scene. The addressable key is scene/shot/beat." },
+                "devLabel": { "type": "string" },
+                "weight": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "description": "Staging weight for this beat, same meaning as on a shot. Defaults to 1. A textless beat is held for one segment-equivalent times its weight."
+                },
+                "segments": {
+                  "type": "array",
+                  "description": "Segment ids, in reading order. Ids may come from more than one chapter. An empty array is valid: a beat may be pure staging with no text.",
+                  "items": { "type": "string", "pattern": "^ch[0-9]{2}\\.s[0-9]{4}$" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

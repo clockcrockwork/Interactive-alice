@@ -36,3 +36,30 @@ See:
 ## Status
 
 Specification / PoC planning.
+
+## Text and translation
+
+The story is kept in layers so that language is never baked into scene code: the
+untouched 1865 English in [`text/raw/`](text/raw/), a language-neutral sentence
+skeleton in `text/story/`, and one short sentence per language in
+`text/locales/<locale>/`. The experience refers to those sentences by stable id
+from `experience/`, so Scene, Shot and Beat composition holds no prose and no
+language.
+
+Visitors read a child-friendly retelling in short sentences, because the
+original 1865 text is not written for small children. The simplified English
+(`en-simple`) is the base text, and every other language is translated from it.
+Chapter 1 is complete in English and Japanese.
+
+- [`docs/text-pipeline.md`](docs/text-pipeline.md) — how the layers work, how to
+  add a language or a chapter, and the writing rules
+- [`docs/text-experience-binding.md`](docs/text-experience-binding.md) — how
+  Scenes, Shots and Beats reference the text, and why a story section is not a
+  runtime Scene
+- [`text/raw/SOURCE.md`](text/raw/SOURCE.md) — provenance and copyright status of
+  the source text
+- [`CREDITS.md`](CREDITS.md) — what this project is built on and the credit shown
+  in the experience
+- `python3 scripts/check-text.py` — validates the whole text layer
+- `python3 scripts/check-experience.py` — validates the experience layer's
+  references into it

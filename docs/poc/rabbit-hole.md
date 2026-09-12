@@ -85,6 +85,27 @@ Do not block this PoC on:
 
 ## 5. Scene model
 
+### Narrative text and shot identity
+
+`experience/scenes/rabbit-hole.scene.json` is the canonical list of this scene's
+shots, beats and text. It stages chapter 1 segments `ch01.s0200`–`ch01.s0630`
+across five shots, with two textless beats for the dream transition and the exit
+handoff. Read segment ids from that file and resolve the words per language; do
+not embed prose in motion code, and do not keep a second shot list in code. The
+contract is [`../text-experience-binding.md`](../text-experience-binding.md).
+
+The four narrative phases below are experience phases, not a second shot list.
+They map onto the mapping's shots like this:
+
+```text
+threshold   -> threshold
+drop        -> primary-fall
+deep fall   -> alice-focus + dreamy-fall
+exit        -> landing
+```
+
+The shot split itself is an initial mapping that PoC work may adjust.
+
 ### Scroll is the authoritative progression source
 
 The Rabbit Hole owns a normalized scene progress value:
@@ -97,18 +118,31 @@ Progress is derived from the scene's scroll range and is the authoritative input
 
 Scrolling backward must rewind the scene cleanly. Core scene state must not depend on a long sequence of irreversible one-shot callbacks.
 
-### Recommended internal beat ranges
+### Progress ranges are derived, not hardcoded
 
-These values are starting points, not visual constants:
+Shot ranges come from the staging weights in the mapping file and the reading
+load of the staged text, per the formula in
+[`../text-experience-binding.md`](../text-experience-binding.md).
+`python3 scripts/show-scene.py rabbit-hole --plan` prints them, currently:
 
 ```text
-0.00 ─ 0.12  threshold
-0.12 ─ 0.30  initial drop / acceleration
-0.30 ─ 0.82  deep fall / main spectacle
-0.82 ─ 1.00  exit / handoff
+0.000 ─ 0.115  threshold
+0.115 ─ 0.310  primary-fall
+0.310 ─ 0.567  alice-focus
+0.567 ─ 0.852  dreamy-fall
+0.852 ─ 1.000  landing
 ```
 
-Each beat may remap scene progress into its own local `0..1` interval.
+Those numbers land close to the curve this document first suggested by hand,
+which is a good sign, but they are output rather than constants: they move when
+the text, a weight, or the active language changes. Do not paste them into code.
+
+The scene's **total** scroll distance is a separate, art-directed decision that
+the runtime owns. Use one base distance for every language for this PoC, let the
+normalized costs divide it, and judge in the browser whether either language
+reads rushed before considering a bounded locale adjustment.
+
+Each shot and beat may remap scene progress into its own local `0..1` interval.
 
 ### Alice anchor
 

@@ -15,6 +15,8 @@ Use these documents together:
 - [`product-principles.md`](product-principles.md) — product and experience principles.
 - [`scene-shot-model.md`](scene-shot-model.md) — Scene / Shot / Beat composition and progression model.
 - [`poc/rabbit-hole.md`](poc/rabbit-hole.md) — first executable acceptance criteria.
+- [`text-pipeline.md`](text-pipeline.md) — the narrative text and translation model.
+- [`text-experience-binding.md`](text-experience-binding.md) — how Scenes, Shots and Beats reference narrative text.
 - this document — what is fixed versus what an implementation agent may decide.
 
 For the Rabbit Hole PoC, the explicit Acceptance Criteria in `poc/rabbit-hole.md` and `scene-shot-model.md` are authoritative.
@@ -70,14 +72,14 @@ The implementation must preserve the conceptual hierarchy:
 ```text
 Story
 └─ Scene
-   ├─ Shot / Segment
+   ├─ Shot
    │  └─ Beat
-   └─ Shot / Segment
+   └─ Shot
       └─ Beat
 ```
 
 - **Scene**: narrative/spatial unit and overall progression range.
-- **Shot / Segment**: presentation/composition unit inside a Scene.
+- **Shot**: presentation/composition unit inside a Scene.
 - **Beat**: smaller timing or event unit inside a Shot.
 
 A Scene must not imply one fixed camera, one fixed composition, or one renderer.
@@ -122,6 +124,8 @@ Narrative text, UI text, accessibility text, and scene mechanics must not be fus
 
 Text should be addressable semantically so that additional languages can be added without rebuilding the interaction engine.
 
+Concretely: narrative text is addressed by stable segment id, a Beat references those ids, and the words themselves are resolved per language at runtime. A story section in the text model is not a runtime Scene. See [`text-experience-binding.md`](text-experience-binding.md).
+
 ### 3.9 Accessibility and comfort are intentional modes
 
 At minimum, implementation must support a coherent `prefers-reduced-motion` interpretation and preserve usability when optional effects or advanced APIs are unavailable.
@@ -149,7 +153,7 @@ Unless an issue or acceptance criterion says otherwise, the implementation agent
 - build configuration details;
 - internal quality-tier representation;
 - lifecycle implementation details;
-- naming of `Shot` versus `Segment` in code;
+- internal naming of composition types, except that `Segment` stays reserved for the one-sentence narrative atom of the text layer;
 - whether a transition overlaps two renderer states or uses one persistent representation;
 - temporary placeholder composition used to validate motion before final visuals exist.
 

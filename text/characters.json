@@ -1,0 +1,7 @@
+{
+  "$schema": "../schema/characters.schema.json",
+  "characters": [
+    { "id": "alice", "devLabel": "Alice" },
+    { "id": "white-rabbit", "devLabel": "the White Rabbit" }
+  ]
+}

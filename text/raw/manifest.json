@@ -1,0 +1,114 @@
+{
+  "work": "Alice's Adventures in Wonderland",
+  "author": "Lewis Carroll",
+  "firstPublished": 1865,
+  "edition": "The Millennium Fulcrum Edition 3.0",
+  "source": {
+    "name": "Project Gutenberg",
+    "ebookId": 11,
+    "url": "https://www.gutenberg.org/files/11/11-0.txt",
+    "landingPage": "https://www.gutenberg.org/ebooks/11"
+  },
+  "language": "en",
+  "retrievedOn": "2026-09-12",
+  "processing": "Project Gutenberg header and footer removed; split per chapter; text otherwise unmodified.",
+  "sourceSha256": "a3a27f8edbf7fcd9b8ba8435494440e24952deaa3e2f2d65192d4cb7ca403754",
+  "chapters": [
+    {
+      "number": 1,
+      "roman": "I",
+      "title": "Down the Rabbit-Hole",
+      "file": "ch01-down-the-rabbit-hole.txt",
+      "characters": 11517,
+      "sha256": "da7ec7b772ccaad12efd9b818d1a876cb3e28a8c64e111e3452409744d4ede60"
+    },
+    {
+      "number": 2,
+      "roman": "II",
+      "title": "The Pool of Tears",
+      "file": "ch02-the-pool-of-tears.txt",
+      "characters": 10921,
+      "sha256": "17ace91e39013667b55e4db1a1b933f48157becdef7d6d660fc18a2580edfba5"
+    },
+    {
+      "number": 3,
+      "roman": "III",
+      "title": "A Caucus-Race and a Long Tale",
+      "file": "ch03-a-caucus-race-and-a-long-tale.txt",
+      "characters": 9216,
+      "sha256": "9754a50c2d1ccc7c3de1be39f2ee540ff52d7c3f97dc874c9b3beb6d4ab1f354"
+    },
+    {
+      "number": 4,
+      "roman": "IV",
+      "title": "The Rabbit Sends in a Little Bill",
+      "file": "ch04-the-rabbit-sends-in-a-little-bill.txt",
+      "characters": 13836,
+      "sha256": "ebe272b79e75a167c2a60dfa8e5c5ffdab732052122157d58e625f13cad8631a"
+    },
+    {
+      "number": 5,
+      "roman": "V",
+      "title": "Advice from a Caterpillar",
+      "file": "ch05-advice-from-a-caterpillar.txt",
+      "characters": 11972,
+      "sha256": "1728f2a84275cc6d2a7ea560cffd0772ad8abb13affa0b566444c835bbc32af2"
+    },
+    {
+      "number": 6,
+      "roman": "VI",
+      "title": "Pig and Pepper",
+      "file": "ch06-pig-and-pepper.txt",
+      "characters": 13815,
+      "sha256": "4ed693155b2ca0f9f7414cebe9f7f314ece69236fd918d3fb23d518c1a4c4c55"
+    },
+    {
+      "number": 7,
+      "roman": "VII",
+      "title": "A Mad Tea-Party",
+      "file": "ch07-a-mad-tea-party.txt",
+      "characters": 12672,
+      "sha256": "65cdb15353a922707054e34246302194592965e2ac5f58d71f6b1ded8bc02cb8"
+    },
+    {
+      "number": 8,
+      "roman": "VIII",
+      "title": "The Queen’s Croquet-Ground",
+      "file": "ch08-the-queens-croquet-ground.txt",
+      "characters": 13627,
+      "sha256": "e39339bf6fbc0ae642e8985a8aa3290411c882e6ec7caeaec8ee905ec032dc56"
+    },
+    {
+      "number": 9,
+      "roman": "IX",
+      "title": "The Mock Turtle’s Story",
+      "file": "ch09-the-mock-turtles-story.txt",
+      "characters": 12593,
+      "sha256": "83029a63d1624dec1376529f974b3e2af7e283e3ef81a90228f201af24848304"
+    },
+    {
+      "number": 10,
+      "roman": "X",
+      "title": "The Lobster Quadrille",
+      "file": "ch10-the-lobster-quadrille.txt",
+      "characters": 11376,
+      "sha256": "b82ada22378fd68aed5f893648be6a36f01b2cec9d8962a948c1f3dfe8ba2e0c"
+    },
+    {
+      "number": 11,
+      "roman": "XI",
+      "title": "Who Stole the Tarts?",
+      "file": "ch11-who-stole-the-tarts.txt",
+      "characters": 10352,
+      "sha256": "0f47490ccb2ea5703f9a8df94c0209d42b1ee43bda90f9445fa5c7ccf36c3f40"
+    },
+    {
+      "number": 12,
+      "roman": "XII",
+      "title": "Alice’s Evidence",
+      "file": "ch12-alices-evidence.txt",
+      "characters": 11613,
+      "sha256": "8eb6bd1ccdf2f9d3baea6ecf6c8d1f102a082a72aaca6b02094067ce65e9b85e"
+    }
+  ]
+}

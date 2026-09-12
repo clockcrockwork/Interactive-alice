@@ -30,6 +30,9 @@ description: Implement or change a Scene, Shot, or Beat in the experience runtim
    across every shot boundary.
 6. **Suspend what is off-screen.** A shot that is not visible must not keep a
    render loop doing real work.
+7. **Leave the seams in.** A development-only progress setter, seeded or disabled
+   randomness, flags for optional layers, and one serializable state snapshot. The
+   browser tests and the debug overlay both read them.
 
 ## Contracts that must not break
 
@@ -45,8 +48,14 @@ description: Implement or change a Scene, Shot, or Beat in the experience runtim
 ```
 python3 scripts/check-experience.py
 python3 scripts/check-text.py
+python3 scripts/check-frontend.py
 npm run lint && npm run typecheck && npm run build
+npm run test && npm run test:e2e
 ```
+
+Behaviour you changed needs its tests changed in the same work: the determinism
+test for any new shot boundary, and the golden fixture if the pacing formula moved.
+See `docs/testing.md` and the `test-work` skill.
 
 Then actually use the scene: forwards, backwards, at phone width, with reduced
 motion on, and with the optional interaction ignored. Frame behaviour claims need

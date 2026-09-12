@@ -10,9 +10,13 @@
 - Decorative layers are `aria-hidden="true"`. Interactive props are real buttons.
 - Every image has an `alt` that says what it contributes, or `alt=""` when it is
   decoration. Always set `width` and `height`, to reserve space.
-- No inline event handlers and no inline styles, except CSS custom properties
-  written by script (`style.setProperty('--fall', value)`), which is the intended
-  channel between JS and CSS.
+- No inline event handlers. No hand-written inline styles either, with two
+  deliberate exceptions: CSS custom properties written by script
+  (`style.setProperty('--fall', value)`), which is the intended channel between JS
+  and CSS, and **properties GSAP animates**, which it writes to `element.style` by
+  design. Inline styles outrank every `@layer` rule, so a scene must not expect a
+  layered rule to win against a live tween: drive what CSS should react to through a
+  custom property instead.
 - Narrative markup carries its segment id as `data-segment="ch01.s0200"`, so the
   debug overlay, audio, and highlighting all address text the same way.
 
@@ -66,14 +70,38 @@
 
 | Tool | Role |
 | --- | --- |
-| Biome | lint and format, one tool, fast enough to run on save |
+| Biome | lint and format for TS, JS, JSON and CSS; lint for HTML |
 | `tsc --noEmit` | typecheck |
-| Playwright | smoke tests, screenshots, a mobile-viewport pass |
+| Vitest | unit tests |
+| Playwright | browser tests, screenshots, a mobile-viewport pass |
 | Vite | dev server and production build |
+| `scripts/check-frontend.py` | the project's own invariants, which no linter can express |
 
 Formatting is not a matter of taste here: Biome decides, and nobody argues in
-review. Lint rules that fight the scene code get turned off deliberately, with a
-comment saying why, rather than suppressed line by line.
+review.
+
+### How lint stays strict
+
+- **Pinned version.** Biome is pinned exactly, because its rule set moves. An
+  upgrade is its own pull request, with the diff it causes.
+- **One command, both jobs.** `npm run lint` is `biome check`, covering format and
+  lint, and fails on any diagnostic. There is no "format later" state.
+- **Start from recommended, then ratchet.** Rules are added when a real pattern in
+  this codebase asks for one, not by enabling everything preemptively. Nursery
+  rules stay off until they have earned their place.
+- **Suppressions need a reason.** A `biome-ignore` carries a comment explaining
+  why; a rule turned off in the config carries the same in the config. A
+  suppression with no reason is a review comment.
+- **HTML.** Biome lints HTML, and its HTML *formatter* is experimental and opt-in.
+  The project either enables it explicitly and pins it, or states that HTML
+  formatting is a deliberate exception. It does not claim Biome formats everything.
+- **The project's own rules are checked by the repository, not the linter.** No
+  prose in code, no absolute asset paths, no second shot list, no hardcoded
+  progress ranges, no `window.scrollY` in a scene, no layout-triggering keyframes:
+  `scripts/check-frontend.py` owns these, runs in CI beside the text and experience
+  checkers, and grows as new invariants appear.
+- **Before a commit**, lint and format run locally rather than waiting for CI, so a
+  failing push is the exception.
 
 ## 6. Comments
 

@@ -39,12 +39,13 @@ The site is a static, multi-page build: plain HTML documents, hand-written CSS,
 TypeScript, GSAP for scroll-driven timelines, and cross-document View Transitions
 for smooth moves between pages. Output uses relative paths, so the same build runs
 at a domain root or in a subdirectory. Pull requests get a Vercel preview;
-production is published from a separate branch that the host deploys.
+production is built and deployed by the host from a separate branch.
 
 - [`docs/frontend-architecture.md`](docs/frontend-architecture.md) — stack, pages, routing
 - [`docs/code-conventions.md`](docs/code-conventions.md) — HTML, CSS, TypeScript
 - [`docs/performance-budget.md`](docs/performance-budget.md) — budgets, Core Web Vitals, comfort modes
 - [`docs/assets-and-audio.md`](docs/assets-and-audio.md) — generated images and music, synthesized sound
+- [`docs/testing.md`](docs/testing.md) — what is proven automatically, and what by hand
 - [`docs/deployment.md`](docs/deployment.md) — preview and production
 - [`CLAUDE.md`](CLAUDE.md) — the short list of rules, and where each decision lives
 

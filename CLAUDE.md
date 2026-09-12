@@ -20,18 +20,40 @@ the browser, readable in several languages, aimed at phones as well as desktops.
    becomes the only way forward.
 7. **Every motion has a reduced-motion version**, designed rather than disabled.
 8. **Budgets are part of done.** If a change grows one, say so in the PR.
+9. **Behaviour ships with its tests.** A runtime behaviour change with an untouched
+   test suite is incomplete. See `docs/testing.md`.
+10. **Motion and sound can be paused.** Looping animation and music need a visible
+    pause control, not only a mute.
+
+## Browser support target
+
+```text
+Baseline Widely available as of 2026-09-01
+```
+
+Fixed on purpose, so the target does not move underneath the project; change it
+deliberately in `docs/frontend-architecture.md` §6. Documented exceptions, used as
+progressive enhancement only: cross-document View Transitions, the Speculation
+Rules API, and any WebGL or device-motion work a Shot introduces.
+
+Chrome's Modern Web Guidance skills are expected to be installed alongside this
+repository for evergreen platform knowledge. They advise on the platform; the
+documents below remain authority for this project's own constraints.
 
 ## Commands
 
 ```
 python3 scripts/check-text.py          # text layer: schemas, parity, budgets
 python3 scripts/check-experience.py    # text/experience boundary: ids, order, layers
+python3 scripts/check-frontend.py      # the project's own front-end invariants
 python3 scripts/show-scene.py rabbit-hole --locale ja
 python3 scripts/show-scene.py rabbit-hole --plan    # derived progress ranges
 ```
 
-Front-end commands (`npm run dev`, `lint`, `typecheck`, `build`, `test:smoke`)
-arrive with the first implementation; see `docs/deployment.md` §4 for what CI runs.
+Front-end commands (`npm run dev`, `lint`, `typecheck`, `build`, `test`,
+`test:e2e`) arrive with the first implementation; `.github/workflows/checks.yml`
+runs them once `package.json` exists. npm only: the production host does not
+support pnpm or yarn.
 
 ## Where decisions live
 
@@ -43,7 +65,8 @@ arrive with the first implementation; see `docs/deployment.md` §4 for what CI r
 | The text and translation pipeline | `docs/text-pipeline.md` |
 | Build, routing, stack | `docs/frontend-architecture.md` |
 | Numbers and how they are measured | `docs/performance-budget.md` |
-| HTML / CSS / TS conventions | `docs/code-conventions.md` |
+| HTML / CSS / TS conventions, and how lint stays strict | `docs/code-conventions.md` |
+| What is tested, how, and by whom | `docs/testing.md` |
 | Images, music, sound effects | `docs/assets-and-audio.md` |
 | Preview and production deploy | `docs/deployment.md` |
 | First executable milestone | `docs/poc/rabbit-hole.md`, issue #1 |

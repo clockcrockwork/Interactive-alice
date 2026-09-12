@@ -46,6 +46,12 @@ asserts the TypeScript implementation produces it to within a tolerance far fine
 a pixel of scroll. The TypeScript side runs at build time, writing the spans into the
 markup as data attributes, so the browser never recomputes them.
 
+The Python interpreter for that comparison is resolved once, from `PYTHON` or the
+usual names, because `python3` is not what it is called everywhere and `npm test` has
+to run on any machine. The maintenance commands in `package.json` still name
+`python3` directly: they are run deliberately by whoever regenerates the fixture, not
+by the gate.
+
 A scene that stages no text has no place in that fixture, because no such scene
 exists yet in the story. Its formula is covered instead by a unit test that calls the
 Python reference directly with a synthetic scene and compares it to the TypeScript
@@ -87,7 +93,9 @@ The full suite covers, per scene:
   seam value without drawing, and on return publishes it **and** re-reads the real
   scroll position, so a held value can never survive as the document's position;
 - degradation: a story page whose scene markup cannot be driven carries
-  `data-degraded` and stays a readable document, rather than failing silently;
+  `data-degraded` and stays a readable document, rather than failing silently. One
+  broken scene among several is the same case: staging is all or nothing per
+  document, and a test covers exactly that mixture;
 - a right-to-left rendering of a real page, served with its direction flipped, so
   logical layout is proven before a right-to-left language is registered rather than
   after;

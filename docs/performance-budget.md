@@ -44,19 +44,24 @@ exceeded silently.
 Assets for the *next* scene never count against the current page, and never load
 before the current scene is interactive.
 
-### Baseline
+### Baseline, and what it is today
 
-With the scene runtime in place, before any placeholder art, FX layer, or audio:
+Gzip, from the build's own size report, before any placeholder art, FX layer or audio.
+The **baseline** column is the first measurement with the scene runtime in place; the
+**current** column is the same build after the review corrections. Every later figure
+is compared against the baseline, so growth has a cause rather than a surprise.
 
-| Page | HTML | CSS | JS |
-| --- | --- | --- | --- |
-| `/` | 0.4 KB | 0.7 KB | none |
-| `/<locale>/` | 0.4 KB | 0.7 KB | none |
-| `/<locale>/rabbit-hole/` | 2.2–2.4 KB | 1.3 KB | 2.2 KB |
+| Page | HTML | CSS | JS baseline | JS current |
+| --- | --- | --- | --- | --- |
+| `/` | 0.4 KB | 0.7 KB | none | none |
+| `/<locale>/` | 0.4 KB | 0.7 KB | none | none |
+| `/<locale>/rabbit-hole/` | 2.2–2.4 KB | 1.3 KB | 2.2 KB | 2.7 KB |
 
-Gzip, from the build's own size report. The scaffolding alone was 0.4 KB of JS, so the
-runtime cost 1.8 KB. Every later figure is compared against this, so growth has a
-cause rather than a surprise.
+The scaffolding alone was 0.4 KB of JS, so the runtime cost 1.8 KB to begin with. The
+0.5 KB since then bought the suspend and resume correction, the observable degraded
+mode, and the per-scene probe. Against the 120 KB budget in §2 this is noise, but it
+is recorded rather than rounded away: a runtime that grows every review round is worth
+noticing early.
 
 ## 3. Keeping interaction responsive
 

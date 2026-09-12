@@ -137,8 +137,11 @@ Publishability is derived from this layer, not declared by a flag:
   entry lists the parts it can be read in as links, and the ones it cannot as items
   marked `data-available="false"`, titled in the base locale because this language has
   no title for them yet;
-- the entry is also in `manifest.json`, with `parts` and `pending`, so a test or a
-  later index reads what a language offers instead of parsing HTML;
+- the entry is also in `manifest.json`, carrying every part **in story order** with an
+  `available` flag, so a test or a later index reads what a language offers instead of
+  parsing HTML, and reads it in the story's order. The entry markup is in the same
+  order: translation does not advance front to back, so a language may well have the
+  second part and not the first;
 - the **base locale** is the exception: missing text there is a hard error, since
   there is nothing for the other languages to be translated from;
 - the build logs every part it skipped and why, so a gap is visible rather than quiet.

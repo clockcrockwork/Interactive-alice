@@ -22,7 +22,7 @@ interface Prepared {
  * Console output is for whoever has the console open; `data-degraded` is what a test,
  * a support request or a later diagnostic can read off the page itself.
  */
-function degrade(story: HTMLElement, reason: 'markup' | 'mount' | 'partial'): void {
+function degrade(story: HTMLElement, reason: 'markup' | 'mount'): void {
   story.dataset.degraded = reason;
 }
 
@@ -35,8 +35,12 @@ export function attachStory(story: HTMLElement): SceneDriver[] {
       const track = scene.querySelector<HTMLElement>('[data-scene-track]');
       const stage = scene.querySelector<HTMLElement>('[data-scene-stage]');
       if (!track || !stage) {
-        // A scene without a track or a stage cannot be driven. The rest of the page
-        // still can, so it is left in flow and counted rather than thrown over.
+        // A scene without a track or a stage cannot be driven, and staging is a
+        // decision about the whole document: the stylesheet keys off `data-mode` on
+        // the story, so a scene left out of staging would still be laid out as if it
+        // were staged, and would become unreadable. So one unstageable scene means
+        // the document stays in flow. Staging part of a document would need the mode
+        // to move onto each scene, in CSS as well as here.
         unreadable += 1;
         continue;
       }
@@ -61,10 +65,13 @@ export function attachStory(story: HTMLElement): SceneDriver[] {
     return [];
   }
 
+  if (unreadable > 0) {
+    console.error(`Interactive Alice: ${unreadable} scene(s) cannot be staged`);
+    degrade(story, 'markup');
+    return [];
+  }
+
   if (prepared.length === 0) {
-    if (unreadable > 0) {
-      degrade(story, 'markup');
-    }
     return [];
   }
 
@@ -89,9 +96,6 @@ export function attachStory(story: HTMLElement): SceneDriver[] {
     return [];
   }
 
-  if (unreadable > 0) {
-    degrade(story, 'partial');
-  }
   story.dataset.ready = 'true';
   return mounted;
 }

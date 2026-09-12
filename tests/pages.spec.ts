@@ -33,12 +33,22 @@ for (const entry of pages.filter((page) => page.kind === 'locale')) {
     await page.goto(entry.url);
     await expect(page.locator('.entry')).toHaveAttribute('data-locale', entry.locale ?? '');
 
-    const parts = pages.filter(
-      (candidate) => candidate.kind === 'part' && candidate.locale === entry.locale,
-    );
-    await expect(page.locator('.entry__parts a')).toHaveCount(parts.length);
-    for (const part of parts) {
-      await expect(page.locator(`.entry__parts a[href="./${part.part}/"]`)).toHaveCount(1);
+    // The manifest carries every part in story order with its availability, so this
+    // covers a language that is behind on its own, the day the data has one.
+    const listed = entry.parts ?? [];
+    await expect(page.locator('.entry__part')).toHaveCount(listed.length);
+    expect(
+      await page.locator('.entry__part').evaluateAll((nodes) =>
+        nodes.map((node) => ({
+          id: (node as HTMLElement).dataset.part ?? '',
+          available: (node as HTMLElement).dataset.available === 'true',
+        })),
+      ),
+    ).toEqual(listed);
+
+    for (const part of listed) {
+      const link = page.locator(`.entry__parts a[href="./${part.id}/"]`);
+      await expect(link).toHaveCount(part.available ? 1 : 0);
     }
   });
 }

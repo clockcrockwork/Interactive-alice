@@ -133,6 +133,33 @@ test.describe('a document the runtime cannot stage', () => {
   });
 });
 
+test.describe('a document where only one scene is broken', () => {
+  test('stays readable as a whole rather than staging half of it', async ({ page }) => {
+    test.skip(!first, 'no part pages in the manifest');
+    const target = first as NonNullable<typeof first>;
+
+    // Staging is a decision about the document: the stylesheet keys off the story,
+    // so a scene left out of staging would be laid out as if it were in it. One
+    // scene that cannot be driven therefore leaves the whole document in flow.
+    await serveRewritten(page, target.url, (html) =>
+      html.replace(
+        '</main>',
+        '<div class="scene" data-scene="broken"><div class="shot" data-shot="s"></div></div></main>',
+      ),
+    );
+    await page.goto(target.url);
+
+    const story = page.locator('.story');
+    await expect(story).toHaveAttribute('data-degraded', 'markup');
+    await expect(story).not.toHaveAttribute('data-mode', 'scene');
+
+    const lines = page.locator('.line');
+    await expect(lines).toHaveCount(target.segments?.length ?? 0);
+    await expect(lines.first()).toBeVisible();
+    await expect(lines.last()).toBeVisible();
+  });
+});
+
 test.describe('back and forward', () => {
   test('restores the scroll position and the progress that follows from it', async ({ page }) => {
     test.skip(!first, 'no part pages in the manifest');

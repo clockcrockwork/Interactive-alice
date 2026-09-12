@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { pythonCommand } from '../../build/python.ts';
 import { planScene, type SceneMapping, type ScenePlan } from './pacing.ts';
 
 const root = fileURLToPath(new URL('../..', import.meta.url));
@@ -158,10 +159,16 @@ describe('a scene that stages no text', () => {
   });
 
   it('agrees with the Python reference', () => {
+    const [python, ...pythonArgs] = pythonCommand();
+    if (!python) {
+      throw new Error('no Python interpreter');
+    }
+
     const reference = JSON.parse(
       execFileSync(
-        'python3',
+        python,
         [
+          ...pythonArgs,
           '-c',
           [
             'import importlib.util, json, sys',

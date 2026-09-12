@@ -197,36 +197,36 @@ function partHeading(project: Project, locale: string, scenes: string[]): string
  * this language has text for are links; the rest are listed as not yet available,
  * titled in the base locale because this language has no title for them, and marked
  * `data-available="false"` so a test, a style or a later index can tell them apart.
+ * The list is in story order either way.
  */
 function renderLocaleEntry(
   project: Project,
   locale: string,
-  available: readonly Part[],
-  pending: readonly Part[],
+  available: ReadonlySet<string>,
 ): string {
   const settings = project.locales[locale];
   if (!settings) {
     throw new Error(`unknown locale ${locale}`);
   }
+  const base = project.locales[project.baseLocale];
+  if (!base) {
+    throw new Error(`unknown base locale ${project.baseLocale}`);
+  }
   const root = up(2);
-  const item = (part: Part, body: string, ready: boolean) =>
-    `        <li class="entry__part" data-part="${part.id}" data-available="${ready}">${body}</li>`;
-  const links = [
-    ...available.map((part) =>
-      item(
-        part,
-        `<a href="./${part.id}/">${escapeHtml(partHeading(project, locale, part.scenes))}</a>`,
-        true,
-      ),
-    ),
-    ...pending.map((part) =>
-      item(
-        part,
-        `<span lang="${project.baseLocale}">${escapeHtml(partHeading(project, project.baseLocale, part.scenes))}</span>`,
-        false,
-      ),
-    ),
-  ].join('\n');
+  // Story order, always. Translations do not advance front to back, so listing what
+  // is ready before what is not would reorder the story itself.
+  const links = project.parts
+    .map((part) => {
+      const ready = available.has(part.id);
+      const body = ready
+        ? `<a href="./${part.id}/">${escapeHtml(partHeading(project, locale, part.scenes))}</a>`
+        : // The title has no translation yet, so it is shown in the base locale, with
+          // that language's own direction: an English title inside a right-to-left
+          // page must not be laid out right to left.
+          `<span lang="${project.baseLocale}" dir="${base.dir}">${escapeHtml(partHeading(project, project.baseLocale, part.scenes))}</span>`;
+      return `        <li class="entry__part" data-part="${part.id}" data-available="${ready}">${body}</li>`;
+    })
+    .join('\n');
 
   return `<!doctype html>
 <html lang="${locale}" dir="${settings.dir}" data-line-break="${settings.lineBreak}" data-significant-spaces="${settings.significantSpaces}">
@@ -288,10 +288,12 @@ export interface PageEntry {
   kind: 'home' | 'locale' | 'part';
   locale?: string;
   part?: string;
-  /** On a locale entry: the parts this language can be read in today. */
-  parts?: string[];
-  /** On a locale entry: the parts it has no text for yet. */
-  pending?: string[];
+  /**
+   * On a locale entry: every part in story order, and whether this language can be
+   * read in it today. One ordered list rather than a readable set and a pending set,
+   * so the story's order survives the trip through the manifest.
+   */
+  parts?: { id: string; available: boolean }[];
   scenes?: string[];
   shots?: number;
   beats?: number;
@@ -325,7 +327,7 @@ export function generatePagesFrom(project: Project): PageGraph {
   const pages: GeneratedPage[] = [];
   const manifest: PageEntry[] = [];
   const skipped: PageGraph['skipped'] = [];
-  const entries: { locale: string; available: Part[]; pending: Part[] }[] = [];
+  const entries: { locale: string; available: Part[] }[] = [];
 
   const locales = Object.keys(project.locales);
   const base = project.locales[project.baseLocale];
@@ -337,10 +339,19 @@ export function generatePagesFrom(project: Project): PageGraph {
   if (base.role !== 'base') {
     throw new Error(`baseLocale ${project.baseLocale} has role ${base.role}, not base`);
   }
+  // Not only the checker's job: a remote build runs `npm run build` without the
+  // Python checkers, so the rule that exactly one language is the base has to hold
+  // here too. Two bases would make "missing text is a hard error" depend on which
+  // one a reader of the registry happened to mean.
+  const bases = locales.filter((name) => project.locales[name]?.role === 'base');
+  if (bases.length !== 1) {
+    throw new Error(
+      `exactly one locale may have role base, but ${bases.length} do: ${bases.join(', ')}`,
+    );
+  }
 
   for (const locale of locales) {
     const available: Part[] = [];
-    const pending: Part[] = [];
 
     for (const part of project.parts) {
       const missing = untranslated(project, locale, part.scenes);
@@ -351,14 +362,15 @@ export function generatePagesFrom(project: Project): PageGraph {
               `which ${part.id} stages`,
           );
         }
+        // Why it is missing lives here, for the build log; what is missing reaches
+        // the manifest as the availability flag on the ordered part list below.
         skipped.push({ locale, part: part.id, chapters: missing });
-        pending.push(part);
         continue;
       }
       available.push(part);
     }
 
-    entries.push({ locale, available, pending });
+    entries.push({ locale, available });
   }
 
   pages.push({
@@ -370,18 +382,20 @@ export function generatePagesFrom(project: Project): PageGraph {
   });
   manifest.push({ path: 'index.html', url: './', kind: 'home' });
 
-  for (const { locale, available, pending } of entries) {
+  for (const { locale, available } of entries) {
     pages.push({
       path: `${locale}/index.html`,
-      html: renderLocaleEntry(project, locale, available, pending),
+      html: renderLocaleEntry(project, locale, new Set(available.map((part) => part.id))),
     });
     manifest.push({
       path: `${locale}/index.html`,
       url: `./${locale}/`,
       kind: 'locale',
       locale,
-      parts: available.map((part) => part.id),
-      pending: pending.map((part) => part.id),
+      parts: project.parts.map((part) => ({
+        id: part.id,
+        available: available.includes(part),
+      })),
     });
 
     for (const part of available) {

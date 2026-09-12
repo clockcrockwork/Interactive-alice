@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import type { SceneMapping } from '../src/runtime/pacing.ts';
 import { escapeHtml, generatePages, generatePagesFrom, writePages } from './pages.ts';
 import { loadProject } from './project.ts';
 
@@ -16,6 +17,30 @@ const locales = Object.keys(project.locales);
 function withoutText(locale: string, chapter: number) {
   const project = loadProject(root);
   project.text.get(locale)?.delete(chapter);
+  return project;
+}
+
+/**
+ * The real project with a second part added ahead of the first in story order, which
+ * only the base locale has text for. The repository has one part today, so the order
+ * a mixed entry list comes out in cannot be observed without staging one.
+ */
+function withPendingFirstPart() {
+  const project = loadProject(root);
+  const scene: SceneMapping = {
+    id: 'later',
+    shots: [{ id: 'only', beats: [{ id: 'first', segments: ['ch02.s0010'] }] }],
+  };
+  project.scenes.set('later', scene);
+  project.structure.set(2, [{ id: 'ch02.s0010', section: 'pool', kind: 'narration' }]);
+  project.text.get('en-simple')?.set(2, {
+    locale: 'en-simple',
+    chapter: 2,
+    title: 'The Pool of Tears',
+    sections: { pool: 'The pool' },
+    segments: { 'ch02.s0010': 'Alice cried a great pool of tears.' },
+  } as never);
+  project.parts = [{ id: 'later', scenes: ['later'] }, ...project.parts] as typeof project.parts;
   return project;
 }
 
@@ -35,8 +60,7 @@ describe('publishability', () => {
     // The manifest says the same thing, so a test or a later index does not have to
     // parse HTML to find out what a language can be read in.
     const record = manifest.pages.find((page) => page.path === 'ja/index.html');
-    expect(record?.parts).toEqual([]);
-    expect(record?.pending).toEqual(['rabbit-hole']);
+    expect(record?.parts).toEqual([{ id: 'rabbit-hole', available: false }]);
     expect(manifest.pages.some((page) => page.kind === 'part' && page.locale === 'ja')).toBe(false);
     expect(skipped).toEqual([{ locale: 'ja', part: 'rabbit-hole', chapters: [1] }]);
 
@@ -59,6 +83,37 @@ describe('publishability', () => {
     );
   });
 
+  it('lists parts in story order whether or not they are available', () => {
+    const { pages } = generatePagesFrom(withPendingFirstPart());
+    const entry = pages.find((page) => page.path === 'ja/index.html')?.html ?? '';
+
+    // Translations do not advance front to back, so a language that has the second
+    // part but not the first must still present them in the story's order.
+    expect(entry.indexOf('data-part="later"')).toBeLessThan(
+      entry.indexOf('data-part="rabbit-hole"'),
+    );
+    expect(entry).toContain('data-part="later" data-available="false"');
+    expect(entry).toContain('data-part="rabbit-hole" data-available="true"');
+
+    const record = generatePagesFrom(withPendingFirstPart()).manifest.pages.find(
+      (page) => page.path === 'ja/index.html',
+    );
+    // Story order, availability alongside it, in one list.
+    expect(record?.parts).toEqual([
+      { id: 'later', available: false },
+      { id: 'rabbit-hole', available: true },
+    ]);
+  });
+
+  it('gives an untranslated title the base locale own direction', () => {
+    const entry =
+      generatePagesFrom(withPendingFirstPart()).pages.find((page) => page.path === 'ja/index.html')
+        ?.html ?? '';
+
+    // An English title inside a right-to-left page must not inherit that direction.
+    expect(entry).toContain('<span lang="en-simple" dir="ltr">');
+  });
+
   it('refuses to build when baseLocale does not name a locale in the registry', () => {
     const broken = loadProject(root);
     broken.baseLocale = 'en-simpel';
@@ -69,6 +124,16 @@ describe('publishability', () => {
     const broken = loadProject(root);
     broken.baseLocale = 'ja';
     expect(() => generatePagesFrom(broken)).toThrow(/baseLocale ja has role translation/);
+  });
+
+  it('refuses to build when two locales claim to be the base', () => {
+    // A remote build runs this and not the Python checkers, so the rule holds here.
+    const broken = loadProject(root);
+    const ja = broken.locales.ja;
+    if (ja) {
+      broken.locales = { ...broken.locales, ja: { ...ja, role: 'base' } };
+    }
+    expect(() => generatePagesFrom(broken)).toThrow(/exactly one locale may have role base/);
   });
 });
 

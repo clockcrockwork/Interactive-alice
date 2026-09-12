@@ -211,11 +211,17 @@ an implementation detail:
 2. **Travel comes from the elements.** The driver measures the track and the sticky
    stage, never `innerHeight`, so CSS stays the only place that picks a viewport unit.
    A phone's retracting toolbar moves `innerHeight` but not the stage.
-3. **The probe addresses scenes by id.** `setProgress(sceneId, progress)`,
+3. **Staging is a decision about the whole document.** Either every scene in a story
+   page is driven, or none is and the page stays the readable fallback carrying
+   `data-degraded`. The stylesheet keys off `data-mode` on the story, so a scene left
+   out of staging would still be laid out as if it were in it. Staging part of a
+   document would mean moving the mode onto each scene, in CSS as well as in
+   `attach.ts`; that is a change to make deliberately, not by accident.
+4. **The probe addresses scenes by id.** `setProgress(sceneId, progress)`,
    `snapshot(sceneId?)`, `scenes()`. A document may host several scenes, and driving
    them all to one progress is a state real scrolling never produces.
 
-A fourth thing is decided rather than fixed: **the probe ships in production**.
+A fifth thing is decided rather than fixed: **the probe ships in production**.
 `?probe=1` installs a debug surface on the live site, and that is accepted for the
 proof of concept with its limits written down. It can set progress, read a snapshot
 and switch optional layers off. It reads and writes no credential, storage or

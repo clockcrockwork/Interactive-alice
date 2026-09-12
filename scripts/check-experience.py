@@ -5,15 +5,17 @@ The experience layer plans composition: Story -> Scene -> Shot -> Beat, where a
 Beat names the narrative segments it carries. This checker guards the boundary
 between the two layers rather than the staging itself:
 
+  * every file matches its schema in schema/
   * every scene listed in experience/story.json exists and agrees on its id
   * shot and beat ids are unique inside a scene
-  * every referenced segment id exists in the chapter structure
+  * every referenced segment id exists in some chapter structure
   * a segment is referenced at most once in the whole story
-  * references never run backwards against the text's reading order
+  * references never run backwards against the text's reading order, across
+    scene boundaries as well as inside one scene
   * experience files carry no visible or localized text
-  * text files carry no experience concepts
+  * text files carry no experience concepts, at any nesting level
 
-Segments a scene skips are reported as todo lines, not errors: a beat may be
+Segments no scene stages are reported as todo lines, not errors: a beat may be
 pure staging, and a chapter is mapped scene by scene.
 
 Usage:
@@ -27,16 +29,17 @@ import json
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from jsonschema_lite import validate  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 STORY_FILE = REPO_ROOT / "experience" / "story.json"
+SCHEMA_DIR = REPO_ROOT / "schema"
 STRUCTURE_DIR = REPO_ROOT / "text" / "story"
 TEXT_DIR = REPO_ROOT / "text"
 
-SCENE_KEYS = {"id", "devLabel", "chapter", "shots"}
-SHOT_KEYS = {"id", "devLabel", "beats"}
-BEAT_KEYS = {"id", "devLabel", "segments"}
 # Keys that would mean visible text had leaked into the experience layer.
-TEXT_KEYS = {"text", "title", "label", "caption", "locale", "translations", "strings"}
+TEXT_KEYS = {"text", "title", "caption", "locale", "translations", "strings"}
 # Keys that would mean composition had leaked into the text layer.
 EXPERIENCE_KEYS = {"scene", "scenes", "shot", "shots", "beat", "beats"}
 
@@ -45,104 +48,41 @@ def load(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def structure_order(chapter: int, errors: list[str]) -> list[str]:
-    path = STRUCTURE_DIR / f"ch{chapter:02d}.structure.json"
-    if not path.exists():
-        errors.append(f"chapter {chapter} has no structure file at {path.relative_to(REPO_ROOT)}")
-        return []
-    return [segment["id"] for segment in load(path)["segments"]]
+def chapter_of(segment_id: str) -> int:
+    return int(segment_id[2:4])
 
 
-def check_keys(label: str, obj: dict, allowed: set[str], errors: list[str]) -> None:
-    for key in obj:
-        if key in TEXT_KEYS:
-            errors.append(
-                f"{label}: key {key!r} looks like visible text. "
-                "The experience layer references segment ids; text lives in text/locales/."
-            )
-        elif key not in allowed:
-            errors.append(f"{label}: unexpected key {key!r}")
-    if "devLabel" in obj and not obj["devLabel"].isascii():
-        errors.append(f"{label}: devLabel must stay ASCII; it is a debug label, not translated text")
+def reading_order(chapter: int, cache: dict[int, list[str]], errors: list[str]) -> list[str]:
+    """Segment ids of one chapter in reading order, loaded once."""
+    if chapter not in cache:
+        path = STRUCTURE_DIR / f"ch{chapter:02d}.structure.json"
+        if not path.exists():
+            errors.append(f"chapter {chapter} is referenced but has no structure file")
+            cache[chapter] = []
+        else:
+            cache[chapter] = [segment["id"] for segment in load(path)["segments"]]
+    return cache[chapter]
+
+
+def forbidden_keys(value, forbidden: set[str], label: str, problems: list[str]) -> None:
+    """Report forbidden keys anywhere in a document, not only at the top level."""
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if key in forbidden:
+                problems.append(f"{label}: key {key!r} belongs to the other layer")
+            forbidden_keys(child, forbidden, f"{label}.{key}", problems)
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            forbidden_keys(item, forbidden, f"{label}[{index}]", problems)
 
 
 def check_text_layer(errors: list[str]) -> None:
     """The text layer must not know how anything is staged."""
     for path in sorted(STRUCTURE_DIR.glob("*.json")) + sorted(TEXT_DIR.glob("locales/*/*.json")):
-        for key in EXPERIENCE_KEYS & set(load(path)):
-            errors.append(
-                f"{path.relative_to(REPO_ROOT)}: key {key!r} is an experience concept. "
-                "Scene, shot and beat composition belongs in experience/."
-            )
-
-
-def check_scene(entry: dict, owners: dict[str, str], errors: list[str], notes: list[str]) -> None:
-    path = REPO_ROOT / entry["file"]
-    if not path.exists():
-        errors.append(f"story.json lists a missing scene file: {entry['file']}")
-        return
-
-    scene = load(path)
-    label = entry["file"]
-    check_keys(label, scene, SCENE_KEYS, errors)
-
-    if scene.get("id") != entry["id"]:
-        errors.append(f"{label}: scene id {scene.get('id')!r} does not match story.json entry {entry['id']!r}")
-
-    chapter = scene["chapter"]
-    order = structure_order(chapter, errors)
-    position = {segment_id: index for index, segment_id in enumerate(order)}
-    prefix = f"ch{chapter:02d}."
-
-    shot_ids: set[str] = set()
-    beat_ids: set[str] = set()
-    referenced: list[str] = []
-
-    for shot in scene["shots"]:
-        check_keys(f"{label} shot {shot.get('id')}", shot, SHOT_KEYS, errors)
-        if shot["id"] in shot_ids:
-            errors.append(f"{label}: duplicate shot id {shot['id']!r}")
-        shot_ids.add(shot["id"])
-
-        for beat in shot["beats"]:
-            beat_label = f"{label} {shot['id']}/{beat.get('id')}"
-            check_keys(beat_label, beat, BEAT_KEYS, errors)
-            if beat["id"] in beat_ids:
-                errors.append(f"{label}: duplicate beat id {beat['id']!r}")
-            beat_ids.add(beat["id"])
-
-            for segment_id in beat["segments"]:
-                if not segment_id.startswith(prefix):
-                    errors.append(f"{beat_label}: {segment_id} is not from chapter {chapter}")
-                elif segment_id not in position:
-                    errors.append(f"{beat_label}: {segment_id} does not exist in the chapter structure")
-                elif segment_id in owners:
-                    errors.append(
-                        f"{beat_label}: {segment_id} is already carried by {owners[segment_id]}; "
-                        "a segment belongs to one beat"
-                    )
-                else:
-                    owners[segment_id] = beat_label
-                    referenced.append(segment_id)
-
-    indexes = [position[segment_id] for segment_id in referenced]
-    for earlier, later in zip(indexes, indexes[1:]):
-        if later < earlier:
-            errors.append(
-                f"{label}: {order[later]} is staged after {order[earlier]} but comes earlier in the text"
-            )
-
-    if indexes:
-        skipped = [
-            order[index]
-            for index in range(min(indexes), max(indexes) + 1)
-            if index not in set(indexes)
-        ]
-        if skipped:
-            notes.append(f"{label}: {len(skipped)} segment(s) inside its range are unstaged, first is {skipped[0]}")
-        notes.append(
-            f"{label}: stages {len(indexes)} segment(s), {order[min(indexes)]} to {order[max(indexes)]}"
-        )
+        problems: list[str] = []
+        forbidden_keys(load(path), EXPERIENCE_KEYS, path.relative_to(REPO_ROOT).as_posix(), problems)
+        for problem in problems:
+            errors.append(f"{problem}. Scene, shot and beat composition belongs in experience/.")
 
 
 def main() -> int:
@@ -158,16 +98,89 @@ def main() -> int:
         return 1
 
     story = load(STORY_FILE)
-    seen_scenes: set[str] = set()
+    story_schema = load(SCHEMA_DIR / "experience-story.schema.json")
+    scene_schema = load(SCHEMA_DIR / "experience-scene.schema.json")
+
+    errors += validate(story, story_schema, "experience/story.json")
+    if errors:
+        # Later checks assume the file is shaped correctly.
+        for error in errors:
+            print(f"error: {error}", file=sys.stderr)
+        return 1
+
+    chapters: dict[int, list[str]] = {}
     owners: dict[str, str] = {}
+    seen_scenes: set[str] = set()
+    stream: list[tuple[tuple[int, int], str, str]] = []
 
     for entry in story["scenes"]:
+        label = entry["file"]
         if entry["id"] in seen_scenes:
             errors.append(f"story.json: duplicate scene id {entry['id']!r}")
         seen_scenes.add(entry["id"])
-        check_scene(entry, owners, errors, notes)
+
+        path = REPO_ROOT / label
+        if not path.exists():
+            errors.append(f"story.json lists a missing scene file: {label}")
+            continue
+
+        scene = load(path)
+        scene_errors = validate(scene, scene_schema, label)
+        forbidden_keys(scene, TEXT_KEYS, label, scene_errors)
+        if scene_errors:
+            errors += scene_errors
+            continue
+
+        if scene["id"] != entry["id"]:
+            errors.append(f"{label}: scene id {scene['id']!r} does not match story.json entry {entry['id']!r}")
+
+        shot_ids: set[str] = set()
+        beat_ids: set[str] = set()
+
+        for shot in scene["shots"]:
+            if shot["id"] in shot_ids:
+                errors.append(f"{label}: duplicate shot id {shot['id']!r}")
+            shot_ids.add(shot["id"])
+
+            for beat in shot["beats"]:
+                where = f"{label} {shot['id']}/{beat['id']}"
+                if beat["id"] in beat_ids:
+                    errors.append(f"{label}: duplicate beat id {beat['id']!r}")
+                beat_ids.add(beat["id"])
+
+                for segment_id in beat["segments"]:
+                    chapter = chapter_of(segment_id)
+                    order = reading_order(chapter, chapters, errors)
+                    if segment_id not in order:
+                        errors.append(f"{where}: {segment_id} does not exist in the chapter structure")
+                    elif segment_id in owners:
+                        errors.append(
+                            f"{where}: {segment_id} is already carried by {owners[segment_id]}; "
+                            "a segment belongs to one beat"
+                        )
+                    else:
+                        owners[segment_id] = where
+                        stream.append(((chapter, order.index(segment_id)), segment_id, where))
+
+    # Reading order must hold across the whole story, in story.json scene order.
+    for (earlier_key, earlier_id, _), (later_key, later_id, later_where) in zip(stream, stream[1:]):
+        if later_key < earlier_key:
+            errors.append(
+                f"{later_where}: {later_id} is staged after {earlier_id} but comes earlier in the text"
+            )
 
     check_text_layer(errors)
+
+    for chapter in sorted(chapters):
+        order = reading_order(chapter, chapters, errors)
+        staged = [segment_id for segment_id in order if segment_id in owners]
+        if not order:
+            continue
+        unstaged = len(order) - len(staged)
+        notes.append(
+            f"chapter {chapter}: {len(staged)} of {len(order)} segments staged"
+            + (f", {unstaged} not in any scene yet" if unstaged else "")
+        )
 
     for note in notes:
         if not args.quiet:

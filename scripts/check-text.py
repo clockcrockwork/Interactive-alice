@@ -2,6 +2,7 @@
 """Validate the text layer: raw sources, chapter structures, and locale files.
 
 Checks performed:
+  * every structure and locale file matches its schema in schema/
   * every raw chapter file still matches the checksum recorded in its manifest
   * each chapter structure has unique, ascending segment ids and known sections
   * each locale file covers exactly the structure's sections and segments
@@ -20,11 +21,15 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from jsonschema_lite import validate  # noqa: E402
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = REPO_ROOT / "text" / "raw"
 STORY_DIR = REPO_ROOT / "text" / "story"
 LOCALES_DIR = REPO_ROOT / "text" / "locales"
 LOCALES_CONFIG = REPO_ROOT / "text" / "locales.json"
+SCHEMA_DIR = REPO_ROOT / "schema"
 
 SEGMENT_ID = re.compile(r"^ch(\d{2})\.s(\d{4})$")
 # A segment is one sentence, so terminal punctuation may only appear at the end.
@@ -77,6 +82,13 @@ def check_sentence(label: str, text: str, max_chars: int, errors: list[str], sen
 
 def check_chapter(structure_path: Path, config: dict, errors: list[str], notes: list[str]) -> None:
     structure = load(structure_path)
+    schema_errors = validate(
+        structure, load(SCHEMA_DIR / "chapter-structure.schema.json"), structure_path.name
+    )
+    if schema_errors:
+        # The checks below assume the file is shaped correctly.
+        errors += schema_errors
+        return
     chapter = structure["chapter"]
     prefix = f"ch{chapter:02d}"
 
@@ -108,6 +120,10 @@ def check_chapter(structure_path: Path, config: dict, errors: list[str], notes: 
             continue
         doc = load(path)
         label = f"{locale}/{prefix}.json"
+        schema_errors = validate(doc, load(SCHEMA_DIR / "locale-chapter.schema.json"), label)
+        if schema_errors:
+            errors += schema_errors
+            continue
         if doc["locale"] != locale:
             errors.append(f"{label}: locale field says {doc['locale']!r}")
         if doc["chapter"] != chapter:

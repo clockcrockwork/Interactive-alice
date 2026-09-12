@@ -15,13 +15,13 @@ The runtime therefore distinguishes **where we are in the story** from **how tha
 ```text
 Story
 └─ Scene
-   ├─ Shot / Segment
+   ├─ Shot
    │  ├─ Beat
    │  ├─ Beat
    │  └─ Beat
-   ├─ Shot / Segment
+   ├─ Shot
    │  └─ Beat
-   └─ Shot / Segment
+   └─ Shot
       └─ Beat
 ```
 
@@ -39,9 +39,9 @@ Examples:
 
 A Scene owns its overall scroll range, lifecycle, nearby asset loading, and handoff to the next Scene.
 
-### Shot / Segment
+### Shot
 
-A **Shot** (or implementation-level segment) is one way of presenting part of a Scene.
+A **Shot** is one way of presenting part of a Scene.
 
 A Shot may change:
 
@@ -58,7 +58,7 @@ A Shot may change:
 
 A Shot change does **not** imply a new story location.
 
-The term `Shot` is conceptual. The implementation may use a different name such as `segment` if that avoids implying a literal 3D camera.
+The term `Shot` is conceptual and the implementation may name its types differently, but **not** `Segment`: that word is reserved for the one-sentence narrative atom of the text layer. Using it for composition as well produced exactly the ambiguity this sentence now prevents.
 
 ### Beat
 
@@ -203,7 +203,7 @@ At least one Shot transition must be more than an instantaneous display swap: it
 
 The Rabbit Hole PoC does not pass unless:
 
-- [ ] the Rabbit Hole remains one Scene while containing at least three distinct Shot / segment states;
+- [ ] the Rabbit Hole remains one Scene while containing at least three distinct Shot states;
 - [ ] at least one Shot materially changes camera angle, framing, perspective, or dominant movement axis;
 - [ ] Shot-local progress is derived from the Scene's normalized progression rather than an unrelated page timeline;
 - [ ] scrolling backward across Shot boundaries reconstructs a coherent reverse transition;
@@ -219,13 +219,15 @@ A Beat does not contain prose. It names the narrative **segment ids** it
 carries, and the runtime resolves those against the active language.
 
 One segment is one short sentence. A Beat may carry several segments, exactly
-one, or none at all, and a Shot groups whatever its Beats carry. So `Segment`
-in the text sense is not a synonym for `Beat`, and it is unrelated to the
-`Shot / Segment` naming used for composition in this document.
+one, or none at all, and a Shot groups whatever its Beats carry. `Segment` is
+never a synonym for `Beat`, and never a name for a composition unit.
 
-The text's own divisions (its *story sections*) are editorial and do not have to
-line up with Scene boundaries: the Rabbit Hole Scene stages three story
-sections of chapter 1.
+The text's own divisions are editorial and do not have to line up with Scene
+boundaries. The Rabbit Hole Scene stages three story sections of chapter 1, and
+a Scene may cross chapter boundaries too when one location does.
+
+How long each Shot and Beat runs is derived from its staging weight and the
+reading load of its text in the active language, so pacing survives translation.
 
 The mapping files, their schemas, and the rules are defined in
 [`text-experience-binding.md`](text-experience-binding.md). Scene

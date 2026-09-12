@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../schema/locale-chapter.schema.json",
   "locale": "ja",
   "chapter": 1,
   "title": "うさぎの あなを おちて",

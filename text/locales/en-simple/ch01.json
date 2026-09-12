@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../schema/locale-chapter.schema.json",
   "locale": "en-simple",
   "chapter": 1,
   "title": "Down the Rabbit Hole",

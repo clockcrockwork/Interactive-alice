@@ -1,4 +1,5 @@
 {
+  "$schema": "../../schema/chapter-structure.schema.json",
   "chapter": 1,
   "sourceFile": "text/raw/ch01-down-the-rabbit-hole.txt",
   "sections": [

@@ -72,14 +72,14 @@ The implementation must preserve the conceptual hierarchy:
 ```text
 Story
 └─ Scene
-   ├─ Shot / Segment
+   ├─ Shot
    │  └─ Beat
-   └─ Shot / Segment
+   └─ Shot
       └─ Beat
 ```
 
 - **Scene**: narrative/spatial unit and overall progression range.
-- **Shot / Segment**: presentation/composition unit inside a Scene.
+- **Shot**: presentation/composition unit inside a Scene.
 - **Beat**: smaller timing or event unit inside a Shot.
 
 A Scene must not imply one fixed camera, one fixed composition, or one renderer.
@@ -153,7 +153,7 @@ Unless an issue or acceptance criterion says otherwise, the implementation agent
 - build configuration details;
 - internal quality-tier representation;
 - lifecycle implementation details;
-- naming of `Shot` versus `Segment` in code;
+- internal naming of composition types, except that `Segment` stays reserved for the one-sentence narrative atom of the text layer;
 - whether a transition overlaps two renderer states or uses one persistent representation;
 - temporary placeholder composition used to validate motion before final visuals exist.
 

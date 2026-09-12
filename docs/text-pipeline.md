@@ -135,12 +135,14 @@ It verifies the raw files against their checksums, the structure's ids and
 ordering, section and segment parity between every locale and the structure, and
 that each line of text is a single sentence within budget.
 
-`scripts/check-experience.py` covers the other side of the boundary: that the
-experience layer's segment references exist and stay in reading order.
+Both checkers validate every file against its schema in `schema/` before
+applying their own rules. `scripts/check-experience.py` covers the other side of
+the boundary: that the experience layer's segment references exist, are owned
+once, and stay in reading order across the whole scene list.
 
 ## 7. Status
 
 | Chapter | Structure | en-simple | ja | Experience mapping |
 | --- | --- | --- | --- | --- |
-| 1. Down the Rabbit-Hole | done | done | done | Rabbit Hole scene only (`s0200`–`s0630`) |
+| 1. Down the Rabbit-Hole | done | done | done | Rabbit Hole scene only (`s0200`–`s0630`, 44 of 137 segments) |
 | 2–12 | not started | not started | not started | not started |

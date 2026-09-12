@@ -8,7 +8,8 @@ the browser, readable in several languages, aimed at phones as well as desktops.
 1. **Never edit `text/raw/`.** It is the untouched 1865 source and is checksummed.
    Adapted text goes in `text/locales/<locale>/`.
 2. **No prose in code.** Scene code references segment ids; the words are resolved
-   per language. No sentence of any language appears in a `.ts` or `.css` file.
+   per language. No sentence of any language appears in a `.ts` or `.css` file. This
+   covers the site's own labels too: they live in `text/locales/<locale>/ui.json`.
 3. **One shot list.** `experience/scenes/<scene>.scene.json` is the only list of
    shots and beats. Code must not keep a second one, and must not hardcode
    progress ranges: they are derived (see the binding doc).
@@ -46,17 +47,33 @@ documents below remain authority for this project's own constraints.
 ## Commands
 
 ```
-python3 scripts/check-text.py          # text layer: schemas, parity, budgets
-python3 scripts/check-experience.py    # text/experience boundary: ids, order, layers
-python3 scripts/check-frontend.py      # the project's own front-end invariants
-python3 scripts/show-scene.py rabbit-hole --locale ja
-python3 scripts/show-scene.py rabbit-hole --plan    # derived progress ranges
+npm run check:data              # all three checkers
+npm run check:text              # text layer: schemas, parity, UI copy, budgets
+npm run check:experience        # text/experience boundary: ids, order, layers
+npm run check:frontend          # the project's own front-end invariants
+npm run scene -- rabbit-hole --locale ja
+npm run scene -- rabbit-hole --plan    # derived progress ranges
 ```
 
-Front-end commands (`npm run dev`, `lint`, `typecheck`, `build`, `test`,
-`test:e2e`) arrive with the first implementation; `.github/workflows/checks.yml`
-runs them once `package.json` exists. npm only: the production host does not
-support pnpm or yarn.
+```
+npm run dev           # Vite dev server; pages regenerate when text/ or experience/ changes
+npm run build         # static output in dist/, with size report
+npm run lint          # biome check: format and lint, fails on any diagnostic
+npm run typecheck
+npm test              # Vitest unit layer
+npm run test:e2e      # Playwright, desktop Chromium; build first, it serves dist/
+npm run test:e2e:full # adds phone, Firefox and WebKit; for milestones
+npm run types:schema  # regenerate src/types/schema.ts from schema/
+npm run plan:fixture  # regenerate the pacing golden fixture
+```
+
+npm only, as this project's own choice: one package manager, one lockfile. Python is
+launched through `node build/python.mjs`, never by name, so the gate runs on any
+operating system.
+
+**CI is paused for September 2026**: the account's runner minutes are exhausted, so
+queued runs fail in seconds without starting. Run the gate locally and say so in the
+pull request; see `docs/deployment.md` §4.
 
 ## Where decisions live
 

@@ -134,6 +134,13 @@ shot range           = cumulative shot cost / total cost
 The minimum of one segment-equivalent per beat is what gives a textless beat, or
 a beat holding one short cry, real screen time.
 
+A scene may stage no text at all, since a beat may hold zero segments and a purely
+visual scene is that all the way through. There is then no mean staged sentence to
+normalize by, so the statistic is reported as `null` rather than invented: every beat
+falls to the minimum hold, and the scene divides by weight alone. Nothing about a
+scene that mixes text and textless beats changes. A scene with no text is a legal
+composition, not a defect, so neither implementation may treat it as one.
+
 Two things follow, and the difference between them matters:
 
 - **Proportions are text-derived and language-independent.** Normalizing by the
@@ -155,7 +162,7 @@ If browser testing later shows one language genuinely reads rushed, adjust with 
 locale-aware reading-rate model. Do not reintroduce unbounded proportional
 scaling from raw character counts.
 
-`python3 scripts/show-scene.py rabbit-hole --plan` prints the ranges for every
+`npm run scene -- rabbit-hole --plan` prints the ranges for every
 locale and is the reference implementation of the formula above. A Scene runtime
 should derive its ranges the same way and must not keep a second shot list.
 
@@ -201,8 +208,8 @@ change silently is the reading order or a published segment id.
 ## 7. Checks
 
 ```
-python3 scripts/check-text.py          # the text layer on its own
-python3 scripts/check-experience.py    # the boundary: references, order, layer separation
+npm run check:text          # the text layer on its own
+npm run check:experience    # the boundary: references, order, layer separation
 ```
 
 Both validate every file against its schema first, then apply the rules above.

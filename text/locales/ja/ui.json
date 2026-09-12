@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../schema/ui-strings.schema.json",
+  "locale": "ja",
+  "strings": {
+    "partPending": "この ことばでは まだ よめません",
+    "localePartial": "いちぶ よめます",
+    "localeNone": "まだ よめません"
+  }
+}

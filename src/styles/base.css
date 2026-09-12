@@ -1,0 +1,119 @@
+@layer tokens, base, layout, scene, utilities;
+
+@import "./tokens.css";
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    color-scheme: light dark;
+    /* The locale registry records how this language may break lines. */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  html[data-line-break="strict"] {
+    /* Japanese carries authored phrase spaces, so keep breaking conservative and
+       let only an over-long single token break. */
+    line-break: strict;
+    word-break: normal;
+    overflow-wrap: break-word;
+  }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: system-ui, sans-serif;
+    line-height: var(--line-height);
+  }
+
+  h1 {
+    font-size: clamp(1.5rem, 1.1rem + 2vw, 2.5rem);
+    margin-block: 0 var(--space-3);
+    text-wrap: balance;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+}
+
+@layer layout {
+  .entry,
+  .home,
+  .story {
+    max-inline-size: var(--measure);
+    margin-inline: auto;
+    padding-block: var(--space-4);
+    padding-inline: var(--space-2);
+  }
+
+  .home__locales,
+  .entry__parts {
+    display: grid;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+    font-size: 1.25rem;
+  }
+
+  /*
+   * A language or a part that cannot be read yet says so, on its own line under the
+   * name it belongs to. Smaller and quieter than the name, never a colour alone: the
+   * words carry the meaning, so this still reads without them.
+   */
+  .home__locale,
+  .entry__part {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .home__status,
+  .entry__part-status {
+    color: var(--ink-soft);
+    font-size: 0.875rem;
+  }
+
+  .entry__part[data-available="false"] .entry__part-title {
+    color: var(--ink-soft);
+  }
+
+  .line {
+    margin-block: 0 var(--space-1);
+    text-wrap: pretty;
+  }
+
+  /*
+   * Some languages author their own spacing: Japanese puts spaces between phrases so a
+   * new reader can chunk a line. Those spaces are content, so they are preserved and
+   * the line is not re-balanced, which would move them. The locale registry decides,
+   * not the language.
+   */
+  html[data-significant-spaces="true"] .line {
+    white-space: break-spaces;
+    text-wrap: initial;
+  }
+
+  .line[data-kind="dialogue"],
+  .line[data-kind="thought"] {
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+
+  .beat {
+    margin-block-end: var(--space-2);
+  }
+
+  .shot {
+    margin-block-end: var(--space-3);
+  }
+}

@@ -7,7 +7,9 @@ between the two layers rather than the staging itself:
 
   * every file matches its schema in schema/
   * every scene listed in experience/story.json exists and agrees on its id
-  * shot and beat ids are unique inside a scene
+  * when documents (parts) are declared, each scene belongs to exactly one, in order
+  * shot and beat ids are unique inside their own namespace in a scene; a shot and a
+    beat may share a name, since a beat is addressed as scene/shot/beat
   * every referenced segment id exists in some chapter structure
   * a segment is referenced at most once in the whole story
   * references never run backwards against the text's reading order, across
@@ -83,6 +85,42 @@ def check_text_layer(errors: list[str]) -> None:
         forbidden_keys(load(path), EXPERIENCE_KEYS, path.relative_to(REPO_ROOT).as_posix(), problems)
         for problem in problems:
             errors.append(f"{problem}. Scene, shot and beat composition belongs in experience/.")
+
+
+def check_parts(story: dict, errors: list[str]) -> None:
+    """Documents group scenes. Flattened, they must be exactly the story's scenes, in order."""
+    parts = story.get("parts")
+    if not parts:
+        # The schema requires parts; this only runs if schema validation was skipped.
+        errors.append("story.json: parts are required, so every scene has a document")
+        return
+
+    order = [entry["id"] for entry in story["scenes"]]
+    flattened = [scene_id for part in parts for scene_id in part["scenes"]]
+
+    seen_parts: set[str] = set()
+    for part in parts:
+        if part["id"] in seen_parts:
+            errors.append(f"story.json: duplicate part id {part['id']!r}")
+        seen_parts.add(part["id"])
+
+    # Specific diagnostics first, because "not equal" alone is hard to act on.
+    for scene_id in flattened:
+        if scene_id not in order:
+            errors.append(f"story.json: parts name unknown scene {scene_id!r}")
+    for scene_id in order:
+        count = flattened.count(scene_id)
+        if count == 0:
+            errors.append(f"story.json: scene {scene_id!r} is in no part, so it has no page")
+        elif count > 1:
+            errors.append(f"story.json: scene {scene_id!r} is in {count} parts; it belongs to one")
+
+    # Then the whole contract in one comparison: same scenes, same order, no extras.
+    if flattened != order and not errors:
+        errors.append(
+            "story.json: the parts' scenes are not the story's scenes in order: "
+            f"{flattened} against {order}"
+        )
 
 
 def main() -> int:
@@ -169,6 +207,7 @@ def main() -> int:
                 f"{later_where}: {later_id} is staged after {earlier_id} but comes earlier in the text"
             )
 
+    check_parts(story, errors)
     check_text_layer(errors)
 
     for chapter in sorted(chapters):

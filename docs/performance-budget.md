@@ -30,7 +30,7 @@ one scene page. Shared chunks count once.
 | --- | --- | --- |
 | HTML | ≤ 20 KB | includes the page's own inlined text |
 | CSS | ≤ 30 KB | tokens plus the scene's own sheet |
-| JS, first load | ≤ 120 KB | split roughly: GSAP + ScrollTrigger ≈ 50 KB, runtime ≈ 25 KB, the scene ≈ 45 KB |
+| JS, first load | ≤ 120 KB | today: runtime ≈ 3 KB and no library. If a Shot later needs GSAP, about 50 KB of this budget goes to it, leaving roughly 25 KB for the runtime and 45 KB for scenes |
 | images, critical | ≤ 400 KB | what the first viewport needs; AVIF first is a measurement, not a law, since its decode can be slower than WebP on low-end phones |
 | images, whole scene | ≤ 1.5 MB | lazily loaded, not in the critical path |
 | audio per scene | ≤ 700 KB | BGM loop, fetched after the first interaction |
@@ -43,6 +43,26 @@ exceeded silently.
 
 Assets for the *next* scene never count against the current page, and never load
 before the current scene is interactive.
+
+### Baseline, and what it is today
+
+Gzip, from the build's own size report, before any placeholder art, FX layer or audio.
+The **baseline** column is the first measurement with the scene runtime in place; the
+**current** column is the same build after the review corrections. Every later figure
+is compared against the baseline, so growth has a cause rather than a surprise.
+
+| Page | HTML | CSS | JS baseline | JS current |
+| --- | --- | --- | --- | --- |
+| `/` | 0.4 KB | 0.8 KB | none | none |
+| `/<locale>/` | 0.5 KB | 0.8 KB | none | none |
+| `/<locale>/rabbit-hole/` | 2.2–2.4 KB | 1.4 KB | 2.2 KB | 2.7 KB |
+
+The scaffolding alone was 0.4 KB of JS, so the runtime cost 1.8 KB to begin with. CSS
+gained 0.06 KB for the availability notes on the entry and home pages. The 0.5 KB of
+JS since the baseline bought the suspend and resume correction, the observable degraded
+mode, and the per-scene probe. Against the 120 KB budget in §2 this is noise, but it
+is recorded rather than rounded away: a runtime that grows every review round is worth
+noticing early.
 
 ## 3. Keeping interaction responsive
 
@@ -61,10 +81,18 @@ For LCP, the entry scene's first meaningful asset is preloaded with an explicit
 until needed, and nothing in the critical path waits on an asset the first frame
 does not show.
 
-Back and forward navigation must stay cheap, which means each page stays eligible
-for the back/forward cache: no `unload` listener anywhere, the `AudioContext`
+Back and forward navigation must stay cheap, so each page is **designed** to stay
+eligible for the back/forward cache: no `unload` listener anywhere, the `AudioContext`
 suspended on `pagehide` and resumed on `pageshow`, and progression reconstructed
 from the restored scroll position rather than from an event that already fired.
+
+Eligibility itself is **not verified yet**. A headless browser decides on its own
+whether to keep a page, so `pageshow.persisted` is not a pass condition anywhere in
+the suite; in the runs to date it came back `false`. What is tested instead is the
+semantics a reader actually feels: after a back navigation the scroll position is
+restored and the scene's progress follows from it, whether the document was cached or
+rebuilt (`tests/resilience.spec.ts`). Real eligibility is measured with the DevTools
+back/forward cache tester on a deployed build before the first release.
 
 ## 4. Rules that protect the frame
 
@@ -110,6 +138,14 @@ A Lighthouse run has no user in it, so **it does not measure INP**. It reports
 total blocking time as a lab proxy, and real INP is a field metric. LCP and CLS it
 estimates usefully; INP it does not. Do not read a Lighthouse score as covering all
 three targets in §1.
+
+### Reaching the preview to measure it at all
+
+Previews are behind Vercel's Deployment Protection, so Lighthouse cannot fetch one by
+URL: every path answers `302`. The run carries the project's Automation Bypass secret
+as `x-vercel-protection-bypass`, supplied from a secret store at the time of the run;
+see [`deployment.md`](deployment.md) §1. A Lighthouse report against a `302` is a
+report about a redirect, not about the site, and must not be recorded as evidence.
 
 ### Pinning the measurement
 

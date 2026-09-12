@@ -18,11 +18,23 @@
 Vite (multi-page build)
 TypeScript
 HTML + CSS, hand-written, no UI framework
-GSAP + ScrollTrigger for scroll-driven timelines
+A sticky track for pinning, and one rAF loop for progress: no pinning library
+GSAP where a Shot needs a real timeline, added when that Shot exists
 Canvas 2D / WebGL only inside the Shot that needs it
 Biome for lint and format
-Playwright for smoke tests and screenshots
+Vitest for the pure layer, Playwright for the browser layer
 ```
+
+### Why no pinning library yet
+
+A tall track plus `position: sticky` gives the scene its scroll distance and holds the
+composition in the viewport, so the runtime only has to read one scroll offset and
+remap it. That is about twenty lines, it costs nothing, it survives scroll
+restoration, and it is deterministic enough to test headlessly.
+
+GSAP earns its place when a Shot needs sequenced, eased, interruptible timelines, and
+it is added then, with the budget cost stated in that pull request. Until then it is
+not a dependency: an unused 50 KB in the lockfile is a promise nobody checked.
 
 No site framework and no UI framework. Vite's multi-page mode takes several HTML
 entry points and emits plain static files, which is all "SSG" has to mean for
@@ -44,6 +56,11 @@ still loading, and every page is independently linkable and cacheable.
 /<locale>/<part>/     one part of the story, hosting one or more Scenes
 ```
 
+All three levels are generated from the data. Every registered language has an entry
+whether or not it can be read yet; only the part pages depend on the text existing.
+See [`text-pipeline.md`](text-pipeline.md) §4 for what an unfinished translation
+means for the site.
+
 The locale lives in the path, which keeps the static output free of negotiation
 logic and lets a CDN cache each language separately. No cookie, no redirect, no
 runtime language switch that rewrites the DOM: switching language navigates to the
@@ -64,6 +81,14 @@ Pages are generated at build time from `text/locales.json` and `experience/`, so
 adding a locale adds pages without anyone editing a page matrix, and a Scene
 cannot drift between the mapping and the file tree. There is no hand-maintained
 `pages/<locale>/<scene>/` directory of entry files.
+
+The generated tree is materialized whole on every build: it is cleared first, so a
+removed locale or part cannot leave a page behind that the dev server still serves.
+
+Which pages exist also depends on how far each translation has come. A part is
+generated for a language only when every chapter it stages has text there; the base
+locale is a hard error instead. The rule and its reasoning live in
+[`text-pipeline.md`](text-pipeline.md), because it is a property of the text layer.
 
 ### Crossing a document boundary with scroll alone
 
@@ -113,14 +138,20 @@ Consequences to respect in code:
 ## 5. Where the scene runtime sits
 
 ```text
+build/                                reads the data layers and generates the page graph
 src/
-  pages/                              page templates; the page graph is generated from data
+  entry/                              one module per page kind
   runtime/                            scene progress, lifecycle, viewport, capability context
   scenes/<scene>/                     one directory per Scene: shots, layers, its own CSS
   audio/                              BGM controller and the beep synthesizer
-  text/                               loads the binding output for a locale at build time
   styles/                             tokens, base, utilities
+  assets/                             icons and placeholder art
+  generated/                          written by the build; not in the repository
 ```
+
+The generator resolves each page's text for its locale and writes the derived shot
+and beat spans into the markup as data attributes, so the pacing formula runs once
+per build and the runtime reads the result instead of recomputing it.
 
 The runtime owns normalized progress, direction, velocity, viewport, reduced
 motion, and lifecycle, as listed in the charter. Scenes consume it. Shots are
@@ -136,10 +167,15 @@ formula.
 ## 6. Browser support: a fixed Baseline target
 
 The support contract is **Baseline Widely available as of 2026-09-01**, not a
-hand-written browser list. It is a checkable definition rather than an argument,
-it is encoded in the project's browserslist configuration so the build targets
-it, and the date is fixed so the target does not move underneath the project. It
-moves when someone changes it deliberately, in this document.
+hand-written browser list: a checkable definition rather than an argument.
+
+It is encoded as the build's transform target, `build.target:
+'baseline-widely-available'` in `vite.config.ts`, set explicitly rather than left to
+a default. The date is pinned by the exact Vite version in `package.json`, since
+that version owns the feature-to-browser mapping, so a Vite upgrade has to confirm
+the target in the same pull request. There is no browserslist configuration, because
+nothing in this stack reads one: Vite owns the transform and Biome does not consult
+it. Adding one would be decoration that can silently disagree with the real target.
 
 Anything newer is progressive enhancement, and the documented exceptions are
 cross-document View Transitions, the Speculation Rules API, and any WebGL or
@@ -147,16 +183,86 @@ device-motion work a Shot introduces. The scene must stay complete when each is
 missing. Nothing in the guaranteed path may depend on a feature outside the
 Baseline target.
 
-## 7. Testing and tooling
+## 7. What the runtime owns
+
+`src/runtime/` holds the parts every scene shares:
+
+| Module | Responsibility |
+| --- | --- |
+| `progress.ts` | the pure arithmetic: clamping, local progress, span state, direction, velocity |
+| `context.ts` | what a scene is told: progress, direction, velocity, viewport, reduced motion, quality tier, optional-layer flags |
+| `lifecycle.ts` | idle, mounted, active, suspended, destroyed, and the moves that are refused |
+| `scene-driver.ts` | scroll to progress, the frame loop, measurement on resize, suspend off-screen, remeasure on `pageshow` |
+| `stage.ts` | writes state onto the document as data attributes and custom properties |
+| `attach.ts` | the attach order: staged mode, flush layout, then measure and mount; marks `data-degraded` when it has to fall back |
+| `probe.ts` | the test seam, attached on `?probe=1` or in development |
+| `debug-overlay.ts` | development-only overlay, dropped from production bundles |
+
+Two rules hold the division: a scene never reads the scroll position or measures the
+window, and the runtime never decides what anything looks like. Appearance is CSS
+reacting to `--scene-progress`, `--progress` and `data-state`.
+
+Five contracts are now fixed, and changing them is a deliberate decision rather than
+an implementation detail:
+
+1. **Attach order.** Staged mode is applied, layout is flushed, and only then does a
+   driver measure. The track's scroll distance comes from CSS that applies only in
+   staged mode, so measuring first reads the flow layout. `attachStory` owns this.
+2. **Travel comes from the elements.** The driver measures the track and the sticky
+   stage, never `innerHeight`, so CSS stays the only place that picks a viewport unit.
+   A phone's retracting toolbar moves `innerHeight` but not the stage.
+3. **Staging is a decision about the whole document.** Either every scene in a story
+   page is driven, or none is and the page stays the readable fallback carrying
+   `data-degraded`. The stylesheet keys off `data-mode` on the story, so a scene left
+   out of staging would still be laid out as if it were in it. Staging part of a
+   document would mean moving the mode onto each scene, in CSS as well as in
+   `attach.ts`; that is a change to make deliberately, not by accident.
+4. **Nothing on screen says a word that is not in the text layer.** Narrative text
+   comes from `text/locales/<locale>/chNN.json`, and the site's own labels from
+   `ui.json` beside it. A template or a runtime that needs a new word adds a key
+   there first; see `docs/text-pipeline.md` §4.
+5. **The probe addresses scenes by id.** `setProgress(sceneId, progress)`,
+   `snapshot(sceneId?)`, `scenes()`. A document may host several scenes, and driving
+   them all to one progress is a state real scrolling never produces.
+
+Two more things are decided rather than fixed. **`direction` means reader movement.**
+A progress value that arrives without anyone scrolling — the first sync after mounting,
+a return from suspension or the back/forward cache, a seam jump, a release back to the
+real position, a geometry change — is published with `direction` and `velocity` of
+zero rather than the direction of the gap it closed. The driver keeps that as private
+state: no scene has yet needed to know *why* progress jumped, so `RuntimeContext` does
+not carry a `discontinuous` flag. The first renderer with a real need for the reason
+is what adds one.
+
+And **the probe ships in production**: `?probe=1` installs a debug surface on the live site, and that is accepted for the
+proof of concept with its limits written down. It can set progress, read a snapshot
+and switch optional layers off. It reads and writes no credential, storage or
+network, and it cannot change what the page says: the worst a visitor who finds it
+can do is move their own copy of the animation. It stays out of the way otherwise,
+since nothing installs without the query. Before the first public release this is
+re-decided, and the alternatives are a build-time flag that drops the seam from the
+production bundle, or a key the query has to carry.
+
+Still open, and fair for the PoC to change: how two scenes in one document hand over
+to each other, and how an overlapping transition between shots is represented. Both
+change data shapes, so they are decided before the staging work rather than during it.
+The runtime already drives several scenes per document, each with its own driver and
+its own suspension, but no published page carries two scenes yet: treat multi-scene
+support as implemented and not yet proven end to end until the two-scene fixture
+lands with that work.
+
+## 8. Testing and tooling
 
 Testing layers, the runtime's testability requirements, and who owns them are in
 [`testing.md`](testing.md). Lint, format and conventions are in
 [`code-conventions.md`](code-conventions.md). Build and publication are in
 [`deployment.md`](deployment.md).
 
-## 8. Open questions, deliberately unanswered here
+## 9. Open questions, deliberately unanswered here
 
 - the Scene runtime's exact interfaces, which issue #1 owns;
 - whether any Shot needs WebGL, which profiling decides;
 - where the document boundaries fall once there is more than one part;
-- whether a later boundary justifies a same-document transition.
+- whether a later boundary justifies a same-document transition;
+- the two items named above: scene-to-scene handoff inside one document, and how
+  overlapping shots are expressed in the mapping.

@@ -1,0 +1,21 @@
+@layer tokens {
+  :root {
+    /* Placeholder palette: the visual direction has not started yet. */
+    --ink: oklch(22% 0.02 270);
+    --ink-soft: oklch(45% 0.02 270);
+    --ground: oklch(96% 0.01 90);
+    --ground-deep: oklch(28% 0.03 270);
+
+    --space-1: 0.5rem;
+    --space-2: 1rem;
+    --space-3: 2rem;
+    --space-4: 4rem;
+
+    --measure: 34rem;
+    --line-height: 1.7;
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --duration-quick: 180ms;
+    --duration-calm: 420ms;
+  }
+}

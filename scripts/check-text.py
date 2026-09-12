@@ -3,6 +3,7 @@
 
 Checks performed:
   * every registry, structure and locale file matches its schema in schema/
+  * every locale has complete UI copy: the site's own words are never half translated
   * every raw chapter file still matches the checksum recorded in its manifest
   * each chapter structure has unique, ascending segment ids, known sections, and
     speakers that exist in the character registry
@@ -46,6 +47,65 @@ ABBREVIATION = re.compile(r"\b(Mr|Mrs|Ms|Dr|St)\.$")
 
 def load(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def check_registry(config: dict, errors: list[str]) -> None:
+    """The registry's own integrity, beyond what the schema can say.
+
+    The schema can require a `baseLocale` string and a `role` enum, but not that the
+    two agree. Without this check a typo in `baseLocale` names a language that does
+    not exist, and the rule that missing base text is a hard error quietly stops
+    applying to anything.
+    """
+    locales = config["locales"]
+    base = config["baseLocale"]
+    if base not in locales:
+        errors.append(
+            f"text/locales.json: baseLocale {base!r} is not one of the locales "
+            f"({', '.join(sorted(locales))})"
+        )
+    elif locales[base]["role"] != "base":
+        errors.append(
+            f"text/locales.json: baseLocale {base!r} has role "
+            f"{locales[base]['role']!r}, not 'base'"
+        )
+    declared = sorted(name for name, settings in locales.items() if settings["role"] == "base")
+    if len(declared) != 1:
+        errors.append(
+            "text/locales.json: exactly one locale may have role 'base', "
+            f"but {len(declared)} do ({', '.join(declared) or 'none'})"
+        )
+
+
+def check_ui(config: dict, errors: list[str]) -> None:
+    """Every locale's UI copy, in full.
+
+    Chapter text may be behind; the words the site says about itself may not. A
+    locale entry page exists for every registered language, and a page that cannot
+    explain why a part is missing is worse than no page.
+    """
+    schema = load(SCHEMA_DIR / "ui-strings.schema.json")
+    for locale, settings in config["locales"].items():
+        path = LOCALES_DIR / locale / "ui.json"
+        label = f"{locale}/ui.json"
+        if not path.exists():
+            errors.append(f"{label} is missing; every locale needs its UI copy")
+            continue
+        doc = load(path)
+        schema_errors = validate(doc, schema, label)
+        if schema_errors:
+            errors += schema_errors
+            continue
+        if doc["locale"] != locale:
+            errors.append(f"{label}: locale field says {doc['locale']!r}")
+        budget = settings["maxChars"]
+        for key, text in doc["strings"].items():
+            # A label is not a sentence, so the sentence rules do not apply; the
+            # per-locale budget still does, because it is a width budget.
+            if len(text) > budget:
+                errors.append(f"{label} {key}: {len(text)} characters, budget is {budget}")
+            if text != text.strip():
+                errors.append(f"{label} {key}: has leading or trailing space")
 
 
 def check_raw(errors: list[str]) -> None:
@@ -192,6 +252,8 @@ def main() -> int:
         return 1
     characters = {character["id"] for character in characters_doc["characters"]}
 
+    check_registry(config, errors)
+    check_ui(config, errors)
     check_raw(errors)
 
     structures = sorted(STORY_DIR.glob("ch*.structure.json"))
@@ -210,7 +272,10 @@ def main() -> int:
         print(f"\n{len(errors)} problem(s) found", file=sys.stderr)
         return 1
     if not args.quiet:
-        print(f"ok: {len(structures)} chapter(s), {len(config['locales'])} locale(s)")
+        print(
+            f"ok: {len(structures)} chapter(s), {len(config['locales'])} locale(s), "
+            "UI copy complete"
+        )
     return 0
 
 

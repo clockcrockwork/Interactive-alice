@@ -12,6 +12,7 @@ own, listed in CLAUDE.md, and each one has already been stated in a document:
   keyframe-layout  keyframes animate transform and opacity, not layout
   reduced-motion   a stylesheet with motion carries a reduced-motion block
   bfcache          nothing listens for unload, which would disqualify the page
+  node-pin         .nvmrc and package.json agree on one Node major
 
 A line may opt out with a trailing comment naming the rule and a reason:
 
@@ -30,7 +31,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SRC = REPO_ROOT / "src"
+ROOTS = ("src", "build", "tests")
 SCENES_DIR = REPO_ROOT / "experience" / "scenes"
 
 ALLOW = re.compile(r"check-frontend:\s*allow\s+([a-z-]+)")
@@ -38,7 +39,9 @@ ALLOW = re.compile(r"check-frontend:\s*allow\s+([a-z-]+)")
 CJK = re.compile(r"[぀-ヿ一-鿿]")
 ABSOLUTE = re.compile(r"""(?:src|href)\s*=\s*["']/|url\(\s*/|from\s+["']/""")
 SCROLL_READ = re.compile(r"window\.(?:scrollY|pageYOffset)|documentElement\.scrollTop")
-INLINE_STYLE = re.compile(r"\.style\.(?!setProperty)[A-Za-z]")
+# An assignment to a style property. Reading one, or calling getPropertyValue and
+# friends, is fine; writing a property other than a custom one is what GSAP owns.
+INLINE_STYLE = re.compile(r"\.style\.(?!setProperty|getPropertyValue|removeProperty)[A-Za-z_$][\w$]*\s*=")
 SET_PROPERTY_VAR = re.compile(r"setProperty\(\s*['\"]--")
 # A layout-triggering property, wherever it sits on the line.
 LAYOUT_PROPS = re.compile(
@@ -56,6 +59,21 @@ def shot_and_beat_ids() -> set[str]:
             ids.add(shot["id"])
             ids.update(beat["id"] for beat in shot["beats"])
     return ids
+
+
+GENERATED = REPO_ROOT / "src" / "generated"
+
+
+SCENES = REPO_ROOT / "src" / "scenes"
+
+
+def is_scene_code(path: Path) -> bool:
+    return path.is_relative_to(SCENES)
+
+
+def is_generated(path: Path) -> bool:
+    """Only this one tree is build output; everything else is hand-written."""
+    return path.is_relative_to(GENERATED)
 
 
 def allowed(line: str, rule: str) -> bool:
@@ -77,11 +95,12 @@ def check_code(path: Path, text: str, ids: set[str], problems: list[str]) -> Non
             report(problems, path, number, "absolute-path",
                    "use a relative URL or import the asset through the bundler")
         if path.suffix == ".ts":
-            if SCROLL_READ.search(line) and "runtime" not in path.parts and not allowed(line, "scroll-read"):
+            # Only scene code is bound by this: the runtime is where scroll is read,
+            # and a browser test drives the window on purpose.
+            if is_scene_code(path) and SCROLL_READ.search(line) and not allowed(line, "scroll-read"):
                 report(problems, path, number, "scroll-read",
                        "take progress from the runtime context, not from the window")
-            if (INLINE_STYLE.search(line) and not SET_PROPERTY_VAR.search(line)
-                    and not allowed(line, "inline-style")):
+            if INLINE_STYLE.search(line) and not allowed(line, "inline-style"):
                 report(problems, path, number, "inline-style",
                        "write a CSS custom property; GSAP owns the properties it animates")
             if "addEventListener('unload'" in line.replace('"', "'") and not allowed(line, "bfcache"):
@@ -108,19 +127,56 @@ def check_code(path: Path, text: str, ids: set[str], problems: list[str]) -> Non
                "a stylesheet with motion needs its reduced-motion counterpart")
 
 
+ENGINE_RANGE = re.compile(r"^>=\s*(\d+)(?:\.\S+)?\s+<\s*(\d+)$")
+
+
+def check_node_pin(problems: list[str]) -> None:
+    """`.nvmrc` and `package.json` must name the same Node major.
+
+    They are read by different tools that never compare notes: the local shell and
+    GitHub Actions follow `.nvmrc`, while the hosts follow `engines`. If they drift,
+    the version the gate runs on is not the version that builds the site, and nothing
+    says so. The pin itself is a decision recorded in docs/deployment.md §5.
+    """
+    nvmrc = (REPO_ROOT / ".nvmrc").read_text(encoding="utf-8").strip()
+    engines = json.loads((REPO_ROOT / "package.json").read_text(encoding="utf-8"))["engines"]["node"]
+    match = ENGINE_RANGE.match(engines.strip())
+    if match is None:
+        problems.append(
+            f"node-pin: package.json engines.node is {engines!r}; this project pins one "
+            "major, written as '>=<major> <next major>'"
+        )
+        return
+    low, high = int(match.group(1)), int(match.group(2))
+    if high != low + 1:
+        problems.append(
+            f"node-pin: package.json engines.node {engines!r} spans more than one major"
+        )
+    pinned = nvmrc.lstrip("v").split(".")[0]
+    if not pinned.isdigit() or int(pinned) != low:
+        problems.append(
+            f"node-pin: .nvmrc says {nvmrc!r} but package.json engines.node says {engines!r}"
+        )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--quiet", action="store_true", help="print only problems")
     args = parser.parse_args()
 
-    if not SRC.exists():
-        if not args.quiet:
-            print("ok: no front end yet, nothing to check")
-        return 0
+    roots = [REPO_ROOT / name for name in ROOTS if (REPO_ROOT / name).exists()]
 
     ids = shot_and_beat_ids()
     problems: list[str] = []
-    files = [p for p in SRC.rglob("*") if p.suffix in {".ts", ".css", ".html"} and p.is_file()]
+    check_node_pin(problems)
+    files = [
+        path
+        for root in roots
+        for path in root.rglob("*")
+        # Generated pages are build output, derived from the mapping rather than a
+        # second copy of it, so they are not hand-written code to police.
+        if path.suffix in {".ts", ".css", ".html"} and path.is_file() and not is_generated(path)
+    ]
     for path in sorted(files):
         check_code(path, path.read_text(encoding="utf-8"), ids, problems)
 

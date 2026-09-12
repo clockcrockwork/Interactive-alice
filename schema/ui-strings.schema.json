@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/clockcrockwork/Interactive-alice/schema/ui-strings.schema.json",
+  "title": "Locale UI strings",
+  "description": "The words the site itself says in one language, as opposed to the words of the story. Every locale in text/locales.json must have this file in full: a language may be behind on chapters, but the chrome around the story cannot be half translated. Keys are added only when something on screen needs them; see docs/text-pipeline.md.",
+  "type": "object",
+  "required": ["locale", "strings"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string", "description": "Optional editor hint; not part of the data." },
+    "locale": {
+      "type": "string",
+      "description": "Must equal the directory name, so a copied file cannot silently claim another language."
+    },
+    "strings": {
+      "type": "object",
+      "required": ["partPending", "localePartial", "localeNone"],
+      "additionalProperties": false,
+      "properties": {
+        "partPending": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Shown beside a part this language has no text for yet, on the story entry."
+        },
+        "localePartial": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Shown beside a language on the home page when some of its parts can be read and some cannot."
+        },
+        "localeNone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Shown beside a language on the home page when none of its parts can be read yet."
+        }
+      }
+    }
+  }
+}

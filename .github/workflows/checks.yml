@@ -5,43 +5,49 @@ on:
   push:
     branches: [main]
 
+# Note: GitHub-hosted runner minutes for this account are exhausted for September
+# 2026, so these jobs cannot start until the allowance resets. Until then the gate
+# is the same set of commands run locally; see docs/deployment.md §4.
+
 jobs:
   repository:
     name: repository checkers
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Node, because the checkers are launched through build/python.mjs, which finds
+      # the interpreter by name rather than assuming one. No npm install is needed:
+      # the checkers and the launcher have no dependencies.
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: python3 scripts/check-text.py
-      - run: python3 scripts/check-experience.py
-      - run: python3 scripts/check-frontend.py
+      - run: npm run check:data
+      - name: the pacing fixture still matches the reference, for every scene
+        run: |
+          npm run plan:fixture
+          git diff --exit-code -- tests/fixtures/plans.json
 
   frontend:
     name: lint, typecheck, build, test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: look for a front end
-        id: probe
-        run: echo "exists=${{ hashFiles('package.json') != '' }}" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-node@v4
-        if: steps.probe.outputs.exists == 'true'
         with:
           node-version-file: .nvmrc
           cache: npm
-      - if: steps.probe.outputs.exists == 'true'
-        run: npm ci
-      - if: steps.probe.outputs.exists == 'true'
-        run: npm run lint
-      - if: steps.probe.outputs.exists == 'true'
-        run: npm run typecheck
-      - if: steps.probe.outputs.exists == 'true'
+      - run: npm ci
+      - name: types still match the schemas
+        run: |
+          npm run types:schema
+          git diff --exit-code -- src/types/schema.ts
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - name: build, and record the size report
         run: npm run build
-      - if: steps.probe.outputs.exists == 'true'
-        run: npm test
-      - if: steps.probe.outputs.exists == 'true'
-        run: npx playwright install --with-deps chromium
-      - if: steps.probe.outputs.exists == 'true'
-        run: npm run test:e2e
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e

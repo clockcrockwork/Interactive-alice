@@ -5,7 +5,9 @@
 ## 1. HTML
 
 - Write semantic elements first and reach for `div` when nothing else fits.
-  A scene is `<main>`; narrative sentences are real text nodes, not decorations.
+  **One `<main>` per document**, since a document may host several scenes: a scene is
+  a section inside it, not a second `<main>`. Narrative sentences are real text nodes,
+  not decorations.
 - One `h1` per page, headings in order, no skipped levels.
 - Decorative layers are `aria-hidden="true"`. Interactive props are real buttons.
 - Every image has an `alt` that says what it contributes, or `alt=""` when it is
@@ -13,8 +15,8 @@
 - No inline event handlers. No hand-written inline styles either, with two
   deliberate exceptions: CSS custom properties written by script
   (`style.setProperty('--fall', value)`), which is the intended channel between JS
-  and CSS, and **properties GSAP animates**, which it writes to `element.style` by
-  design. Inline styles outrank every `@layer` rule, so a scene must not expect a
+  and CSS, and the properties an animation library writes to `element.style` by design,
+  if one is ever added (none is in the bundle today). Inline styles outrank every `@layer` rule, so a scene must not expect a
   layered rule to win against a live tween: drive what CSS should react to through a
   custom property instead.
 - Narrative markup carries its segment id as `data-segment="ch01.s0200"`, so the
@@ -44,8 +46,10 @@
 - Ordinary modules and functions. A class when something genuinely holds state
   for a lifetime, which a Scene does and a helper does not.
 - `strict` on. No `any`; `unknown` plus a narrowing function at boundaries.
-- Types describe data that exists: the mapping file's shape is generated from the
-  JSON Schemas rather than retyped by hand, so the schema stays the single source.
+- Types describe data that exists: every data shape comes from `schema/` through
+  `npm run types:schema`, which writes `src/types/schema.ts`. Derive element types
+  from those (`type ShotMapping = SceneMapping['shots'][number]`) rather than
+  retyping a schema by hand, and never edit the generated file.
 - No global event bus, no dependency injection container, no state library. A
   scene receives the runtime context as an argument.
 - Every listener, timer, observer and rAF handle is owned by the thing that
@@ -92,6 +96,12 @@ review.
 - **Suppressions need a reason.** A `biome-ignore` carries a comment explaining
   why; a rule turned off in the config carries the same in the config. A
   suppression with no reason is a review comment.
+- **Generated data is not formatted by Biome.** `text/**`, `experience/**`,
+  `schema/**` and `tests/fixtures/**` are written by Python tooling, so Biome's
+  formatter is disabled for them in `biome.json` while its linter stays on. Without
+  that, the two generators fight: a Python rewrite reflows the file, the next
+  `npm run lint` fails, and the pacing fixture's regenerate-and-diff check and the
+  format check can contradict each other outright.
 - **HTML.** Biome lints HTML, and its HTML *formatter* is experimental and opt-in.
   The project either enables it explicitly and pins it, or states that HTML
   formatting is a deliberate exception. It does not claim Biome formats everything.

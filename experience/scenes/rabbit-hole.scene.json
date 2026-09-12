@@ -10,24 +10,16 @@
       "beats": [
         {
           "id": "jump-in",
-          "segments": [
-            "ch01.s0200",
-            "ch01.s0210"
-          ]
+          "segments": ["ch01.s0200", "ch01.s0210"]
         },
         {
           "id": "tunnel",
-          "segments": [
-            "ch01.s0220",
-            "ch01.s0230"
-          ]
+          "segments": ["ch01.s0220", "ch01.s0230"]
         },
         {
           "id": "floor-vanishes",
           "weight": 1.5,
-          "segments": [
-            "ch01.s0240"
-          ]
+          "segments": ["ch01.s0240"]
         }
       ]
     },
@@ -38,34 +30,19 @@
       "beats": [
         {
           "id": "slow-or-deep",
-          "segments": [
-            "ch01.s0250",
-            "ch01.s0260",
-            "ch01.s0270"
-          ]
+          "segments": ["ch01.s0250", "ch01.s0260", "ch01.s0270"]
         },
         {
           "id": "dark-below",
-          "segments": [
-            "ch01.s0280"
-          ]
+          "segments": ["ch01.s0280"]
         },
         {
           "id": "shelf-wall",
-          "segments": [
-            "ch01.s0290",
-            "ch01.s0300"
-          ]
+          "segments": ["ch01.s0290", "ch01.s0300"]
         },
         {
           "id": "marmalade-jar",
-          "segments": [
-            "ch01.s0310",
-            "ch01.s0320",
-            "ch01.s0330",
-            "ch01.s0340",
-            "ch01.s0350"
-          ]
+          "segments": ["ch01.s0310", "ch01.s0320", "ch01.s0330", "ch01.s0340", "ch01.s0350"]
         }
       ]
     },
@@ -76,47 +53,27 @@
       "beats": [
         {
           "id": "brave-at-home",
-          "segments": [
-            "ch01.s0360",
-            "ch01.s0370"
-          ]
+          "segments": ["ch01.s0360", "ch01.s0370"]
         },
         {
           "id": "down-down-down",
-          "segments": [
-            "ch01.s0380",
-            "ch01.s0390"
-          ]
+          "segments": ["ch01.s0380", "ch01.s0390"]
         },
         {
           "id": "how-many-miles",
-          "segments": [
-            "ch01.s0400",
-            "ch01.s0410",
-            "ch01.s0420"
-          ]
+          "segments": ["ch01.s0400", "ch01.s0410", "ch01.s0420"]
         },
         {
           "id": "nobody-listening",
-          "segments": [
-            "ch01.s0430",
-            "ch01.s0440"
-          ]
+          "segments": ["ch01.s0430", "ch01.s0440"]
         },
         {
           "id": "through-the-earth",
-          "segments": [
-            "ch01.s0450",
-            "ch01.s0460",
-            "ch01.s0470"
-          ]
+          "segments": ["ch01.s0450", "ch01.s0460", "ch01.s0470"]
         },
         {
           "id": "bow-in-the-air",
-          "segments": [
-            "ch01.s0480",
-            "ch01.s0490"
-          ]
+          "segments": ["ch01.s0480", "ch01.s0490"]
         }
       ]
     },
@@ -127,41 +84,23 @@
       "beats": [
         {
           "id": "still-falling",
-          "segments": [
-            "ch01.s0500"
-          ]
+          "segments": ["ch01.s0500"]
         },
         {
           "id": "dinah",
-          "segments": [
-            "ch01.s0510",
-            "ch01.s0520",
-            "ch01.s0530",
-            "ch01.s0540"
-          ]
+          "segments": ["ch01.s0510", "ch01.s0520", "ch01.s0530", "ch01.s0540"]
         },
         {
           "id": "bats",
-          "segments": [
-            "ch01.s0550",
-            "ch01.s0560",
-            "ch01.s0570"
-          ]
+          "segments": ["ch01.s0550", "ch01.s0560", "ch01.s0570"]
         },
         {
           "id": "cats-and-bats",
-          "segments": [
-            "ch01.s0580",
-            "ch01.s0590",
-            "ch01.s0600"
-          ]
+          "segments": ["ch01.s0580", "ch01.s0590", "ch01.s0600"]
         },
         {
           "id": "drifting-off",
-          "segments": [
-            "ch01.s0610",
-            "ch01.s0620"
-          ]
+          "segments": ["ch01.s0610", "ch01.s0620"]
         },
         {
           "id": "into-the-dream",
@@ -178,9 +117,7 @@
         {
           "id": "thump",
           "weight": 1.5,
-          "segments": [
-            "ch01.s0630"
-          ]
+          "segments": ["ch01.s0630"]
         },
         {
           "id": "handoff",

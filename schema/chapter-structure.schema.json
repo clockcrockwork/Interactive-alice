@@ -4,12 +4,7 @@
   "title": "Chapter structure file",
   "description": "Language-neutral narrative skeleton for one chapter: story-section order, segment order, and who is speaking. Carries no visible text. A story section is a division of the TEXT, not a runtime Scene; Scene / Shot / Beat composition lives in experience/ and is documented in docs/text-experience-binding.md.",
   "type": "object",
-  "required": [
-    "chapter",
-    "sourceFile",
-    "sections",
-    "segments"
-  ],
+  "required": ["chapter", "sourceFile", "sections", "segments"],
   "additionalProperties": false,
   "properties": {
     "$schema": {
@@ -31,9 +26,7 @@
       "description": "Story sections in reading order. A section groups consecutive segments of the text; it does not describe how they are staged.",
       "items": {
         "type": "object",
-        "required": [
-          "id"
-        ],
+        "required": ["id"],
         "additionalProperties": false,
         "properties": {
           "id": {
@@ -49,11 +42,7 @@
       "description": "Segments in reading order. One segment is one short sentence: the narrative atom that the experience displays, reads aloud, highlights, and translates.",
       "items": {
         "type": "object",
-        "required": [
-          "id",
-          "section",
-          "kind"
-        ],
+        "required": ["id", "section", "kind"],
         "additionalProperties": false,
         "properties": {
           "id": {
@@ -65,12 +54,7 @@
             "pattern": "^[a-z0-9-]+$"
           },
           "kind": {
-            "enum": [
-              "narration",
-              "dialogue",
-              "thought",
-              "sound"
-            ]
+            "enum": ["narration", "dialogue", "thought", "sound"]
           },
           "speaker": {
             "type": "string",

@@ -2,11 +2,12 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/clockcrockwork/Interactive-alice/schema/experience-story.schema.json",
   "title": "Experience story file",
-  "description": "The runtime Scene order for the whole story. Holds no visible text.",
+  "description": "The runtime Scene order for the whole story, and optionally how those scenes are grouped into documents. Holds no visible text.",
   "type": "object",
   "required": [
     "story",
-    "scenes"
+    "scenes",
+    "parts"
   ],
   "additionalProperties": false,
   "properties": {
@@ -37,6 +38,34 @@
           "file": {
             "type": "string",
             "description": "Repository-relative path to the scene file."
+          }
+        }
+      }
+    },
+    "parts": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Documents, in story order. A part hosts one or more scenes; a document boundary is a delivery decision, never a scene boundary. Required: every scene belongs to exactly one document, and that grouping is declared rather than inferred. See docs/frontend-architecture.md.",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "scenes"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$",
+            "description": "URL segment for this document."
+          },
+          "scenes": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$"
+            }
           }
         }
       }

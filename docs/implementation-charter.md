@@ -17,6 +17,11 @@ Use these documents together:
 - [`poc/rabbit-hole.md`](poc/rabbit-hole.md) — first executable acceptance criteria.
 - [`text-pipeline.md`](text-pipeline.md) — the narrative text and translation model.
 - [`text-experience-binding.md`](text-experience-binding.md) — how Scenes, Shots and Beats reference narrative text.
+- [`frontend-architecture.md`](frontend-architecture.md) — stack, pages, routing and where the runtime sits.
+- [`code-conventions.md`](code-conventions.md) — HTML, CSS and TypeScript conventions.
+- [`performance-budget.md`](performance-budget.md) — the numbers, and how they are measured.
+- [`assets-and-audio.md`](assets-and-audio.md) — generated images, music, and synthesized sound.
+- [`deployment.md`](deployment.md) — preview and production deployment.
 - this document — what is fixed versus what an implementation agent may decide.
 
 For the Rabbit Hole PoC, the explicit Acceptance Criteria in `poc/rabbit-hole.md` and `scene-shot-model.md` are authoritative.
@@ -181,15 +186,21 @@ Repeated real requirements may justify generalization later.
 
 ## 6. Recommended engineering direction, not immutable architecture
 
-The current default implementation direction is:
+The current implementation direction is:
 
 ```text
-Vite
+Vite, multi-page build (several HTML entry points, static output)
 TypeScript
-HTML / CSS
+HTML / CSS, hand-written, no UI framework
 GSAP + ScrollTrigger
+Cross-document View Transitions for page-to-page moves
 + renderer-specific code only where a Scene/Shot needs it
 ```
+
+Since the experience is now several pages rather than one, the pages are real
+static documents and transitions between them are progressive enhancement. The
+reasoning, the page shape, and the relative-path requirement that lets one build
+run on any host are recorded in [`frontend-architecture.md`](frontend-architecture.md).
 
 This is a starting point, not a permanent framework contract.
 

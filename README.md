@@ -33,9 +33,25 @@ See:
 - [`docs/scene-shot-model.md`](docs/scene-shot-model.md)
 - [`docs/poc/rabbit-hole.md`](docs/poc/rabbit-hole.md)
 
+## Engineering
+
+The site is a static, multi-page build: plain HTML documents, hand-written CSS,
+TypeScript, GSAP for scroll-driven timelines, and cross-document View Transitions
+for smooth moves between pages. Output uses relative paths, so the same build runs
+at a domain root or in a subdirectory. Pull requests get a Vercel preview;
+production is published from a separate branch that the host deploys.
+
+- [`docs/frontend-architecture.md`](docs/frontend-architecture.md) — stack, pages, routing
+- [`docs/code-conventions.md`](docs/code-conventions.md) — HTML, CSS, TypeScript
+- [`docs/performance-budget.md`](docs/performance-budget.md) — budgets, Core Web Vitals, comfort modes
+- [`docs/assets-and-audio.md`](docs/assets-and-audio.md) — generated images and music, synthesized sound
+- [`docs/deployment.md`](docs/deployment.md) — preview and production
+- [`CLAUDE.md`](CLAUDE.md) — the short list of rules, and where each decision lives
+
 ## Status
 
-Specification / PoC planning.
+Specification complete for the text layer and the engineering baseline. The first
+implementation milestone is the Rabbit Hole PoC, issue #1.
 
 ## Text and translation
 

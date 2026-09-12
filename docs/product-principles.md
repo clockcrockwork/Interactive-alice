@@ -1,5 +1,7 @@
 # Product principles
 
+> These are product-level constraints, not a prescribed code architecture. See [`implementation-charter.md`](implementation-charter.md) for the implementation-agent authority boundary.
+
 ## 1. What this project is trying to be
 
 Interactive Alice should feel like **entering a story through the browser**, not like reading a story that happens to be displayed in a browser.

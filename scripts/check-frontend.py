@@ -12,6 +12,7 @@ own, listed in CLAUDE.md, and each one has already been stated in a document:
   keyframe-layout  keyframes animate transform and opacity, not layout
   reduced-motion   a stylesheet with motion carries a reduced-motion block
   bfcache          nothing listens for unload, which would disqualify the page
+  node-pin         .nvmrc and package.json agree on one Node major
 
 A line may opt out with a trailing comment naming the rule and a reason:
 
@@ -126,19 +127,48 @@ def check_code(path: Path, text: str, ids: set[str], problems: list[str]) -> Non
                "a stylesheet with motion needs its reduced-motion counterpart")
 
 
+ENGINE_RANGE = re.compile(r"^>=\s*(\d+)(?:\.\S+)?\s+<\s*(\d+)$")
+
+
+def check_node_pin(problems: list[str]) -> None:
+    """`.nvmrc` and `package.json` must name the same Node major.
+
+    They are read by different tools that never compare notes: the local shell and
+    GitHub Actions follow `.nvmrc`, while the hosts follow `engines`. If they drift,
+    the version the gate runs on is not the version that builds the site, and nothing
+    says so. The pin itself is a decision recorded in docs/deployment.md §5.
+    """
+    nvmrc = (REPO_ROOT / ".nvmrc").read_text(encoding="utf-8").strip()
+    engines = json.loads((REPO_ROOT / "package.json").read_text(encoding="utf-8"))["engines"]["node"]
+    match = ENGINE_RANGE.match(engines.strip())
+    if match is None:
+        problems.append(
+            f"node-pin: package.json engines.node is {engines!r}; this project pins one "
+            "major, written as '>=<major> <next major>'"
+        )
+        return
+    low, high = int(match.group(1)), int(match.group(2))
+    if high != low + 1:
+        problems.append(
+            f"node-pin: package.json engines.node {engines!r} spans more than one major"
+        )
+    pinned = nvmrc.lstrip("v").split(".")[0]
+    if not pinned.isdigit() or int(pinned) != low:
+        problems.append(
+            f"node-pin: .nvmrc says {nvmrc!r} but package.json engines.node says {engines!r}"
+        )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--quiet", action="store_true", help="print only problems")
     args = parser.parse_args()
 
     roots = [REPO_ROOT / name for name in ROOTS if (REPO_ROOT / name).exists()]
-    if not roots:
-        if not args.quiet:
-            print("ok: no front end yet, nothing to check")
-        return 0
 
     ids = shot_and_beat_ids()
     problems: list[str] = []
+    check_node_pin(problems)
     files = [
         path
         for root in roots

@@ -170,8 +170,10 @@ export class SceneDriver {
       // Whatever the seam set while we were suspended reaches the document once, now.
       this.#deferredPublish = false;
       this.#publish(this.#override ?? this.#progress, true);
-      return;
     }
+    // Always read the real position afterwards. The page may have scrolled while this
+    // scene was off-screen or in the back/forward cache, so the held value is what the
+    // seam asked for, never evidence of where the document now is.
     this.#request(true);
   }
 

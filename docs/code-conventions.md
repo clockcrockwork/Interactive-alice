@@ -15,8 +15,8 @@
 - No inline event handlers. No hand-written inline styles either, with two
   deliberate exceptions: CSS custom properties written by script
   (`style.setProperty('--fall', value)`), which is the intended channel between JS
-  and CSS, and **properties GSAP animates**, which it writes to `element.style` by
-  design. Inline styles outrank every `@layer` rule, so a scene must not expect a
+  and CSS, and the properties an animation library writes to `element.style` by design,
+  if one is ever added (none is in the bundle today). Inline styles outrank every `@layer` rule, so a scene must not expect a
   layered rule to win against a live tween: drive what CSS should react to through a
   custom property instead.
 - Narrative markup carries its segment id as `data-segment="ch01.s0200"`, so the

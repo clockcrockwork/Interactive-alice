@@ -122,7 +122,9 @@ def plan(scene: dict, locale: str) -> dict:
     # One segment-equivalent is the average staged sentence in this language, so
     # the shape of the plan stays comparable between languages. Character counts
     # are not comparable across writing systems, so they never leave this ratio.
-    mean = characters / len(staged)
+    # A scene may stage no text at all: it then has no mean, and every beat falls
+    # back to the minimum hold below.
+    mean = characters / len(staged) if staged else None
 
     shot_costs: list[tuple[str, float]] = []
     beat_costs: list[tuple[str, float]] = []
@@ -130,7 +132,11 @@ def plan(scene: dict, locale: str) -> dict:
         shot_weight = shot.get("weight", 1.0)
         total = 0.0
         for beat in shot["beats"]:
-            load = sum(len(text[segment_id]) for segment_id in beat["segments"]) / mean
+            load = (
+                0.0
+                if mean is None
+                else sum(len(text[segment_id]) for segment_id in beat["segments"]) / mean
+            )
             cost = beat.get("weight", 1.0) * max(load, MINIMUM_HOLD)
             total += cost
             # A beat divides its own shot's span, so it carries the shot's weight too.
@@ -160,8 +166,30 @@ def plans_for(scenes: list[dict]) -> list[dict]:
     return out
 
 
-def show_plan(scene: dict, as_json: bool) -> None:
+def available_locales(scene: dict) -> tuple[list[str], list[str]]:
+    """Locales that can be planned for this scene today, and those that cannot."""
     locales = list(load(REPO_ROOT / "text" / "locales.json")["locales"])
+    chapters = chapters_of(scene)
+    ready = [locale for locale in locales if has_text(locale, chapters)]
+    waiting = [locale for locale in locales if locale not in ready]
+    return ready, waiting
+
+
+def show_plan(scene: dict, as_json: bool, locale: str | None) -> None:
+    """Plan one scene.
+
+    Without --locale this plans every language that has text for the chapters the
+    scene stages, and names the ones it skipped: a translation being behind is
+    normal, and an inspection tool must not die of it. With --locale the language is
+    a deliberate choice, so an untranslated one fails loudly instead.
+    """
+    if locale is not None:
+        locales = [locale]
+        waiting: list[str] = []
+    else:
+        locales, waiting = available_locales(scene)
+    if not locales:
+        raise SystemExit(f"no locale has text for scene {scene['id']!r} yet")
     plans = {locale: plan(scene, locale) for locale in locales}
 
     if as_json:
@@ -179,10 +207,15 @@ def show_plan(scene: dict, as_json: bool) -> None:
     print()
     for locale in locales:
         entry = plans[locale]
+        if entry["mean"] is None:
+            print(f"  {locale}: no staged text; every beat holds for the minimum")
+            continue
         print(
             f"  {locale}: {entry['characters']} characters staged, "
             f"{entry['mean']:.1f} per segment on average"
         )
+    for locale in waiting:
+        print(f"  {locale}: not translated this far yet, so it has no plan")
     print("\n  Character counts are an authoring statistic, not a reading-time unit:")
     print("  they are not comparable between writing systems, so they only ever")
     print("  appear as a ratio against this locale's own mean.")
@@ -196,7 +229,14 @@ def main() -> int:
         "scene", nargs="?", help="scene id, as listed in experience/story.json"
     )
     parser.add_argument("--all", action="store_true", help="every scene in story order")
-    parser.add_argument("--locale", default="en-simple", help="locale directory under text/locales/")
+    parser.add_argument(
+        "--locale",
+        default=None,
+        help=(
+            "locale directory under text/locales/; defaults to the registry's "
+            "baseLocale for text, and to every translated locale for --plan"
+        ),
+    )
     parser.add_argument("--plan", action="store_true", help="print progress ranges instead of text")
     parser.add_argument("--json", action="store_true", help="with --plan, emit JSON for the fixture")
     args = parser.parse_args()
@@ -213,9 +253,10 @@ def main() -> int:
 
     scene = find_scene(args.scene)
     if args.plan:
-        show_plan(scene, args.json)
+        show_plan(scene, args.json, args.locale)
     else:
-        show(scene, args.locale)
+        base = load(REPO_ROOT / "text" / "locales.json")["baseLocale"]
+        show(scene, args.locale or base)
     return 0
 
 

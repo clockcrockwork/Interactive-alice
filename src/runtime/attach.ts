@@ -16,14 +16,28 @@ interface Prepared {
   driver: SceneDriver;
 }
 
+/**
+ * Marks the document as running in a reduced form, so degradation is observable.
+ *
+ * Console output is for whoever has the console open; `data-degraded` is what a test,
+ * a support request or a later diagnostic can read off the page itself.
+ */
+function degrade(story: HTMLElement, reason: 'markup' | 'mount' | 'partial'): void {
+  story.dataset.degraded = reason;
+}
+
 export function attachStory(story: HTMLElement): SceneDriver[] {
   // Preflight: read the markup and construct, while the document is still in flow.
   const prepared: Prepared[] = [];
+  let unreadable = 0;
   try {
     for (const scene of story.querySelectorAll<HTMLElement>('.scene')) {
       const track = scene.querySelector<HTMLElement>('[data-scene-track]');
       const stage = scene.querySelector<HTMLElement>('[data-scene-stage]');
       if (!track || !stage) {
+        // A scene without a track or a stage cannot be driven. The rest of the page
+        // still can, so it is left in flow and counted rather than thrown over.
+        unreadable += 1;
         continue;
       }
       const shots = readUnits(scene, '.shot');
@@ -43,10 +57,14 @@ export function attachStory(story: HTMLElement): SceneDriver[] {
   } catch (error) {
     // Nothing has changed yet, so the document is still the readable fallback.
     console.error('Interactive Alice: scene markup could not be read', error);
+    degrade(story, 'markup');
     return [];
   }
 
   if (prepared.length === 0) {
+    if (unreadable > 0) {
+      degrade(story, 'markup');
+    }
     return [];
   }
 
@@ -67,9 +85,13 @@ export function attachStory(story: HTMLElement): SceneDriver[] {
       driver.destroy();
     }
     delete story.dataset.mode;
+    degrade(story, 'mount');
     return [];
   }
 
+  if (unreadable > 0) {
+    degrade(story, 'partial');
+  }
   story.dataset.ready = 'true';
   return mounted;
 }

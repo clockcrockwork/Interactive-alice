@@ -48,6 +48,34 @@ def load(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def check_registry(config: dict, errors: list[str]) -> None:
+    """The registry's own integrity, beyond what the schema can say.
+
+    The schema can require a `baseLocale` string and a `role` enum, but not that the
+    two agree. Without this check a typo in `baseLocale` names a language that does
+    not exist, and the rule that missing base text is a hard error quietly stops
+    applying to anything.
+    """
+    locales = config["locales"]
+    base = config["baseLocale"]
+    if base not in locales:
+        errors.append(
+            f"text/locales.json: baseLocale {base!r} is not one of the locales "
+            f"({', '.join(sorted(locales))})"
+        )
+    elif locales[base]["role"] != "base":
+        errors.append(
+            f"text/locales.json: baseLocale {base!r} has role "
+            f"{locales[base]['role']!r}, not 'base'"
+        )
+    declared = sorted(name for name, settings in locales.items() if settings["role"] == "base")
+    if len(declared) != 1:
+        errors.append(
+            "text/locales.json: exactly one locale may have role 'base', "
+            f"but {len(declared)} do ({', '.join(declared) or 'none'})"
+        )
+
+
 def check_raw(errors: list[str]) -> None:
     manifest_path = RAW_DIR / "manifest.json"
     if not manifest_path.exists():
@@ -192,6 +220,7 @@ def main() -> int:
         return 1
     characters = {character["id"] for character in characters_doc["characters"]}
 
+    check_registry(config, errors)
     check_raw(errors)
 
     structures = sorted(STORY_DIR.glob("ch*.structure.json"))

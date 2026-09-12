@@ -31,8 +31,14 @@ export interface ScenePlan {
   beats: Span[];
   /** Characters of staged text in this locale. An authoring statistic, never a scroll multiplier. */
   characters: number;
-  /** Mean staged sentence length in this locale: one segment-equivalent. */
-  mean: number;
+  /**
+   * Mean staged sentence length in this locale: one segment-equivalent.
+   *
+   * `null` when the scene stages no text at all. Such a scene has no reading load,
+   * so there is no average to take; every beat then costs its weight times the
+   * minimum hold. See docs/text-experience-binding.md §4.
+   */
+  mean: number | null;
 }
 
 const weightOf = (unit: { weight?: number }): number => unit.weight ?? 1;
@@ -74,11 +80,11 @@ export function planScene(
   text: Readonly<Record<string, string>>,
 ): ScenePlan {
   const staged = stagedSegments(scene);
-  if (staged.length === 0) {
-    throw new Error(`scene ${scene.id} stages no segments`);
-  }
   const characters = lengthOf(staged, text);
-  const mean = characters / staged.length;
+  // A scene may legitimately stage no text: the model lets a beat hold 0 segments,
+  // and a purely visual scene is that all the way up. It carries no reading load, so
+  // it has no mean, and its beats fall back to the minimum hold below.
+  const mean = staged.length === 0 ? null : characters / staged.length;
 
   const beatCosts: { id: string; cost: number }[] = [];
   const shotCosts: { id: string; cost: number }[] = [];
@@ -87,7 +93,7 @@ export function planScene(
     const shotWeight = weightOf(shot);
     let shotTotal = 0;
     for (const beat of shot.beats) {
-      const load = lengthOf(beat.segments, text) / mean;
+      const load = mean === null ? 0 : lengthOf(beat.segments, text) / mean;
       const cost = weightOf(beat) * Math.max(load, MINIMUM_HOLD);
       shotTotal += cost;
       // A beat divides its own shot's span, so it carries the shot's weight too.

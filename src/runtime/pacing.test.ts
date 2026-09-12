@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -78,7 +79,12 @@ describe('planScene', () => {
 
       it('reports the same text statistics', () => {
         expect(actual.characters).toBe(expected.characters);
-        expect(actual.mean).toBeCloseTo(expected.mean, 12);
+        if (expected.mean === null) {
+          // A scene that stages no text has no mean sentence length to report.
+          expect(actual.mean).toBeNull();
+        } else {
+          expect(actual.mean).toBeCloseTo(expected.mean, 12);
+        }
       });
 
       it('covers the whole scene without gaps', () => {
@@ -112,4 +118,74 @@ describe('planScene', () => {
       });
     });
   }
+});
+
+/**
+ * A scene may legitimately stage no text: the model lets a beat hold zero segments,
+ * and a purely visual scene is that all the way through. No such scene exists in the
+ * story yet, so the golden fixture cannot cover this case; the Python reference is
+ * called directly instead, which keeps the rule that the formula exists once.
+ */
+describe('a scene that stages no text', () => {
+  const scene: SceneMapping = {
+    id: 'textless',
+    shots: [
+      {
+        id: 'first',
+        weight: 2,
+        beats: [
+          { id: 'a', segments: [] },
+          { id: 'b', weight: 3, segments: [] },
+        ],
+      },
+      { id: 'second', beats: [{ id: 'c', segments: [] }] },
+    ],
+  } as SceneMapping;
+
+  const plan = planScene(scene, 'en-simple', {});
+
+  it('has no mean sentence length to report', () => {
+    expect(plan.characters).toBe(0);
+    expect(plan.mean).toBeNull();
+  });
+
+  it('divides the scene by weight alone, with every beat held for the minimum', () => {
+    // first: 2 × (1 + 3) = 8, second: 1 × 1 = 1, so the first shot takes 8/9.
+    expect(plan.shots[0]?.end).toBeCloseTo(8 / 9, 12);
+    expect(plan.shots.at(-1)?.end).toBeCloseTo(1, 12);
+    expect(plan.beats[0]?.end).toBeCloseTo(2 / 9, 12);
+    expect(plan.beats[1]?.end).toBeCloseTo(8 / 9, 12);
+  });
+
+  it('agrees with the Python reference', () => {
+    const reference = JSON.parse(
+      execFileSync(
+        'python3',
+        [
+          '-c',
+          [
+            'import importlib.util, json, sys',
+            'spec = importlib.util.spec_from_file_location("ref", sys.argv[1])',
+            'ref = importlib.util.module_from_spec(spec)',
+            'spec.loader.exec_module(ref)',
+            'ref.locale_text = lambda locale, chapters: {}',
+            'print(json.dumps(ref.plan(json.loads(sys.argv[2]), "en-simple")))',
+          ].join('\n'),
+          join(root, 'scripts', 'show-scene.py'),
+          JSON.stringify(scene),
+        ],
+        { encoding: 'utf8' },
+      ),
+    ) as ScenePlan;
+
+    expect(reference.mean).toBeNull();
+    expect(reference.characters).toBe(0);
+    for (const key of ['shots', 'beats'] as const) {
+      expect(reference[key].map((span) => span.id)).toEqual(plan[key].map((span) => span.id));
+      for (const [index, span] of reference[key].entries()) {
+        expect(plan[key][index]?.start).toBeCloseTo(span.start, 12);
+        expect(plan[key][index]?.end).toBeCloseTo(span.end, 12);
+      }
+    }
+  });
 });

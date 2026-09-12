@@ -134,6 +134,13 @@ shot range           = cumulative shot cost / total cost
 The minimum of one segment-equivalent per beat is what gives a textless beat, or
 a beat holding one short cry, real screen time.
 
+A scene may stage no text at all, since a beat may hold zero segments and a purely
+visual scene is that all the way through. There is then no mean staged sentence to
+normalize by, so the statistic is reported as `null` rather than invented: every beat
+falls to the minimum hold, and the scene divides by weight alone. Nothing about a
+scene that mixes text and textless beats changes. A scene with no text is a legal
+composition, not a defect, so neither implementation may treat it as one.
+
 Two things follow, and the difference between them matters:
 
 - **Proportions are text-derived and language-independent.** Normalizing by the

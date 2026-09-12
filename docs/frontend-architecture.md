@@ -56,6 +56,11 @@ still loading, and every page is independently linkable and cacheable.
 /<locale>/<part>/     one part of the story, hosting one or more Scenes
 ```
 
+All three levels are generated from the data. Every registered language has an entry
+whether or not it can be read yet; only the part pages depend on the text existing.
+See [`text-pipeline.md`](text-pipeline.md) §4 for what an unfinished translation
+means for the site.
+
 The locale lives in the path, which keeps the static output free of negotiation
 logic and lets a CDN cache each language separately. No cookie, no redirect, no
 runtime language switch that rewrites the DOM: switching language navigates to the
@@ -189,7 +194,7 @@ Baseline target.
 | `lifecycle.ts` | idle, mounted, active, suspended, destroyed, and the moves that are refused |
 | `scene-driver.ts` | scroll to progress, the frame loop, measurement on resize, suspend off-screen, remeasure on `pageshow` |
 | `stage.ts` | writes state onto the document as data attributes and custom properties |
-| `attach.ts` | the attach order: staged mode, flush layout, then measure and mount |
+| `attach.ts` | the attach order: staged mode, flush layout, then measure and mount; marks `data-degraded` when it has to fall back |
 | `probe.ts` | the test seam, attached on `?probe=1` or in development |
 | `debug-overlay.ts` | development-only overlay, dropped from production bundles |
 
@@ -210,9 +215,23 @@ an implementation detail:
    `snapshot(sceneId?)`, `scenes()`. A document may host several scenes, and driving
    them all to one progress is a state real scrolling never produces.
 
+A fourth thing is decided rather than fixed: **the probe ships in production**.
+`?probe=1` installs a debug surface on the live site, and that is accepted for the
+proof of concept with its limits written down. It can set progress, read a snapshot
+and switch optional layers off. It reads and writes no credential, storage or
+network, and it cannot change what the page says: the worst a visitor who finds it
+can do is move their own copy of the animation. It stays out of the way otherwise,
+since nothing installs without the query. Before the first public release this is
+re-decided, and the alternatives are a build-time flag that drops the seam from the
+production bundle, or a key the query has to carry.
+
 Still open, and fair for the PoC to change: how two scenes in one document hand over
 to each other, and how an overlapping transition between shots is represented. Both
 change data shapes, so they are decided before the staging work rather than during it.
+The runtime already drives several scenes per document, each with its own driver and
+its own suspension, but no published page carries two scenes yet: treat multi-scene
+support as implemented and not yet proven end to end until the two-scene fixture
+lands with that work.
 
 ## 8. Testing and tooling
 

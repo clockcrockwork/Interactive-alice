@@ -190,19 +190,43 @@ function partHeading(project: Project, locale: string, scenes: string[]): string
   return text?.title ?? PROJECT_NAME;
 }
 
-/** `/<locale>/`: the story entry for one language, listing the documents it has. */
-function renderLocaleEntry(project: Project, locale: string, parts: readonly Part[]): string {
+/**
+ * `/<locale>/`: the story entry for one language.
+ *
+ * Every language in the registry gets one, whether or not it can be read yet. Parts
+ * this language has text for are links; the rest are listed as not yet available,
+ * titled in the base locale because this language has no title for them, and marked
+ * `data-available="false"` so a test, a style or a later index can tell them apart.
+ */
+function renderLocaleEntry(
+  project: Project,
+  locale: string,
+  available: readonly Part[],
+  pending: readonly Part[],
+): string {
   const settings = project.locales[locale];
   if (!settings) {
     throw new Error(`unknown locale ${locale}`);
   }
   const root = up(2);
-  const links = parts
-    .map(
-      (part) =>
-        `        <li><a href="./${part.id}/">${escapeHtml(partHeading(project, locale, part.scenes))}</a></li>`,
-    )
-    .join('\n');
+  const item = (part: Part, body: string, ready: boolean) =>
+    `        <li class="entry__part" data-part="${part.id}" data-available="${ready}">${body}</li>`;
+  const links = [
+    ...available.map((part) =>
+      item(
+        part,
+        `<a href="./${part.id}/">${escapeHtml(partHeading(project, locale, part.scenes))}</a>`,
+        true,
+      ),
+    ),
+    ...pending.map((part) =>
+      item(
+        part,
+        `<span lang="${project.baseLocale}">${escapeHtml(partHeading(project, project.baseLocale, part.scenes))}</span>`,
+        false,
+      ),
+    ),
+  ].join('\n');
 
   return `<!doctype html>
 <html lang="${locale}" dir="${settings.dir}" data-line-break="${settings.lineBreak}" data-significant-spaces="${settings.significantSpaces}">
@@ -264,6 +288,10 @@ export interface PageEntry {
   kind: 'home' | 'locale' | 'part';
   locale?: string;
   part?: string;
+  /** On a locale entry: the parts this language can be read in today. */
+  parts?: string[];
+  /** On a locale entry: the parts it has no text for yet. */
+  pending?: string[];
   scenes?: string[];
   shots?: number;
   beats?: number;
@@ -285,20 +313,34 @@ export function generatePages(root: string): PageGraph {
 /**
  * Builds the page graph from already-loaded data.
  *
- * Publishability is derived from the text layer rather than from a flag: a part is
- * generated for a locale when every chapter it stages has text in that locale. A
- * translation that is behind simply has fewer pages, and the locale entry links only
- * what exists. The base locale is different: missing text there is a hard error,
- * because there is nothing to translate from.
+ * Publishability is derived from the text layer rather than from a flag: a part page
+ * is generated for a locale when every chapter it stages has text in that locale.
+ * Every locale in the registry keeps its `/<locale>/` entry either way, so a language
+ * that is behind has fewer documents rather than disappearing from the site, and both
+ * the entry and the manifest say which parts are readable and which are not yet. The
+ * base locale is different: missing text there is a hard error, because there is
+ * nothing to translate from.
  */
 export function generatePagesFrom(project: Project): PageGraph {
   const pages: GeneratedPage[] = [];
   const manifest: PageEntry[] = [];
   const skipped: PageGraph['skipped'] = [];
-  const entries: { locale: string; parts: Part[] }[] = [];
+  const entries: { locale: string; available: Part[]; pending: Part[] }[] = [];
 
-  for (const locale of Object.keys(project.locales)) {
+  const locales = Object.keys(project.locales);
+  const base = project.locales[project.baseLocale];
+  if (!base) {
+    throw new Error(
+      `baseLocale ${project.baseLocale} is not in text/locales.json: ${locales.join(', ')}`,
+    );
+  }
+  if (base.role !== 'base') {
+    throw new Error(`baseLocale ${project.baseLocale} has role ${base.role}, not base`);
+  }
+
+  for (const locale of locales) {
     const available: Part[] = [];
+    const pending: Part[] = [];
 
     for (const part of project.parts) {
       const missing = untranslated(project, locale, part.scenes);
@@ -310,16 +352,13 @@ export function generatePagesFrom(project: Project): PageGraph {
           );
         }
         skipped.push({ locale, part: part.id, chapters: missing });
+        pending.push(part);
         continue;
       }
       available.push(part);
     }
 
-    if (available.length === 0) {
-      // Nothing to read in this language yet, so it gets no entry and no link home.
-      continue;
-    }
-    entries.push({ locale, parts: available });
+    entries.push({ locale, available, pending });
   }
 
   pages.push({
@@ -331,14 +370,21 @@ export function generatePagesFrom(project: Project): PageGraph {
   });
   manifest.push({ path: 'index.html', url: './', kind: 'home' });
 
-  for (const { locale, parts } of entries) {
+  for (const { locale, available, pending } of entries) {
     pages.push({
       path: `${locale}/index.html`,
-      html: renderLocaleEntry(project, locale, parts),
+      html: renderLocaleEntry(project, locale, available, pending),
     });
-    manifest.push({ path: `${locale}/index.html`, url: `./${locale}/`, kind: 'locale', locale });
+    manifest.push({
+      path: `${locale}/index.html`,
+      url: `./${locale}/`,
+      kind: 'locale',
+      locale,
+      parts: available.map((part) => part.id),
+      pending: pending.map((part) => part.id),
+    });
 
-    for (const part of parts) {
+    for (const part of available) {
       pages.push({
         path: `${locale}/${part.id}/index.html`,
         html: renderPart(project, part.id, locale, part.scenes),
@@ -389,6 +435,12 @@ export function writePages(root: string, outDir: string): string[] {
   }
   // Nothing but generated output lives here, so clearing it first is what keeps a
   // removed locale or part from leaving a page behind that the dev server still serves.
+  //
+  // Clear-then-write, not write-then-prune: these three calls are synchronous and run
+  // to completion on the same event loop turn as the dev server, so no request can be
+  // served from the gap between them. Writing first would instead leave a window where
+  // a stale page and a fresh manifest disagree. If a materializer ever becomes
+  // asynchronous or moves to another process, this becomes an atomic swap.
   rmSync(outDir, { recursive: true, force: true });
   mkdirSync(outDir, { recursive: true });
   const written: string[] = [];

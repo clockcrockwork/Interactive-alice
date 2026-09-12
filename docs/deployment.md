@@ -24,6 +24,22 @@ Two consequences that shape everything below:
   are not supported. So npm is the project's package manager, the lockfile is
   `package-lock.json`, and it is committed.
 
+### The preview is protected, and stays that way
+
+The repository is private, and so are its previews. Vercel's Deployment Protection
+is left on: every preview URL answers `302` to anyone without access, including
+Lighthouse and any automated check. It is not turned off to make tooling easier.
+
+Automation reaches a preview through Vercel's own Automation Bypass instead: the
+project's bypass secret is sent as `x-vercel-protection-bypass` by whatever runs the
+check. The secret comes from a local or CI secret store at the moment of use. It is
+never committed, never written into a URL in a document, and never put in the
+repository. Where that is not available, the fallback is a time-limited share link
+issued for one session, not a permanent hole.
+
+One consequence for evidence: a preview that returns `302` is working as designed.
+Neither a green preview nor an unreachable one is a substitute for the gate in §4.
+
 ## 2. Branches
 
 ```text
@@ -125,14 +141,46 @@ in [`testing.md`](testing.md) must be current.
   committed and CI installs with `npm ci`.
 - `package.json` carries `"private": true` and `"license": "UNLICENSED"`: the
   repository is private and nothing here is published to a registry.
-- Node is pinned in `.nvmrc`, and CI reads the pin rather than naming a version.
+- Node is pinned in `.nvmrc`, and CI reads the pin rather than naming a version. See
+  the subsection below: the pin is a decision, and a checker keeps it from drifting.
 - Biome is pinned exactly; an upgrade is its own pull request, with the diff it
   causes.
-- Before the first public release, record in `CREDITS.md` the licence terms under
-  which GSAP and its plugins are used, confirmed against the current licence rather
-  than from memory.
+- No animation library is in the bundle today. If a Shot later brings GSAP in, its
+  licence terms go in `CREDITS.md` before that release, confirmed against the current
+  licence rather than from memory.
 - A new runtime dependency needs a sentence in its pull request saying what it
   solves that the platform does not, and what it costs against the JS budget.
+
+### The Node version, and who decides it
+
+**The repository decides. Node 22 is the pin.**
+
+```text
+.nvmrc                 22            local shells, and CI via node-version-file
+package.json engines   >=22 <23      every host that installs before it builds
+```
+
+Three environments read one of those two files and never compare notes, so
+`python3 scripts/check-frontend.py` fails if they stop naming the same major
+(`node-pin`). A dashboard setting is not a third source of truth: Vercel's project
+setting currently says `24.x`, and its build log shows the build running on 22
+because `engines` wins. That is the right outcome by accident, and the setting should
+be changed to 22.x so the two agree where a person reads them. Only the project owner
+can change it; it is not in this repository.
+
+Why 22 rather than the newer line:
+
+- the production host is Lolipop Deploy Now, and which Node versions it offers is
+  still unverified (open question 7 above). The older active LTS is the version most
+  likely to be there;
+- Node 22 is supported until April 2027, well past this proof of concept;
+- while CI is paused, the local run is the whole gate, and it runs 22. Pinning a
+  version nothing in the project actually executes would mean the pin is never tested;
+- nothing in the toolchain needs 24.
+
+Move to 24 as its own pull request, before Node 22's maintenance ends on 2027-04-30
+or sooner if the host requires it. That change is four lines in one commit: `.nvmrc`,
+`engines`, the `@types/node` dependency, and the Vercel project setting.
 
 ## 6. Secrets
 

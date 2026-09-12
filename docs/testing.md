@@ -46,6 +46,12 @@ asserts the TypeScript implementation produces it to within a tolerance far fine
 a pixel of scroll. The TypeScript side runs at build time, writing the spans into the
 markup as data attributes, so the browser never recomputes them.
 
+A scene that stages no text has no place in that fixture, because no such scene
+exists yet in the story. Its formula is covered instead by a unit test that calls the
+Python reference directly with a synthetic scene and compares it to the TypeScript
+result, which keeps the "the formula must not exist twice" rule true for that branch
+as well.
+
 The fixture covers **every scene the story lists**, for every language that has text
 for the chapters that scene stages, and the test fails if a scene has no reference plan
 at all. Neither side keeps its own list of scenes or chapters: both read
@@ -73,8 +79,18 @@ The full suite covers, per scene:
 - `prefers-reduced-motion: reduce` producing the reduced variant, not a broken one;
 - the FX layer disabled, and the optional interaction never touched;
 - each locale that has text for the scene;
-- back navigation restoring scroll position and progression, with the page
-  remaining eligible for the back/forward cache;
+- back navigation restoring scroll position and the progression that follows from
+  it. Back/forward cache eligibility is a design rule, not an assertion: a headless
+  browser decides for itself, so `pageshow.persisted` is never a pass condition. See
+  `performance-budget.md` §3;
+- interruption: a scene suspended by `pagehide` or by leaving the viewport holds a
+  seam value without drawing, and on return publishes it **and** re-reads the real
+  scroll position, so a held value can never survive as the document's position;
+- degradation: a story page whose scene markup cannot be driven carries
+  `data-degraded` and stays a readable document, rather than failing silently;
+- a right-to-left rendering of a real page, served with its direction flipped, so
+  logical layout is proven before a right-to-left language is registered rather than
+  after;
 - no console errors, unhandled rejections, or failed requests in any of the above.
 
 ## 3. The runtime must be testable on purpose

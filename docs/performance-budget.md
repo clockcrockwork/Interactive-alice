@@ -75,10 +75,18 @@ For LCP, the entry scene's first meaningful asset is preloaded with an explicit
 until needed, and nothing in the critical path waits on an asset the first frame
 does not show.
 
-Back and forward navigation must stay cheap, which means each page stays eligible
-for the back/forward cache: no `unload` listener anywhere, the `AudioContext`
+Back and forward navigation must stay cheap, so each page is **designed** to stay
+eligible for the back/forward cache: no `unload` listener anywhere, the `AudioContext`
 suspended on `pagehide` and resumed on `pageshow`, and progression reconstructed
 from the restored scroll position rather than from an event that already fired.
+
+Eligibility itself is **not verified yet**. A headless browser decides on its own
+whether to keep a page, so `pageshow.persisted` is not a pass condition anywhere in
+the suite; in the runs to date it came back `false`. What is tested instead is the
+semantics a reader actually feels: after a back navigation the scroll position is
+restored and the scene's progress follows from it, whether the document was cached or
+rebuilt (`tests/resilience.spec.ts`). Real eligibility is measured with the DevTools
+back/forward cache tester on a deployed build before the first release.
 
 ## 4. Rules that protect the frame
 
@@ -124,6 +132,14 @@ A Lighthouse run has no user in it, so **it does not measure INP**. It reports
 total blocking time as a lab proxy, and real INP is a field metric. LCP and CLS it
 estimates usefully; INP it does not. Do not read a Lighthouse score as covering all
 three targets in §1.
+
+### Reaching the preview to measure it at all
+
+Previews are behind Vercel's Deployment Protection, so Lighthouse cannot fetch one by
+URL: every path answers `302`. The run carries the project's Automation Bypass secret
+as `x-vercel-protection-bypass`, supplied from a secret store at the time of the run;
+see [`deployment.md`](deployment.md) §1. A Lighthouse report against a `302` is a
+report about a redirect, not about the site, and must not be recorded as evidence.
 
 ### Pinning the measurement
 

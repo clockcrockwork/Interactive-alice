@@ -130,17 +130,32 @@ error, so a language can ship chapter by chapter.
 
 Publishability is derived from this layer, not declared by a flag:
 
-- a **part** is generated for a language when every chapter its scenes stage has text
-  in that language;
-- a language that is behind simply has fewer pages. Its story entry links only the
-  parts that exist, and a language with no readable part is not linked from the home
-  page at all;
+- a **part page** is generated for a language when every chapter its scenes stage has
+  text in that language;
+- **every language in the registry keeps its `/<locale>/` entry**, translated or not.
+  A language that is behind has fewer documents, not a smaller place in the site: the
+  entry lists the parts it can be read in as links, and the ones it cannot as items
+  marked `data-available="false"`, titled in the base locale because this language has
+  no title for them yet;
+- the entry is also in `manifest.json`, with `parts` and `pending`, so a test or a
+  later index reads what a language offers instead of parsing HTML;
 - the **base locale** is the exception: missing text there is a hard error, since
   there is nothing for the other languages to be translated from;
 - the build logs every part it skipped and why, so a gap is visible rather than quiet.
 
 So adding a scene that stages chapter 2 never breaks the English build because the
 Japanese chapter 2 is still being written.
+
+#### What a reader meets
+
+A bookmark or a shared link to `/<locale>/` keeps working while that language is
+behind, which is why the entry is generated unconditionally: the alternative loses a
+URL every time a new chapter is staged ahead of its translations.
+
+A link to a part page that does not exist yet is a genuine 404, and deliberately so.
+It is not rewritten to another language: silently serving English to someone who
+asked for Japanese is worse than an honest missing page. The entry never links such a
+part, so a 404 means a hand-typed or outdated URL rather than a path through the site.
 
 ## 5. Adding a chapter
 

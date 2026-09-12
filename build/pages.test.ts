@@ -20,24 +20,55 @@ function withoutText(locale: string, chapter: number) {
 }
 
 describe('publishability', () => {
-  it('skips a part a translation is not ready for, and does not link it', () => {
+  it('keeps the locale entry when a part is not translated yet, without linking it', () => {
     const { pages, manifest, skipped } = generatePagesFrom(withoutText('ja', 1));
 
-    expect(pages.some((page) => page.path.startsWith('ja/'))).toBe(false);
-    expect(manifest.pages.some((page) => page.locale === 'ja')).toBe(false);
+    // The language keeps its place in the site: only the document it cannot serve
+    // goes away. Dropping the entry too would break every bookmark to /ja/ the
+    // moment a new chapter is staged ahead of its translation.
+    const entry = pages.find((page) => page.path === 'ja/index.html');
+    expect(entry).toBeDefined();
+    expect(pages.some((page) => page.path === 'ja/rabbit-hole/index.html')).toBe(false);
+    expect(entry?.html).not.toContain('href="./rabbit-hole/"');
+    expect(entry?.html).toContain('data-part="rabbit-hole" data-available="false"');
+
+    // The manifest says the same thing, so a test or a later index does not have to
+    // parse HTML to find out what a language can be read in.
+    const record = manifest.pages.find((page) => page.path === 'ja/index.html');
+    expect(record?.parts).toEqual([]);
+    expect(record?.pending).toEqual(['rabbit-hole']);
+    expect(manifest.pages.some((page) => page.kind === 'part' && page.locale === 'ja')).toBe(false);
     expect(skipped).toEqual([{ locale: 'ja', part: 'rabbit-hole', chapters: [1] }]);
 
     const home = pages.find((page) => page.path === 'index.html');
-    expect(home?.html).not.toContain('href="./ja/"');
+    expect(home?.html).toContain('href="./ja/"');
     // The language that does have text is unaffected.
     expect(home?.html).toContain('href="./en-simple/"');
     expect(pages.some((page) => page.path === 'en-simple/rabbit-hole/index.html')).toBe(true);
+  });
+
+  it('marks a readable part as available and links it', () => {
+    const entry = pages.find((page) => page.path === 'ja/index.html');
+    expect(entry?.html).toContain('data-part="rabbit-hole" data-available="true"');
+    expect(entry?.html).toContain('href="./rabbit-hole/"');
   });
 
   it('refuses to build when the base locale is missing text', () => {
     expect(() => generatePagesFrom(withoutText('en-simple', 1))).toThrow(
       /base locale en-simple has no text for chapter\(s\) 1/,
     );
+  });
+
+  it('refuses to build when baseLocale does not name a locale in the registry', () => {
+    const broken = loadProject(root);
+    broken.baseLocale = 'en-simpel';
+    expect(() => generatePagesFrom(broken)).toThrow(/baseLocale en-simpel is not in/);
+  });
+
+  it('refuses to build when baseLocale names a locale that is not the base', () => {
+    const broken = loadProject(root);
+    broken.baseLocale = 'ja';
+    expect(() => generatePagesFrom(broken)).toThrow(/baseLocale ja has role translation/);
   });
 });
 

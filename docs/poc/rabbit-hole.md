@@ -271,7 +271,7 @@ interface Scene {
 
 The exact TypeScript API may change during implementation. Acceptance is about these lifecycle responsibilities, not these exact method names.
 
-GSAP / ScrollTrigger may own scroll normalization and pinning. Scene-specific code may use GSAP timelines where that is simpler than manually setting every transform.
+Superseded by the implementation: pinning and scroll normalization are **CSS and the runtime**, not a library. A tall track gives the scene its distance and a sticky stage holds the composition, so the driver only reads a scroll offset; no animation library is in the bundle. GSAP is still available to a later Shot that needs a sequenced, eased, interruptible timeline, at the budget cost recorded in `docs/performance-budget.md` §2.
 
 ## 10. Performance requirements
 

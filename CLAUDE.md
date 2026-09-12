@@ -53,10 +53,18 @@ python3 scripts/show-scene.py rabbit-hole --locale ja
 python3 scripts/show-scene.py rabbit-hole --plan    # derived progress ranges
 ```
 
-Front-end commands (`npm run dev`, `lint`, `typecheck`, `build`, `test`,
-`test:e2e`) arrive with the first implementation; `.github/workflows/checks.yml`
-runs them once `package.json` exists. npm only: the production host does not
-support pnpm or yarn.
+```
+npm run dev          # Vite dev server; pages are generated from data on start
+npm run build        # static output in dist/, with size report
+npm run lint         # biome check: format and lint, fails on any diagnostic
+npm run typecheck
+npm test             # Vitest unit layer
+npm run test:e2e     # Playwright, desktop and phone viewports
+npm run plan:fixture # regenerate the pacing golden fixture
+```
+
+npm only: the production host does not support pnpm or yarn. CI runs all of the
+above (`.github/workflows/checks.yml`).
 
 ## Where decisions live
 

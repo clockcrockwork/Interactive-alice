@@ -8,8 +8,15 @@
   "additionalProperties": false,
   "properties": {
     "$schema": { "type": "string", "description": "Optional editor hint; not part of the data." },
-    "id": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "Scene id, unique across the story." },
-    "devLabel": { "type": "string", "description": "Development and debug label only. Never shown to a visitor, never translated." },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Scene id, unique across the story."
+    },
+    "devLabel": {
+      "type": "string",
+      "description": "Development and debug label only. Never shown to a visitor, never translated."
+    },
     "shots": {
       "type": "array",
       "minItems": 1,
@@ -19,7 +26,11 @@
         "required": ["id", "beats"],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "Shot id, unique within the scene." },
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$",
+            "description": "Shot id, unique within the scene."
+          },
           "devLabel": { "type": "string" },
           "weight": {
             "type": "number",
@@ -35,7 +46,11 @@
               "required": ["id", "segments"],
               "additionalProperties": false,
               "properties": {
-                "id": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "Beat id, unique within the scene. The addressable key is scene/shot/beat." },
+                "id": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9-]+$",
+                  "description": "Beat id, unique within the scene. The addressable key is scene/shot/beat."
+                },
                 "devLabel": { "type": "string" },
                 "weight": {
                   "type": "number",

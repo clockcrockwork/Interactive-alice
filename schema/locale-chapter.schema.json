@@ -4,13 +4,7 @@
   "title": "Locale chapter file",
   "description": "Visible text for one chapter in one language. Segment ids, their order, and the story sections are owned by the matching text/story/chNN.structure.json file.",
   "type": "object",
-  "required": [
-    "locale",
-    "chapter",
-    "title",
-    "sections",
-    "segments"
-  ],
+  "required": ["locale", "chapter", "title", "sections", "segments"],
   "additionalProperties": false,
   "properties": {
     "$schema": {

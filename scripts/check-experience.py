@@ -7,6 +7,7 @@ between the two layers rather than the staging itself:
 
   * every file matches its schema in schema/
   * every scene listed in experience/story.json exists and agrees on its id
+  * when documents (parts) are declared, each scene belongs to exactly one, in order
   * shot and beat ids are unique inside a scene
   * every referenced segment id exists in some chapter structure
   * a segment is referenced at most once in the whole story
@@ -83,6 +84,45 @@ def check_text_layer(errors: list[str]) -> None:
         forbidden_keys(load(path), EXPERIENCE_KEYS, path.relative_to(REPO_ROOT).as_posix(), problems)
         for problem in problems:
             errors.append(f"{problem}. Scene, shot and beat composition belongs in experience/.")
+
+
+def check_parts(story: dict, errors: list[str]) -> None:
+    """Documents group scenes; the grouping must cover every scene once, in story order."""
+    parts = story.get("parts")
+    if not parts:
+        return
+
+    order = [entry["id"] for entry in story["scenes"]]
+    seen_parts: set[str] = set()
+    claimed: dict[str, str] = {}
+    first_positions: list[int] = []
+
+    for part in parts:
+        if part["id"] in seen_parts:
+            errors.append(f"story.json: duplicate part id {part['id']!r}")
+        seen_parts.add(part["id"])
+        positions = []
+        for scene_id in part["scenes"]:
+            if scene_id not in order:
+                errors.append(f"story.json: part {part['id']!r} names unknown scene {scene_id!r}")
+                continue
+            if scene_id in claimed:
+                errors.append(
+                    f"story.json: scene {scene_id!r} is in both {claimed[scene_id]!r} and {part['id']!r}"
+                )
+                continue
+            claimed[scene_id] = part["id"]
+            positions.append(order.index(scene_id))
+        if positions:
+            first_positions.append(min(positions))
+
+    for scene_id in order:
+        if scene_id not in claimed:
+            errors.append(f"story.json: scene {scene_id!r} is in no part, so it has no page")
+
+    for earlier, later in zip(first_positions, first_positions[1:]):
+        if later < earlier:
+            errors.append("story.json: parts are not in story order")
 
 
 def main() -> int:
@@ -169,6 +209,7 @@ def main() -> int:
                 f"{later_where}: {later_id} is staged after {earlier_id} but comes earlier in the text"
             )
 
+    check_parts(story, errors)
     check_text_layer(errors)
 
     for chapter in sorted(chapters):

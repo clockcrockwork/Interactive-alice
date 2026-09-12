@@ -44,6 +44,19 @@ exceeded silently.
 Assets for the *next* scene never count against the current page, and never load
 before the current scene is interactive.
 
+### First baseline
+
+The scaffolding, before any scene animation, GSAP, or art:
+
+| Page | HTML | CSS | JS |
+| --- | --- | --- | --- |
+| `/` | 0.4 KB | 0.7 KB | none |
+| `/ja/rabbit-hole/` | 2.3 KB | 0.7 KB | 0.4 KB |
+| `/en-simple/rabbit-hole/` | 2.1 KB | 0.7 KB | 0.4 KB |
+
+Gzip, from the build's own size report. Every later figure is compared against
+this, so growth has a cause rather than a surprise.
+
 ## 3. Keeping interaction responsive
 
 The INP target is a consequence of how work is scheduled, not of a setting:

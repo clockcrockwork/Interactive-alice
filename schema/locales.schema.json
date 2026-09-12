@@ -8,14 +8,29 @@
   "additionalProperties": false,
   "properties": {
     "$schema": { "type": "string", "description": "Optional editor hint; not part of the data." },
-    "sourceLocale": { "type": "string", "description": "The language of the original public-domain text in text/raw/." },
-    "baseLocale": { "type": "string", "description": "The retelling every translation works from." },
+    "sourceLocale": {
+      "type": "string",
+      "description": "The language of the original public-domain text in text/raw/."
+    },
+    "baseLocale": {
+      "type": "string",
+      "description": "The retelling every translation works from."
+    },
     "locales": {
       "type": "object",
       "propertyNames": { "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]+)*$" },
       "additionalProperties": {
         "type": "object",
-        "required": ["name", "nativeName", "role", "maxChars", "status", "dir", "lineBreak", "significantSpaces"],
+        "required": [
+          "name",
+          "nativeName",
+          "role",
+          "maxChars",
+          "status",
+          "dir",
+          "lineBreak",
+          "significantSpaces"
+        ],
         "additionalProperties": false,
         "properties": {
           "name": { "type": "string", "minLength": 1 },
@@ -27,7 +42,10 @@
             "description": "Authoring budget per segment. A limit on how long a sentence may be written, not a promise that it fits one rendered line."
           },
           "status": { "enum": ["in-progress", "complete"] },
-          "dir": { "enum": ["ltr", "rtl"], "description": "Base writing direction for this language's text." },
+          "dir": {
+            "enum": ["ltr", "rtl"],
+            "description": "Base writing direction for this language's text."
+          },
           "lineBreak": {
             "enum": ["auto", "loose", "normal", "strict"],
             "description": "CSS line-break keyword a scene should apply to this language's text."

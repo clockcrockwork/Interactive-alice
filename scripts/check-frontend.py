@@ -30,7 +30,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SRC = REPO_ROOT / "src"
+ROOTS = ("src", "build", "tests")
 SCENES_DIR = REPO_ROOT / "experience" / "scenes"
 
 ALLOW = re.compile(r"check-frontend:\s*allow\s+([a-z-]+)")
@@ -70,7 +70,7 @@ def report(problems: list[str], path: Path, number: int, rule: str, message: str
 def check_code(path: Path, text: str, ids: set[str], problems: list[str]) -> None:
     in_keyframes = 0
     for number, line in enumerate(text.splitlines(), start=1):
-        if CJK.search(line) and not allowed(line, "prose"):
+        if path.suffix in {".ts", ".css"} and CJK.search(line) and not allowed(line, "prose"):
             report(problems, path, number, "prose",
                    "narrative text belongs in text/locales/, referenced by segment id")
         if ABSOLUTE.search(line) and not allowed(line, "absolute-path"):
@@ -113,14 +113,22 @@ def main() -> int:
     parser.add_argument("--quiet", action="store_true", help="print only problems")
     args = parser.parse_args()
 
-    if not SRC.exists():
+    roots = [REPO_ROOT / name for name in ROOTS if (REPO_ROOT / name).exists()]
+    if not roots:
         if not args.quiet:
             print("ok: no front end yet, nothing to check")
         return 0
 
     ids = shot_and_beat_ids()
     problems: list[str] = []
-    files = [p for p in SRC.rglob("*") if p.suffix in {".ts", ".css", ".html"} and p.is_file()]
+    files = [
+        path
+        for root in roots
+        for path in root.rglob("*")
+        # Generated pages are build output, derived from the mapping rather than a
+        # second copy of it, so they are not hand-written code to police.
+        if path.suffix in {".ts", ".css", ".html"} and path.is_file() and "generated" not in path.parts
+    ]
     for path in sorted(files):
         check_code(path, path.read_text(encoding="utf-8"), ids, problems)
 

@@ -1,2 +1,8 @@
 __pycache__/
 *.pyc
+node_modules/
+dist/
+src/generated/
+playwright-report/
+test-results/
+.vite/

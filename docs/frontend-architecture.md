@@ -113,14 +113,20 @@ Consequences to respect in code:
 ## 5. Where the scene runtime sits
 
 ```text
+build/                                reads the data layers and generates the page graph
 src/
-  pages/                              page templates; the page graph is generated from data
+  entry/                              one module per page kind
   runtime/                            scene progress, lifecycle, viewport, capability context
   scenes/<scene>/                     one directory per Scene: shots, layers, its own CSS
   audio/                              BGM controller and the beep synthesizer
-  text/                               loads the binding output for a locale at build time
   styles/                             tokens, base, utilities
+  assets/                             icons and placeholder art
+  generated/                          written by the build; not in the repository
 ```
+
+The generator resolves each page's text for its locale and writes the derived shot
+and beat spans into the markup as data attributes, so the pacing formula runs once
+per build and the runtime reads the result instead of recomputing it.
 
 The runtime owns normalized progress, direction, velocity, viewport, reduced
 motion, and lifecycle, as listed in the charter. Scenes consume it. Shots are

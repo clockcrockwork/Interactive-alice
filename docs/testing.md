@@ -40,9 +40,11 @@ browser:
 drift unless something compares them, and the symptom would be text appearing at
 the wrong moment in one language only.
 
-So the Python side emits a machine-readable plan, that output is committed as a
-**golden fixture**, and a unit test asserts the TypeScript implementation produces
-it exactly. CI regenerates the fixture and fails on a diff, which turns a silent
+So the Python side emits a machine-readable plan (`--plan --json`), that output is
+committed as a **golden fixture** in `tests/fixtures/`, and a unit test asserts the
+TypeScript implementation produces it to within a tolerance far finer than a pixel
+of scroll. The TypeScript side runs at build time, writing the spans into the markup
+as data attributes, so the browser never recomputes them. CI regenerates the fixture and fails on a diff, which turns a silent
 divergence into a failed check. When the formula changes deliberately, the fixture
 changes in the same commit.
 

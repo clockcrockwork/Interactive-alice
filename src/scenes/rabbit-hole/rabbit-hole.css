@@ -77,6 +77,34 @@
       z-index: 3;
     }
 
+    /*
+     * The Canvas FX layer, created by src/scenes/rabbit-hole/dust.ts and present in
+     * one shot only. Three things this rule is responsible for:
+     *
+     *   - it never takes pointer events. The renderer listens on the shot instead,
+     *     so a tap stirs the dust without the canvas swallowing text selection, a
+     *     scroll, or anything the shot may hold later;
+     *   - `z-index: 1` puts it in the mid band, and being appended after the mid
+     *     layer puts it in front of that: dust passes behind Alice (2) and behind
+     *     the foreground occluder (3), which is what makes it read as depth rather
+     *     than as a wash over the whole shot;
+     *   - the CSS box is stated here and the backing buffer is not. They are
+     *     deliberately separate; the renderer sizes the buffer from this box times
+     *     the capped DPR.
+     *
+     * Nothing here animates, so this file's reduced-motion block has nothing to say
+     * about it: the comfortable version of the dust is a different field, drawn by
+     * the renderer, not the same field with a rule switched off.
+     */
+    .scene-rabbit-hole__dust {
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      inline-size: 100%;
+      block-size: 100%;
+      pointer-events: none;
+    }
+
     .scene-rabbit-hole__alice {
       position: absolute;
       z-index: 2;

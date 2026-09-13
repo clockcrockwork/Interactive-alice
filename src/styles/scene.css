@@ -60,6 +60,20 @@
   .story[data-mode="scene"] .shot[data-state="before"],
   .story[data-mode="scene"] .shot[data-state="after"] {
     opacity: 0;
+    /*
+     * ...and takes no pointer input either. Shots are stacked siblings filling the
+     * same box, so without this the *last* shot in the document swallows every
+     * click and tap on the stage, whatever is actually on screen — invisible, and
+     * still first in hit-testing order. That is not a hypothetical: it is what a
+     * shot with an optional pointer interaction runs into immediately (see
+     * `src/scenes/rabbit-hole/dust.ts`), and it would equally intercept a selection
+     * drag over the words a reader can see.
+     *
+     * `pointer-events` is not an accessibility decision the way `visibility` is: the
+     * text stays in the document, in reading order and in the accessibility tree, so
+     * the rule in docs/testing.md §3 about how a shot hides is untouched.
+     */
+    pointer-events: none;
   }
 
   /*

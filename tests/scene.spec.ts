@@ -131,14 +131,33 @@ for (const entry of parts) {
       }
     });
 
-    test(`${entry.url} ${sceneId}: settles its velocity after scrolling stops`, async ({
+    test(`${entry.url} ${sceneId}: reads a speed while scrolling, and settles it after`, async ({
       page,
     }) => {
       await page.goto(url);
-
-      // Somewhere inside this scene's own travel, whichever scene it is.
       const { top, travel } = await geometryOf(page, sceneId);
-      await page.evaluate((to) => window.scrollTo(0, to), top + travel * 0.5);
+
+      // Both halves matter, and only the second used to be checked. A runtime that
+      // reported zero for every frame of every scroll passed a settling assertion
+      // perfectly, because it had nothing to settle — which is exactly what this
+      // runtime did until the Canvas FX layer became the first thing to read the
+      // value. So the speed is sampled *while the reader is moving*, inside the
+      // page and once per animation frame: a reading fetched afterwards always
+      // finds the field at rest.
+      const fastest = await page.evaluate(
+        async ({ scene, top, travel }) => {
+          let peak = 0;
+          for (let step = 1; step <= 20; step += 1) {
+            window.scrollTo(0, top + travel * (0.2 + (0.5 * step) / 20));
+            await new Promise((resolve) => requestAnimationFrame(resolve));
+            peak = Math.max(peak, Math.abs(window.__alice?.snapshot(scene)[0]?.velocity ?? 0));
+          }
+          return peak;
+        },
+        { scene: sceneId, top, travel },
+      );
+      expect(fastest, 'scrolling has a speed').toBeGreaterThan(0.01);
+
       await page.waitForTimeout(700);
       const settled = await page.evaluate(
         (scene) => window.__alice?.snapshot(scene)[0]?.velocity,

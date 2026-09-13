@@ -60,6 +60,16 @@ export interface SceneDriverOptions {
   shots: readonly ShotSpan[];
   beats: readonly Span[];
   onUpdate: (context: RuntimeContext) => void;
+  /**
+   * The scene stopped being ticked.
+   *
+   * `onUpdate` alone cannot say this: not being called is indistinguishable from a
+   * frame in which nothing changed, and a renderer that holds a frame request of its
+   * own has to be told to let it go. Off-screen scenes doing no work is a rule, and
+   * a rule needs an edge to fire on.
+   */
+  onSuspend?: () => void;
+  onDestroy?: () => void;
 }
 
 export class SceneDriver {
@@ -159,6 +169,7 @@ export class SceneDriver {
   suspend(): void {
     if (this.#lifecycle.can('suspended')) {
       this.#lifecycle.to('suspended');
+      this.#options.onSuspend?.();
     }
     // Nothing is moving while suspended, and the clock must not carry the pause into
     // the first sample after resuming.
@@ -186,6 +197,7 @@ export class SceneDriver {
   destroy(): void {
     this.suspend();
     this.#lifecycle.to('destroyed');
+    this.#options.onDestroy?.();
   }
 
   /**
@@ -274,7 +286,15 @@ export class SceneDriver {
     this.#lastTime = time;
 
     const delta = progress - this.#progress;
-    this.#direction = directionOf(delta);
+    // Only a frame in which the position actually moved says anything about which
+    // way a reader is going. A frame that moved nothing is not evidence that they
+    // stopped: frames now arrive while velocity decays and to give the clock an
+    // interval to measure, and letting either of those reset `direction` would make
+    // the value flicker to zero a frame after every scroll. `#neutral` is still what
+    // clears it, and it is called for exactly the discontinuities that should.
+    if (delta !== 0) {
+      this.#direction = directionOf(delta);
+    }
     this.#velocity = velocityOf(this.#velocity, delta, seconds);
 
     if (delta !== 0 || this.#velocity !== 0) {
@@ -286,6 +306,22 @@ export class SceneDriver {
     if (Math.abs(this.#velocity) > VELOCITY_EPSILON) {
       return true;
     }
+
+    // Movement, but no interval to measure it over yet: this frame had no previous
+    // timestamp, so `seconds` was zero and `velocityOf` could only return what it
+    // was given. Dropping the clock here as well would make that permanent —
+    // every frame would rediscover that it has no previous one, and `velocity`
+    // could never leave zero however fast a reader scrolled. So the clock is kept
+    // and another frame is asked for, and the frame after this one is the first
+    // that can say how fast this is going. One frame of latency before a speed
+    // exists is inherent; never having one is a defect, and was one until the
+    // Canvas layer became the first thing to actually read the value.
+    if (delta !== 0) {
+      return true;
+    }
+
+    // Genuinely still. Drop the clock, so that whenever the next frame comes — a
+    // second later, or after a suspension — the pause does not read as travel.
     this.#lastTime = 0;
     return false;
   }

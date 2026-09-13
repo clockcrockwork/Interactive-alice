@@ -9,9 +9,25 @@
  *    the track's scroll distance comes from CSS that applies only in that mode.
  */
 
+import { renderersFor } from '../scenes/registry.ts';
 import { SceneCoordinator } from './coordinator.ts';
 import type { SceneDriverOptions } from './scene-driver.ts';
+import { type ShotRendererReport, ShotRenderers } from './shot-renderer.ts';
 import { readBeats, readShots, Stage } from './stage.ts';
+
+/**
+ * What a story document ended up with.
+ *
+ * The renderers are reported separately from the coordinator rather than hung off a
+ * driver: a driver owns one scene's geometry, progress and lifecycle, and knows
+ * nothing about anything that draws. Keeping it that way is what lets a renderer be
+ * added, or fail, without the progression contract noticing.
+ */
+export interface AttachedStory {
+  coordinator: SceneCoordinator;
+  /** Scene id to that scene's renderer states, for the probe and the tests. */
+  fx: Map<string, () => ShotRendererReport[]>;
+}
 
 /**
  * Marks the document as running in a reduced form, so degradation is observable.
@@ -23,9 +39,11 @@ function degrade(story: HTMLElement, reason: 'markup' | 'mount'): void {
   story.dataset.degraded = reason;
 }
 
-export function attachStory(story: HTMLElement): SceneCoordinator | undefined {
+export function attachStory(story: HTMLElement): AttachedStory | undefined {
   // Preflight: read the markup and construct, while the document is still in flow.
   const prepared: SceneDriverOptions[] = [];
+  const fx = new Map<string, () => ShotRendererReport[]>();
+  const mountable: ShotRenderers[] = [];
   let unreadable = 0;
   try {
     for (const scene of story.querySelectorAll<HTMLElement>('.scene')) {
@@ -44,13 +62,26 @@ export function attachStory(story: HTMLElement): SceneCoordinator | undefined {
       const shots = readShots(scene);
       const beats = readBeats(scene);
       const staging = new Stage(scene, { shots, beats });
+      // Optional layers are this scene's own; a scene with none carries no cost and
+      // no `data-fx`. Constructing one must not touch the DOM or the platform, so
+      // that a renderer whose feature is missing fails at mount, inside the guard,
+      // rather than here where the document is still the readable fallback.
+      const renderers = new ShotRenderers(scene, renderersFor(scene.dataset.scene ?? ''));
+      if (!renderers.empty) {
+        mountable.push(renderers);
+        fx.set(scene.dataset.scene ?? '', () => renderers.report());
+      }
       prepared.push({
         scene,
         track,
         stage,
         shots: shots.map((unit) => unit.span),
         beats: beats.map((unit) => unit.span),
-        onUpdate: (context) => staging.apply(context),
+        // One `shotStates` per frame: the stage derives it, writes the document with
+        // it, and hands the same values to the renderers.
+        onUpdate: (context) => renderers.apply(context, staging.apply(context)),
+        onSuspend: () => renderers.suspend(),
+        onDestroy: () => renderers.destroy(),
       });
     }
   } catch (error) {
@@ -77,6 +108,11 @@ export function attachStory(story: HTMLElement): SceneCoordinator | undefined {
   void story.offsetHeight;
 
   try {
+    // Renderers first: mounting one is guarded, so a broken optional layer retires
+    // itself here instead of throwing into the scene mount below.
+    for (const renderers of mountable) {
+      renderers.mount();
+    }
     coordinator.mount();
   } catch (error) {
     // Put the page back the way a visitor can read it, then give up on staging.
@@ -88,5 +124,5 @@ export function attachStory(story: HTMLElement): SceneCoordinator | undefined {
   }
 
   story.dataset.ready = 'true';
-  return coordinator;
+  return { coordinator, fx };
 }

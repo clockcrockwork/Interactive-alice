@@ -7,7 +7,7 @@
  */
 
 import type { RuntimeContext } from './context.ts';
-import { type ShotSpan, type Span, shotStates, spanStates } from './progress.ts';
+import { type ShotSpan, type ShotState, type Span, shotStates, spanStates } from './progress.ts';
 
 export interface StageUnit {
   element: HTMLElement;
@@ -53,7 +53,14 @@ export class Stage {
     this.#beatSpans = units.beats.map((unit) => unit.span);
   }
 
-  apply(context: RuntimeContext): void {
+  /**
+   * Writes this frame, and hands back the shot states it derived.
+   *
+   * Returned rather than recomputed by the caller: a shot renderer needs exactly
+   * these values, and `shotStates` running twice per frame would be two answers to
+   * one question that must never differ. See `shot-renderer.ts`.
+   */
+  apply(context: RuntimeContext): ShotState[] {
     // The scene's own values go through the same guard as its units, so a frame
     // that changes nothing writes nothing anywhere.
     const sceneKey = `${round(context.progress)}:${context.direction}:${context.quality}`;
@@ -88,6 +95,8 @@ export class Stage {
       }
       this.#write(unit.element, beat.state, beat.local);
     }
+
+    return shots;
   }
 
   /** Writes one unit's state, skipping the work when nothing it shows has changed. */

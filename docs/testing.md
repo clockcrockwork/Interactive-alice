@@ -318,6 +318,26 @@ which tier it ran at has measured the runner. `tests/canvas-fx.spec.ts` drives b
 tiers explicitly and asserts that the reduced one is thinner than the full one and
 still a field rather than nothing.
 
+Since the pacing work (`tests/pacing.spec.ts`), two contracts about **how much of a
+Scene one gesture crosses** — the measurable half of a complaint that was otherwise
+perceptual:
+
+- every text-bearing Beat outlasts one ordinary wheel gesture, and the median
+  outlasts one comfortably. The notch is measured with a real wheel event through
+  the browser's input pipeline rather than assumed to be 100px, and the spans are
+  read from the markup, so a mapping change moves the numbers instead of breaking
+  the test;
+- each project gets the track length its own pointer class implies — the long one
+  for a wheel, the short one for touch — asserted inside each project rather than by
+  comparing two contexts, so the run that needs the branch is the run that proves it.
+
+Thresholds are calibrated against the shortest desktop viewport in the matrix, not
+the most generous, and they were verified to **fail** on a revert of the distance.
+A pacing test that cannot fail is worse than none, because it reads as coverage.
+
+What they deliberately do not assert is that the scene *feels* like falling. That is
+the review question on issue #8 and it belongs to a person looking at it.
+
 Still to come with the scenes they belong to: audio, and back-navigation restore
 across a document boundary.
 

@@ -247,10 +247,17 @@ an implementation detail:
    its track, or a track any padding, and only the stage still means "on screen".
 
    A driver stops at `mounted` and the coordinator resumes or suspends it from the
-   stage's geometry, synchronously, before any frame runs. An observer's first
-   callback is delivered *after* that frame's animation callbacks, so a driver that
-   started `active` would run one frame from three viewports below the fold before
-   being told where it was.
+   stage's geometry, synchronously, before any frame runs. An observer's callback is
+   delivered *after* the animation callbacks of the frame that provoked it, so a
+   driver that started `active` would run one frame from three viewports below the
+   fold before being told where it was.
+
+   That is not only true at mount, so it is not only done at mount. Every path that
+   can move a scene relative to the viewport without a scroll — mount, a resize, a
+   restore from the back/forward cache — reads the geometry and settles the
+   lifecycles from it, and the observer maintains the answer afterwards rather than
+   establishing it. The layout read is affordable because none of those paths is a
+   frame; the frame loop still never reads layout.
 
 Two more things are decided rather than fixed. **`direction` means reader movement.**
 A progress value that arrives without anyone scrolling — the first sync after mounting,

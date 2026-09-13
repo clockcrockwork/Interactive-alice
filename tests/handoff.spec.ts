@@ -145,6 +145,71 @@ for (const entry of shared) {
     expect(await progressOf(page, second)).toBe(0);
   });
 
+  /**
+   * The same contract on the paths that move a scene relative to the viewport
+   * without anyone scrolling.
+   *
+   * The observer is silenced for these, so nothing can pass by being corrected a
+   * frame later: whatever the lifecycle says has to have come from the runtime
+   * reading the geometry itself. That is the whole claim, and an observer left
+   * running would hide a failure to make it.
+   */
+  test.describe('with the intersection observer silenced', () => {
+    test.beforeEach(async ({ page }) => {
+      await page.addInitScript(() => {
+        const Real = window.IntersectionObserver;
+        window.IntersectionObserver = class extends Real {
+          constructor() {
+            // Observes nothing and reports nothing. `disconnect` and `observe`
+            // still exist, so the runtime attaches and tears down as usual.
+            super(() => {});
+          }
+        } as typeof IntersectionObserver;
+      });
+    });
+
+    test(`${entry.url} places every scene at mount`, async ({ page }) => {
+      await page.goto(url);
+      await expect.poll(() => stateOf(page, first), { timeout: 5000 }).toBe('active');
+      expect(await stateOf(page, second)).toBe('suspended');
+    });
+
+    test(`${entry.url} replaces them when a resize moves the viewport past one`, async ({
+      page,
+    }) => {
+      await page.goto(url);
+      await expect.poll(() => stateOf(page, first), { timeout: 5000 }).toBe('active');
+
+      // Put the second scene on screen and the first off it. Nothing has told the
+      // runtime yet: scrolling is the observer's job, and it has been silenced.
+      await page.evaluate((to) => window.scrollTo(0, to), await pastScene(page, first));
+      expect(await stateOf(page, first), 'before the resize').toBe('active');
+      expect(await stateOf(page, second), 'before the resize').toBe('suspended');
+
+      // A resize is a path that reads the geometry, so it settles both.
+      await page.setViewportSize({ width: 900, height: 600 });
+      await expect.poll(() => stateOf(page, first), { timeout: 5000 }).toBe('suspended');
+      expect(await stateOf(page, second)).toBe('active');
+    });
+
+    test(`${entry.url} replaces them again when the page is restored`, async ({ page }) => {
+      await page.goto(url);
+      await expect.poll(() => stateOf(page, first), { timeout: 5000 }).toBe('active');
+
+      await page.evaluate((to) => window.scrollTo(0, to), await pastScene(page, first));
+      await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+      expect(await stateOf(page, first)).toBe('suspended');
+      expect(await stateOf(page, second)).toBe('suspended');
+
+      // Coming back reads where the scenes now are, rather than trusting what was
+      // true when the page was put away.
+      await page.evaluate(() => window.dispatchEvent(new Event('pageshow')));
+      await expect.poll(() => stateOf(page, second), { timeout: 5000 }).toBe('active');
+      expect(await stateOf(page, first)).toBe('suspended');
+      await expectProgress(page, second, 0);
+    });
+  });
+
   test(`${entry.url} suspends a scene once it is off screen, and stops advancing it`, async ({
     page,
   }) => {

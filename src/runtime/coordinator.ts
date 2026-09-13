@@ -28,7 +28,7 @@ function onScreen(element: HTMLElement): boolean {
 
 export class SceneCoordinator {
   readonly #drivers: SceneDriver[];
-  /** Which scenes are on screen, by the observer's reckoning. */
+  /** Which scenes are on screen, as last decided by geometry or by the observer. */
   readonly #visible = new WeakMap<SceneDriver, boolean>();
   readonly #byStage = new Map<HTMLElement, SceneDriver>();
   #observer: IntersectionObserver | undefined;
@@ -37,21 +37,11 @@ export class SceneCoordinator {
   #mounted = false;
 
   readonly #onScroll = () => this.#request();
-  readonly #onResize = () => this.#remeasure();
-  readonly #onPageShow = () => {
-    // Back from the back/forward cache: the viewport may differ and the scroll
-    // position is restored, so remeasure before trusting anything.
-    for (const driver of this.#drivers) {
-      driver.measure();
-    }
-    for (const driver of this.#drivers) {
-      // A scene that is off screen stays suspended. Resuming everything would
-      // undo the suspension the moment a visitor came back to the page.
-      if (this.#visible.get(driver) !== false) {
-        driver.resume();
-      }
-    }
-  };
+  readonly #onResize = () => this.#resettle();
+  // Back from the back/forward cache: the viewport may differ and the scroll
+  // position is restored, so nothing about where a scene sits can be assumed.
+  // Which is the same situation as a resize, and gets the same answer.
+  readonly #onPageShow = () => this.#resettle();
   readonly #onPageHide = () => {
     for (const driver of this.#drivers) {
       driver.suspend();
@@ -77,30 +67,16 @@ export class SceneCoordinator {
     }
 
     // Decide who is on screen before anyone runs a frame.
-    //
-    // An intersection callback for the initial observation does not arrive until
-    // after this frame's animation callbacks, so a scene left `active` here would
-    // run one frame before being told it is three viewports below the fold. The
-    // geometry is already known, so it is read once and the observer below only
-    // has to maintain the answer.
-    for (const driver of this.#drivers) {
-      const visible = onScreen(driver.stage);
-      this.#visible.set(driver, visible);
-      if (visible) {
-        driver.resume();
-      } else {
-        driver.suspend();
-      }
-    }
+    this.#syncVisibility();
     this.#mounted = true;
 
     // Layout can still move under us: a late font swap shifts what sits above a
     // track, and a container query or an orientation change resizes it.
-    this.#resizeObserver = new ResizeObserver(() => this.#remeasure());
+    this.#resizeObserver = new ResizeObserver(() => this.#resettle());
     for (const driver of this.#drivers) {
       this.#resizeObserver.observe(driver.track);
     }
-    void document.fonts?.ready.then(() => this.#remeasure());
+    void document.fonts?.ready.then(() => this.#resettle());
 
     addEventListener('scroll', this.#onScroll, { passive: true });
     addEventListener('resize', this.#onResize, { passive: true });
@@ -157,13 +133,44 @@ export class SceneCoordinator {
   }
 
   /**
-   * Geometry moved, so every scene remeasures and treats what it reads next as a
-   * jump. A suspended scene remeasures too: it is cheap, and it is what lets the
-   * scene resume onto correct geometry rather than onto what was true before.
+   * Which scenes are on screen, read from the stages themselves.
+   *
+   * An intersection callback is delivered after the animation callbacks of the
+   * frame that provoked it, so anything that relies on the observer alone leaves
+   * a frame in which a scene's lifecycle disagrees with where it actually is: an
+   * off-screen scene still ticking, or a scene now in view still suspended and
+   * drawing nothing. Every path that can move a scene relative to the viewport
+   * therefore reads the geometry itself and lets the observer maintain the answer
+   * afterwards rather than establish it.
+   *
+   * The layout read is affordable because none of those paths is a frame: mount,
+   * a resize, and a restore. The frame loop still never reads layout.
    */
-  #remeasure(): void {
+  #syncVisibility(): void {
+    for (const driver of this.#drivers) {
+      const visible = onScreen(driver.stage);
+      this.#visible.set(driver, visible);
+      if (visible) {
+        driver.resume();
+      } else {
+        driver.suspend();
+      }
+    }
+  }
+
+  /**
+   * Geometry moved under the scenes: remeasure, work out who is on screen now,
+   * and treat whatever each one reads next as a jump rather than as travel.
+   *
+   * A suspended scene remeasures too: it is cheap, and it is what lets the scene
+   * resume onto correct geometry rather than onto what was true before.
+   */
+  #resettle(): void {
     for (const driver of this.#drivers) {
       driver.measure();
+    }
+    this.#syncVisibility();
+    for (const driver of this.#drivers) {
       driver.resync();
     }
   }
@@ -171,8 +178,10 @@ export class SceneCoordinator {
   /**
    * One frame for the whole document.
    *
-   * One scroll event schedules one frame, however many scenes the page has, and
-   * the frame ends when no scene still wants one.
+   * One loop, and at most one runtime callback in any animation frame, however
+   * many scenes the page hosts. Not one frame per scroll event: a scene whose
+   * velocity is still decaying asks for the next frame itself, so frames continue
+   * after scrolling stops and end when no scene still wants one.
    */
   #request(): void {
     if (this.#frame) {

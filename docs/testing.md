@@ -322,14 +322,22 @@ Since the pacing work (`tests/pacing.spec.ts`), two contracts about **how much o
 Scene one gesture crosses** — the measurable half of a complaint that was otherwise
 perceptual:
 
-- every text-bearing Beat outlasts one ordinary wheel gesture, and the median
-  outlasts one comfortably. The notch is measured with a real wheel event through
-  the browser's input pipeline rather than assumed to be 100px, and the spans are
-  read from the markup, so a mapping change moves the numbers instead of breaking
-  the test;
-- each project gets the track length its own pointer class implies — the long one
-  for a wheel, the short one for touch — asserted inside each project rather than by
-  comparing two contexts, so the run that needs the branch is the run that proves it.
+- in **Rabbit Hole**, every text-bearing Beat outlasts one ordinary wheel gesture,
+  and the median outlasts one comfortably. The notch is measured with a real wheel
+  event through the browser's input pipeline rather than assumed to be 100px, and
+  the spans are read from the markup, so a mapping change moves the numbers instead
+  of breaking the test;
+- every Scene gets the track length it art-directs — Rabbit Hole's own, longer for
+  a desktop-class pointer, and the shared base for everything that has not
+  art-directed one. Asserted inside each project rather than by comparing two
+  contexts, so the run that needs the branch is the run that proves it.
+
+Scoping the first to one Scene is deliberate. Physical distance is art-directed per
+Scene, so a floor derived from one Scene's evidence is not an invariant of the
+runtime, and asserting it over every Scene would bind a future Scene of short, quick
+exchanges to the tempo of a long fall. The second contract is the guard in the other
+direction: it fails if Rabbit Hole's distance is ever promoted into the generic
+stylesheet, because the Scenes that never opted in would move too.
 
 Thresholds are calibrated against the shortest desktop viewport in the matrix, not
 the most generous, and they were verified to **fail** on a revert of the distance.

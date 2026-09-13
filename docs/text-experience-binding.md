@@ -160,10 +160,14 @@ Two things follow, and the difference between them matters:
   same ranges, so a shot's dramatic proportion does not change with translation.
 - **Total scroll distance is not text-derived.** It is art-directed and owned by
   the Scene runtime: one base distance shared by every locale, which the
-  normalized costs above then divide. It may vary by **input class** — a wheel
-  moves in fixed steps and a flick does not, so a desktop pointer gets a longer
-  track than touch — and that is still one distance per class shared by every
-  locale, decided in CSS, never derived from the text.
+  normalized costs above then divide. The base is a default, not a policy — each
+  Scene may art-direct its own, because sharing a runtime is not a reason to share
+  a tempo, and one Scene's evidence does not generalize to another. Within a Scene
+  that distance is still locale-independent; it may carry **variants by input
+  class**, since a step-wise input crosses a fixed number of pixels per notch and
+  a flick does not. Rabbit Hole has one such variant (issue #8). All of it is
+  decided in CSS — the generic default in `src/styles/scene.css`, a Scene's own in
+  its own stylesheet — and never derived from the text.
 
 Character counts never escape that ratio, because they are not a reading-time
 unit. The same 44 segments are 1660 characters in `en-simple` and 832 in `ja`,

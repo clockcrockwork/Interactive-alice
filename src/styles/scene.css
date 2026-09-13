@@ -5,36 +5,25 @@
    * flowing text into a staged scene.
    */
   /*
-   * Art-directed scroll distance: one base length for every language, and one per
-   * class of input.
+   * The default scroll distance a Scene gets: one base length, the same for every
+   * language, which the normalized Beat costs then divide.
    *
-   * The length is what decides how much of a Scene one gesture crosses, because a
-   * wheel notch is a fixed 100px however tall the track is. Measured before this
-   * changed: at 500svh one notch crossed 0.028 of the Scene, which was about one
-   * whole Beat, so the composition advanced like a slide every time the wheel
-   * moved. See issue #8 for the full baseline.
+   * A default rather than a policy. Physical length is an art-directed decision per
+   * Scene (docs/text-experience-binding.md §5), and sharing a runtime is not a
+   * reason to share a tempo: a Scene of short exchanges and a Scene of a long fall
+   * want different distances even though the mapping semantics are identical. A
+   * Scene that wants another length overrides `--scene-length` in its own
+   * stylesheet, and may key that override on anything CSS can see — Rabbit Hole
+   * varies it by pointer class in scenes/rabbit-hole/rabbit-hole.css, for reasons
+   * measured on issue #8 that were about that Scene.
+   *
+   * Nothing else varies with it: the same normalized 0..1, the same Shot and Beat
+   * semantics, the same mapping. Length is the one thing the runtime owns rather
+   * than the mapping, which is exactly why it is the thing allowed to differ.
    */
   .story[data-mode="scene"] .scene {
     --scene-length: 500svh;
     position: relative;
-  }
-
-  /*
-   * Twice the distance where the pointer is a wheel or a trackpad, so an ordinary
-   * three-to-five notch gesture lands inside one Beat rather than past it.
-   *
-   * `pointer: fine` rather than a width query, because this is a fact about the
-   * input and not about the screen: a wheel moves in fixed steps and a flick does
-   * not, so touch keeps the shorter distance and stays comfortable to swipe
-   * through. Nothing else differs between them — the same normalized 0..1, the
-   * same Shot and Beat semantics, the same mapping. Physical length is the one
-   * thing the runtime owns rather than the mapping, which is exactly why it is the
-   * thing allowed to vary here.
-   */
-  @media (pointer: fine) {
-    .story[data-mode="scene"] .scene {
-      --scene-length: 1000svh;
-    }
   }
 
   .story[data-mode="scene"] .scene__track {

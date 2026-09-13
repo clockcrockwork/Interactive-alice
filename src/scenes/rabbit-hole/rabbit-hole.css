@@ -146,6 +146,36 @@
   }
 
   /*
+   * Rabbit Hole's own scroll distance: twice the generic base where the pointer is
+   * a desktop-class one, so an ordinary three-to-five notch gesture lands inside
+   * one Beat rather than past it.
+   *
+   * This Scene's decision, not the runtime's. The base in ../../styles/scene.css
+   * stays 500svh and Hall of Doors keeps it: what was measured on issue #8 was this
+   * fall — its Beat lengths, its depth bands, its Canvas dust — and a Scene without
+   * layered motion to watch would get a long quiet stretch out of the same change
+   * rather than a breath. Whether another Scene wants this is a judgement made by
+   * looking at that Scene.
+   *
+   * Keyed on pointer capability rather than width, because it is a fact about the
+   * input and not the screen: a step-wise input crosses a fixed 100px per notch
+   * however tall the track is, so the track's length decides how much of the Scene
+   * one gesture covers, while a flick is not a fixed step and touch is comfortable
+   * on the shorter track. `pointer: fine` is a proxy for that class of input, not a
+   * detection of the gesture in flight — a pen or a 2-in-1 also matches it, and
+   * gets the longer track, which is the safe side of the error.
+   *
+   * Specificity matches the generic rule and adds the scene attribute beyond it, so
+   * the override holds regardless of stylesheet order, the same way every other
+   * rule in this file wins.
+   */
+  @media (pointer: fine) {
+    .story[data-mode="scene"] .scene[data-scene="rabbit-hole"] {
+      --scene-length: 1000svh;
+    }
+  }
+
+  /*
    * Five Alice elements exist (one per shot), but only the one or two shots that
    * are `active` or `outgoing` at a given moment are actually changing her
    * `translate`/`scale`/`rotate` from frame to frame; `before`/`after` are the

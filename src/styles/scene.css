@@ -4,8 +4,24 @@
    * The runtime sets data-mode="scene" once it has attached, which is what turns the
    * flowing text into a staged scene.
    */
+  /*
+   * The default scroll distance a Scene gets: one base length, the same for every
+   * language, which the normalized Beat costs then divide.
+   *
+   * A default rather than a policy. Physical length is an art-directed decision per
+   * Scene (docs/text-experience-binding.md §5), and sharing a runtime is not a
+   * reason to share a tempo: a Scene of short exchanges and a Scene of a long fall
+   * want different distances even though the mapping semantics are identical. A
+   * Scene that wants another length overrides `--scene-length` in its own
+   * stylesheet, and may key that override on anything CSS can see — Rabbit Hole
+   * varies it by pointer class in scenes/rabbit-hole/rabbit-hole.css, for reasons
+   * measured on issue #8 that were about that Scene.
+   *
+   * Nothing else varies with it: the same normalized 0..1, the same Shot and Beat
+   * semantics, the same mapping. Length is the one thing the runtime owns rather
+   * than the mapping, which is exactly why it is the thing allowed to differ.
+   */
   .story[data-mode="scene"] .scene {
-    /* Art-directed scroll distance: one base length for every language. */
     --scene-length: 500svh;
     position: relative;
   }

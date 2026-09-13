@@ -263,6 +263,12 @@ Hole's own FX layer (`tests/canvas-fx.spec.ts`):
 - **reverse**, the same way: the hash at a progress, a different hash further on, and
   the first hash exactly again on return. Reversing is not a rewind here, because the
   field is a pure function of progress;
+- **motion settling, in the renderer rather than in the snapshot.** Real scrolling,
+  then a stop: the field streaks while the reader moves, the speed reaches exactly
+  zero, `direction` returns to zero, nothing is streaking any more, and the canvas
+  equals the composition that progress alone describes at that point;
+- **both quality tiers**, driven explicitly: the reduced tier draws fewer motes than
+  the full one and more than none;
 - **reduced motion as a different design.** Fewer motes than the same page at the
   same progress without the preference, still enough to be a layer, and never a
   streak however fast the reader scrolls — sampled once per animation frame from
@@ -284,12 +290,33 @@ the suspension tests were intermittently failing — a late callback really was
 resuming a scene on a hidden page, which mattered little when the only cost was a
 progress value and matters more now that a renderer would be drawing.
 
-One existing test was strengthened rather than added: velocity is now sampled **while
-the reader is moving**, not only after they stop. The old assertion — that velocity
-settles to near zero — passed perfectly against a runtime in which velocity was
-always zero, which is what it was until the Canvas layer became the first thing to
-read the value. An assertion that only checks the resting state of a value cannot
-tell a settled value from one that never moved.
+Two things about **what a test is allowed to read** came out of this, and both are
+worth keeping:
+
+- **the snapshot is not the renderer.** Velocity decayed correctly inside the driver
+  and was never published, so the snapshot showed it settling to zero while the
+  Canvas layer still had a full-speed streak frame painted. Every assertion about
+  motion therefore reads the *consumer's* state — `fx(...)` — and not only
+  `snapshot(...)`. A test that had checked both against each other would have caught
+  it; a test that checked either alone did not;
+- **the seam cannot produce the state.** `setProgress` publishes a neutral jump, so
+  no test written on `holdAt` can ever reach "a reader who was moving and is not any
+  more". The settling test scrolls for real, and samples once per animation frame
+  from inside the page, because velocity is gone within a few hundred milliseconds
+  and a reading fetched across the bridge always finds the field at rest.
+
+One existing test was strengthened rather than added for the same reason: velocity is
+now sampled **while the reader is moving**, not only after they stop. The old
+assertion — that velocity settles to near zero — passed perfectly against a runtime in
+which velocity was always zero. An assertion that only checks the resting state of a
+value cannot tell a settled value from one that never moved.
+
+A third came out of the performance review rather than the tests: **a renderer whose
+density follows the quality tier needs a test that both tiers are real**, because
+`initialQuality` gives a four-core machine `reduced` and a trace taken without saying
+which tier it ran at has measured the runner. `tests/canvas-fx.spec.ts` drives both
+tiers explicitly and asserts that the reduced one is thinner than the full one and
+still a field rather than nothing.
 
 Still to come with the scenes they belong to: audio, and back-navigation restore
 across a document boundary.

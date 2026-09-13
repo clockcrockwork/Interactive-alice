@@ -82,6 +82,7 @@ export function attachStory(story: HTMLElement): AttachedStory | undefined {
         onUpdate: (context) => renderers.apply(context, staging.apply(context)),
         onSuspend: () => renderers.suspend(),
         onDestroy: () => renderers.destroy(),
+        onMeasure: (viewport) => renderers.measure(viewport),
       });
     }
   } catch (error) {

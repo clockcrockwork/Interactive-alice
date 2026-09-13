@@ -37,7 +37,7 @@
  * impulse is decaying.
  */
 
-import type { RuntimeContext } from '../../runtime/context.ts';
+import type { RuntimeContext, Viewport } from '../../runtime/context.ts';
 import type { ShotState } from '../../runtime/progress.ts';
 import type { ShotRenderer } from '../../runtime/shot-renderer.ts';
 
@@ -195,8 +195,6 @@ class DustRenderer implements ShotRenderer {
   #buffer = { width: 0, height: 0 };
   #css = { width: 0, height: 0 };
   #dpr = 0;
-  /** The geometry those sizes were derived from, as the runtime reported it. */
-  #geometry = '';
   /** What the last update said, so a decay frame redraws the same canonical state. */
   #held: { context: RuntimeContext; shot: ShotState } | undefined;
   #draws = 0;
@@ -240,7 +238,6 @@ class DustRenderer implements ShotRenderer {
 
   update(context: RuntimeContext, shot: ShotState): void {
     this.#held = { context, shot };
-    this.#resize(context);
     this.#draw(context, shot, performance.now());
   }
 
@@ -300,45 +297,38 @@ class DustRenderer implements ShotRenderer {
   }
 
   /**
-   * Sizes the backing buffer, once per geometry change rather than per frame.
+   * Sizes the backing buffer. The only layout read this renderer makes while drawing
+   * — which is to say, none: this runs from the driver's `measure`, never a frame.
    *
    * The CSS box and the buffer are separate on purpose: CSS says how large the layer
    * is, the buffer how many device pixels that is, and only the second follows DPR.
    * `readViewport` caps DPR at 2, so a 3× phone renders at 2× — that policy is
    * recorded in docs/performance-budget.md §4 rather than chosen here.
    *
-   * Guarded rather than unconditional for two reasons. The measurement is a layout
-   * read, and the frame loop must not contain one; viewport width, height and DPR
-   * all arrive from the runtime and change only on a resize, a restore or a zoom,
-   * each of which republishes, so the guard costs nothing real. And assigning
-   * `width` or `height` clears the canvas even when the value is unchanged, so doing
-   * it every frame would also be a correctness bug.
+   * `clientWidth`, not `getBoundingClientRect`: the rect is the element's *visual*
+   * box and includes transforms, and this shot is scaled while it hands over
+   * (`scale: 1 + var(--handoff)` in ../../styles/scene.css). Sizing the buffer from
+   * that would make the resolution depend on how far through a handover the reader
+   * happened to be, and would draw the field into a coordinate space a few per cent
+   * larger than the box it is painted into. The layout box is the stable one, and it
+   * is the one CSS is scaling.
+   *
+   * Assigning `width` or `height` clears the canvas even when the value is
+   * unchanged, so the assignment stays guarded on the size actually differing: a
+   * font swap resettles every scene, and none of those should blank the field.
    */
-  #resize(context: RuntimeContext): void {
+  measure(viewport: Viewport): void {
     const canvas = this.#canvas;
     if (!canvas) {
       return;
     }
-    const { width, height, dpr } = context.viewport;
-    const geometry = `${width}x${height}@${dpr}`;
-    if (geometry === this.#geometry) {
-      return;
-    }
-    this.#geometry = geometry;
-    // `clientWidth`, not `getBoundingClientRect`: the rect is the element's *visual*
-    // box and includes transforms, and this shot is scaled while it hands over
-    // (`scale: 1 + var(--handoff)` in ../../styles/scene.css). Sizing the buffer
-    // from that would make the resolution depend on how far through a handover the
-    // reader happened to be, and would draw the field into a coordinate space a few
-    // per cent larger than the box it is painted into. The layout box is the one
-    // that is stable, and it is the one CSS is scaling.
     const box = { width: canvas.clientWidth, height: canvas.clientHeight };
     const pixels = {
-      width: Math.max(1, Math.round(box.width * dpr)),
-      height: Math.max(1, Math.round(box.height * dpr)),
+      width: Math.max(1, Math.round(box.width * viewport.dpr)),
+      height: Math.max(1, Math.round(box.height * viewport.dpr)),
     };
     this.#css = box;
-    this.#dpr = dpr;
+    this.#dpr = viewport.dpr;
     if (pixels.width === this.#buffer.width && pixels.height === this.#buffer.height) {
       return;
     }
@@ -380,7 +370,7 @@ class DustRenderer implements ShotRenderer {
     if (!this.#active || !canvas || this.#css.width <= 0 || this.#css.height <= 0) {
       return;
     }
-    // The visual box here, deliberately unlike `#resize` above: a pointer's
+    // The visual box here, deliberately unlike `measure` above: a pointer's
     // coordinates are in the transformed space a visitor is actually looking at, so
     // mapping them through anything else would put the stir where they did not tap.
     const box = canvas.getBoundingClientRect();

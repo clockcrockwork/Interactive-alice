@@ -252,8 +252,10 @@ Use one Canvas layer for a lightweight effect such as:
 
 The Canvas layer must consume the same scene progress / runtime context rather than maintaining an unrelated page timeline.
 
-The implementation: `src/scenes/rabbit-hole/dust.ts`, a field of motes at three
-depths inside `primary-fall`, elongating into streaks with scroll speed. It consumes
+The implementation: `src/scenes/rabbit-hole/dust.ts`, a field of **170 seeded motes**
+at three depths inside `primary-fall`, elongating into streaks with scroll speed. The
+quality tier thins it — `full` draws all 170, `reduced` about 103 — so any measurement
+of it has to say which tier it ran at. It consumes
 the scene's runtime context and its own shot's `core + handoff` as one continuous
 travel; it has no timeline of its own and no idle loop. Its layout is seeded once
 from a constant seed, so the same progress reconstructs the same field in either

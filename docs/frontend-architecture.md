@@ -265,21 +265,40 @@ an implementation detail:
    establishing it. The layout read is affordable because none of those paths is a
    frame; the frame loop still never reads layout.
 
-An eighth is now fixed as well, because two things read runtime values for the
-first time and found them wrong. **`velocity` is a real speed, and `direction` is
-the way the reader last actually moved.** `tick` used to drop its frame clock
-whenever velocity was below the epsilon, which every frame was, because a frame with
-no previous timestamp cannot compute one — so `velocity` could never leave zero,
-however fast anyone scrolled, and the browser test that watched it settle passed
-against a runtime with nothing to settle. A frame that moved the position but had no
-interval to measure it over now keeps the clock and asks for one more frame, so the
-frame after it is the first that can say how fast this is going; one frame of
-latency before a speed exists is inherent, never having one was a defect. And since
-frames now genuinely arrive while velocity decays, `direction` is only recomputed on
-a frame in which the position actually moved: a frame that moved nothing is not
-evidence that a reader stopped, and letting one reset the value would make it
-flicker to zero a frame after every scroll. `#neutral` is still what clears both,
-for exactly the discontinuities that should.
+An eighth is now fixed as well, because a renderer read the runtime's motion values
+for the first time and found all three of them broken. **Motion is a published value,
+not an internal one.**
+
+- **`velocity` is a real speed.** `tick` used to drop its frame clock whenever
+  velocity was below the epsilon, which every frame was, because a frame with no
+  previous timestamp cannot compute one — so `velocity` could never leave zero,
+  however fast anyone scrolled, and the browser test that watched it settle passed
+  against a runtime with nothing to settle. The clock is now anchored to where the
+  scene *was* rather than where the frame has arrived, so the movement a frame
+  carries is measured over the interval it is observed in and the first frame of a
+  scroll is no longer dropped from the speed.
+- **Motion changing is a reason to publish.** Publication was gated on progress
+  alone, so every velocity between the last real movement and rest was computed,
+  stored in the snapshot, and thrown away: `onUpdate` never fired for any of them. A
+  scene reading speed therefore kept whichever value the last progress change
+  happened to carry. That was invisible while nothing read the value and immediately
+  visible when something did — the Canvas layer left a full-speed streak frame
+  painted on a page that had stopped scrolling, while the snapshot the tests read
+  showed the speed decaying to zero. Progress, direction and velocity are all inputs
+  a scene renders from, so any of them changing publishes. `Stage` keeps its own
+  per-element cache, so a frame that only changes velocity reaches the renderers and
+  writes nothing to the document.
+- **`direction` holds through the decay and returns to zero at rest.** Travelling
+  does not stop at the last frame that moved a pixel — momentum is still being
+  reported — so a direction of 0 beside a velocity of 0.3 would be two halves of one
+  answer disagreeing. It holds while velocity is non-zero and becomes 0 at the moment
+  the scene is genuinely still, which is now a state a renderer is told about rather
+  than one it has to infer from silence. `#neutral` still clears both, for exactly
+  the discontinuities that should.
+
+The lesson worth keeping: a value that nothing consumes is not a working value, and a
+test that only inspects the snapshot cannot tell the difference. The regression test
+for this reads the *renderer's* state, not the driver's.
 
 Two more things are decided rather than fixed. **`direction` means reader movement.**
 A progress value that arrives without anyone scrolling — the first sync after mounting,
@@ -358,6 +377,14 @@ guarded, the first throw retires that renderer for the life of the page, and the
 scene is marked `data-fx="failed"` and carries on. A renderer whose feature is
 missing — no 2D context — throws at mount and is retired there, before anything
 depends on it.
+
+`measure(viewport)` is the one place a renderer may read layout, and it is on the
+contract for that reason rather than for convenience. The driver calls it from its
+own `measure`, which runs at mount, on a resize, on a restore and on a font swap and
+never inside an animation frame, so §4 of the budget — the frame loop reads no layout
+— stays true of renderers as well as of the runtime. A renderer that worked its own
+size out while drawing would be the first thing in the project to break that rule,
+and the first version of this one did.
 
 What this seam still does not do, and should not until something needs it: it does
 not preload, it does not tell a renderer about the shot next to it, it does not

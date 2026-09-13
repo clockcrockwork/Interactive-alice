@@ -35,7 +35,7 @@
  * the guard lives in the seam rather than in each renderer.
  */
 
-import type { RuntimeContext } from './context.ts';
+import type { RuntimeContext, Viewport } from './context.ts';
 import { Lifecycle, type LifecycleState } from './lifecycle.ts';
 import type { ShotState } from './progress.ts';
 
@@ -44,6 +44,21 @@ export interface ShotRenderer {
   readonly shot: string;
   /** Build whatever is cheap to keep; draw nothing. `host` is the shot's element. */
   mount(host: HTMLElement): void;
+  /**
+   * Read layout, and size anything that follows from it.
+   *
+   * The one place a renderer is allowed to touch the layout, and the reason this is
+   * a method rather than something `update` works out for itself: it is called from
+   * the driver's own `measure`, which runs at mount, on a resize, on a restore and
+   * when a font swap moves the page — never inside an animation frame. That is the
+   * rule in docs/performance-budget.md §4, and the coordinator has always kept it;
+   * a renderer that measured itself while drawing would be the first thing in the
+   * project to break it.
+   *
+   * Called before the first `update` and before any `update` that follows a
+   * geometry change, so a draw never has to ask how large it is.
+   */
+  measure(viewport: Viewport): void;
   activate(): void;
   /** Draw one frame. Called only while active. */
   update(context: RuntimeContext, shot: ShotState): void;
@@ -143,6 +158,23 @@ export class ShotRenderers {
           renderer.update(context, shot);
         }
       });
+    }
+  }
+
+  /**
+   * Geometry moved: let every renderer re-read it, outside any animation frame.
+   *
+   * Every renderer, not only the running ones. A suspended renderer resuming onto a
+   * buffer sized for the old viewport would draw one wrong frame before anything
+   * corrected it, and measuring is cheap — the same reasoning that makes the driver
+   * remeasure a suspended scene.
+   */
+  measure(viewport: Viewport): void {
+    for (const renderer of this.#renderers) {
+      if (this.#lifecycles.get(renderer)?.state === 'idle') {
+        continue;
+      }
+      this.#guard(renderer, () => renderer.measure(viewport));
     }
   }
 

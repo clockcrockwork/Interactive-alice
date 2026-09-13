@@ -325,6 +325,46 @@ for (const entry of parts) {
       expect(settled.detail.css).toEqual(middle.detail.css);
     });
 
+    test('draws the whole field at the full tier and a thinned one at the reduced tier', async ({
+      page,
+    }) => {
+      await withSignature(page);
+      await page.goto(url);
+      const { shot } = await mount(page);
+      const own = await shotSpan(page, shot);
+      const middle = (own.start + own.end) / 2;
+
+      // The tier a machine happens to select is not the tier that ships: a
+      // four-core device gets `reduced` and everything larger gets `full`, so a
+      // measurement or an assertion that never says which one it saw has covered
+      // whichever the test runner happened to be. Both are driven explicitly.
+      await page.evaluate((scene) => window.__alice?.setFlags({ quality: 'full' }, scene), SCENE);
+      await holdAt(page, SCENE, middle);
+      await settle(page);
+      const full = await fxOne(page);
+      expect(await page.evaluate((s) => window.__alice?.snapshot(s)[0]?.quality, SCENE)).toBe(
+        'full',
+      );
+
+      await page.evaluate(
+        (scene) => window.__alice?.setFlags({ quality: 'reduced' }, scene),
+        SCENE,
+      );
+      await holdAt(page, SCENE, middle);
+      await settle(page);
+      const reduced = await fxOne(page);
+
+      // The tier thins the field; it does not switch it off, and it does not leave
+      // it unchanged either. Both halves matter: an implementation that ignored the
+      // tier would fail the first, and one that dropped the layer would fail the
+      // second.
+      expect(reduced.detail.drawn).toBeLessThan(full.detail.drawn);
+      expect(reduced.detail.drawn).toBeGreaterThan(full.detail.drawn / 2);
+      // The full tier is every seeded mote, so it is the field the performance
+      // evidence has to be taken against.
+      expect(full.detail.drawn).toBeGreaterThan(150);
+    });
+
     test('a renderer that cannot start leaves the scene untouched', async ({ page }) => {
       await withSignature(page);
       // The one failure a Canvas layer really has: the context is refused. Injected
@@ -424,6 +464,58 @@ for (const entry of parts) {
         .poll(async () => (await fxOne(page)).detail.looping, { timeout: 5000 })
         .toBe(false);
       expect((await canvasSignature(page)).hash).toBe(resting.hash);
+    });
+
+    test('stops streaking when the reader stops, and returns to the resting field', async ({
+      page,
+    }) => {
+      await withSignature(page);
+      await page.goto(url);
+      const { shot } = await mount(page);
+      const own = await shotSpan(page, shot);
+      const stop = own.start + (own.end - own.start) * 0.7;
+
+      // Real scrolling, not the seam: `holdAt` publishes a neutral jump, so it can
+      // never produce the state this is about — a reader who was moving and is not
+      // any more. Velocity decays over frames in which progress does not change at
+      // all, and those frames used to reach the renderer never: the last full-speed
+      // streak frame simply stayed painted on a page that had stopped scrolling.
+      const moving = await page.evaluate(
+        async ({ top, travel, from, to }) => {
+          const read = () =>
+            window.__alice?.fx('rabbit-hole')[0]?.detail as { streak?: number } | undefined;
+          let peak = 0;
+          for (let step = 0; step <= 20; step += 1) {
+            window.scrollTo(0, top + travel * (from + ((to - from) * step) / 20));
+            await new Promise((resolve) => requestAnimationFrame(resolve));
+            peak = Math.max(peak, read()?.streak ?? 0);
+          }
+          return peak;
+        },
+        { ...(await geometryOf(page, SCENE)), from: own.start, to: stop },
+      );
+      expect(moving, 'the field streaks while the reader is moving').toBeGreaterThan(0);
+
+      // Now let go, and wait for the speed itself rather than for the streak: a
+      // streak shorter than the mote it came from is drawn as the mote, so the
+      // streaking stops a little before the movement does. Rest is the stricter
+      // moment, and the one the renderer has to be told about.
+      await expect
+        .poll(
+          async () => (await page.evaluate((s) => window.__alice?.snapshot(s)[0], SCENE))?.velocity,
+          { timeout: 5000 },
+        )
+        .toBe(0);
+      const rest = await page.evaluate((scene) => window.__alice?.snapshot(scene)[0], SCENE);
+      expect(rest?.direction, 'nobody is travelling any more').toBe(0);
+      expect((await fxOne(page)).detail.streak, 'and nothing is streaking').toBe(0);
+
+      // ...and what is on the canvas is the composition this progress alone
+      // describes, which is the claim the whole determinism story rests on.
+      const settled = await canvasSignature(page);
+      await holdAt(page, SCENE, rest?.progress ?? 0);
+      await settle(page);
+      expect((await canvasSignature(page)).hash).toBe(settled.hash);
     });
 
     test('scrolling still drives the scene after a tap', async ({ page }) => {

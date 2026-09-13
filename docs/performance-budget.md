@@ -125,82 +125,107 @@ at all because it is suspended.
 `src/scenes/rabbit-hole/dust.ts`, the project's first renderer that is not CSS.
 
 **Weight.** From the build's own size report, comparing the build immediately before
-and after: JS 3.36 KB → 5.71 KB gzip (**+2.35 KB**), which is the renderer, the
+and after: JS 3.36 KB → 5.75 KB gzip (**+2.39 KB**), which is the renderer, the
 per-shot seam and the probe surface for it. CSS 3.17 KB → 3.20 KB (+0.03 KB: the
 canvas's own rule and `pointer-events: none` on non-painting shots). HTML unchanged at
 3.11–3.42 KB, because the canvas is created by the renderer and never appears in the
 static document — which is also the failure boundary, since a page whose renderer
 cannot start carries no orphan element. Against the 120 KB JS budget in §2 the runtime
-is now 5.71 KB, so 4.8% of it; no budget moved.
+is now 5.75 KB, so 4.8% of it; no budget moved.
 
-**Frames.** Measured the same way as the section above — the production build, the
-whole two-scene document in 40-pixel steps, one step per animation frame, in both
-directions, with `requestAnimationFrame` instrumented, every layout-reading accessor
-(`getBoundingClientRect`, `clientWidth`/`clientHeight`, `offsetWidth`/`offsetHeight`)
-counted and flagged when it happens inside a frame, layout counts from the CDP
-performance domain, and long tasks from a `PerformanceObserver`. The measurement's own
-frame request is subtracted. The first interval after the counters are reset is
-dropped, because it measures the reset and not a frame.
+**Which field was measured.** The field is **170 seeded motes**, and the quality tier
+thins it: `full` draws all 170, `reduced` draws about 103, and reduced *motion* is a
+different field again at 71. The tier a machine picks is not a fact about the code —
+`initialQuality` gives four cores or fewer `reduced` and everything larger `full` —
+so a measurement that does not say which tier it saw has measured whichever the
+runner happened to be. **Every row below is `quality: 'full'`**, set explicitly
+through the probe, which is the heavier path and the one most visitors get. The
+machine these runs were taken on reports four cores and would otherwise have selected
+`reduced`, which is exactly how a 103-mote trace could be mistaken for evidence about
+the shipped default.
 
-The FX-off column is the same page with `setFlags({ effects: false })`, which is the
-control that makes the other columns attributable rather than merely reassuring.
+**Frames.** The production build, the whole two-scene document in 40-pixel steps, one
+step per animation frame, in both directions, then held still for 1.5 s so the
+velocity decay is inside the sample. `requestAnimationFrame` instrumented; every
+layout-reading accessor (`getBoundingClientRect`, `clientWidth`/`clientHeight`,
+`offsetWidth`/`offsetHeight`) counted and flagged when it happens inside a frame;
+layout counts from the CDP performance domain; long tasks from a
+`PerformanceObserver`. The measurement's own frame request is subtracted, and the
+first interval after the counters are reset is dropped because it measures the reset.
 
-| | desktop 1280×720 | desktop, FX off | phone 390×780 @2× | phone @2×, 4× CPU | phone @2× 4× CPU, FX off | desktop, reduced motion |
+The FX-off column is the same page with `setFlags({ effects: false })`. It is what
+makes the other columns attributable rather than merely reassuring, and in one case
+below it is what stopped a number being attributed to the renderer wrongly.
+
+| | desktop 1280×720 | desktop, **FX off** | phone 390×780 @2× | phone @2×, **4× CPU** | phone @2× 4× CPU, **FX off** | desktop, reduced motion |
 | --- | --- | --- | --- | --- | --- | --- |
-| runtime callbacks per animation frame | 0.92 | 0.92 | 0.92 | 0.92 | 0.92 | 0.92 |
-| layout reads inside a frame | 2 | 0 | 2 | 2 | 0 | 2 |
-| layout reads, whole scroll | 2 | 0 | 2 | 2 | 0 | 2 |
-| layouts over the whole scroll | 19 | 17 | 19 | 19 | 17 | 20 |
-| long tasks during the scroll | one, 66 ms | one, 61 ms | none | 51 ms at load, 52 ms | 50 ms | none |
-| frame interval p50 / p95 / p99 / max | 16.6 / 16.7 / 16.8 / 83.3 ms | 16.6 / 16.7 / 16.8 / 66.7 ms | 16.6 / 16.7 / 16.8 / 66.6 ms | 16.6 / 16.7 / 33.3 / 50 ms | 16.6 / 16.7 / 16.8 / 50 ms | 16.6 / 16.7 / 16.8 / 33.4 ms |
-| motes drawn per frame while active | 103 | — | 103 | 103 | — | 37 |
+| quality tier | full | full | full | full | full | full |
+| motes drawn per frame | 170 | — | 170 | 170 | — | 71 |
 | backing buffer | 512×688 @1× | — | 716×1496 @2× | 716×1496 @2× | — | 512×688 @1× |
+| runtime callbacks / animation frame | 0.87 | 0.87 | 0.88 | 0.88 | 0.88 | 0.87 |
+| **layout reads inside a frame** | **0** | **0** | **0** | **0** | **0** | **0** |
+| layout reads of any kind during the scroll | 0 | 0 | 0 | 0 | 0 | 0 |
+| layouts over the whole scroll | 18 | 17 | 18 | 18 | 17 | 19 |
+| long tasks during the scroll | one, 78 ms | one, 62 ms | none | 60 ms at load, 58 ms | 68 ms | none |
+| frame interval p50 / p95 / p99 / max | 16.6 / 16.7 / 16.8 / 83.3 ms | 16.6 / 16.7 / 16.8 / 66.6 ms | 16.6 / 16.7 / 16.8 / 66.6 ms | 16.6 / 16.7 / 33.3 / 66.7 ms | 16.6 / 16.7 / 33.3 / 100 ms | 16.6 / 16.7 / 16.8 / 33.4 ms |
 
 Read in order:
 
-- **the document still runs one loop.** 0.92 runtime callbacks per animation frame,
-  unchanged by the renderer, because the renderer has no loop during scrolling: it
-  draws inside the update the runtime was already making. The §7.6 contract in
+- **the document still runs one loop.** Under 0.9 runtime callbacks per animation
+  frame, unchanged by the renderer, because it has no loop during scrolling: it draws
+  inside the update the runtime was already making. The §7.6 contract in
   `frontend-architecture.md` is intact and is still what `tests/handoff.spec.ts`
   asserts;
-- **two layout reads, and they belong to the renderer.** The control's zero is what
-  proves it: they are `clientWidth` and `clientHeight`, read once when the runtime
-  reports a viewport it has not seen before, on the frame after that report rather
-  than on a steady-state frame. Two reads over an entire document traversal, forward
-  and back. It is not the ideal shape — the coordinator does its own measuring
-  *outside* a frame — and the alternative, a `ResizeObserver` per renderer, was
-  rejected because §7.6 keeps one observer for the whole page. If a scene ever hosts
-  several renderers this is where to look again;
-- **`getBoundingClientRect` is never called during a scroll at all.** The one the
-  renderer does own is in the pointer handler, once per press, and never in a frame;
-- **the long tasks are not the renderer's.** Desktop shows one ~60 ms task at the
-  same moment with FX on and with FX off (66 ms against 61 ms), and the throttled
-  phone shows the same pairing (52 ms against 50 ms). What is new with FX on is a
-  51 ms task at page load, which is the extra 2.34 KB being parsed and the field
-  being seeded, not steady-state scrolling. The §1 target is "none attributable to a
-  scene renderer" during steady scrolling, and that holds;
-- **the honest cost is one frame in a hundred, on a throttled phone.** At 4× CPU
-  throttling with a 716×1496 buffer, p99 goes from 16.8 ms without FX to 33.3 ms with
-  it: one dropped frame per hundred, p95 unaffected, max 50 ms in both. That is
-  comfortably inside the §1 mobile target (no *sustained* run of dropped frames), and
-  it is the number to watch if the field ever grows;
-- **reduced motion is cheaper as well as calmer**, at 37 motes against 103, which is
-  a consequence of the design rather than its purpose.
+- **the frame loop reads no layout, and neither does the renderer.** Zero, in every
+  configuration, and zero reads *of any kind* over an entire document traversal. The
+  renderer's one layout read happens in `ShotRenderer.measure`, called from the
+  driver's own `measure` — at mount, on a resize, on a restore, on a font swap — and
+  never inside an animation frame. It shows up as the single extra layout in the
+  totals row (18 against the control's 17), outside a frame, which is the same shape
+  the coordinator's own measurement has always had. An earlier version of this
+  renderer measured itself inside `update` and cost 2 reads per traversal *inside* a
+  frame; that was a regression against §4 and is fixed rather than documented;
+- **the long tasks are not the renderer's.** Desktop shows one at the same moment
+  with FX on and with FX off (78 ms against 62 ms), and the throttled phone shows one
+  at ~6 s in every run including the controls. What is new with FX on is a ~60 ms
+  task at page load, which is the extra 2.39 KB parsing and the field seeding, not
+  steady-state scrolling. The §1 target is "none attributable to a scene renderer"
+  during steady scrolling, and that holds;
+- **the p99 on a throttled phone is the environment, not the renderer.** At 4× CPU
+  throttling p99 is 33.3–33.4 ms with the field drawing, and the FX-off control
+  reproduces the same 33.3 ms in two of three runs; the `reduced` tier reproduces it
+  too. p50 and p95 are identical in every configuration. An earlier single pair of
+  runs showed 33.3 ms against a 16.8 ms control and was written up here as a cost of
+  the renderer; repeating it with a control each time does not support that, so the
+  claim is withdrawn rather than kept because it sounded suitably cautious. What can
+  be said is that no configuration shows a *sustained* run of dropped frames, which
+  is the §1 mobile target;
+- **reduced motion is cheaper as well as calmer**, at 71 motes against 170, which is a
+  consequence of the design rather than its purpose.
 
 **The interaction.** Six pointer presses in a row, on desktop, while the shot is
-active: 119 frame callbacks over 92 frames, so the impulse decay adds about 0.3
+active: 107 frame callbacks over 92 frames, so the impulse decay adds about 0.16
 callbacks per frame for as long as it lives, and p99 stays at 16.8 ms. No long tasks.
 `looping` reports false afterwards, which is the renderer's own statement that it let
 its frame request go; `tests/canvas-fx.spec.ts` asserts the same thing.
 
+**What the decay costs.** Velocity now reaches the renderer as it decays, which it
+did not before — see §7's note in `frontend-architecture.md` — so roughly a second of
+frames after every scroll stop now carries a redraw that previously carried nothing.
+Those frames were already being requested; what changed is that they do the work they
+were requested for, which is what makes the streaks actually settle instead of
+leaving a full-speed frame painted on a stationary page. The sample above holds still
+for 1.5 s after each traversal precisely so that this is inside the measurement, and
+it does not move p95 or p99 in any configuration.
+
 **DPR policy.** `readViewport` caps the ratio at 2, so a 3× phone renders a 2× buffer
 — roughly 44% fewer pixels than following the device. The cap predates this work; it
 is recorded as policy here because the FX layer is the first thing it actually
-governs, and because §4 requires the cap to be explicit rather than incidental. The
-evidence for keeping it is the throttled row above: at 2× the field already costs a
-frame per hundred on a slow phone, and 3× would be 2.25 times the fill. It is
-deliberately not lowered below 2 — text and the Alice silhouette are DOM and unaffected
-either way, and 1× dust on a retina phone is visibly coarse.
+governs, and because §4 requires the cap to be explicit rather than incidental. It is
+deliberately not lowered below 2: text and the Alice silhouette are DOM and unaffected
+either way, and 1× dust on a retina phone is visibly coarse. If a future field grows
+past 170 motes, this and the tier density are the two dials to reach for, and the
+throttled row above is the measurement to repeat first.
 
 ## 3. Keeping interaction responsive
 
@@ -251,6 +276,13 @@ back/forward cache tester on a deployed build before the first release.
   `getBoundingClientRect`, which includes transforms: an outgoing shot is scaled
   as it hands over, and a buffer sized from its visual rect would change
   resolution partway through a handover;
+- and read that box from `ShotRenderer.measure`, which the driver calls outside any
+  animation frame, never from a draw. A renderer that measures itself while drawing
+  breaks the rule two lines above however rarely it does it;
+- state the **quality tier** beside any measurement of a renderer whose density
+  follows it. `initialQuality` gives a four-core machine `reduced`, so a trace taken
+  without saying which tier it ran at has measured the runner rather than the
+  product;
 - `will-change` is applied for the duration of a transition and then removed;
 - large animated blur or filter regions need a profile before they stay.
 

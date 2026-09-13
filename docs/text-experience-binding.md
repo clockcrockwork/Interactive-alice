@@ -160,7 +160,10 @@ Two things follow, and the difference between them matters:
   same ranges, so a shot's dramatic proportion does not change with translation.
 - **Total scroll distance is not text-derived.** It is art-directed and owned by
   the Scene runtime: one base distance shared by every locale, which the
-  normalized costs above then divide.
+  normalized costs above then divide. It may vary by **input class** — a wheel
+  moves in fixed steps and a flick does not, so a desktop pointer gets a longer
+  track than touch — and that is still one distance per class shared by every
+  locale, decided in CSS, never derived from the text.
 
 Character counts never escape that ratio, because they are not a reading-time
 unit. The same 44 segments are 1660 characters in `en-simple` and 832 in `ja`,

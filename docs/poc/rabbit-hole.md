@@ -138,9 +138,19 @@ which is a good sign, but they are output rather than constants: they move when
 the text, a weight, or the active language changes. Do not paste them into code.
 
 The scene's **total** scroll distance is a separate, art-directed decision that
-the runtime owns. Use one base distance for every language for this PoC, let the
-normalized costs divide it, and judge in the browser whether either language
-reads rushed before considering a bounded locale adjustment.
+the runtime owns. One base distance for every language, with the normalized costs
+dividing it, and a bounded locale adjustment only if browser testing shows one
+language genuinely reads rushed. It has not.
+
+What browser testing *did* show is that the distance has to differ by **input**,
+which is a different axis from language. A wheel notch is a fixed 100 px however
+tall the track is, so the distance decides how much of a Scene one gesture
+crosses; at the original 500svh a notch crossed about one whole Beat and the
+scene advanced like a slide. Desktop-class pointers therefore get twice the
+distance, keyed on `pointer: fine` in `src/styles/scene.css`, and touch keeps the
+shorter one so a swipe stays comfortable. Only the physical length differs: the
+same normalized 0..1, the same Shot and Beat semantics, the same mapping. The
+measurements behind it are on issue #8.
 
 Each shot and beat may remap scene progress into its own local `0..1` interval.
 

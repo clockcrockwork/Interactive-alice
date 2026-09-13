@@ -98,6 +98,21 @@
     }
   }
 
+  /*
+   * Five Alice elements exist (one per shot), but only the one or two shots that
+   * are `active` or `outgoing` at a given moment are actually changing her
+   * `translate`/`scale`/`rotate` from frame to frame; `before`/`after` are the
+   * generic opacity-0 rule in ../../styles/scene.css and never move. Resetting the
+   * promotion hint there mirrors how that same stylesheet handles `.beat`
+   * (`.beat[data-state="before"], .beat[data-state="after"] { will-change: auto; }`)
+   * so the browser is never asked to keep three idle Alice copies promoted
+   * (docs/performance-budget.md §4).
+   */
+  .scene[data-scene="rabbit-hole"] .shot[data-state="before"] .scene-rabbit-hole__alice,
+  .scene[data-scene="rabbit-hole"] .shot[data-state="after"] .scene-rabbit-hole__alice {
+    will-change: auto;
+  }
+
   /* ---------------------------------------------------------------- threshold */
   .scene[data-scene="rabbit-hole"] .shot[data-shot="threshold"] {
     &::before {

@@ -1,0 +1,519 @@
+/*
+ * Rabbit Hole's temporary depth staging.
+ *
+ * Shapes and silhouettes standing in for final art (docs/poc/rabbit-hole.md §6-8):
+ * a persistent Alice anchor plus decorative depth-band layers, on top of the
+ * generic shot/beat rules in ../../styles/scene.css. Five perceptually distinct
+ * bands per docs/scene-shot-model.md §9's example list, one pair per shot:
+ *
+ *   atmosphere   the shot's own `::before` (generic; recoloured per shot here)
+ *   environment  a new `::after`, walls / shaft / ground
+ *   mid props    `.scene-rabbit-hole__depth--mid`
+ *   foreground   `.scene-rabbit-hole__depth--near`, occasionally in front of Alice
+ *   Alice anchor `.scene-rabbit-hole__alice`, one persistent identity per shot,
+ *                matched at each handover rather than one element shared across
+ *                shots (docs/scene-shot-model.md §6 names both as valid)
+ *
+ * Every rule is scoped by `.scene[data-scene="rabbit-hole"]`, and every selector
+ * that must win over the generic placeholder rule adds an attribute beyond it, so
+ * the override holds regardless of stylesheet order. Hall of Doors reuses the same
+ * `.shot`/`.beat` shapes; nothing here selects a bare one, so its composition is
+ * untouched.
+ *
+ * Each shot's own state is written below its base rule; the `[data-state="outgoing"]`
+ * overrides for the shots that hand over (threshold, primary-fall, alice-focus) are
+ * gathered afterward in one section instead, so that every selector later in this
+ * file is at least as specific as the ones before it — the shape Biome's own
+ * specificity check asks for, and a fair one, since a scattered set of overrides is
+ * harder to audit against the mapping's own overlap list than one place is.
+ *
+ * check-frontend: allow shot-list — every id below is this one scene's own mapping
+ * id, read back from the `data-shot` attribute the build already writes from
+ * experience/scenes/rabbit-hole.scene.json. Styling five shots differently is this
+ * file's whole purpose; it is not a second list of what shots exist, their order,
+ * or their progress ranges, none of which appears here.
+ */
+@layer scene {
+  .scene[data-scene="rabbit-hole"] {
+    /*
+     * Elevates narrative text above every decorative layer this file adds, in this
+     * scene only: Hall of Doors has no competing layers yet to sit above. A quiet
+     * panel behind the text keeps it readable against every shot's own palette,
+     * from Threshold's bright doorway to Dreamy Fall's dusky haze, rather than
+     * depending on WCAG contrast holding by coincidence against a background this
+     * file otherwise controls.
+     */
+    .beat {
+      z-index: 4;
+      padding-block: 0.4rem;
+      padding-inline: 0.75rem;
+      border-radius: 0.5rem;
+      background: color-mix(in oklab, var(--ground) 88%, transparent);
+    }
+
+    .scene-rabbit-hole__depth {
+      position: absolute;
+      inset: 0;
+      margin: 0;
+    }
+
+    .scene-rabbit-hole__depth--mid {
+      z-index: 1;
+    }
+
+    /* Foreground occluder: closer to the camera than Alice, so it is free to pass
+       in front of her, which is what a foreground band is for. */
+    .scene-rabbit-hole__depth--near {
+      z-index: 3;
+    }
+
+    .scene-rabbit-hole__alice {
+      position: absolute;
+      z-index: 2;
+      margin: 0;
+      inline-size: min(24vw, 8.5rem);
+      will-change: translate, scale, rotate;
+    }
+
+    .scene-rabbit-hole__alice-figure {
+      display: block;
+      inline-size: 100%;
+      block-size: auto;
+      overflow: visible;
+    }
+
+    /*
+     * A pale fill with a dark outline, rather than one flat colour: this scene's
+     * backgrounds run from a bright doorway to a near-black tunnel, and a single
+     * silhouette colour would vanish against half of them. The outline keeps her
+     * legible against the light shots; the fill keeps her legible against the dark
+     * ones, so she stays the one constant across every change of palette.
+     */
+    .scene-rabbit-hole__alice-dress,
+    .scene-rabbit-hole__alice-head {
+      fill: var(--rh-figure);
+      stroke: var(--ink);
+      stroke-width: 2.5;
+      paint-order: stroke fill;
+    }
+  }
+
+  /* ---------------------------------------------------------------- threshold */
+  .scene[data-scene="rabbit-hole"] .shot[data-shot="threshold"] {
+    &::before {
+      /* Atmosphere: the bright doorway above, fading toward the tunnel's throat as
+         Alice goes further in. Starts low so the opening frame keeps its contrast. */
+      background:
+        radial-gradient(
+          120% 90% at 50% 18%,
+          color-mix(in oklab, var(--rh-day) 70%, transparent),
+          transparent 65%
+        ),
+        linear-gradient(
+          to bottom,
+          transparent 35%,
+          color-mix(in oklab, var(--rh-tunnel) 80%, transparent)
+        );
+      opacity: calc(0.2 + var(--progress, 0) * 0.7);
+    }
+
+    &::after {
+      /* Environment: the tunnel's rough throat, textured with a ring pattern that
+         grows and turns slightly as the hole swallows more of the view. */
+      content: "";
+      position: absolute;
+      inset: -10%;
+      z-index: 0;
+      background: repeating-radial-gradient(
+        circle at 50% 40%,
+        color-mix(in oklab, var(--rh-tunnel) 55%, transparent) 0,
+        color-mix(in oklab, var(--rh-tunnel) 55%, transparent) 2%,
+        transparent 2%,
+        transparent 6%
+      );
+      opacity: calc(var(--progress, 0) * 0.6);
+      scale: calc(1 + var(--progress, 0) * 0.5);
+      rotate: calc(var(--progress, 0) * 6deg);
+    }
+
+    .scene-rabbit-hole__depth--near {
+      /* The hole's rim: a dark ring that closes in around Alice, the aperture this
+         shot hands off through into Primary Fall. */
+      background: var(--rh-tunnel);
+      mask-image: radial-gradient(
+        circle at 50% 44%,
+        transparent calc(36% - var(--progress, 0) * 30%),
+        black calc(38% - var(--progress, 0) * 30%)
+      );
+    }
+
+    .scene-rabbit-hole__depth--mid {
+      background:
+        radial-gradient(
+          10% 6% at 20% 30%,
+          color-mix(in oklab, var(--ink) 45%, transparent),
+          transparent 100%
+        ),
+        radial-gradient(
+          8% 5% at 78% 60%,
+          color-mix(in oklab, var(--ink) 35%, transparent),
+          transparent 100%
+        );
+      opacity: calc(var(--progress, 0) * 0.5);
+      scale: calc(1 + var(--progress, 0) * 0.3);
+    }
+
+    .scene-rabbit-hole__alice {
+      translate: 0 calc(var(--progress, 0) * 22svh);
+      rotate: calc(var(--progress, 0) * 8deg);
+      scale: calc(1 + var(--progress, 0) * 0.15);
+    }
+  }
+
+  /* ------------------------------------------------------------- primary-fall */
+  .scene[data-scene="rabbit-hole"] .shot[data-shot="primary-fall"] {
+    /* The changed dominant axis of this shot: a long vertical shaft, given real
+       depth with a perspective vantage rather than flat sliding layers. */
+    perspective: 56rem;
+    perspective-origin: 50% 30%;
+
+    &::before {
+      /* Starts already pulled in, matching Threshold's push through the rim, then
+         eases back out as the shaft opens up around Alice. */
+      background: radial-gradient(
+        140% 100% at 50% 45%,
+        color-mix(in oklab, var(--rh-shaft) 70%, transparent),
+        transparent 75%
+      );
+      opacity: calc(0.75 - var(--progress, 0) * 0.2);
+      scale: calc(1.3 - var(--progress, 0) * 0.3);
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: -25%;
+      z-index: 0;
+      border-radius: 50%;
+      background: repeating-conic-gradient(
+        from 0deg,
+        color-mix(in oklab, var(--rh-shaft) 65%, black) 0deg 16deg,
+        color-mix(in oklab, var(--rh-shaft) 35%, black) 16deg 32deg
+      );
+      rotate: 1 0 0 64deg;
+      translate: 0 calc(max(-2svh, -1svh - var(--progress, 0) * 30svh));
+      opacity: 0.85;
+    }
+
+    .scene-rabbit-hole__depth--mid {
+      background:
+        radial-gradient(
+          9% 14% at 24% 30%,
+          color-mix(in oklab, var(--ink-soft) 70%, transparent),
+          transparent 100%
+        ),
+        radial-gradient(
+          7% 10% at 70% 65%,
+          color-mix(in oklab, var(--ink-soft) 55%, transparent),
+          transparent 100%
+        ),
+        radial-gradient(
+          11% 7% at 45% 85%,
+          color-mix(in oklab, var(--ink-soft) 60%, transparent),
+          transparent 100%
+        );
+      /* Passing props: the world rushes upward past an anchored Alice. */
+      translate: 0 calc(30svh - var(--progress, 0) * 60svh);
+    }
+
+    .scene-rabbit-hole__depth--near {
+      background: linear-gradient(
+        to bottom,
+        transparent,
+        color-mix(in oklab, var(--rh-tunnel) 65%, transparent) 85%
+      );
+      /* Closer to the camera, so it travels faster than the mid band. */
+      translate: 0 calc(46svh - var(--progress, 0) * 92svh);
+      opacity: 0.8;
+    }
+
+    .scene-rabbit-hole__alice {
+      /* Un-tumbles from the dive and settles to the anchored pose within the first
+         quarter of the shot, then holds: the world does the travelling from here,
+         not Alice (docs/poc/rabbit-hole.md §5, "Alice anchor"). */
+      translate: 0 calc(max(0svh, 12svh - var(--progress, 0) * 48svh));
+      rotate: calc(max(0deg, 60deg - var(--progress, 0) * 240deg));
+      scale: calc(min(1, 0.4 + var(--progress, 0) * 4));
+    }
+  }
+
+  /* --------------------------------------------------------------- alice-focus */
+  .scene[data-scene="rabbit-hole"] .shot[data-shot="alice-focus"] {
+    &::before {
+      /* Changed framing: a tightened vignette crops the view down around Alice, so
+         this reads as a different angle rather than a continuation of the wide
+         fall (docs/scene-shot-model.md §9, "changed-angle framing"). */
+      background: radial-gradient(
+        55% 50% at 50% 42%,
+        transparent,
+        color-mix(in oklab, var(--rh-shaft) 85%, black) 78%
+      );
+      opacity: 1;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: color-mix(in oklab, var(--rh-shaft) 55%, transparent);
+      opacity: calc(0.3 + var(--progress, 0) * 0.1);
+    }
+
+    /* The world quiets for this close reaction shot; almost nothing passes. */
+    .scene-rabbit-hole__depth--mid,
+    .scene-rabbit-hole__depth--near {
+      opacity: 0.22;
+      scale: 1.05;
+    }
+
+    .scene-rabbit-hole__alice {
+      /* A held close-up with a slow breathing pulse and idle sway, not travel. */
+      scale: calc(1.35 + sin(var(--progress, 0) * 3.14159) * 0.05);
+      rotate: calc(sin(var(--progress, 0) * 6.28318) * 4deg);
+    }
+  }
+
+  /* ---------------------------------------------------------------- dreamy-fall */
+  .scene[data-scene="rabbit-hole"] .shot[data-shot="dreamy-fall"] {
+    &::before {
+      background: radial-gradient(
+        120% 100% at 50% 55%,
+        color-mix(in oklab, var(--rh-dream) 75%, transparent),
+        transparent 80%
+      );
+      opacity: calc(0.6 + var(--progress, 0) * 0.2);
+    }
+
+    &::after {
+      /* Drifting motes, each on its own slow lateral wander rather than a straight
+         drop, for the dreamier, slower read this shot asks for. */
+      content: "";
+      position: absolute;
+      inset: -15%;
+      z-index: 0;
+      background:
+        radial-gradient(
+          4% 3% at calc(20% + sin(var(--progress, 0) * 6.28318) * 8%)
+            calc(80% - var(--progress, 0) * 60%),
+          color-mix(in oklab, var(--ink) 60%, transparent),
+          transparent 100%
+        ),
+        radial-gradient(
+          3% 5% at calc(70% + cos(var(--progress, 0) * 6.28318) * 6%)
+            calc(90% - var(--progress, 0) * 70%),
+          color-mix(in oklab, var(--ink) 50%, transparent),
+          transparent 100%
+        ),
+        radial-gradient(
+          5% 3% at calc(45% - sin(var(--progress, 0) * 4.71239) * 10%)
+            calc(70% - var(--progress, 0) * 50%),
+          color-mix(in oklab, var(--ink) 45%, transparent),
+          transparent 100%
+        );
+      opacity: 0.5;
+    }
+
+    .scene-rabbit-hole__depth--mid {
+      translate: calc(sin(var(--progress, 0) * 6.28318) * 6svh)
+        calc(20svh - var(--progress, 0) * 40svh);
+      opacity: 0.4;
+    }
+
+    .scene-rabbit-hole__depth--near {
+      background: color-mix(in oklab, var(--rh-dream) 40%, transparent);
+      opacity: 0.35;
+    }
+
+    .scene-rabbit-hole__alice {
+      /* A slow, sleepy tumble: gentle lateral sway rather than the earlier dive. */
+      translate: calc(sin(var(--progress, 0) * 6.28318) * 3svh) calc(var(--progress, 0) * 4svh);
+      rotate: calc(var(--progress, 0) * 40deg + sin(var(--progress, 0) * 3.14159) * 6deg);
+      scale: calc(0.8 + var(--progress, 0) * 0.1);
+    }
+  }
+
+  /* -------------------------------------------------------------------- landing */
+  .scene[data-scene="rabbit-hole"] .shot[data-shot="landing"] {
+    &::before {
+      background: radial-gradient(
+        130% 90% at 50% 80%,
+        color-mix(in oklab, var(--rh-ground) 70%, transparent),
+        transparent 70%
+      );
+      opacity: calc(0.3 + var(--progress, 0) * 0.5);
+    }
+
+    &::after {
+      /* The floor rises to meet Alice, then holds: the exit's stable handoff
+         composition (docs/poc/rabbit-hole.md §5, "Exit transition"). */
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 55%,
+        color-mix(in oklab, var(--rh-ground) 60%, transparent)
+      );
+      translate: 0 calc(max(0svh, 30svh - var(--progress, 0) * 130svh));
+    }
+
+    .scene-rabbit-hole__depth--mid {
+      opacity: calc(var(--progress, 0) * 0.3);
+      scale: calc(1 + var(--progress, 0) * 0.6);
+    }
+
+    .scene-rabbit-hole__depth--near {
+      /* A brief dust ring from the impact, already blooming as the shot begins and
+         gone well before it ends. */
+      background: radial-gradient(
+        30% 12% at 50% 88%,
+        color-mix(in oklab, var(--ink) 45%, transparent),
+        transparent 100%
+      );
+      opacity: calc(max(0, 0.5 - var(--progress, 0) * 2.5));
+      scale: calc(1 + var(--progress, 0) * 3);
+    }
+
+    .scene-rabbit-hole__alice {
+      /* Finishes the fall, plants, and a quick squash-and-stretch settles her
+         upright for the handoff to the next scene. */
+      --rh-bounce: calc(max(0, 0.3 - var(--progress, 0) * 1.5));
+      translate: 0 calc(max(0svh, 6svh - var(--progress, 0) * 30svh));
+      scale: calc(1 + var(--rh-bounce, 0) * 0.6) calc(1 - var(--rh-bounce, 0) * 0.6);
+    }
+  }
+
+  /*
+   * --------------------------------------------------------- shot handovers ---
+   *
+   * The overlap contract's `[data-state="outgoing"]` overrides, gathered here
+   * rather than beside each shot's base rule above. Threshold's is the one
+   * visibly motivated transition (docs/scene-shot-model.md §4): the rim keeps
+   * closing and rushes toward the viewer as this shot hands off, while
+   * Primary Fall is already the primary shot beneath it and starts pulled in to
+   * match — together they read as one camera travelling through the hole rather
+   * than a cut, a crossfade, or an unrelated wash. Primary Fall's and
+   * Alice-Focus's overrides continue Alice's own pose across their own handovers,
+   * so the same anchor reads as continuous through every boundary.
+   */
+  .scene[data-scene="rabbit-hole"] .shot[data-shot="threshold"][data-state="outgoing"] {
+    scale: calc(1 + var(--handoff, 0) * 2.4);
+    opacity: calc(1 - var(--handoff, 0) * 0.9);
+
+    .scene-rabbit-hole__depth--near {
+      mask-image: radial-gradient(
+        circle at 50% 44%,
+        transparent calc(6% - var(--handoff, 0) * 6%),
+        black calc(8% - var(--handoff, 0) * 6%)
+      );
+    }
+
+    .scene-rabbit-hole__alice {
+      translate: 0 calc(22svh + var(--handoff, 0) * 8svh);
+      rotate: calc(8deg + var(--handoff, 0) * 70deg);
+      scale: calc(1.15 - var(--handoff, 0) * 0.9);
+    }
+  }
+
+  .scene[data-scene="rabbit-hole"] .shot[data-shot="primary-fall"][data-state="outgoing"] {
+    .scene-rabbit-hole__alice {
+      scale: calc(1 + var(--handoff, 0) * 0.55);
+    }
+
+    .scene-rabbit-hole__depth--near {
+      opacity: calc(0.8 - var(--handoff, 0) * 0.5);
+    }
+  }
+
+  .scene[data-scene="rabbit-hole"] .shot[data-shot="alice-focus"][data-state="outgoing"] {
+    .scene-rabbit-hole__alice {
+      scale: calc(1.35 - var(--handoff, 0) * 0.55);
+      rotate: calc(var(--handoff, 0) * -25deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /*
+     * Comfortable versions, designed rather than disabled: the same shots still
+     * read as different compositions, but nothing pushes toward the viewer, spins
+     * continuously, or oscillates. Depth keeps communicating through colour,
+     * opacity and a shallower, steadier translate instead. Base overrides first,
+     * or the same overlap-list Biome hint applies to this block as well.
+     */
+    .scene[data-scene="rabbit-hole"] .shot[data-shot="threshold"]::after {
+      rotate: none;
+    }
+
+    .scene[data-scene="rabbit-hole"] .shot[data-shot="primary-fall"] {
+      perspective: none;
+
+      &::after {
+        rotate: none;
+        translate: 0 calc(max(-2svh, -1svh - var(--progress, 0) * 8svh));
+      }
+
+      .scene-rabbit-hole__depth--mid {
+        translate: 0 calc(8svh - var(--progress, 0) * 16svh);
+      }
+
+      .scene-rabbit-hole__depth--near {
+        translate: 0 calc(12svh - var(--progress, 0) * 24svh);
+      }
+
+      .scene-rabbit-hole__alice {
+        rotate: none;
+      }
+    }
+
+    .scene[data-scene="rabbit-hole"] .shot[data-shot="alice-focus"] .scene-rabbit-hole__alice {
+      scale: 1.35;
+      rotate: none;
+    }
+
+    .scene[data-scene="rabbit-hole"] .shot[data-shot="dreamy-fall"] {
+      &::after {
+        background: none;
+      }
+
+      .scene-rabbit-hole__depth--mid {
+        translate: 0 calc(8svh - var(--progress, 0) * 16svh);
+      }
+
+      .scene-rabbit-hole__alice {
+        translate: 0 calc(var(--progress, 0) * 4svh);
+        rotate: none;
+      }
+    }
+
+    .scene[data-scene="rabbit-hole"] .shot[data-shot="landing"] .scene-rabbit-hole__alice {
+      scale: none;
+    }
+
+    .scene[data-scene="rabbit-hole"] .shot[data-shot="threshold"][data-state="outgoing"] {
+      scale: none;
+
+      .scene-rabbit-hole__alice {
+        rotate: 8deg;
+        scale: 1.15;
+      }
+    }
+
+    .scene[data-scene="rabbit-hole"]
+      .shot[data-shot="alice-focus"][data-state="outgoing"]
+      .scene-rabbit-hole__alice {
+      rotate: none;
+    }
+  }
+}

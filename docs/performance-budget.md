@@ -55,7 +55,7 @@ is compared against the baseline, so growth has a cause rather than a surprise.
 | --- | --- | --- | --- | --- |
 | `/` | 0.4 KB | 0.8 KB | none | none |
 | `/<locale>/` | 0.5 KB | 0.8 KB | none | none |
-| `/<locale>/rabbit-hole/` | 2.9–3.2 KB | 1.5 KB | 2.2 KB | 3.3 KB |
+| `/<locale>/rabbit-hole/` | 3.1–3.4 KB | 3.1 KB | 2.2 KB | 3.4 KB |
 
 The scaffolding alone was 0.4 KB of JS, so the runtime cost 1.8 KB to begin with. CSS
 gained 0.06 KB for the availability notes on the entry and home pages, and 0.13 KB for
@@ -68,6 +68,21 @@ The page grew from 2.2–2.4 KB to 2.9–3.2 KB because it now carries a **secon
 and its eighteen extra sentences, which is content rather than overhead. The runtime
 grew from 2.7 KB to 3.3 KB for shot overlap, the document coordinator, and the
 render-active set in the snapshot.
+
+### Rabbit Hole's temporary depth staging
+
+Measured the same way, comparing the build immediately before and after the depth
+bands, the Alice anchor and the threshold→primary-fall handover mask landed (no other
+change in between): HTML 2.87–3.17 KB → 3.11–3.42 KB (+0.24–0.25 KB, the depth-band
+markup and the inline Alice silhouette, generated per shot); CSS (`base.css` +
+`story.css` together, since the new tokens live in the former and the new rules in the
+latter) 1.52 KB → 3.11 KB (+1.59 KB, `src/scenes/rabbit-hole/rabbit-hole.css`); JS
+unchanged at 3.36 KB, because this work added no runtime behaviour — every depth cue is
+CSS keyed off the `--progress`, `--handoff` and `data-state` the runtime already
+publishes. Against the budgets in §2 (CSS ≤ 30 KB, JS ≤ 120 KB) this is comfortably
+inside both, and the JS figure is the one that matters most here: a purely
+CSS-and-markup approach was the goal, and the size report confirms it cost no bundle
+weight.
 
 ### What two scenes cost per frame
 

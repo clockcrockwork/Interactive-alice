@@ -120,6 +120,74 @@ for (const entry of parts) {
       }
     });
 
+    // Regression guard: `.shot` carries no z-index of its own, so without the
+    // generic outgoing override's own stacking position, two shots this deep into
+    // a handover would paint in document order — the later, incoming shot always
+    // in front, regardless of which one is meant to be closing over the other.
+    // That silently defeats any occlusion-style reveal a shot's own mask sets up
+    // (a shrinking aperture, a closing iris), the mask only ever showing what is
+    // underneath its own layers rather than the shot genuinely behind it.
+    test(`${entry.url} ${sceneId}: the outgoing shot paints above the shot taking over from it`, async ({
+      page,
+    }) => {
+      await page.goto(url);
+      await focusScene(page, sceneId);
+
+      for (const shot of handovers) {
+        const spans = await page
+          .locator(`.scene[data-scene="${sceneId}"] .shot`)
+          .evaluateAll((nodes) =>
+            nodes.map((node) => ({
+              start: Number(node.dataset.start),
+              end: Number(node.dataset.end),
+            })),
+          );
+        const next = spans[shot.index + 1];
+        if (!next) {
+          throw new Error(`${sceneId}/${shot.id} has no next shot`);
+        }
+        const tail = shot.overlap * (next.end - next.start);
+
+        // Well inside the handover, so both shots are genuinely on screen together.
+        await holdAt(page, sceneId, next.start + tail / 2);
+        const [outgoingId, incomingId] = await shotsOf(page, sceneId);
+        expect(outgoingId).toBe(shot.id);
+        if (!incomingId) {
+          throw new Error(`${sceneId}/${shot.id} has no incoming shot to compare against`);
+        }
+
+        const stage = page.locator(`.scene[data-scene="${sceneId}"] [data-scene-stage]`);
+        const box = await stage.boundingBox();
+        if (!box) {
+          throw new Error(`${sceneId} has no stage box to sample`);
+        }
+        const point = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+
+        // Both `.shot` elements cover the whole stage (`inset: 0`), so both sit in
+        // the hit-test stack at its centre; which one is listed first is exactly
+        // which one paints on top.
+        const order = await page.evaluate(
+          ({ x, y }) =>
+            document
+              .elementsFromPoint(x, y)
+              .map((node) => (node as HTMLElement).dataset?.shot)
+              .filter((id): id is string => Boolean(id)),
+          point,
+        );
+        const outgoingRank = order.indexOf(shot.id);
+        const incomingRank = order.indexOf(incomingId);
+        expect(
+          outgoingRank,
+          `${shot.id} should be hit-testable at the stage centre`,
+        ).toBeGreaterThanOrEqual(0);
+        expect(
+          incomingRank,
+          `${incomingId} should be hit-testable at the stage centre`,
+        ).toBeGreaterThanOrEqual(0);
+        expect(outgoingRank).toBeLessThan(incomingRank);
+      }
+    });
+
     // Named for what it does. The seam, not the scrollbar: what is proven is that
     // the composition is a function of progress and nothing else, arrived at from
     // either direction. Reversal by real scrolling is covered in handoff.spec.ts.

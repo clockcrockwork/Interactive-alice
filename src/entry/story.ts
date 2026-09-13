@@ -9,6 +9,7 @@
 import { attachStory } from '../runtime/attach.ts';
 import { installProbe } from '../runtime/probe.ts';
 import '../styles/scene.css';
+import '../scenes/rabbit-hole/rabbit-hole.css';
 
 const story = document.querySelector<HTMLElement>('.story');
 const coordinator = story ? attachStory(story) : undefined;

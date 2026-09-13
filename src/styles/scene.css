@@ -69,6 +69,17 @@
    * overlap, which never reaches this state anyway.
    */
   .story[data-mode="scene"] .shot[data-state="outgoing"] {
+    /*
+     * One level above the implicit stacking (auto, effectively 0) every other
+     * shot state paints at, so the shot handing over always paints in front of
+     * the shot it hands over to, regardless of their order in the document. Shots
+     * are siblings with no z-index of their own otherwise, so without this an
+     * occlusion-style reveal (a closing iris, a shrinking aperture) could only
+     * ever show its own layers through its own mask — never what is genuinely
+     * behind it — because the later sibling (the incoming shot) would always win
+     * the paint order.
+     */
+    z-index: 1;
     opacity: calc(1 - var(--handoff, 0));
     scale: calc(1 + var(--handoff, 0) * 0.14);
     will-change: opacity, scale;

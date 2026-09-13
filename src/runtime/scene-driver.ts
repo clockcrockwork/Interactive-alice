@@ -18,6 +18,7 @@ import {
   type QualityTier,
   type RuntimeContext,
   readViewport,
+  type Viewport,
 } from './context.ts';
 import { Lifecycle } from './lifecycle.ts';
 import {
@@ -60,6 +61,21 @@ export interface SceneDriverOptions {
   shots: readonly ShotSpan[];
   beats: readonly Span[];
   onUpdate: (context: RuntimeContext) => void;
+  /**
+   * The scene stopped being ticked.
+   *
+   * `onUpdate` alone cannot say this: not being called is indistinguishable from a
+   * frame in which nothing changed, and a renderer that holds a frame request of its
+   * own has to be told to let it go. Off-screen scenes doing no work is a rule, and
+   * a rule needs an edge to fire on.
+   */
+  onSuspend?: () => void;
+  onDestroy?: () => void;
+  /**
+   * Layout was just read, outside any animation frame. Anything else that needs to
+   * read it should do so now. See `ShotRenderer.measure`.
+   */
+  onMeasure?: (viewport: Viewport) => void;
 }
 
 export class SceneDriver {
@@ -87,6 +103,8 @@ export class SceneDriver {
    */
   #resync = true;
   #lastTime = 0;
+  /** The progress at `#lastTime`, so a speed is travel over the interval it spans. */
+  #sampled = 0;
   #quality: QualityTier = 'full';
   #effects = true;
   #audio = false;
@@ -154,11 +172,17 @@ export class SceneDriver {
     const stage = this.#options.stage.getBoundingClientRect();
     this.#top = track.top + scrollY;
     this.#distance = Math.max(track.height - stage.height, 1);
+    // The one moment in a scene's life when reading layout is correct, so it is the
+    // moment everything that needs to reads it. Every caller of this is outside an
+    // animation frame — mount, a resize, a restore, a font swap — which is what lets
+    // the frame loop keep its promise never to read layout at all.
+    this.#options.onMeasure?.(readViewport());
   }
 
   suspend(): void {
     if (this.#lifecycle.can('suspended')) {
       this.#lifecycle.to('suspended');
+      this.#options.onSuspend?.();
     }
     // Nothing is moving while suspended, and the clock must not carry the pause into
     // the first sample after resuming.
@@ -186,6 +210,7 @@ export class SceneDriver {
   destroy(): void {
     this.suspend();
     this.#lifecycle.to('destroyed');
+    this.#options.onDestroy?.();
   }
 
   /**
@@ -226,6 +251,7 @@ export class SceneDriver {
     this.#direction = 0;
     this.#velocity = 0;
     this.#lastTime = 0;
+    this.#sampled = this.#progress;
   }
 
   snapshot(): SceneSnapshot {
@@ -270,32 +296,87 @@ export class SceneDriver {
       return false;
     }
 
-    const seconds = this.#lastTime ? (time - this.#lastTime) / 1000 : 0;
-    this.#lastTime = time;
+    // Start the clock at where the scene already was, not at where this frame has
+    // just arrived. A frame with no previous timestamp cannot divide by an interval,
+    // so the movement it carries has to be measured over the interval it is
+    // *observed* in — the one ending at the next frame. Anchoring `#sampled` to the
+    // pre-frame position is what keeps the first frame of a scroll in the speed
+    // instead of silently dropping it, which is why `velocity` could never leave
+    // zero at all before this.
+    if (this.#lastTime === 0) {
+      this.#lastTime = time;
+      this.#sampled = this.#progress;
+    }
+    const seconds = (time - this.#lastTime) / 1000;
 
     const delta = progress - this.#progress;
-    this.#direction = directionOf(delta);
-    this.#velocity = velocityOf(this.#velocity, delta, seconds);
-
-    if (delta !== 0 || this.#velocity !== 0) {
-      this.#publish(progress, false);
+    if (seconds > 0) {
+      this.#velocity = velocityOf(this.#velocity, progress - this.#sampled, seconds);
+      this.#lastTime = time;
+      this.#sampled = progress;
     }
+
+    // `direction` is the way a reader is travelling, and travelling does not stop at
+    // the last frame that moved a pixel: momentum is still being reported for as
+    // long as `velocity` is non-zero, and a direction of 0 beside a velocity of 0.3
+    // is two halves of one answer disagreeing. So it holds through the decay and
+    // returns to 0 at the moment the scene is genuinely still — which is a state a
+    // renderer is now told about, rather than one it has to infer from silence.
+    if (delta !== 0) {
+      this.#direction = directionOf(delta);
+    } else if (this.#velocity === 0) {
+      this.#direction = 0;
+    }
+
+    this.#publish(progress, false);
 
     // Keep going while velocity is still decaying, so a scene that reads speed sees
     // it settle to zero rather than holding the last value after scrolling stops.
     if (Math.abs(this.#velocity) > VELOCITY_EPSILON) {
       return true;
     }
+
+    // Movement this frame, but no interval to measure it over yet. Another frame is
+    // needed before there is a speed at all, so ask for it rather than dropping the
+    // clock, which would make every frame rediscover that it has no previous one.
+    if (delta !== 0) {
+      return true;
+    }
+
+    // Genuinely still. Drop the clock, so that whenever the next frame comes — a
+    // second later, or after a suspension — the pause does not read as travel.
     this.#lastTime = 0;
     return false;
   }
 
+  /**
+   * The last context a scene was actually given.
+   *
+   * Publication used to be gated on progress alone, which quietly meant that
+   * **motion was never delivered**: velocity decays across frames in which progress
+   * does not move at all, so every value between the last real movement and rest was
+   * computed, stored in the snapshot, and thrown away. A scene reading speed
+   * therefore kept whichever value the last progress change happened to carry —
+   * Rabbit Hole's Canvas layer left a full-speed streak frame painted on a page that
+   * had stopped scrolling. Progress, direction and velocity are all inputs a scene
+   * renders from, so any of them changing is a reason to publish.
+   *
+   * This does not mean more DOM work. `Stage` keeps its own per-element cache keyed
+   * on what it writes, so a frame that only changes velocity reaches the renderers
+   * and writes nothing to the document.
+   */
+  #sent = { progress: Number.NaN, direction: 0 as Direction, velocity: 0 };
+
   #publish(progress: number, force: boolean): void {
-    const changed = progress !== this.#progress;
     this.#progress = progress;
+    const changed =
+      progress !== this.#sent.progress ||
+      this.#direction !== this.#sent.direction ||
+      this.#velocity !== this.#sent.velocity;
     if (!changed && !force) {
       return;
     }
+    this.#sent = { progress, direction: this.#direction, velocity: this.#velocity };
     this.#options.onUpdate({
       progress,
       direction: this.#direction,

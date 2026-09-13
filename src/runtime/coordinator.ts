@@ -33,14 +33,29 @@ export class SceneCoordinator {
   #resizeObserver: ResizeObserver | undefined;
   #frame = 0;
   #mounted = false;
+  /**
+   * The page itself has gone away, whatever the geometry says.
+   *
+   * Being on screen is a fact about the viewport, and a hidden page has no viewport
+   * to be on screen in. Without this the two answers race: `pagehide` suspends every
+   * scene, and an intersection callback already queued for the frame before it then
+   * arrives and resumes one — leaving a scene ticking, and now a renderer drawing,
+   * on a page nobody is looking at. Which way that race falls decides nothing about
+   * the design, so it is not left to it.
+   */
+  #hidden = false;
 
   readonly #onScroll = () => this.#request();
   readonly #onResize = () => this.#resettle();
   // Back from the back/forward cache: the viewport may differ and the scroll
   // position is restored, so nothing about where a scene sits can be assumed.
   // Which is the same situation as a resize, and gets the same answer.
-  readonly #onPageShow = () => this.#resettle();
+  readonly #onPageShow = () => {
+    this.#hidden = false;
+    this.#resettle();
+  };
   readonly #onPageHide = () => {
+    this.#hidden = true;
     for (const driver of this.#drivers) {
       driver.suspend();
     }
@@ -96,7 +111,7 @@ export class SceneCoordinator {
         if (!driver) {
           continue;
         }
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && !this.#hidden) {
           driver.resume();
         } else {
           driver.suspend();
@@ -148,7 +163,7 @@ export class SceneCoordinator {
    */
   #syncVisibility(): void {
     for (const driver of this.#drivers) {
-      if (onScreen(driver.stage)) {
+      if (!this.#hidden && onScreen(driver.stage)) {
         driver.resume();
       } else {
         driver.suspend();

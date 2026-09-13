@@ -20,6 +20,7 @@ that property and on the contracts around it, and leaves taste to human review.
 | Browser, full | Playwright, Chromium desktop and phone, Firefox, WebKit (`npm run test:e2e:full`) | interaction milestones and before a release | shot boundaries, reverse reconstruction, resize, portrait, keyboard, reduced motion, degraded modes, locales, back-navigation restore |
 | Accessibility | axe inside Playwright, plus an ARIA snapshot | every PR, on load and mid-scene | semantics, labels, focus order, contrast where measurable; and that a staged scene keeps every segment it stages in the accessibility tree, in reading order |
 | Visual | Playwright screenshots at named checkpoints | opt-in, after art stabilizes | that a deliberate composition has not silently changed |
+| Rendered pixels | hashing a canvas's own `getImageData` in Playwright | where a renderer's output *is* the contract | that a composition really changed, and really came back — for a layer whose state is not readable off the DOM |
 | Performance | traces, size output, Lighthouse | milestones | see `performance-budget.md`; evidence, not pass/fail in CI |
 
 ### Unit layer
@@ -121,15 +122,26 @@ is flaky and the visual layer is worthless:
    Driving every scene on a page to the same value is not a state scrolling produces,
    so the seam does not offer it as a default.
 2. **Randomness is controllable.** Seeded, or disabled, through one switch. An
-   unseeded particle field cannot be compared between runs.
+   unseeded particle field cannot be compared between runs. The Canvas dust takes
+   the strongest available form of this: one constant seed, so the layout is
+   identical on every load and every device and there is no switch left to get
+   wrong. The comfort mode and the quality tier change how many motes are drawn,
+   never where they are.
 3. **Time is not a hidden input.** Progression-critical state depends on progress,
    not on elapsed time. Decorative time-based motion can be frozen by the same
    switch that seeds randomness.
 4. **Optional layers can be turned off.** FX, audio, and device motion each have a
-   flag, which is also how the degraded-mode tests are written.
+   flag, which is also how the degraded-mode tests are written. Switching FX off
+   takes the same path through the renderer seam as a shot going off screen, so the
+   degraded mode is not a second, less-tested code path.
 5. **State can be serialized.** The debug overlay's values come from one
    inspectable snapshot: progress, direction, active shot and beat, viewport, DPR,
-   reduced motion, quality tier. The determinism test compares snapshots.
+   reduced motion, quality tier. The determinism test compares snapshots. A scene's
+   renderers report separately, through `__alice.fx(sceneId)`, because they answer a
+   different question — not where the reader is, but what an optional layer is doing
+   about it. What they report is chosen so that a test never has to guess at timing:
+   a monotonic count of painted frames, the buffer and CSS sizes in use, and whether
+   the renderer is holding a frame request of its own.
 6. **A ready signal exists.** The story page sets `data-ready` on its `.story`
    element once the page's script has run, so a test can wait for something real
    rather than for a timeout. The scene runtime takes this over when it lands, and
@@ -226,8 +238,88 @@ Since the two-scene work, and on both the desktop and phone Chromium projects:
 - **the end of a scene**: the last beat still owns the scene's end, and a scene whose
   last beat carries text does not finish on an empty stage.
 
-Still to come with the scenes they belong to: depth bands, the FX layer, the optional
-interaction, audio, and back-navigation restore across a document boundary.
+Since the Canvas work, and covering the per-shot renderer seam as well as Rabbit
+Hole's own FX layer (`tests/canvas-fx.spec.ts`):
+
+- **the backing buffer**, at three device pixel ratios: that the CSS box and the
+  buffer are separate numbers, that the buffer is the box times the ratio, that the
+  ratio is the capped one and not the device's (a 3× profile renders 2×), and that a
+  handover's own scale transform does **not** move the buffer;
+- **renderer lifecycle, from frozen counters rather than from labels.** The renderer
+  reports a monotonic count of the frames it has painted, and the test waits a real
+  600 ms and asserts the count has not moved: while another shot of the same, still
+  running scene owns the frame; while the scene itself is off screen; and while
+  optional effects are switched off. A lifecycle label alone would be a claim about
+  the implementation rather than about what it did;
+- **overlap**, at a progress inside the renderer's own handover tail, where its shot
+  is `outgoing` and another owns the pacing: it is still active, still drawing, and
+  still using the same buffer;
+- **the interaction, in pixels.** The canvas's own image data is hashed. A tap
+  changes it, the change is watched out frame by frame from inside the page while the
+  impulse decays, and when the impulse is spent the hash equals the resting hash
+  again — pixel for pixel, which is the recovery rule observed rather than asserted.
+  Once with a mouse, once with a real touch tap on a phone viewport. Scrolling
+  forwards and backwards during a live impulse still moves scene progress normally;
+- **reverse**, the same way: the hash at a progress, a different hash further on, and
+  the first hash exactly again on return. Reversing is not a rewind here, because the
+  field is a pure function of progress;
+- **motion settling, in the renderer rather than in the snapshot.** Real scrolling,
+  then a stop: the field streaks while the reader moves, the speed reaches exactly
+  zero, `direction` returns to zero, nothing is streaking any more, and the canvas
+  equals the composition that progress alone describes at that point;
+- **both quality tiers**, driven explicitly: the reduced tier draws fewer motes than
+  the full one and more than none;
+- **reduced motion as a different design.** Fewer motes than the same page at the
+  same progress without the preference, still enough to be a layer, and never a
+  streak however fast the reader scrolls — sampled once per animation frame from
+  inside the page, because a streak is a function of speed and a reading fetched
+  after the scroll always finds the field at rest. The full-motion counterpart
+  asserts that streaks do appear, so "no streaks" cannot pass by accident;
+- **effects off, and the renderer refusing to start.** In both cases: nothing painted,
+  the draw count frozen, `data-degraded` absent, and the scene still scrollable end to
+  end with its text on screen. The second injects a `getContext` that returns null
+  before the page's script runs, so the seam's guard is what is being tested;
+- **resize across a shot boundary**, to a viewport narrower than the reading column so
+  the staged box itself changes: the buffer follows, and the field is still painting.
+
+One more runtime rule landed with them, in `tests/resilience.spec.ts`: a scene stays
+suspended while the page is hidden, whatever the geometry says. `pagehide`, then a
+scroll and a resize and long enough for any queued intersection callback to arrive,
+and the scene is still suspended; `pageshow` is what ends it. This was found because
+the suspension tests were intermittently failing — a late callback really was
+resuming a scene on a hidden page, which mattered little when the only cost was a
+progress value and matters more now that a renderer would be drawing.
+
+Two things about **what a test is allowed to read** came out of this, and both are
+worth keeping:
+
+- **the snapshot is not the renderer.** Velocity decayed correctly inside the driver
+  and was never published, so the snapshot showed it settling to zero while the
+  Canvas layer still had a full-speed streak frame painted. Every assertion about
+  motion therefore reads the *consumer's* state — `fx(...)` — and not only
+  `snapshot(...)`. A test that had checked both against each other would have caught
+  it; a test that checked either alone did not;
+- **the seam cannot produce the state.** `setProgress` publishes a neutral jump, so
+  no test written on `holdAt` can ever reach "a reader who was moving and is not any
+  more". The settling test scrolls for real, and samples once per animation frame
+  from inside the page, because velocity is gone within a few hundred milliseconds
+  and a reading fetched across the bridge always finds the field at rest.
+
+One existing test was strengthened rather than added for the same reason: velocity is
+now sampled **while the reader is moving**, not only after they stop. The old
+assertion — that velocity settles to near zero — passed perfectly against a runtime in
+which velocity was always zero. An assertion that only checks the resting state of a
+value cannot tell a settled value from one that never moved.
+
+A third came out of the performance review rather than the tests: **a renderer whose
+density follows the quality tier needs a test that both tiers are real**, because
+`initialQuality` gives a four-core machine `reduced` and a trace taken without saying
+which tier it ran at has measured the runner. `tests/canvas-fx.spec.ts` drives both
+tiers explicitly and asserts that the reduced one is thinner than the full one and
+still a field rather than nothing.
+
+Still to come with the scenes they belong to: audio, and back-navigation restore
+across a document boundary.
 
 ## 6. Ownership
 

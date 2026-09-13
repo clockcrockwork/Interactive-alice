@@ -12,6 +12,7 @@
 
 import type { QualityTier } from './context.ts';
 import type { SceneDriver, SceneSnapshot } from './scene-driver.ts';
+import type { ShotRendererReport } from './shot-renderer.ts';
 
 export interface ProbeFlags {
   effects?: boolean;
@@ -26,6 +27,15 @@ export interface AliceProbe {
   releaseProgress(sceneId?: string): void;
   snapshot(sceneId?: string): SceneSnapshot[];
   setFlags(flags: ProbeFlags, sceneId?: string): void;
+  /**
+   * What each of a scene's own renderers is doing.
+   *
+   * Separate from `snapshot` because it answers a different question: the snapshot
+   * is where the *reader* is, and this is what an optional layer is doing about it.
+   * A scene with no renderer of its own answers with an empty list rather than an
+   * error, so a test can ask any scene.
+   */
+  fx(sceneId: string): ShotRendererReport[];
 }
 
 export const probeRequested = (): boolean =>
@@ -44,7 +54,10 @@ function select(drivers: readonly SceneDriver[], sceneId: string | undefined): S
   return found;
 }
 
-export function installProbe(drivers: readonly SceneDriver[]): void {
+export function installProbe(
+  drivers: readonly SceneDriver[],
+  fx: ReadonlyMap<string, () => ShotRendererReport[]> = new Map(),
+): void {
   if (!probeRequested()) {
     return;
   }
@@ -65,6 +78,12 @@ export function installProbe(drivers: readonly SceneDriver[]): void {
       for (const driver of select(drivers, sceneId)) {
         driver.setFlags(flags);
       }
+    },
+    // `select` first, so asking about a scene that is not on this page is the same
+    // error it is everywhere else in the seam rather than a silent empty answer.
+    fx: (sceneId) => {
+      select(drivers, sceneId);
+      return fx.get(sceneId)?.() ?? [];
     },
   };
 }

@@ -12,10 +12,10 @@ import '../styles/scene.css';
 import '../scenes/rabbit-hole/rabbit-hole.css';
 
 const story = document.querySelector<HTMLElement>('.story');
-const coordinator = story ? attachStory(story) : undefined;
-const drivers = coordinator?.drivers ?? [];
+const attached = story ? attachStory(story) : undefined;
+const drivers = attached?.coordinator.drivers ?? [];
 
-installProbe(drivers);
+installProbe(drivers, attached?.fx);
 
 if (import.meta.env.DEV && drivers.length > 0) {
   const { installDebugOverlay } = await import('../runtime/debug-overlay.ts');

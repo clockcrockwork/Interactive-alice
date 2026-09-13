@@ -255,14 +255,14 @@ At least one Shot transition must be more than an instantaneous display swap: it
 
 The Rabbit Hole PoC does not pass unless:
 
-- [ ] the Rabbit Hole remains one Scene while containing at least three distinct Shot states;
-- [ ] at least one Shot materially changes camera angle, framing, perspective, or dominant movement axis;
-- [ ] Shot-local progress is derived from the Scene's normalized progression rather than an unrelated page timeline;
-- [ ] scrolling backward across Shot boundaries reconstructs a coherent reverse transition;
-- [ ] at least one transition between Shots is spatially / visually motivated rather than a hard visibility toggle;
-- [ ] Alice or another focal subject can preserve perceptual continuity across a Shot change;
-- [ ] a Shot may activate / suspend renderer work independently enough to avoid keeping unnecessary expensive work alive;
-- [ ] resizing while inside or near a Shot boundary does not leave the Scene in an invalid composition;
+- [x] the Rabbit Hole remains one Scene while containing at least three distinct Shot states;
+- [x] at least one Shot materially changes camera angle, framing, perspective, or dominant movement axis;
+- [x] Shot-local progress is derived from the Scene's normalized progression rather than an unrelated page timeline;
+- [x] scrolling backward across Shot boundaries reconstructs a coherent reverse transition;
+- [x] at least one transition between Shots is spatially / visually motivated rather than a hard visibility toggle;
+- [x] Alice or another focal subject can preserve perceptual continuity across a Shot change;
+- [x] a Shot may activate / suspend renderer work independently enough to avoid keeping unnecessary expensive work alive;
+- [x] resizing while inside or near a Shot boundary does not leave the Scene in an invalid composition;
 - [ ] adding another Shot later does not require redefining what a Scene means or rewriting global scroll semantics.
 
 ## 11. Narrative text is referenced, not embedded

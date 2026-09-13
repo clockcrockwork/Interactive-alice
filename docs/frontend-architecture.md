@@ -196,6 +196,7 @@ Baseline target.
 | `coordinator.ts` | the document: one scroll listener, one frame loop, one intersection observer, one resize observer, for every scene on the page |
 | `stage.ts` | writes state onto the document as data attributes and custom properties |
 | `attach.ts` | the attach order: staged mode, flush layout, then measure and mount; marks `data-degraded` when it has to fall back |
+| `shot-renderer.ts` | the per-shot renderer contract, its activation contract, and the guard that keeps a failed optional layer from taking the scene with it |
 | `probe.ts` | the test seam, attached on `?probe=1` or in development |
 | `debug-overlay.ts` | development-only overlay, dropped from production bundles |
 
@@ -223,8 +224,13 @@ an implementation detail:
    `ui.json` beside it. A template or a runtime that needs a new word adds a key
    there first; see `docs/text-pipeline.md` §4.
 5. **The probe addresses scenes by id.** `setProgress(sceneId, progress)`,
-   `snapshot(sceneId?)`, `scenes()`. A document may host several scenes, and driving
-   them all to one progress is a state real scrolling never produces.
+   `snapshot(sceneId?)`, `scenes()`, `fx(sceneId)`. A document may host several
+   scenes, and driving them all to one progress is a state real scrolling never
+   produces. `fx` is separate from `snapshot` because it answers a different
+   question: the snapshot says where the reader is, `fx` says what an optional layer
+   is doing about it — its lifecycle, its backing-buffer and CSS sizes, a monotonic
+   count of the frames it has painted, and whether it holds a frame request of its
+   own. A scene with no renderer answers with an empty list.
 6. **The document owns the listening, a scene owns itself.** One scroll listener, one
    resize listener, one `IntersectionObserver`, one `ResizeObserver` and one frame
    loop for the whole page, in `coordinator.ts`. A driver keeps its geometry, its
@@ -259,6 +265,41 @@ an implementation detail:
    establishing it. The layout read is affordable because none of those paths is a
    frame; the frame loop still never reads layout.
 
+An eighth is now fixed as well, because a renderer read the runtime's motion values
+for the first time and found all three of them broken. **Motion is a published value,
+not an internal one.**
+
+- **`velocity` is a real speed.** `tick` used to drop its frame clock whenever
+  velocity was below the epsilon, which every frame was, because a frame with no
+  previous timestamp cannot compute one — so `velocity` could never leave zero,
+  however fast anyone scrolled, and the browser test that watched it settle passed
+  against a runtime with nothing to settle. The clock is now anchored to where the
+  scene *was* rather than where the frame has arrived, so the movement a frame
+  carries is measured over the interval it is observed in and the first frame of a
+  scroll is no longer dropped from the speed.
+- **Motion changing is a reason to publish.** Publication was gated on progress
+  alone, so every velocity between the last real movement and rest was computed,
+  stored in the snapshot, and thrown away: `onUpdate` never fired for any of them. A
+  scene reading speed therefore kept whichever value the last progress change
+  happened to carry. That was invisible while nothing read the value and immediately
+  visible when something did — the Canvas layer left a full-speed streak frame
+  painted on a page that had stopped scrolling, while the snapshot the tests read
+  showed the speed decaying to zero. Progress, direction and velocity are all inputs
+  a scene renders from, so any of them changing publishes. `Stage` keeps its own
+  per-element cache, so a frame that only changes velocity reaches the renderers and
+  writes nothing to the document.
+- **`direction` holds through the decay and returns to zero at rest.** Travelling
+  does not stop at the last frame that moved a pixel — momentum is still being
+  reported — so a direction of 0 beside a velocity of 0.3 would be two halves of one
+  answer disagreeing. It holds while velocity is non-zero and becomes 0 at the moment
+  the scene is genuinely still, which is now a state a renderer is told about rather
+  than one it has to infer from silence. `#neutral` still clears both, for exactly
+  the discontinuities that should.
+
+The lesson worth keeping: a value that nothing consumes is not a working value, and a
+test that only inspects the snapshot cannot tell the difference. The regression test
+for this reads the *renderer's* state, not the driver's.
+
 Two more things are decided rather than fixed. **`direction` means reader movement.**
 A progress value that arrives without anyone scrolling — the first sync after mounting,
 a return from suspension or the back/forward cache, a seam jump, a release back to the
@@ -267,6 +308,15 @@ zero rather than the direction of the gap it closed. The driver keeps that as pr
 state: no scene has yet needed to know *why* progress jumped, so `RuntimeContext` does
 not carry a `discontinuous` flag. The first renderer with a real need for the reason
 is what adds one.
+
+**A hidden page outranks the geometry.** `pagehide` suspends every scene and latches
+until `pageshow`, so nothing that speaks for the viewport — a queued intersection
+callback, a resize, a scroll — can put a scene back to work while the page is away. A
+hidden page has no viewport to be on screen in. Without the latch the two answers
+race: `pagehide` suspends, and a callback already queued for the frame before it
+arrives and resumes, leaving a scene ticking and now a renderer drawing on a page
+nobody is looking at. Which way that race fell decided nothing about the design, so
+it is no longer left to it.
 
 A third thing is decided rather than fixed. **A scene is suspended when its stage is
 off screen, and resumes onto geometry.** Nothing ticks a suspended scene, so its
@@ -286,15 +336,72 @@ since nothing installs without the query. Before the first public release this i
 re-decided, and the alternatives are a build-time flag that drops the seam from the
 production bundle, or a key the query has to carry.
 
-Two seams are named but deliberately not built, so that the first scene needing
-them does not discover them. An **incoming** shot has no way to know a handover is
-under way or how long it lasts: `--handoff` is written on the outgoing shot only,
-and the tail length is a fact about the mapping that CSS cannot see. And there is
-no JavaScript hook for **per-shot renderer activation**: a Canvas or WebGL shot
-would today have to watch its own element's attributes to learn when to start and
-stop. `ShotState` is already the shape such a hook would carry, and `Stage` already
-computes the transitions; what is missing is somewhere to send them. Both are for
-the change that first needs them, not before.
+Of the two seams this section named and deliberately did not build, **one is now
+built and one still is not.**
+
+### The per-shot renderer seam, built because a renderer arrived
+
+`shot-renderer.ts` exists because Rabbit Hole's Canvas dust exists, and it is
+shaped by what that renderer needs rather than by what a renderer might need. It
+is a contract — `mount`, `activate`, `update`, `suspend`, `destroy`, `report` —
+and a small driver for it, and that is all: no registry, no discovery, no render
+graph. A renderer names the one shot it lives inside; the mapping is still the only
+list of shots. `src/scenes/registry.ts` is a lookup rather than a registry, so that
+`runtime/` never imports a scene.
+
+The activation contract, exactly:
+
+- renderers are driven from the **scene's own update**, so they inherit scene
+  suspension for nothing: a suspended scene is never ticked, so a renderer inside
+  it is never asked to draw, and `SceneDriverOptions.onSuspend` fires the edge so a
+  renderer holding a frame request of its own can let it go. Not being called is
+  indistinguishable from a frame in which nothing changed, which is why the edge
+  exists at all;
+- `activate` when its shot is **render-active** — `active` or `outgoing`. That is
+  exactly the set that paints, so an overlap that puts two shots on screen may
+  legitimately leave a renderer running while a different shot owns the pacing.
+  Losing the primary role is not leaving the screen;
+- `update` once per published frame while active, never otherwise;
+- `suspend` the moment its shot stops painting, the scene suspends, or
+  `context.effects` goes false. Switching optional effects off therefore takes
+  exactly the same path as a shot going off screen: there is no second, less-tested
+  way for a renderer to be quiet;
+- `destroy` with the scene.
+
+`Stage.apply` now **returns** the shot states it derived, and the renderers are
+given those, so one `shotStates` call per frame answers both the document and the
+renderers rather than two computations that could differ.
+
+Failure is closed off in the seam rather than in each renderer: every call is
+guarded, the first throw retires that renderer for the life of the page, and the
+scene is marked `data-fx="failed"` and carries on. A renderer whose feature is
+missing — no 2D context — throws at mount and is retired there, before anything
+depends on it.
+
+`measure(viewport)` is the one place a renderer may read layout, and it is on the
+contract for that reason rather than for convenience. The driver calls it from its
+own `measure`, which runs at mount, on a resize, on a restore and on a font swap and
+never inside an animation frame, so §4 of the budget — the frame loop reads no layout
+— stays true of renderers as well as of the runtime. A renderer that worked its own
+size out while drawing would be the first thing in the project to break that rule,
+and the first version of this one did.
+
+What this seam still does not do, and should not until something needs it: it does
+not preload, it does not tell a renderer about the shot next to it, it does not
+schedule, and it does not give a renderer a frame of its own. A renderer that wants
+one asks the platform directly and owns cancelling it, which is what Rabbit Hole's
+impulse decay does — the only loop in the project besides the document's, alive
+only while a visitor's tap is decaying and cancelled at every boundary. The
+document contract in §7.6 is unchanged and still measured: one runtime callback per
+animation frame during ordinary scrolling.
+
+### The incoming-handover seam, still not built
+
+An **incoming** shot still has no way to know a handover is under way or how long
+it lasts: `--handoff` is written on the outgoing shot only, and the tail length is a
+fact about the mapping that CSS cannot see. The Canvas layer did not need it — it
+lives inside the outgoing shot and reads `core + handoff` as one continuous travel —
+so it stays unbuilt, for the change that first needs it.
 
 Both of the items that were open here are now closed, and the answers are the two
 above plus `overlap` in the scene schema. A published page carries two scenes, the

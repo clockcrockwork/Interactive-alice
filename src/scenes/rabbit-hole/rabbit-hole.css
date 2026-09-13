@@ -3,8 +3,9 @@
  *
  * Shapes and silhouettes standing in for final art (docs/poc/rabbit-hole.md §6-8):
  * a persistent Alice anchor plus decorative depth-band layers, on top of the
- * generic shot/beat rules in ../../styles/scene.css. Five perceptually distinct
- * bands per docs/scene-shot-model.md §9's example list, one pair per shot:
+ * generic shot/beat rules in ../../styles/scene.css. Five structural hooks, one
+ * set per shot, standing in for the depth-band roles docs/poc/rabbit-hole.md §6
+ * lists as its example:
  *
  *   atmosphere   the shot's own `::before` (generic; recoloured per shot here)
  *   environment  a new `::after`, walls / shaft / ground
@@ -13,6 +14,15 @@
  *   Alice anchor `.scene-rabbit-hole__alice`, one persistent identity per shot,
  *                matched at each handover rather than one element shared across
  *                shots (docs/scene-shot-model.md §6 names both as valid)
+ *
+ * §6's acceptance criterion is Scene-wide — at least five perceptually distinct
+ * depth bands across Rabbit Hole as a whole — not five per individual shot, so a
+ * tight, close-up shot may leave some of these hooks quiet (alice-focus's mid/near
+ * below carry only opacity and scale, no paint source of their own). Whether the
+ * bands actually read as separate layers is a perceptual judgement made by
+ * looking at the running scene; tests/depth-staging.spec.ts checks that the hooks
+ * exist and that their computed style responds to progress and reduced motion,
+ * which is necessary but is not itself that perceptual judgement.
  *
  * Every rule is scoped by `.scene[data-scene="rabbit-hole"]`, and every selector
  * that must win over the generic placeholder rule adds an attribute beyond it, so

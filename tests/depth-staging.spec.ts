@@ -1,14 +1,22 @@
 /**
- * Rabbit Hole's temporary depth staging: the Alice anchor and the depth bands
- * this scene's visual work package adds on top of the generic shot/beat runtime,
- * and the reduced-motion counterpart of its one motivated shot handover.
+ * Rabbit Hole's temporary depth staging: the Alice anchor and the depth-band
+ * hooks this scene's visual work package adds on top of the generic shot/beat
+ * runtime, and the reduced-motion counterpart of its one motivated shot handover.
  *
  * The generic overlap contract (two shots on screen, exactly one primary, reverse
  * reconstruction) is already proven scene-agnostically in overlap.spec.ts; what is
- * new here is that this scene's own CSS actually reacts: shots read differently
- * from one another, the handover really does push the camera through the rim
- * rather than only crossfading, and the comfortable variant changes something a
- * reader can observe rather than only existing in the stylesheet.
+ * new here is that this scene's own CSS actually reacts: shots carry different
+ * computed styles from one another, the handover's computed scale keeps growing
+ * as it hands off rather than only fading in place, and the comfortable variant
+ * changes something a reader can observe rather than only existing in the
+ * stylesheet.
+ *
+ * What this file does not and cannot establish: whether docs/poc/rabbit-hole.md
+ * §6's five-perceptually-distinct-depth-bands acceptance actually holds. That is
+ * a perceptual judgement about the Scene as a whole, made by looking at it (see
+ * the PR's visual evidence), not a fact about elements existing or computed
+ * styles differing. Every assertion below checks a structural hook or a computed
+ * style, on purpose short of that perceptual claim.
  */
 import { expect, test } from '@playwright/test';
 import { focusScene, holdAt } from './drive.ts';
@@ -24,7 +32,7 @@ const shotIds = mapping.shots.map((shot) => shot.id);
 for (const entry of parts) {
   const url = `${entry.url}?probe=1`;
 
-  test(`${entry.url} ${SCENE_ID}: every shot carries an Alice anchor and its depth bands`, async ({
+  test(`${entry.url} ${SCENE_ID}: every shot carries the Alice anchor and depth-band elements (structural, not a perceptual claim)`, async ({
     page,
   }) => {
     await page.goto(url);
@@ -42,7 +50,7 @@ for (const entry of parts) {
     }
   });
 
-  test(`${entry.url} ${SCENE_ID}: the first and last shot read as different compositions`, async ({
+  test(`${entry.url} ${SCENE_ID}: the first and last shot have different computed background gradients`, async ({
     page,
   }) => {
     await page.goto(url);
@@ -64,11 +72,13 @@ for (const entry of parts) {
       .locator(`.scene[data-scene="${SCENE_ID}"] .shot[data-shot="${last}"]`)
       .evaluate((node) => getComputedStyle(node, '::before').backgroundImage);
 
-    // Different palettes and different gradients, not a shared wash reused as-is.
+    // Different computed gradients, not a shared wash reused as-is. Whether that
+    // reads as two different spaces rather than a palette swap is a perceptual
+    // question this assertion does not answer; see the PR's visual evidence.
     expect(early).not.toBe(late);
   });
 
-  test(`${entry.url} ${SCENE_ID}: the motivated handover pushes the camera through as it hands off`, async ({
+  test(`${entry.url} ${SCENE_ID}: the outgoing shot's computed scale keeps growing through its handover`, async ({
     page,
   }) => {
     await page.goto(url);
@@ -103,8 +113,11 @@ for (const entry of parts) {
     await holdAt(page, SCENE_ID, next.start + tail * 0.8);
     const late = Number(await outgoing.evaluate((node) => getComputedStyle(node).scale));
 
-    // The outgoing composition keeps growing toward the viewer as it hands off,
-    // rather than only fading in place: an occlusion/zoom transition, not a wash.
+    // The outgoing shot's computed scale keeps growing rather than only its opacity
+    // falling, which is the structural signature of an occlusion/zoom transition
+    // rather than a crossfade. Whether it reads as the camera travelling through the
+    // rim is a perceptual question this assertion does not answer; see the PR's
+    // visual evidence.
     expect(late).toBeGreaterThan(early);
   });
 

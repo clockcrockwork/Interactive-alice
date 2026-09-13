@@ -18,7 +18,7 @@ that property and on the contracts around it, and leaves taste to human review.
 | Unit | Vitest | every PR | pure logic: progress mapping, the pacing plan, lifecycle transitions, capability selection, text resolution |
 | Browser, fast | Playwright, desktop Chromium | every PR | every page in the generated manifest loads, each scene reaches start and end, no console, page or request errors |
 | Browser, full | Playwright, Chromium desktop and phone, Firefox, WebKit (`npm run test:e2e:full`) | interaction milestones and before a release | shot boundaries, reverse reconstruction, resize, portrait, keyboard, reduced motion, degraded modes, locales, back-navigation restore |
-| Accessibility | axe inside Playwright, plus an ARIA snapshot | every PR, on load and mid-scene | semantics, labels, focus order, contrast where measurable; and that a staged scene keeps its whole chapter in the accessibility tree |
+| Accessibility | axe inside Playwright, plus an ARIA snapshot | every PR, on load and mid-scene | semantics, labels, focus order, contrast where measurable; and that a staged scene keeps every segment it stages in the accessibility tree, in reading order |
 | Visual | Playwright screenshots at named checkpoints | opt-in, after art stabilizes | that a deliberate composition has not silently changed |
 | Performance | traces, size output, Lighthouse | milestones | see `performance-budget.md`; evidence, not pass/fail in CI |
 
@@ -143,12 +143,21 @@ accessibility tree; `visibility`, `display`, `aria-hidden` and `inert` each take
 out.
 
 So the check reads the **accessibility tree itself**, through an ARIA snapshot of the
-story, and asserts that every sentence the page stages is still exposed by its own
-words and that nothing else is. Counting rendered lines would be easier and would be
-the wrong test: it catches `visibility` and `display` and passes an `aria-hidden` that
-has removed the same text from every assistive technology. The difference does not
-show at progress 0, where most of a scene is in one state anyway, so each scene is
-driven into the middle of itself and asked again.
+story, and compares the whole ordered list of paragraphs against the whole ordered
+list of segments the page stages. Note the scope: a part page stages part of a
+chapter, not all of it, so what is guaranteed is every **staged** segment rather than
+every sentence in the chapter.
+
+Two weaker tests were considered and rejected. Counting rendered lines catches
+`visibility` and `display` and passes an `aria-hidden` that has removed the same text
+from every assistive technology. Checking that each sentence appears somewhere, plus a
+count, passes a pair of sentences swapped into the wrong order, and in text where a
+sentence repeats or contains another it lets a duplicate cover for a missing line.
+Narrative text does both, and reading order is a contract of this project, so the
+comparison is exact and ordered.
+
+The difference does not show at progress 0, where most of a scene is in one state
+anyway, so each scene is driven into the middle of itself and asked again.
 
 This exists because the rule was broken once and nearly shipped: hiding inactive
 shots with `visibility: hidden` removed two thirds of the chapter, and the only thing

@@ -28,8 +28,6 @@ function onScreen(element: HTMLElement): boolean {
 
 export class SceneCoordinator {
   readonly #drivers: SceneDriver[];
-  /** Which scenes are on screen, as last decided by geometry or by the observer. */
-  readonly #visible = new WeakMap<SceneDriver, boolean>();
   readonly #byStage = new Map<HTMLElement, SceneDriver>();
   #observer: IntersectionObserver | undefined;
   #resizeObserver: ResizeObserver | undefined;
@@ -98,7 +96,6 @@ export class SceneCoordinator {
         if (!driver) {
           continue;
         }
-        this.#visible.set(driver, entry.isIntersecting);
         if (entry.isIntersecting) {
           driver.resume();
         } else {
@@ -143,14 +140,15 @@ export class SceneCoordinator {
    * therefore reads the geometry itself and lets the observer maintain the answer
    * afterwards rather than establish it.
    *
+   * Nothing caches which scenes were visible. The lifecycle each driver is in is
+   * that record, and a second copy could only go stale against it.
+   *
    * The layout read is affordable because none of those paths is a frame: mount,
    * a resize, and a restore. The frame loop still never reads layout.
    */
   #syncVisibility(): void {
     for (const driver of this.#drivers) {
-      const visible = onScreen(driver.stage);
-      this.#visible.set(driver, visible);
-      if (visible) {
+      if (onScreen(driver.stage)) {
         driver.resume();
       } else {
         driver.suspend();

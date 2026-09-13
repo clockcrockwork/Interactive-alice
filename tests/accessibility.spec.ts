@@ -18,8 +18,38 @@ for (const entry of pageGraph()) {
   });
 }
 
+/** The shape `ariaSnapshotJSON` returns, to the depth this needs. */
+interface AriaNode {
+  role?: string;
+  text?: string;
+  children?: (AriaNode | string)[];
+}
+
+/** Every paragraph's accessible text, in document order. */
+function paragraphs(
+  node: AriaNode | string | (AriaNode | string)[],
+  found: string[] = [],
+): string[] {
+  if (typeof node === 'string') {
+    return found;
+  }
+  if (Array.isArray(node)) {
+    for (const child of node) {
+      paragraphs(child, found);
+    }
+    return found;
+  }
+  if (node.role === 'paragraph') {
+    found.push(node.text ?? '');
+  }
+  for (const child of node.children ?? []) {
+    paragraphs(child, found);
+  }
+  return found;
+}
+
 /**
- * The whole chapter stays in the accessibility tree while a scene is staged.
+ * Every staged sentence stays in the accessibility tree while a scene runs.
  *
  * A staged scene shows one beat at a time and hides the rest, and *how* it hides
  * them decides whether a screen reader still has the story. Opacity leaves the
@@ -28,6 +58,12 @@ for (const entry of pageGraph()) {
  * than the rendered text: counting rendered lines would catch the first two and
  * quietly pass the last two.
  *
+ * The comparison is the whole ordered list against the whole ordered list, not
+ * membership and a count. Narrative text repeats — a cry said twice, a sentence
+ * that contains another — and under membership a repeated sentence can cover for
+ * a missing one, or a replaced paragraph can pass because some other staged
+ * sentence happens to contain its words. Neither is hypothetical in a story.
+ *
  * The difference is invisible on load, where a scene is at progress 0 and most of
  * it is in one state anyway, so each scene is driven into the middle of itself and
  * asked again. Written after a review round in which hiding inactive shots with
@@ -35,27 +71,20 @@ for (const entry of pageGraph()) {
  * load-time assertion noticed.
  */
 for (const entry of pageGraph().filter((page) => page.kind === 'part')) {
-  test(`${entry.url} keeps its whole chapter in the accessibility tree`, async ({ page }) => {
+  test(`${entry.url} keeps every staged segment in the accessibility tree`, async ({ page }) => {
     await page.goto(`${entry.url}?probe=1`);
     const segments = entry.segments ?? [];
-    // The chapter's whole text, then only the sentences this page actually stages:
-    // `sentencesOf` answers per chapter, and a page stages part of one.
+    // `sentencesOf` answers per chapter, and a page stages part of one, so the
+    // expectation is the staged ids in the order the page must present them.
     const authored = sentencesOf(entry.locale ?? '', segments);
     const staged = segments.map((id) => authored[id] ?? '');
 
     for (const sceneId of entry.scenes ?? []) {
       for (const point of [0.25, 0.5, 0.9, 1]) {
         await holdAt(page, sceneId, point);
-        const tree = await page.locator('.story').ariaSnapshot();
+        const tree = (await page.locator('.story').ariaSnapshotJSON()) as AriaNode[];
 
-        // Every sentence the page carries is still exposed, by its own words.
-        const missing = staged.filter((sentence) => !tree.includes(sentence));
-        expect(missing, `${sceneId} at ${point}`).toEqual([]);
-        // And the page exposes those and nothing else: a count as well as a
-        // membership check, so a sentence cannot go missing behind a duplicate.
-        expect(tree.match(/^\s*- paragraph:/gm) ?? [], `${sceneId} at ${point}`).toHaveLength(
-          staged.length,
-        );
+        expect(paragraphs(tree), `${sceneId} at ${point}`).toEqual(staged);
       }
     }
   });

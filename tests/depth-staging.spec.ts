@@ -108,6 +108,40 @@ for (const entry of parts) {
     expect(late).toBeGreaterThan(early);
   });
 
+  test(`${entry.url} ${SCENE_ID}: primary-fall's environment layer keeps translating across the whole shot`, async ({
+    page,
+  }) => {
+    await page.goto(url);
+    await focusScene(page, SCENE_ID);
+
+    // Regression guard for a `max()` clamp that used to win for effectively the
+    // whole shot: two well-separated points inside primary-fall's own span, read
+    // straight from the mapping rather than a hardcoded shot id's numbers.
+    const shot = page.locator(`.scene[data-scene="${SCENE_ID}"] .shot[data-shot="primary-fall"]`);
+    const { start, end } = await shot.evaluate((node) => ({
+      start: Number(node.dataset.start),
+      end: Number(node.dataset.end),
+    }));
+
+    const environmentTranslateYAt = async (localProgress: number): Promise<number> => {
+      await holdAt(page, SCENE_ID, start + localProgress * (end - start));
+      const raw = await shot.evaluate((node) => getComputedStyle(node, '::after').translate);
+      const [, y] = raw.split(' ');
+      const value = Number.parseFloat(y ?? '');
+      if (Number.isNaN(value)) {
+        throw new Error(`could not read a vertical translate from "${raw}"`);
+      }
+      return value;
+    };
+
+    const early = await environmentTranslateYAt(0.1);
+    const late = await environmentTranslateYAt(0.9);
+
+    // Comfortably more than a rounding difference: the clamp bug this guards
+    // against made every point past roughly local progress 0.03 read identically.
+    expect(late).toBeLessThan(early - 50);
+  });
+
   test(`${entry.url} ${SCENE_ID}: reduced motion changes the active shot's computed style`, async ({
     page,
   }) => {

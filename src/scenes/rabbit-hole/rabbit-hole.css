@@ -216,7 +216,17 @@
         color-mix(in oklab, var(--rh-shaft) 35%, black) 16deg 32deg
       );
       rotate: 1 0 0 64deg;
-      translate: 0 calc(max(-2svh, -1svh - var(--progress, 0) * 30svh));
+      /*
+       * The environment band's own long vertical shaft: a continuous -1svh to
+       * -31svh climb across the whole shot, not a hold. `max(-31svh, …)` is a
+       * defensive floor for a `--progress` that ever overshoots 1, not a design
+       * clamp — it only ties with the second argument at progress 1 itself, so it
+       * never engages within the shot's real 0..1 range. An earlier `-2svh` floor
+       * here was tighter than the climb's own first ~3% of progress, so it froze
+       * the translate for effectively the rest of the shot; see the regression
+       * test in tests/depth-staging.spec.ts.
+       */
+      translate: 0 calc(max(-31svh, -1svh - var(--progress, 0) * 30svh));
       opacity: 0.85;
     }
 
@@ -476,7 +486,9 @@
 
       &::after {
         rotate: none;
-        translate: 0 calc(max(-2svh, -1svh - var(--progress, 0) * 8svh));
+        /* Same shape as the full-motion rule above, shallower: -1svh to -9svh
+           across the shot, with the floor only meeting the climb at progress 1. */
+        translate: 0 calc(max(-9svh, -1svh - var(--progress, 0) * 8svh));
       }
 
       .scene-rabbit-hole__depth--mid {

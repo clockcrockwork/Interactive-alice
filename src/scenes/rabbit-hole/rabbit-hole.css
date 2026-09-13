@@ -534,7 +534,27 @@
 
     .scene[data-scene="rabbit-hole"] .shot[data-shot="dreamy-fall"] {
       &::after {
-        background: none;
+        /* Same three motes as the full-motion rule above, minus the lateral
+           `sin()`/`cos()` wander: each fixed at its own oscillation's midpoint
+           instead. The vertical drift is ordinary progress-linear motion, not the
+           wander this media query removes, so it stays — the motes still fall,
+           they just no longer sway side to side. */
+        background:
+          radial-gradient(
+            4% 3% at 20% calc(80% - var(--progress, 0) * 60%),
+            color-mix(in oklab, var(--ink) 60%, transparent),
+            transparent 100%
+          ),
+          radial-gradient(
+            3% 5% at 70% calc(90% - var(--progress, 0) * 70%),
+            color-mix(in oklab, var(--ink) 50%, transparent),
+            transparent 100%
+          ),
+          radial-gradient(
+            5% 3% at 45% calc(70% - var(--progress, 0) * 50%),
+            color-mix(in oklab, var(--ink) 45%, transparent),
+            transparent 100%
+          );
       }
 
       .scene-rabbit-hole__depth--mid {

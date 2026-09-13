@@ -453,8 +453,12 @@
    * so the same anchor reads as continuous through every boundary.
    */
   .scene[data-scene="rabbit-hole"] .shot[data-shot="threshold"][data-state="outgoing"] {
+    /* Opacity is left to the generic contract in ../../styles/scene.css, which
+       already reaches exactly 0 at handoff 1 — matching primary-fall's and
+       alice-focus's outgoing overrides below, neither of which touches opacity
+       either. An earlier local formula here only reached 0.1, producing a visible
+       pop on the instant this shot's state flips from outgoing to after. */
     scale: calc(1 + var(--handoff, 0) * 2.4);
-    opacity: calc(1 - var(--handoff, 0) * 0.9);
 
     .scene-rabbit-hole__depth--near {
       mask-image: radial-gradient(

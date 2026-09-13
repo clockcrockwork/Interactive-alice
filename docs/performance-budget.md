@@ -76,13 +76,21 @@ bands, the Alice anchor and the threshold→primary-fall handover mask landed (n
 change in between): HTML 2.87–3.17 KB → 3.11–3.42 KB (+0.24–0.25 KB, the depth-band
 markup and the inline Alice silhouette, generated per shot); CSS (`base.css` +
 `story.css` together, since the new tokens live in the former and the new rules in the
-latter) 1.52 KB → 3.11 KB (+1.59 KB, `src/scenes/rabbit-hole/rabbit-hole.css`); JS
+latter) 1.52 KB → 3.17 KB (**+1.65 KB**, `src/scenes/rabbit-hole/rabbit-hole.css`); JS
 unchanged at 3.36 KB, because this work added no runtime behaviour — every depth cue is
 CSS keyed off the `--progress`, `--handoff` and `data-state` the runtime already
 publishes. Against the budgets in §2 (CSS ≤ 30 KB, JS ≤ 120 KB) this is comfortably
 inside both, and the JS figure is the one that matters most here: a purely
 CSS-and-markup approach was the goal, and the size report confirms it cost no bundle
 weight.
+
+That CSS figure has been corrected. It was first recorded here as +1.59 KB and stated
+as +1.61 KB in that pull request's own summary; both were snapshots taken mid-review,
+before the last corrections landed. Re-measured against the merged commits themselves —
+building `9d2c148` (the state before) and `2d23fd7` (the squash merge) and reading each
+build's own size report — the two figures are 0.79 + 0.73 = 1.52 KB and 0.88 + 2.30 =
+3.17 KB, so the delta is **+1.65 KB**. Neither earlier number was wrong when it was
+taken; both were superseded, and this is the one that matches what shipped.
 
 ### What two scenes cost per frame
 
@@ -111,6 +119,88 @@ The other rows say a second scene did not make a frame more expensive: nothing r
 layout inside one, the dozen layouts over an entire document scroll come from sticky
 positioning rather than from the runtime, and the off-screen scene contributes nothing
 at all because it is suspended.
+
+### What the Canvas FX layer costs
+
+`src/scenes/rabbit-hole/dust.ts`, the project's first renderer that is not CSS.
+
+**Weight.** From the build's own size report, comparing the build immediately before
+and after: JS 3.36 KB → 5.70 KB gzip (**+2.34 KB**), which is the renderer, the
+per-shot seam and the probe surface for it. CSS 3.17 KB → 3.20 KB (+0.03 KB: the
+canvas's own rule and `pointer-events: none` on non-painting shots). HTML unchanged at
+3.11–3.42 KB, because the canvas is created by the renderer and never appears in the
+static document — which is also the failure boundary, since a page whose renderer
+cannot start carries no orphan element. Against the 120 KB JS budget in §2 the runtime
+is now 5.7 KB, so 4.7% of it; no budget moved.
+
+**Frames.** Measured the same way as the section above — the production build, the
+whole two-scene document in 40-pixel steps, one step per animation frame, in both
+directions, with `requestAnimationFrame` instrumented, every layout-reading accessor
+(`getBoundingClientRect`, `clientWidth`/`clientHeight`, `offsetWidth`/`offsetHeight`)
+counted and flagged when it happens inside a frame, layout counts from the CDP
+performance domain, and long tasks from a `PerformanceObserver`. The measurement's own
+frame request is subtracted. The first interval after the counters are reset is
+dropped, because it measures the reset and not a frame.
+
+The FX-off column is the same page with `setFlags({ effects: false })`, which is the
+control that makes the other columns attributable rather than merely reassuring.
+
+| | desktop 1280×720 | desktop, FX off | phone 390×780 @2× | phone @2×, 4× CPU | phone @2× 4× CPU, FX off | desktop, reduced motion |
+| --- | --- | --- | --- | --- | --- | --- |
+| runtime callbacks per animation frame | 0.92 | 0.92 | 0.92 | 0.92 | 0.92 | 0.92 |
+| layout reads inside a frame | 2 | 0 | 2 | 2 | 0 | 2 |
+| layout reads, whole scroll | 2 | 0 | 2 | 2 | 0 | 2 |
+| layouts over the whole scroll | 19 | 17 | 19 | 19 | 17 | 20 |
+| long tasks during the scroll | one, 66 ms | one, 61 ms | none | 51 ms at load, 52 ms | 50 ms | none |
+| frame interval p50 / p95 / p99 / max | 16.6 / 16.7 / 16.8 / 83.3 ms | 16.6 / 16.7 / 16.8 / 66.7 ms | 16.6 / 16.7 / 16.8 / 66.6 ms | 16.6 / 16.7 / 33.3 / 50 ms | 16.6 / 16.7 / 16.8 / 50 ms | 16.6 / 16.7 / 16.8 / 33.4 ms |
+| motes drawn per frame while active | 103 | — | 103 | 103 | — | 37 |
+| backing buffer | 512×688 @1× | — | 716×1496 @2× | 716×1496 @2× | — | 512×688 @1× |
+
+Read in order:
+
+- **the document still runs one loop.** 0.92 runtime callbacks per animation frame,
+  unchanged by the renderer, because the renderer has no loop during scrolling: it
+  draws inside the update the runtime was already making. The §7.6 contract in
+  `frontend-architecture.md` is intact and is still what `tests/handoff.spec.ts`
+  asserts;
+- **two layout reads, and they belong to the renderer.** The control's zero is what
+  proves it: they are `clientWidth` and `clientHeight`, read once when the runtime
+  reports a viewport it has not seen before, on the frame after that report rather
+  than on a steady-state frame. Two reads over an entire document traversal, forward
+  and back. It is not the ideal shape — the coordinator does its own measuring
+  *outside* a frame — and the alternative, a `ResizeObserver` per renderer, was
+  rejected because §7.6 keeps one observer for the whole page. If a scene ever hosts
+  several renderers this is where to look again;
+- **`getBoundingClientRect` is never called during a scroll at all.** The one the
+  renderer does own is in the pointer handler, once per press, and never in a frame;
+- **the long tasks are not the renderer's.** Desktop shows one ~60 ms task at the
+  same moment with FX on and with FX off (66 ms against 61 ms), and the throttled
+  phone shows the same pairing (52 ms against 50 ms). What is new with FX on is a
+  51 ms task at page load, which is the extra 2.34 KB being parsed and the field
+  being seeded, not steady-state scrolling. The §1 target is "none attributable to a
+  scene renderer" during steady scrolling, and that holds;
+- **the honest cost is one frame in a hundred, on a throttled phone.** At 4× CPU
+  throttling with a 716×1496 buffer, p99 goes from 16.8 ms without FX to 33.3 ms with
+  it: one dropped frame per hundred, p95 unaffected, max 50 ms in both. That is
+  comfortably inside the §1 mobile target (no *sustained* run of dropped frames), and
+  it is the number to watch if the field ever grows;
+- **reduced motion is cheaper as well as calmer**, at 37 motes against 103, which is
+  a consequence of the design rather than its purpose.
+
+**The interaction.** Six pointer presses in a row, on desktop, while the shot is
+active: 119 frame callbacks over 92 frames, so the impulse decay adds about 0.3
+callbacks per frame for as long as it lives, and p99 stays at 16.8 ms. No long tasks.
+`looping` reports false afterwards, which is the renderer's own statement that it let
+its frame request go; `tests/canvas-fx.spec.ts` asserts the same thing.
+
+**DPR policy.** `readViewport` caps the ratio at 2, so a 3× phone renders a 2× buffer
+— roughly 44% fewer pixels than following the device. The cap predates this work; it
+is recorded as policy here because the FX layer is the first thing it actually
+governs, and because §4 requires the cap to be explicit rather than incidental. The
+evidence for keeping it is the throttled row above: at 2× the field already costs a
+frame per hundred on a slow phone, and 3× would be 2.25 times the fill. It is
+deliberately not lowered below 2 — text and the Alice silhouette are DOM and unaffected
+either way, and 1× dust on a retina phone is visibly coarse.
 
 ## 3. Keeping interaction responsive
 
@@ -154,7 +244,13 @@ back/forward cache tester on a deployed build before the first release.
 - one rAF loop per active renderer, suspended when its Shot is not visible;
 - no DOM creation or destruction per frame;
 - cap Canvas and WebGL backing buffers explicitly rather than following device
-  DPR to whatever it happens to be;
+  DPR to whatever it happens to be. The cap is 2, applied once in
+  `readViewport` so every renderer gets the same answer; the reasoning and the
+  measurement behind it are in "What the Canvas FX layer costs" above;
+- size a backing buffer from an element's **layout** box, never from
+  `getBoundingClientRect`, which includes transforms: an outgoing shot is scaled
+  as it hands over, and a buffer sized from its visual rect would change
+  resolution partway through a handover;
 - `will-change` is applied for the duration of a transition and then removed;
 - large animated blur or filter regions need a profile before they stay.
 

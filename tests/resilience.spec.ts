@@ -39,6 +39,11 @@ for (const entry of parts) {
 
   test(`${entry.url} holds a seam value while suspended and draws nothing`, async ({ page }) => {
     await page.goto(url);
+    // Wait for the scene to be running before suspending it. `pagehide` dispatched
+    // into a page that is still mounting suspends a scene the intersection observer
+    // then resumes a moment later, and the test measures the mount instead of the
+    // suspension. It was flaky for exactly that reason before anything here changed.
+    await expect.poll(() => stateOf(page, scene), { timeout: 5000 }).toBe('active');
     await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
     expect(await stateOf(page, scene)).toBe('suspended');
 
@@ -52,6 +57,7 @@ for (const entry of parts) {
 
   test(`${entry.url} re-reads the real position when it comes back`, async ({ page }) => {
     await page.goto(url);
+    await expect.poll(() => stateOf(page, scene), { timeout: 5000 }).toBe('active');
     const { top, travel } = await geometryOf(page, scene);
 
     // Suspend, hold a value, drop the hold, and move the document while it is away.
@@ -70,6 +76,7 @@ for (const entry of parts) {
     page,
   }) => {
     await page.goto(url);
+    await expect.poll(() => stateOf(page, scene), { timeout: 5000 }).toBe('active');
     const { top, travel } = await geometryOf(page, scene);
 
     await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));

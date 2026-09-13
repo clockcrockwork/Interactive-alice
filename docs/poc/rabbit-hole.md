@@ -206,6 +206,24 @@ Placeholder example:
 
 The interaction is successful if a visitor is likely to try touching another object afterwards.
 
+The implementation, and its recovery rule, in full: a pointer press stirs the dust
+where it landed. That is a **bounded displacement layered on top of the
+progress-derived position**, with an origin, a birth time and a fixed lifetime — 700
+ms at full motion, 1100 ms under reduced motion, which is longer and gentler rather
+than absent. Its strength falls linearly to zero, and at zero it is dropped and every
+mote is exactly where progress alone puts it. At most one impulse exists; a second
+press replaces the first rather than accumulating. It is dropped outright when the
+shot stops painting or the scene suspends, so no interaction state crosses a shot
+boundary or survives going off screen. It touches no scroll, progress or direction
+state, so a visitor who never taps loses nothing at all, and one who taps mid-scroll
+keeps scrolling — the listener is passive, never calls `preventDefault`, and never
+captures the pointer.
+
+It is decorative and stays out of the accessibility tree: nothing it produces is
+information, so there is nothing to give an accessible equivalent of. What it needed
+instead was for non-painting shots to stop swallowing pointer input, which they now
+do.
+
 ## 8. Rendering composition
 
 The scene must prove that renderers can coexist.
@@ -233,6 +251,15 @@ Use one Canvas layer for a lightweight effect such as:
 - atmosphere.
 
 The Canvas layer must consume the same scene progress / runtime context rather than maintaining an unrelated page timeline.
+
+The implementation: `src/scenes/rabbit-hole/dust.ts`, a field of motes at three
+depths inside `primary-fall`, elongating into streaks with scroll speed. It consumes
+the scene's runtime context and its own shot's `core + handoff` as one continuous
+travel; it has no timeline of its own and no idle loop. Its layout is seeded once
+from a constant seed, so the same progress reconstructs the same field in either
+direction. Why one shot, and what it costs, are in
+[`../frontend-architecture.md`](../frontend-architecture.md) §7 and
+[`../performance-budget.md`](../performance-budget.md) respectively.
 
 ### Future Layer C — WebGL
 
@@ -391,32 +418,32 @@ The debug layer must not be shipped visibly in production mode.
 - [ ] Alice stays visually anchored through the main fall.
 - [ ] At least five distinct depth bands are perceptible.
 - [ ] Progress drives translation plus at least two other motion/depth properties such as scale, rotation, opacity, perspective, light, or haze.
-- [ ] At least one Canvas-based FX layer participates in the scene.
-- [ ] At least one optional pointer/tap interaction exists and does not block scroll-only progression.
+- [x] At least one Canvas-based FX layer participates in the scene.
+- [x] At least one optional pointer/tap interaction exists and does not block scroll-only progression.
 - [ ] Exit reaches a stable handoff state suitable for attaching the next scene.
 
 ### Resilience
 
-- [ ] Resize recalculates the scene without reload and without breaking the scroll range.
+- [x] Resize recalculates the scene without reload and without breaking the scroll range.
 - [ ] Portrait mobile layout is usable.
 - [ ] `prefers-reduced-motion` produces a coherent reduced-motion version.
-- [ ] Disabling the optional FX layer still leaves a complete experience.
-- [ ] Optional direct interaction can be ignored entirely.
+- [x] Disabling the optional FX layer still leaves a complete experience.
+- [x] Optional direct interaction can be ignored entirely.
 
 ### Performance
 
-- [ ] Desktop performance trace captured and reviewed.
-- [ ] Mobile-class performance run captured and reviewed.
-- [ ] No known per-frame forced-layout loop remains.
-- [ ] No inactive Rabbit Hole animation loop keeps doing meaningful work off-scene.
-- [ ] Canvas resolution / DPR handling is explicit.
+- [x] Desktop performance trace captured and reviewed.
+- [x] Mobile-class performance run captured and reviewed.
+- [x] No known per-frame forced-layout loop remains.
+- [x] No inactive Rabbit Hole animation loop keeps doing meaningful work off-scene.
+- [x] Canvas resolution / DPR handling is explicit.
 - [ ] Build output makes JS and media sizes visible.
 
 ### Architecture
 
 - [ ] Core progression has a normalized `0..1` source of truth.
 - [ ] Scene rendering does not embed final-language prose into motion code.
-- [ ] DOM/CSS and Canvas layers consume the same scene runtime state.
+- [x] DOM/CSS and Canvas layers consume the same scene runtime state.
 - [ ] No project-wide generic renderer/game-engine abstraction was introduced without a current use case.
 - [ ] A second scene can be attached after the Rabbit Hole without rewriting Rabbit Hole progress semantics.
 

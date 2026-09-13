@@ -197,6 +197,55 @@ describe('naming a part', () => {
   });
 });
 
+describe("rabbit hole's temporary depth staging", () => {
+  const rabbitHole =
+    pages.find((page) => page.path === 'en-simple/rabbit-hole/index.html')?.html ?? '';
+  const scene = project.scenes.get('rabbit-hole');
+  const shotIds = scene?.shots.map((shot) => shot.id) ?? [];
+
+  it('gives every rabbit-hole shot an Alice anchor and its depth bands', () => {
+    expect(shotIds.length).toBeGreaterThan(0);
+    for (const shotId of shotIds) {
+      const shotMarkup = rabbitHole
+        .split(`data-shot="${shotId}"`)[1]
+        ?.split('<section class="shot"')[0];
+      expect(shotMarkup, `shot ${shotId}`).toContain('scene-rabbit-hole__alice');
+      expect(shotMarkup, `shot ${shotId}`).toContain('scene-rabbit-hole__depth--mid');
+      expect(shotMarkup, `shot ${shotId}`).toContain('scene-rabbit-hole__depth--near');
+      // Decorative, so it must not reach the accessibility tree or the segment list.
+      expect(shotMarkup, `shot ${shotId}`).toContain('aria-hidden="true"');
+    }
+  });
+
+  it("leaves hall of doors' shots without any of it", () => {
+    // Both scenes share one part page (docs/frontend-architecture.md §3), so the
+    // scoping has to be by scene, not by document.
+    const hallSection = rabbitHole.split('data-scene="hall-of-doors"')[1] ?? '';
+    expect(hallSection).not.toContain('scene-rabbit-hole__alice');
+    expect(hallSection).not.toContain('scene-rabbit-hole__depth');
+  });
+
+  it('names no other scene, so a second scene never inherits this staging by accident', () => {
+    // A future scene reusing `.shot`/`.beat` must not silently pick up Rabbit Hole's
+    // decorative markup: the generator gates it by this scene's own id.
+    const overture = generatePagesFrom(
+      (() => {
+        const withOverture = loadProject(root);
+        const staging: SceneMapping = {
+          id: 'overture',
+          shots: [{ id: 'only', beats: [{ id: 'hold', segments: [] }] }],
+        };
+        withOverture.scenes.set('overture', staging);
+        withOverture.parts = [{ id: 'rabbit-hole', scenes: ['overture', 'rabbit-hole'] }];
+        return withOverture;
+      })(),
+    ).pages.find((page) => page.path === 'en-simple/rabbit-hole/index.html')?.html;
+    const overtureSection =
+      overture?.split('data-scene="overture"')[1]?.split('data-scene="rabbit-hole"')[0] ?? '';
+    expect(overtureSection).not.toContain('scene-rabbit-hole__alice');
+  });
+});
+
 describe('the page graph', () => {
   it('has the three levels the architecture specifies', () => {
     const kinds = manifest.pages.map((page) => page.kind);

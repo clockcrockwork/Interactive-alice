@@ -276,6 +276,14 @@ Hole's own FX layer (`tests/canvas-fx.spec.ts`):
 - **resize across a shot boundary**, to a viewport narrower than the reading column so
   the staged box itself changes: the buffer follows, and the field is still painting.
 
+One more runtime rule landed with them, in `tests/resilience.spec.ts`: a scene stays
+suspended while the page is hidden, whatever the geometry says. `pagehide`, then a
+scroll and a resize and long enough for any queued intersection callback to arrive,
+and the scene is still suspended; `pageshow` is what ends it. This was found because
+the suspension tests were intermittently failing — a late callback really was
+resuming a scene on a hidden page, which mattered little when the only cost was a
+progress value and matters more now that a renderer would be drawing.
+
 One existing test was strengthened rather than added: velocity is now sampled **while
 the reader is moving**, not only after they stop. The old assertion — that velocity
 settles to near zero — passed perfectly against a runtime in which velocity was

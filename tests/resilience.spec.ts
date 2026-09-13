@@ -55,6 +55,27 @@ for (const entry of parts) {
     await expect.poll(() => progressOf(page, scene)).toBeCloseTo(0.8, 3);
   });
 
+  test(`${entry.url} stays suspended while the page is hidden, whatever the geometry says`, async ({
+    page,
+  }) => {
+    await page.goto(url);
+    await expect.poll(() => stateOf(page, scene), { timeout: 5000 }).toBe('active');
+    await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+
+    // A hidden page has no viewport to be on screen in, so nothing that speaks for
+    // the geometry may put a scene back to work: not a queued intersection callback,
+    // not a resize, not scrolling. Held for long enough that a late callback from
+    // the frame before `pagehide` has certainly been delivered.
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.evaluate(() => window.dispatchEvent(new Event('resize')));
+    await page.waitForTimeout(400);
+    expect(await stateOf(page, scene)).toBe('suspended');
+
+    // ...and `pageshow` is what ends it, from the geometry as it is then.
+    await page.evaluate(() => window.dispatchEvent(new Event('pageshow')));
+    await expect.poll(() => stateOf(page, scene), { timeout: 5000 }).toBe('active');
+  });
+
   test(`${entry.url} re-reads the real position when it comes back`, async ({ page }) => {
     await page.goto(url);
     await expect.poll(() => stateOf(page, scene), { timeout: 5000 }).toBe('active');
@@ -273,10 +294,16 @@ test.describe('back and forward', () => {
     const back = entries.find((candidate) => candidate.locale === target.locale)?.url ?? './';
 
     await page.goto(`${target.url}?probe=1`);
+    // Running before scrolling, and polled rather than read once afterwards. A
+    // scene that has not been resumed yet is not ticked, so it truthfully reports
+    // progress 0 from a document that has already scrolled; reading immediately
+    // measures how quickly the intersection callback arrived rather than anything
+    // about restoring a position.
+    await expect.poll(() => stateOf(page, scene), { timeout: 5000 }).toBe('active');
     await page.evaluate(() => window.scrollTo(0, 1800));
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(1800);
+    await expect.poll(() => progressOf(page, scene), { timeout: 5000 }).toBeGreaterThan(0);
     const progress = await progressOf(page, scene);
-    expect(progress).toBeGreaterThan(0);
 
     await page.goto(back);
     await page.goBack();

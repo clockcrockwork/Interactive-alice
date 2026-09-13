@@ -290,6 +290,15 @@ state: no scene has yet needed to know *why* progress jumped, so `RuntimeContext
 not carry a `discontinuous` flag. The first renderer with a real need for the reason
 is what adds one.
 
+**A hidden page outranks the geometry.** `pagehide` suspends every scene and latches
+until `pageshow`, so nothing that speaks for the viewport — a queued intersection
+callback, a resize, a scroll — can put a scene back to work while the page is away. A
+hidden page has no viewport to be on screen in. Without the latch the two answers
+race: `pagehide` suspends, and a callback already queued for the frame before it
+arrives and resumes, leaving a scene ticking and now a renderer drawing on a page
+nobody is looking at. Which way that race fell decided nothing about the design, so
+it is no longer left to it.
+
 A third thing is decided rather than fixed. **A scene is suspended when its stage is
 off screen, and resumes onto geometry.** Nothing ticks a suspended scene, so its
 progress cannot advance while it is away; coming back, it reads the real scroll

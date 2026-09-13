@@ -125,13 +125,13 @@ at all because it is suspended.
 `src/scenes/rabbit-hole/dust.ts`, the project's first renderer that is not CSS.
 
 **Weight.** From the build's own size report, comparing the build immediately before
-and after: JS 3.36 KB → 5.70 KB gzip (**+2.34 KB**), which is the renderer, the
+and after: JS 3.36 KB → 5.71 KB gzip (**+2.35 KB**), which is the renderer, the
 per-shot seam and the probe surface for it. CSS 3.17 KB → 3.20 KB (+0.03 KB: the
 canvas's own rule and `pointer-events: none` on non-painting shots). HTML unchanged at
 3.11–3.42 KB, because the canvas is created by the renderer and never appears in the
 static document — which is also the failure boundary, since a page whose renderer
 cannot start carries no orphan element. Against the 120 KB JS budget in §2 the runtime
-is now 5.7 KB, so 4.7% of it; no budget moved.
+is now 5.71 KB, so 4.8% of it; no budget moved.
 
 **Frames.** Measured the same way as the section above — the production build, the
 whole two-scene document in 40-pixel steps, one step per animation frame, in both

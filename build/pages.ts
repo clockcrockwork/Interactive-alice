@@ -74,6 +74,31 @@ function sentences(project: Project, locale: string): Map<string, string> {
   return lines;
 }
 
+/**
+ * Rabbit Hole's temporary depth staging: a persistent Alice anchor plus two
+ * decorative depth-band layers, identical markup for every shot of this one scene.
+ * Per-shot staging differences live entirely in CSS, keyed off the `data-shot`
+ * attribute the caller already writes, so this returns the same markup whichever
+ * shot it is for and names none of them itself.
+ *
+ * Scoped to this scene's own id rather than emitted for every scene, so a scene
+ * with no visual staging of its own (Hall of Doors, today) carries none of this
+ * decorative markup rather than inert copies of it.
+ */
+function renderRabbitHoleStaging(): string {
+  return [
+    '        <div class="scene-rabbit-hole__depth scene-rabbit-hole__depth--mid" aria-hidden="true"></div>',
+    '        <div class="scene-rabbit-hole__depth scene-rabbit-hole__depth--near" aria-hidden="true"></div>',
+    '        <div class="scene-rabbit-hole__alice" aria-hidden="true">',
+    '          <svg class="scene-rabbit-hole__alice-figure" viewBox="0 0 64 100" focusable="false">',
+    '            <path class="scene-rabbit-hole__alice-dress"' +
+      ' d="M20 40 C13 42 8 54 8 70 C8 86 18 96 32 96 C46 96 56 86 56 70 C56 54 51 42 44 40 Z" />',
+    '            <circle class="scene-rabbit-hole__alice-head" cx="32" cy="23" r="14" />',
+    '          </svg>',
+    '        </div>',
+  ].join('\n');
+}
+
 function renderScene(
   project: Project,
   sceneId: string,
@@ -96,6 +121,7 @@ function renderScene(
   // Refused here as well as by the data checker: a remote build runs neither
   // Python script, and an overlap the runtime cannot honour must not reach a page.
   const overlaps = overlapsOf(scene);
+  const staging = sceneId === 'rabbit-hole' ? `${renderRabbitHoleStaging()}\n` : '';
 
   const shots = scene.shots.map((shot, index) => {
     const shotSpan = spanOf(plan.shots, shot.id);
@@ -123,6 +149,7 @@ function renderScene(
     return (
       `      <section class="shot" data-shot="${shot.id}"` +
       ` data-start="${span(shotSpan.start)}" data-end="${span(shotSpan.end)}"${overlap}>\n` +
+      staging +
       `${beats.join('\n')}\n      </section>`
     );
   });

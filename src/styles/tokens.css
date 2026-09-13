@@ -17,5 +17,18 @@
     --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
     --duration-quick: 180ms;
     --duration-calm: 420ms;
+
+    /*
+     * Rabbit Hole's temporary depth palette: shapes and silhouettes standing in for
+     * final art, not a second design system. Extends the placeholder tokens above
+     * rather than replacing them; a later scene reuses whichever of these read as
+     * generally useful and adds its own beside them.
+     */
+    --rh-day: oklch(90% 0.04 95);
+    --rh-tunnel: oklch(16% 0.02 270);
+    --rh-shaft: oklch(30% 0.05 260);
+    --rh-dream: oklch(32% 0.09 300);
+    --rh-ground: oklch(58% 0.08 75);
+    --rh-figure: oklch(95% 0.02 90);
   }
 }

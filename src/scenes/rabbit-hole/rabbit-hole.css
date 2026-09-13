@@ -90,6 +90,15 @@
       inline-size: 100%;
       block-size: auto;
       overflow: visible;
+      /*
+       * A constant soft halo, independent of whatever band of a busy background
+       * (threshold's growing ring, in particular) happens to sit behind her at a
+       * given instant: the outline alone can momentarily match a nearby band's own
+       * tone, especially at phone width where the ring's radial gradient scales
+       * differently against her fixed `min(24vw, 8.5rem)` size. Static rather than
+       * a function of `--progress`, so it costs one paint, not one per frame.
+       */
+      filter: drop-shadow(0 0 0.4rem color-mix(in oklab, var(--ink) 60%, transparent));
     }
 
     /*

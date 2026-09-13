@@ -115,6 +115,10 @@ export interface ExperienceSceneFile {
        */
       weight?: number;
       /**
+       * How far this shot stays render-active into the next shot's span, as a fraction of that span. 0 is a hard cut and is the default. Progress-neutral like weight: it moves no boundary, changes no beat's owner, and adds nothing to the scene's scroll distance; it only keeps the outgoing shot drawing while the incoming one is already the primary. The last shot has nothing to hand over to, so it may not carry one. See docs/scene-shot-model.md.
+       */
+      overlap?: number;
+      /**
        * Beats in progression order. A Beat is a timing unit; it may carry several segments, one, or none.
        *
        * @minItems 1
@@ -162,6 +166,10 @@ export interface ExperienceSceneFile {
        * Staging weight: how much longer or shorter this shot should run than its reading load alone would suggest. Relative and progress-neutral, never a scroll distance or a duration. Defaults to 1.
        */
       weight?: number;
+      /**
+       * How far this shot stays render-active into the next shot's span, as a fraction of that span. 0 is a hard cut and is the default. Progress-neutral like weight: it moves no boundary, changes no beat's owner, and adds nothing to the scene's scroll distance; it only keeps the outgoing shot drawing while the incoming one is already the primary. The last shot has nothing to hand over to, so it may not carry one. See docs/scene-shot-model.md.
+       */
+      overlap?: number;
       /**
        * Beats in progression order. A Beat is a timing unit; it may carry several segments, one, or none.
        *

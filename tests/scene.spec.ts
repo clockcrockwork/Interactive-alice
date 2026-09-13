@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
+import { focusScene, geometryOf, holdAt } from './drive.ts';
 import { pageGraph } from './manifest.ts';
 
 const parts = pageGraph().filter((page) => page.kind === 'part');
@@ -50,25 +51,16 @@ for (const entry of parts) {
       // The track's own geometry decides the mapping, so read it from the document
       // rather than assuming a viewport unit. A midpoint has to read as a midpoint:
       // clamping hides a wrong distance at the ends.
-      const midpoint = await page.evaluate(async (scene) => {
-        const track = document.querySelector<HTMLElement>(
-          `.scene[data-scene="${scene}"] [data-scene-track]`,
-        );
-        const stage = document.querySelector<HTMLElement>(
-          `.scene[data-scene="${scene}"] [data-scene-stage]`,
-        );
-        if (!track || !stage) {
-          return -1;
-        }
-        const top = track.getBoundingClientRect().top + window.scrollY;
-        const travel = track.getBoundingClientRect().height - stage.getBoundingClientRect().height;
-        window.scrollTo(0, top + travel / 2);
-        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-        return window.__alice?.snapshot(scene)[0]?.progress ?? -1;
-      }, sceneId);
+      const { top, travel } = await geometryOf(page, sceneId);
+      await page.evaluate((to) => window.scrollTo(0, to), top + travel / 2);
 
-      expect(midpoint).toBeGreaterThan(0.45);
-      expect(midpoint).toBeLessThan(0.55);
+      // Polled rather than counted in frames. A scene further down the document
+      // starts suspended, and it is the intersection observer that wakes it, which
+      // lands on its own schedule rather than on the next frame after the scroll.
+      await expect
+        .poll(async () => (await progression(page, sceneId)).progress, { timeout: 5000 })
+        .toBeGreaterThan(0.45);
+      expect((await progression(page, sceneId)).progress).toBeLessThan(0.55);
     });
 
     test(`${entry.url} ${sceneId}: reconstructs the same state when scrolled back`, async ({
@@ -76,10 +68,18 @@ for (const entry of parts) {
     }) => {
       await page.goto(url);
 
+      await focusScene(page, sceneId);
+
       const boundaries = await page
         .locator(`.scene[data-scene="${sceneId}"] .shot`)
         .evaluateAll((nodes) => nodes.map((node) => Number(node.dataset.start)));
-      const points = [...new Set([0, ...boundaries, 0.93, 1])].sort((a, b) => a - b);
+      // Both sides of every shot boundary, so an overlap is entered and left in
+      // each direction rather than only sampled at the seam itself.
+      const points = [
+        ...new Set([0, ...boundaries.flatMap((at) => [at - 0.01, at, at + 0.01]), 0.93, 1]),
+      ]
+        .filter((point) => point >= 0 && point <= 1)
+        .sort((a, b) => a - b);
 
       for (const point of points) {
         await page.evaluate(
@@ -107,8 +107,12 @@ for (const entry of parts) {
       page,
     }) => {
       await page.goto(url);
+      await focusScene(page, sceneId);
 
-      for (const point of [0.05, 0.2, 0.45, 0.7, 0.95]) {
+      // 1 included on purpose: it is the only value at which the snapshot and the
+      // markup can disagree, because it is the only one where a span has ended
+      // while the stage that shows it is still in the viewport.
+      for (const point of [0, 0.05, 0.2, 0.45, 0.7, 0.95, 1]) {
         await page.evaluate(
           ([scene, value]) => window.__alice?.setProgress(scene as string, value as number),
           [sceneId, point] as const,
@@ -132,7 +136,9 @@ for (const entry of parts) {
     }) => {
       await page.goto(url);
 
-      await page.evaluate(() => window.scrollTo(0, 1500));
+      // Somewhere inside this scene's own travel, whichever scene it is.
+      const { top, travel } = await geometryOf(page, sceneId);
+      await page.evaluate((to) => window.scrollTo(0, to), top + travel * 0.5);
       await page.waitForTimeout(700);
       const settled = await page.evaluate(
         (scene) => window.__alice?.snapshot(scene)[0]?.velocity,
@@ -145,7 +151,7 @@ for (const entry of parts) {
       page,
     }) => {
       await page.goto(url);
-      await page.evaluate((scene) => window.__alice?.setProgress(scene, 0.5), sceneId);
+      await holdAt(page, sceneId, 0.5);
       const before = await progression(page, sceneId);
 
       await page.setViewportSize({ width: 420, height: 820 });
@@ -157,6 +163,48 @@ for (const entry of parts) {
       expect(after.beat).toBe(before.beat);
     });
   }
+
+  test(`${entry.url} ends every scene on something to read`, async ({ page }) => {
+    await page.goto(url);
+
+    for (const sceneId of scenes) {
+      await holdAt(page, sceneId, 1);
+
+      // A beat fades out because the next one is taking over. The last beat of a
+      // scene has nothing taking over from it, and its stage is still on screen,
+      // so the scene must not end on an empty stage.
+      const painted = await page
+        .locator(`.scene[data-scene="${sceneId}"] .beat`)
+        .evaluateAll((nodes) =>
+          nodes
+            .filter((node) => {
+              const shot = node.closest('.shot');
+              return (
+                node.querySelector('.line') !== null &&
+                Number(getComputedStyle(node).opacity) > 0.02 &&
+                shot !== null &&
+                Number(getComputedStyle(shot).opacity) > 0.02
+              );
+            })
+            .map((node) => node.getAttribute('data-beat')),
+        );
+      const last = await page
+        .locator(`.scene[data-scene="${sceneId}"] .beat`)
+        .last()
+        .evaluate((node) => ({
+          beat: node.dataset.beat,
+          state: node.dataset.state,
+          hasText: node.querySelector('.line') !== null,
+        }));
+
+      // The last beat still owns the scene's end, whether or not it carries text.
+      expect(last.state, `${sceneId} last beat`).toBe('active');
+      expect(await progression(page, sceneId).then((state) => state.beat)).toBe(last.beat);
+      if (last.hasText) {
+        expect(painted, `${sceneId} ends on an empty stage`).toContain(last.beat);
+      }
+    }
+  });
 
   test(`${entry.url} reaches both ends by scrolling alone`, async ({ page }) => {
     await page.goto(url);
@@ -182,7 +230,7 @@ test.describe('with reduced motion', () => {
     for (const sceneId of entry.scenes ?? []) {
       test(`${entry.url} ${sceneId}: drops the drift and lowers the tier`, async ({ page }) => {
         await page.goto(`${entry.url}?probe=1`);
-        await page.evaluate((scene) => window.__alice?.setProgress(scene, 0.5), sceneId);
+        await holdAt(page, sceneId, 0.5);
 
         const snapshot = await page.evaluate(
           (scene) => window.__alice?.snapshot(scene)[0],

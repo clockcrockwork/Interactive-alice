@@ -8,7 +8,7 @@
 
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { planScene, type ScenePlan } from '../src/runtime/pacing.ts';
+import { overlapsOf, planScene, type ScenePlan } from '../src/runtime/pacing.ts';
 import { chaptersOf, loadProject, type Part, type Project, type SegmentMeta } from './project.ts';
 
 export interface GeneratedPage {
@@ -93,7 +93,11 @@ function renderScene(
     return found;
   };
 
-  const shots = scene.shots.map((shot) => {
+  // Refused here as well as by the data checker: a remote build runs neither
+  // Python script, and an overlap the runtime cannot honour must not reach a page.
+  const overlaps = overlapsOf(scene);
+
+  const shots = scene.shots.map((shot, index) => {
     const shotSpan = spanOf(plan.shots, shot.id);
     const beats = shot.beats.map((beat) => {
       const beatSpan = spanOf(plan.beats, beat.id);
@@ -113,9 +117,12 @@ function renderScene(
         ` data-start="${span(beatSpan.start)}" data-end="${span(beatSpan.end)}">`;
       return body ? `${open}\n${body}\n        </div>` : `${open}</div>`;
     });
+    // Written only where a shot declares one, so a scene of hard cuts produces the
+    // markup it always did and the attribute means what it says wherever it appears.
+    const overlap = overlaps[index] ? ` data-overlap="${span(overlaps[index] ?? 0)}"` : '';
     return (
       `      <section class="shot" data-shot="${shot.id}"` +
-      ` data-start="${span(shotSpan.start)}" data-end="${span(shotSpan.end)}">\n` +
+      ` data-start="${span(shotSpan.start)}" data-end="${span(shotSpan.end)}"${overlap}>\n` +
       `${beats.join('\n')}\n      </section>`
     );
   });

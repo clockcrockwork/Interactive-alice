@@ -18,7 +18,7 @@ that property and on the contracts around it, and leaves taste to human review.
 | Unit | Vitest | every PR | pure logic: progress mapping, the pacing plan, lifecycle transitions, capability selection, text resolution |
 | Browser, fast | Playwright, desktop Chromium | every PR | every page in the generated manifest loads, each scene reaches start and end, no console, page or request errors |
 | Browser, full | Playwright, Chromium desktop and phone, Firefox, WebKit (`npm run test:e2e:full`) | interaction milestones and before a release | shot boundaries, reverse reconstruction, resize, portrait, keyboard, reduced motion, degraded modes, locales, back-navigation restore |
-| Accessibility | axe inside Playwright, plus explicit assertions | every PR, on load | semantics, labels, focus order, contrast where measurable |
+| Accessibility | axe inside Playwright, plus an ARIA snapshot | every PR, on load and mid-scene | semantics, labels, focus order, contrast where measurable; and that a staged scene keeps every segment it stages in the accessibility tree, in reading order |
 | Visual | Playwright screenshots at named checkpoints | opt-in, after art stabilizes | that a deliberate composition has not silently changed |
 | Performance | traces, size output, Lighthouse | milestones | see `performance-budget.md`; evidence, not pass/fail in CI |
 
@@ -91,7 +91,10 @@ The full suite covers, per scene:
   `performance-budget.md` §3;
 - interruption: a scene suspended by `pagehide` or by leaving the viewport holds a
   seam value without drawing, and on return publishes it **and** re-reads the real
-  scroll position, so a held value can never survive as the document's position;
+  scroll position, so a held value can never survive as the document's position.
+  The consequence for a test is that the seam cannot drive a scene that is off
+  screen, which is the rule rather than a limitation: a test that wants to hold one
+  scene at a value scrolls to it first, as `focusScene` in `tests/drive.ts` does;
 - degradation: a story page whose scene markup cannot be driven carries
   `data-degraded` and stays a readable document, rather than failing silently. One
   broken scene among several is the same case: staging is all or nothing per
@@ -132,6 +135,35 @@ is flaky and the visual layer is worthless:
    rather than for a timeout. The scene runtime takes this over when it lands, and
    the snapshot above becomes the richer form of the same idea.
 
+### Hiding is an accessibility decision
+
+A staged scene shows one beat at a time and hides the rest, and *how* it hides them
+decides whether a screen reader still has the story. `opacity` leaves the text in the
+accessibility tree; `visibility`, `display`, `aria-hidden` and `inert` each take it
+out.
+
+So the check reads the **accessibility tree itself**, through an ARIA snapshot of the
+story, and compares the whole ordered list of paragraphs against the whole ordered
+list of segments the page stages. Note the scope: a part page stages part of a
+chapter, not all of it, so what is guaranteed is every **staged** segment rather than
+every sentence in the chapter.
+
+Two weaker tests were considered and rejected. Counting rendered lines catches
+`visibility` and `display` and passes an `aria-hidden` that has removed the same text
+from every assistive technology. Checking that each sentence appears somewhere, plus a
+count, passes a pair of sentences swapped into the wrong order, and in text where a
+sentence repeats or contains another it lets a duplicate cover for a missing line.
+Narrative text does both, and reading order is a contract of this project, so the
+comparison is exact and ordered.
+
+The difference does not show at progress 0, where most of a scene is in one state
+anyway, so each scene is driven into the middle of itself and asked again.
+
+This exists because the rule was broken once and nearly shipped: hiding inactive
+shots with `visibility: hidden` removed two thirds of the chapter, and the only thing
+that failed was a load-time assertion in an unrelated spec, which would not have
+fired had the rule applied to one state rather than two.
+
 ## 4. What is not automated
 
 Feel, art direction, and whether a scene is worth exploring. Real-device
@@ -159,6 +191,40 @@ manifest entry has a file, that the home page links language entries rather than
 documents, that the generated tree is materialized whole with nothing stale left
 behind, and that an unfinished translation removes pages instead of breaking the build
 while a missing base locale refuses to build at all.
+
+Since the two-scene work, and on both the desktop and phone Chromium projects:
+
+- **shot overlap** (`tests/overlap.spec.ts`): that a handover really does put two
+  shots on screen while exactly one of them owns the scene, that a hard cut puts one,
+  that the outgoing shot is painted and partly faded by its own handoff value, and
+  that walking a handover backwards reproduces the states walking it forwards did,
+  element for element. Which handovers exist is read from the mapping, so a scene
+  whose overlaps change extends the suite rather than breaking it;
+- **two scenes in one document** (`tests/handoff.spec.ts`): reaching the second by
+  scrolling and the first again by scrolling back; each scene keeping its own 0..1
+  with nothing shared between them; the probe still answering per scene;
+- **real off-screen suspension**, through a real `IntersectionObserver` rather than a
+  fake one or a direct lifecycle call. A scene that leaves the viewport reaches
+  `suspended`, its progress then does not move however far the document scrolls, and
+  coming back it resynchronises from geometry with `direction` and `velocity` of
+  zero, after which scrolling reads as movement again. This could not be shown at all
+  with one scene per document: that document ended a viewport before its only scene
+  did, so nothing ever went off screen;
+- **the cost of a second scene**: one scroll listener and one resize listener for
+  the whole document, and at most one runtime callback in any animation frame —
+  counted by instrumenting the page before its script runs, and tallying callbacks
+  against the distinct frames they ran in, so the assertion is rate-independent. Not
+  one frame per scroll event: velocity decay asks for more, on purpose;
+- **the lifecycle a scene starts in, and after the viewport moves**: on the first
+  frame the runtime exists, the scene on screen is `active` and the one below the
+  fold is already `suspended`. The same is then proven for a resize and for a
+  restore, with the `IntersectionObserver` replaced by one that reports nothing, so
+  a lifecycle that is right can only have come from the runtime reading the geometry
+  itself. An observer's callback arrives after the animation callbacks of the frame
+  that provoked it, so these are the moments at which a scene could run from off
+  screen or sit suspended in plain view;
+- **the end of a scene**: the last beat still owns the scene's end, and a scene whose
+  last beat carries text does not finish on an empty stage.
 
 Still to come with the scenes they belong to: depth bands, the FX layer, the optional
 interaction, audio, and back-navigation restore across a document boundary.

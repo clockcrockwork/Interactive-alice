@@ -113,3 +113,55 @@ export function planScene(
     mean,
   };
 }
+
+/**
+ * The overlap each shot carries into the next, in shot order, validated.
+ *
+ * Overlap is progress-neutral: nothing above reads it, so a scene's spans are the
+ * same whether its shots overlap or not, and adding one to a mapping cannot move a
+ * boundary, change a beat's owner, or lengthen the scene. It is read here only
+ * because the build has to write it into the markup.
+ *
+ * Two rules, and they are checked in two places on purpose, because the two places
+ * run at different times:
+ *
+ * - the **schema** owns the type and the range, and validates the file;
+ * - the **positional** rule, that the last shot may not carry one, is not
+ *   expressible in JSON Schema, so `scripts/check-experience.py` refuses it in the
+ *   data gate and this refuses it during a build.
+ *
+ * This is the half a remote build actually runs: nothing validates a scene file
+ * against its schema at build time, so the type is re-checked here rather than
+ * trusted. `overlap: null` or `false` would otherwise pass a comparison against 0
+ * and 1 by coercion and reach the markup as something that is not a number.
+ *
+ * Presence, not value, is what the last shot is refused. A shot that has nothing
+ * to hand over to should not be talking about handing over at all, and an explicit
+ * `0` there is a mapping saying something it cannot mean. The data checker already
+ * reads it that way; this agrees with it rather than accepting a case it rejects.
+ */
+export function overlapsOf(scene: SceneMapping): number[] {
+  const last = scene.shots.length - 1;
+  return scene.shots.map((shot, index) => {
+    const declared = Object.hasOwn(shot, 'overlap');
+    if (index === last && declared) {
+      throw new Error(
+        `${scene.id}: the last shot ${shot.id} declares an overlap, ` +
+          'but it has no following shot to hand over to',
+      );
+    }
+    if (!declared) {
+      return 0;
+    }
+    const overlap = shot.overlap;
+    if (typeof overlap !== 'number' || !Number.isFinite(overlap)) {
+      throw new Error(
+        `${scene.id}: shot ${shot.id} has an overlap that is not a number: ${JSON.stringify(overlap)}`,
+      );
+    }
+    if (overlap < 0 || overlap > 1) {
+      throw new Error(`${scene.id}: shot ${shot.id} has an overlap outside 0..1: ${overlap}`);
+    }
+    return overlap;
+  });
+}

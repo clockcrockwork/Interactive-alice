@@ -10,6 +10,7 @@ const candidates = [
   '/opt/pw-browsers/chromium/chrome-linux/chrome',
 ].filter((path): path is string => typeof path === 'string' && path.length > 0);
 const executablePath = candidates.find((path) => existsSync(path));
+const chromium = executablePath ? { launchOptions: { executablePath } } : {};
 
 export default defineConfig({
   testDir: 'tests',
@@ -19,15 +20,17 @@ export default defineConfig({
   reporter: process.env.CI ? 'list' : [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: 'http://localhost:4173/',
-    launchOptions: executablePath ? { executablePath } : {},
     trace: 'retain-on-failure',
   },
   // All projects are always defined; which ones run is a CLI filter, so the scripts
   // work the same in cmd.exe as in a POSIX shell. Per pull request:
   // `npm run test:e2e` (desktop Chromium). At milestones: `npm run test:e2e:full`.
   projects: [
-    { name: 'chromium-desktop', use: { ...devices['Desktop Chrome'] } },
-    { name: 'chromium-phone', use: { ...devices['Pixel 7'] } },
+    { name: 'chromium-desktop', use: { ...devices['Desktop Chrome'], ...chromium } },
+    { name: 'chromium-phone', use: { ...devices['Pixel 7'], ...chromium } },
+    // No override here: the path found above is a Chromium build, and handing it to
+    // another engine launches Chromium under that engine's command line, which fails
+    // in a way that reads like a broken test rather than a missing browser.
     { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
   ],

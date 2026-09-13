@@ -37,14 +37,20 @@ Chapter 1 already proves the first half. The text has `the-hole`, `the-fall` and
 Hole Scene that crosses all three:
 
 ```text
-text sections      the-hole │ the-fall                      │ landing
-experience         ├──────── Rabbit Hole Scene ─────────────┤ next scene
-                   threshold │ primary-fall │ alice-focus │ dreamy-fall │ landing
+text sections      the-hole │ the-fall                       │ landing        │ the-hall
+experience         ├──────── Rabbit Hole Scene ──────────────┤├─ Hall of Doors Scene ─┤
+                   threshold │ primary-fall │ alice-focus │ dreamy-fall │ landing        passage │ locked-doors │ glass-table
 ```
+
+Note where the second scene begins: partway through the `landing` section, not at
+its edge. The Rabbit Hole ends when the falling does, and what follows — picking
+herself up, the chase, the hall — is somewhere else, however the text divides it.
+That is the rule above being used rather than merely stated.
 
 The same applies to chapters, which is why a scene file does **not** name one.
 The Hall of Doors runs from the end of chapter 1 into the start of chapter 2 as
-one continuous location, and it should be free to be one Scene. The chapters a
+one continuous location, and it should be free to be one Scene; today it stages the
+chapter 1 half. The chapters a
 scene touches are derived from the ids it references.
 
 The only thing that must not drift is the **reading order** of segments.
@@ -113,6 +119,12 @@ and both checkers validate against the schema files rather than restating them.
 8. **Segment order comes from the structure file**, not from key order in a
    locale file. Iterate the chapter structure, or the scene's own beats, and
    look each id up. `Object.values()` over a locale file is the wrong shortcut.
+9. **A shot may declare an `overlap`.** A number from 0 to 1: the share of the next
+   shot's span for which this one stays on screen after handing over. Like `weight`
+   it is progress-neutral, but unlike `weight` it does not enter the pacing formula
+   at all — §4's spans are the same with it and without it. The last shot may not
+   carry the property at all, `0` included. The semantics are in
+   [`scene-shot-model.md`](scene-shot-model.md) §4.
 
 ## 4. Pacing: weight times reading load
 
@@ -183,19 +195,40 @@ work without choosing a language.
 
 ## 6. Current state
 
+Two scenes are mapped, and they share one document, which is what proves that a
+document boundary and a scene boundary are different things.
+
 `experience/scenes/rabbit-hole.scene.json` is the first mapping and exists to
 prove the structure against real chapter 1 data. It stages 44 segments,
 `ch01.s0200` through `ch01.s0630`, in five shots:
 
-| Shot | Purpose | Segments | Weight |
-| --- | --- | --- | --- |
-| `threshold` | entry and tunnel | `s0200`–`s0240` | 1.2 |
-| `primary-fall` | the well opens out, shelves, the marmalade jar | `s0250`–`s0350` | 1.0 |
-| `alice-focus` | changed angle, Alice talking to herself | `s0360`–`s0490` | 1.0 |
-| `dreamy-fall` | the long sleepy fall, Dinah, bats | `s0500`–`s0620` | 1.2 |
-| `landing` | impact and handoff to the next scene | `s0630` | 2.5 |
+| Shot | Purpose | Segments | Weight | Overlap |
+| --- | --- | --- | --- | --- |
+| `threshold` | entry and tunnel | `s0200`–`s0240` | 1.2 | 0.35 |
+| `primary-fall` | the well opens out, shelves, the marmalade jar | `s0250`–`s0350` | 1.0 | 0.25 |
+| `alice-focus` | changed angle, Alice talking to herself | `s0360`–`s0490` | 1.0 | 0.3 |
+| `dreamy-fall` | the long sleepy fall, Dinah, bats | `s0500`–`s0620` | 1.2 | — |
+| `landing` | impact and handoff to the next scene | `s0630` | 2.5 | — |
 
-The shot count satisfies the Rabbit Hole PoC requirement of at least three
+`dreamy-fall` keeps its hard cut on purpose: an impact that is faded into is not an
+impact. `landing` is the last shot and so may not carry one at all.
+
+`experience/scenes/hall-of-doors.scene.json` is the second, staging 18 segments,
+`ch01.s0640` through `ch01.s0810`, in three shots:
+
+| Shot | Purpose | Segments | Weight | Overlap |
+| --- | --- | --- | --- | --- |
+| `passage` | the heap of leaves, and the chase down the passage | `s0640`–`s0730` | 1.0 | 0.4 |
+| `locked-doors` | the long low hall, every door tried | `s0740`–`s0780` | 1.2 | 0.25 |
+| `glass-table` | down the middle of the hall, and the little table | `s0790`–`s0810` | 1.0 | — |
+
+Its last shot and that shot's second beat are both called `glass-table`, which is
+legal and deliberate: shot and beat ids are separate namespaces, a beat is addressed
+as scene/shot/beat, and having a real mapping exercise it stops anyone reintroducing
+a collision check between the two. Rule 6 below says the same thing; this is where
+the data says it.
+
+The rabbit-hole shot count satisfies the PoC requirement of at least three
 perceptually distinct framings, and the last two beats (`into-the-dream`,
 `handoff`) are textless on purpose, so the textless-beat case is exercised by
 real data rather than only by the schema. `landing` carries one sentence and a

@@ -10,6 +10,7 @@ between the two layers rather than the staging itself:
   * when documents (parts) are declared, each scene belongs to exactly one, in order
   * shot and beat ids are unique inside their own namespace in a scene; a shot and a
     beat may share a name, since a beat is addressed as scene/shot/beat
+  * only a shot with a following shot may declare an overlap to hand over to it
   * every referenced segment id exists in some chapter structure
   * a segment is referenced at most once in the whole story
   * references never run backwards against the text's reading order, across
@@ -85,6 +86,34 @@ def check_text_layer(errors: list[str]) -> None:
         forbidden_keys(load(path), EXPERIENCE_KEYS, path.relative_to(REPO_ROOT).as_posix(), problems)
         for problem in problems:
             errors.append(f"{problem}. Scene, shot and beat composition belongs in experience/.")
+
+
+def check_shots(scene: dict, label: str, errors: list[str]) -> None:
+    """Rules about a scene's shots that a JSON Schema cannot state.
+
+    The schema owns each field's type and range. What it cannot say is anything
+    positional, and there is one such rule: an overlap is a handover, so the shot
+    with nothing after it has nothing to hand over to and may not declare one at
+    all. Not "may not declare a non-zero one": a mapping that says `"overlap": 0`
+    there is saying something it cannot mean, and the build refuses it on the same
+    terms.
+
+    Separate from main() so the runtime's own tests can run this rule rather than
+    restate it; see src/runtime/pacing.test.ts.
+    """
+    shot_ids: set[str] = set()
+    last_shot = len(scene["shots"]) - 1
+
+    for index, shot in enumerate(scene["shots"]):
+        if shot["id"] in shot_ids:
+            errors.append(f"{label}: duplicate shot id {shot['id']!r}")
+        shot_ids.add(shot["id"])
+
+        if index == last_shot and "overlap" in shot:
+            errors.append(
+                f"{label}: the last shot {shot['id']!r} declares an overlap, "
+                "but it has no following shot to hand over to"
+            )
 
 
 def check_parts(story: dict, errors: list[str]) -> None:
@@ -172,14 +201,10 @@ def main() -> int:
         if scene["id"] != entry["id"]:
             errors.append(f"{label}: scene id {scene['id']!r} does not match story.json entry {entry['id']!r}")
 
-        shot_ids: set[str] = set()
         beat_ids: set[str] = set()
+        check_shots(scene, label, errors)
 
         for shot in scene["shots"]:
-            if shot["id"] in shot_ids:
-                errors.append(f"{label}: duplicate shot id {shot['id']!r}")
-            shot_ids.add(shot["id"])
-
             for beat in shot["beats"]:
                 where = f"{label} {shot['id']}/{beat['id']}"
                 if beat["id"] in beat_ids:

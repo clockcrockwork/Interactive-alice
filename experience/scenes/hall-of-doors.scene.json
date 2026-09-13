@@ -1,0 +1,70 @@
+{
+  "$schema": "../../schema/experience-scene.schema.json",
+  "id": "hall-of-doors",
+  "devLabel": "Hall of Doors",
+  "shots": [
+    {
+      "id": "passage",
+      "devLabel": "the heap of leaves, and the chase down the passage",
+      "weight": 1.0,
+      "overlap": 0.4,
+      "beats": [
+        {
+          "id": "heap-of-leaves",
+          "segments": ["ch01.s0640", "ch01.s0650", "ch01.s0660"]
+        },
+        {
+          "id": "dark-above",
+          "segments": ["ch01.s0670"]
+        },
+        {
+          "id": "another-passage",
+          "segments": ["ch01.s0680", "ch01.s0690", "ch01.s0700"]
+        },
+        {
+          "id": "late-again",
+          "segments": ["ch01.s0710", "ch01.s0720"]
+        },
+        {
+          "id": "round-the-corner",
+          "segments": ["ch01.s0730"]
+        }
+      ]
+    },
+    {
+      "id": "locked-doors",
+      "devLabel": "the long low hall, every door tried",
+      "weight": 1.2,
+      "overlap": 0.25,
+      "beats": [
+        {
+          "id": "long-low-hall",
+          "segments": ["ch01.s0740", "ch01.s0750"]
+        },
+        {
+          "id": "doors-all-round",
+          "segments": ["ch01.s0760"]
+        },
+        {
+          "id": "every-one-locked",
+          "segments": ["ch01.s0770", "ch01.s0780"]
+        }
+      ]
+    },
+    {
+      "id": "glass-table",
+      "devLabel": "down the middle of the hall, and the little table",
+      "weight": 1.0,
+      "beats": [
+        {
+          "id": "walking-sadly",
+          "segments": ["ch01.s0790"]
+        },
+        {
+          "id": "glass-table",
+          "segments": ["ch01.s0800", "ch01.s0810"]
+        }
+      ]
+    }
+  ]
+}

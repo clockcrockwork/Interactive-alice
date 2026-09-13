@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { PageEntry } from '../build/pages.ts';
+import type { SceneMapping } from '../src/runtime/pacing.ts';
+import type { ExperienceStoryFile } from '../src/types/schema.ts';
 
 /**
  * The page graph the build generated, so the browser tests cover the real pages
@@ -30,4 +32,23 @@ export function sentencesOf(locale: string, segmentIds: readonly string[]): Reco
     Object.assign(text, parsed.segments);
   }
   return text;
+}
+
+/**
+ * One scene's mapping, read from `experience/`.
+ *
+ * The mapping is the only list of shots and beats, so a browser test that needs to
+ * know what a scene declares reads it from there rather than repeating it. See
+ * CLAUDE.md, "One shot list".
+ */
+export function sceneOf(sceneId: string): SceneMapping {
+  const root = join(import.meta.dirname, '..');
+  const story = JSON.parse(
+    readFileSync(join(root, 'experience', 'story.json'), 'utf8'),
+  ) as ExperienceStoryFile;
+  const entry = story.scenes.find((scene) => scene.id === sceneId);
+  if (!entry) {
+    throw new Error(`experience/story.json lists no scene ${sceneId}`);
+  }
+  return JSON.parse(readFileSync(join(root, entry.file), 'utf8')) as SceneMapping;
 }

@@ -55,14 +55,47 @@ is compared against the baseline, so growth has a cause rather than a surprise.
 | --- | --- | --- | --- | --- |
 | `/` | 0.4 KB | 0.8 KB | none | none |
 | `/<locale>/` | 0.5 KB | 0.8 KB | none | none |
-| `/<locale>/rabbit-hole/` | 2.2–2.4 KB | 1.4 KB | 2.2 KB | 2.7 KB |
+| `/<locale>/rabbit-hole/` | 2.9–3.2 KB | 1.5 KB | 2.2 KB | 3.3 KB |
 
 The scaffolding alone was 0.4 KB of JS, so the runtime cost 1.8 KB to begin with. CSS
-gained 0.06 KB for the availability notes on the entry and home pages. The 0.5 KB of
-JS since the baseline bought the suspend and resume correction, the observable degraded
-mode, and the per-scene probe. Against the 120 KB budget in §2 this is noise, but it
-is recorded rather than rounded away: a runtime that grows every review round is worth
-noticing early.
+gained 0.06 KB for the availability notes on the entry and home pages, and 0.13 KB for
+the shot handover and its reduced-motion version. Against the 120 KB budget in §2 this
+is noise, but it is recorded rather than rounded away: a runtime that grows every
+review round is worth noticing early.
+
+Two things moved together in the interaction work, and it is worth separating them.
+The page grew from 2.2–2.4 KB to 2.9–3.2 KB because it now carries a **second scene**
+and its eighteen extra sentences, which is content rather than overhead. The runtime
+grew from 2.7 KB to 3.3 KB for shot overlap, the document coordinator, and the
+render-active set in the snapshot.
+
+### What two scenes cost per frame
+
+Measured on the production build, scrolling the whole two-scene document in 40-pixel
+steps, one step per animation frame, with `requestAnimationFrame` and
+`getBoundingClientRect` instrumented and layout counts read from the CDP performance
+domain. The measurement's own frame request is subtracted, so the callbacks counted
+are the runtime's.
+
+| | desktop 1280×720 | phone 390×780 |
+| --- | --- | --- |
+| runtime callbacks per animation frame | 0.99 | 0.99 |
+| layout reads inside a frame | 0 | 0 |
+| layouts over the whole scroll | 12 | 12 |
+| long tasks | none | none |
+| frame interval, p50 / p99 / max | 16.7 / 16.9 / 16.9 ms | 16.7 / 17.1 / 24.6 ms |
+
+The first row is the one that carries the contract, and it is a **ratio** on purpose.
+A count of frames against a count of scroll events would say nothing: velocity decay
+asks for frames after scrolling has stopped, by design, and scroll events coalesce.
+What must not happen is two callbacks in one frame because the page has two scenes,
+and that is what a ratio of one says. `tests/handoff.spec.ts` asserts it the same way,
+which is what makes it rate-independent.
+
+The other rows say a second scene did not make a frame more expensive: nothing reads
+layout inside one, the dozen layouts over an entire document scroll come from sticky
+positioning rather than from the runtime, and the off-screen scene contributes nothing
+at all because it is suspended.
 
 ## 3. Keeping interaction responsive
 
@@ -99,6 +132,10 @@ back/forward cache tester on a deployed build before the first release.
 - animate `transform` and `opacity`; treat anything that triggers layout in a
   per-frame path as a defect;
 - never read layout in a scroll or rAF handler; cache measurements until resize;
+- one rAF loop for the document, not one per scene: scenes are ticked from it, and
+  a suspended scene is not ticked at all, so no animation frame ever carries more
+  than one runtime callback however many scenes the page hosts. Likewise one scroll
+  listener, one resize listener and one `IntersectionObserver` for the page;
 - one rAF loop per active renderer, suspended when its Shot is not visible;
 - no DOM creation or destruction per frame;
 - cap Canvas and WebGL backing buffers explicitly rather than following device

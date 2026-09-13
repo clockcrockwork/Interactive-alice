@@ -197,12 +197,17 @@ def show_plan(scene: dict, as_json: bool, locale: str | None) -> None:
         return
 
     print(f"scene {scene['id']} \u00b7 progress ranges by locale\n")
-    print("  shot".ljust(18) + "".join(locale.ljust(22) for locale in locales))
+    print("  shot".ljust(18) + "".join(locale.ljust(22) for locale in locales) + "overlap")
     for index, shot in enumerate(scene["shots"]):
         row = f"  {shot['id']}".ljust(18)
         for locale in locales:
             span = plans[locale]["shots"][index]
             row += f"{span['start']:.3f} \u2013 {span['end']:.3f}".ljust(22)
+        # Overlap is progress-neutral, so it is not part of a plan; it is shown
+        # beside one because this is the tool someone tuning a transition reaches
+        # for, and the handovers are otherwise only visible in the JSON.
+        overlap = shot.get("overlap")
+        row += "\u2013" if overlap is None else f"{overlap:.2f} of the next shot"
         print(row)
     print()
     for locale in locales:

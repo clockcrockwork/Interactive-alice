@@ -81,6 +81,78 @@ export interface CharacterRegistry {
   ];
 }
 
+// experience-demo.schema.json
+/**
+ * Composition plan for one standalone concept demo under /demos/: its shots, their beats, and the narrative segment ids each beat carries, in reading order. Holds no visible text. A demo is not a story Scene: it has no pacing plan, no part, and its page is built by build/demos.ts rather than the story runtime. See docs/concept-demos.md.
+ */
+export interface ExperienceConceptDemoFile {
+  /**
+   * Optional editor hint; not part of the data.
+   */
+  $schema?: string;
+  /**
+   * Demo id; also the directory of its page and of its code under src/demos/.
+   */
+  id: string;
+  /**
+   * The chapter whose localized title names this demo.
+   */
+  titleChapter: number;
+  /**
+   * @minItems 1
+   */
+  shots: [
+    {
+      id: string;
+      /**
+       * @minItems 1
+       */
+      beats: [
+        {
+          id: string;
+          /**
+           * Optional staging cue the demo's code may look up, so code addresses a moment by what happens in it rather than by a beat id or an index.
+           */
+          cue?: string;
+          segments: string[];
+        },
+        ...{
+          id: string;
+          /**
+           * Optional staging cue the demo's code may look up, so code addresses a moment by what happens in it rather than by a beat id or an index.
+           */
+          cue?: string;
+          segments: string[];
+        }[],
+      ];
+    },
+    ...{
+      id: string;
+      /**
+       * @minItems 1
+       */
+      beats: [
+        {
+          id: string;
+          /**
+           * Optional staging cue the demo's code may look up, so code addresses a moment by what happens in it rather than by a beat id or an index.
+           */
+          cue?: string;
+          segments: string[];
+        },
+        ...{
+          id: string;
+          /**
+           * Optional staging cue the demo's code may look up, so code addresses a moment by what happens in it rather than by a beat id or an index.
+           */
+          cue?: string;
+          segments: string[];
+        }[],
+      ];
+    }[],
+  ];
+}
+
 // experience-scene.schema.json
 /**
  * Composition plan for one runtime Scene: its Shots, their Beats, and the narrative segment ids each Beat carries. Holds no visible text and no localized strings; text is fetched from text/locales/<locale>/ by segment id at runtime. A scene is not tied to one chapter: the chapters it draws from are derived from the referenced ids. See docs/text-experience-binding.md.
@@ -373,5 +445,69 @@ export interface LocaleUIStrings {
      * Shown beside a language on the home page when none of its parts can be read yet.
      */
     localeNone: string;
+    /**
+     * Shown as the heading of the concept-demo index.
+     */
+    demosTitle: string;
+    /**
+     * One line under the demo index heading.
+     */
+    demosIntro: string;
+    /**
+     * Link from a demo back to the demo index.
+     */
+    demoBack: string;
+    /**
+     * Link from a demo to the next demo.
+     */
+    demoNext: string;
+    /**
+     * Label of the motion toggle while ambient motion is playing.
+     */
+    demoPause: string;
+    /**
+     * Label of the motion toggle while ambient motion is paused.
+     */
+    demoResume: string;
+    /**
+     * Hint at the top of a demo that scrolling moves the story on.
+     */
+    demoScrollHint: string;
+    /**
+     * Technique note on the demo index card for the rabbit hole.
+     */
+    demoTechRabbitHole: string;
+    /**
+     * Technique note on the demo index card for the Dormouse's tale.
+     */
+    demoTechDormouse: string;
+    /**
+     * Technique note on the demo index card for the trial.
+     */
+    demoTechTrial: string;
+    /**
+     * Button that takes the marmalade jar off its shelf.
+     */
+    demoGrabJar: string;
+    /**
+     * Status once the jar is tucked into a cupboard.
+     */
+    demoJarTucked: string;
+    /**
+     * Button that pinches the Dormouse awake.
+     */
+    demoPinch: string;
+    /**
+     * Button that brushes the cards off the screen.
+     */
+    demoBeatOff: string;
+    /**
+     * Note shown when the well cannot be drawn with WebGL and is drawn flat instead.
+     */
+    demoFlatWell: string;
+    /**
+     * Note shown when the visitor prefers reduced motion.
+     */
+    demoReducedMotion: string;
   };
 }

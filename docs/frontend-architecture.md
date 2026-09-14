@@ -54,6 +54,7 @@ still loading, and every page is independently linkable and cacheable.
 /                     language pick + entry
 /<locale>/            story entry for that language
 /<locale>/<part>/     one part of the story, hosting one or more Scenes
+/demos/               the concept demos and their index; see concept-demos.md
 ```
 
 All three levels are generated from the data. Every registered language has an entry
@@ -143,6 +144,7 @@ src/
   entry/                              one module per page kind
   runtime/                            scene progress, lifecycle, viewport, capability context
   scenes/<scene>/                     one directory per Scene: shots, layers, its own CSS
+  demos/<demo>/                       one directory per concept demo, plus the shared shell
   audio/                              BGM controller and the beep synthesizer
   styles/                             tokens, base, utilities
   assets/                             icons and placeholder art

@@ -77,6 +77,11 @@
     gap: var(--space-1);
   }
 
+  .home__demos {
+    margin-block: var(--space-3) 0;
+    font-size: 1.1rem;
+  }
+
   .home__status,
   .entry__part-status {
     color: var(--ink-soft);

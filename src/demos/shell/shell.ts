@@ -1,0 +1,328 @@
+/**
+ * What every concept demo shares: the pinned stage, the scroll-scrubbed master
+ * timeline, the caption layer, the motion pause control, and the pointer.
+ *
+ * The page arrives as a readable document: a bar, then the story's sentences in
+ * reading order inside `[data-demo-track]`. Attaching moves each beat into a stage
+ * that stays pinned to the viewport, and turns the document's height into a master
+ * timeline with one second of timeline time per beat. A demo composes against that
+ * timeline and looks moments up by cue, never by index and never by id.
+ */
+
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import '../../styles/base.css';
+import './shell.css';
+
+gsap.registerPlugin(ScrollTrigger);
+
+export interface Beat {
+  index: number;
+  el: HTMLElement;
+  cue?: string;
+  shot: string;
+  lines: HTMLElement[];
+}
+
+export interface Pointer {
+  /** Normalised viewport position, -1..1 on both axes, y down. */
+  x: number;
+  y: number;
+  /** Whether a pointer has touched the page at all. */
+  active: boolean;
+  /** Whether the current pointer is a fine one (a mouse), so hover-style cues make sense. */
+  fine: boolean;
+}
+
+export interface DemoShell {
+  root: HTMLElement;
+  stage: HTMLElement;
+  captions: HTMLElement;
+  ui: Record<string, string>;
+  beats: Beat[];
+  /** The beat index a cue names; throws for a cue the composition does not have. */
+  cue(name: string): number;
+  /** Beat indices whose lines are said by this speaker. */
+  spokenBy(speaker: string): Beat[];
+  /** Scrubbed by the scroll; duration is the beat count, one unit of time per beat. */
+  master: gsap.core.Timeline;
+  /** Self-running motion: loops that the visitor can pause. */
+  ambient: gsap.core.Timeline;
+  reducedMotion: boolean;
+  readonly paused: boolean;
+  /** Runs every frame unless paused; `dt` in seconds. Returns a release function. */
+  onFrame(fn: (dt: number, elapsed: number) => void): () => void;
+  pointer: Pointer;
+  /** A decorative layer inside the stage, under the captions. */
+  layer(className: string): HTMLElement;
+  /** A real button inside the stage; hidden until `show` is called. */
+  prop(label: string, className: string): HTMLButtonElement & { show(): void; hide(): void };
+  /** A polite live region for a state the visitor changed. */
+  status(text: string): void;
+  /** A one-line note in the bar area, for a degraded mode. */
+  note(text: string): void;
+  /** Current master progress, 0..1. */
+  progress(): number;
+}
+
+export interface ShellOptions {
+  /** Custom caption behaviour: return true to take over a beat's caption tweens. */
+  caption?: (beat: Beat, master: gsap.core.Timeline, reduced: boolean, beats: Beat[]) => boolean;
+}
+
+declare global {
+  interface Window {
+    /** Test seam for the demo pages: present on every demo page. */
+    __aliceDemo?: {
+      progress(): number;
+      beat(): number;
+      paused(): boolean;
+      reduced(): boolean;
+      mode(): string;
+    };
+  }
+}
+
+function readUi(): Record<string, string> {
+  const script = document.getElementById('demo-ui');
+  if (!script?.textContent) {
+    return {};
+  }
+  try {
+    return JSON.parse(script.textContent) as Record<string, string>;
+  } catch {
+    return {};
+  }
+}
+
+export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
+  const root = document.querySelector<HTMLElement>('.demo');
+  const track = root?.querySelector<HTMLElement>('[data-demo-track]');
+  if (!root || !track) {
+    return undefined;
+  }
+  const ui = readUi();
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Stage first, captions on top; the beats move in keeping their order.
+  const stage = document.createElement('div');
+  stage.className = 'demo__stage';
+  const captions = document.createElement('div');
+  captions.className = 'demo__captions';
+  const beats: Beat[] = [];
+  for (const shot of track.querySelectorAll<HTMLElement>('.demo-shot')) {
+    for (const el of shot.querySelectorAll<HTMLElement>('.demo-beat')) {
+      beats.push({
+        index: beats.length,
+        el,
+        cue: el.dataset.cue,
+        shot: shot.dataset.shot ?? '',
+        lines: [...el.querySelectorAll<HTMLElement>('.line')],
+      });
+      captions.append(el);
+    }
+  }
+  stage.append(captions);
+  track.before(stage);
+  root.style.setProperty('--demo-beats', String(beats.length));
+  root.dataset.attached = '';
+  if (reducedMotion) {
+    root.dataset.motion = 'reduced';
+  }
+
+  const cue = (name: string): number => {
+    const beat = beats.find((candidate) => candidate.cue === name);
+    if (!beat) {
+      throw new Error(`no beat carries the cue ${name}`);
+    }
+    return beat.index;
+  };
+
+  const master = gsap.timeline({ paused: true, defaults: { ease: 'none' } });
+  // Pin the duration to the beat count even before any tween is added, so a demo
+  // can place tweens by beat index from the start.
+  master.set({}, {}, beats.length);
+
+  const ambient = gsap.timeline({ repeat: -1 });
+  let paused = false;
+
+  // Captions: each beat fades in over its first third and out over its last
+  // sixth, except the last beat, which stays. A demo may take a beat over.
+  for (const beat of beats) {
+    if (options.caption?.(beat, master, reducedMotion, beats)) {
+      continue;
+    }
+    const t = beat.index;
+    const last = beat.index === beats.length - 1;
+    master.fromTo(
+      beat.lines,
+      { opacity: 0, y: reducedMotion ? 0 : 18 },
+      { opacity: 1, y: 0, duration: 0.3, stagger: 0.08 },
+      t + 0.05,
+    );
+    if (!last) {
+      master.to(beat.lines, { opacity: 0, duration: 0.14 }, t + 0.84);
+    }
+  }
+
+  let activeIndex = -1;
+  const setActive = (index: number): void => {
+    if (index === activeIndex) {
+      return;
+    }
+    activeIndex = index;
+    for (const beat of beats) {
+      if (beat.index === index) {
+        beat.el.dataset.active = '';
+        beat.el.dataset.reached = '';
+      } else {
+        delete beat.el.dataset.active;
+      }
+    }
+    root.style.setProperty('--demo-hint-opacity', index > 0 ? '0' : '1');
+  };
+
+  const trigger = ScrollTrigger.create({
+    trigger: root,
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: reducedMotion ? true : 0.6,
+    animation: master,
+    // Reduced motion steps from beat to beat rather than gliding: the snap is
+    // instant, so the page lands on a whole beat and stays there.
+    snap: reducedMotion ? { snapTo: 1 / beats.length, duration: 0, delay: 0 } : undefined,
+    onUpdate: (self) =>
+      setActive(Math.min(beats.length - 1, Math.floor(self.progress * beats.length))),
+  });
+  setActive(0);
+
+  const frameFns = new Set<(dt: number, elapsed: number) => void>();
+  gsap.ticker.add((time, deltaMs) => {
+    if (paused) {
+      return;
+    }
+    for (const fn of frameFns) {
+      fn(deltaMs / 1000, time);
+    }
+  });
+
+  const pointer: Pointer = {
+    x: 0,
+    y: 0,
+    active: false,
+    fine: matchMedia('(pointer: fine)').matches,
+  };
+  window.addEventListener(
+    'pointermove',
+    (event) => {
+      pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+      pointer.y = (event.clientY / window.innerHeight) * 2 - 1;
+      pointer.active = true;
+    },
+    { passive: true },
+  );
+
+  const button = root.querySelector<HTMLButtonElement>('.demo__motion');
+  if (button) {
+    button.hidden = false;
+    button.addEventListener('click', () => {
+      paused = !paused;
+      button.setAttribute('aria-pressed', String(paused));
+      button.textContent = paused ? (ui.demoResume ?? '') : (ui.demoPause ?? '');
+      ambient.paused(paused);
+      root.toggleAttribute('data-paused', paused);
+    });
+  }
+
+  let live: HTMLElement | undefined;
+  const status = (text: string): void => {
+    if (!live) {
+      live = document.createElement('p');
+      live.className = 'demo__status';
+      live.setAttribute('aria-live', 'polite');
+      stage.append(live);
+    }
+    live.textContent = text;
+  };
+
+  const note = (text: string): void => {
+    const p = document.createElement('p');
+    p.className = 'demo__note';
+    p.textContent = text;
+    root.querySelector('.demo__bar')?.after(p);
+  };
+  if (reducedMotion && ui.demoReducedMotion) {
+    note(ui.demoReducedMotion);
+  }
+
+  const shell: DemoShell = {
+    root,
+    stage,
+    captions,
+    ui,
+    beats,
+    cue,
+    spokenBy: (speaker) =>
+      beats.filter((beat) => beat.lines.some((line) => line.dataset.speaker === speaker)),
+    master,
+    ambient,
+    reducedMotion,
+    get paused() {
+      return paused;
+    },
+    onFrame: (fn) => {
+      frameFns.add(fn);
+      return () => frameFns.delete(fn);
+    },
+    pointer,
+    layer: (className) => {
+      const el = document.createElement('div');
+      el.className = `demo__layer ${className}`;
+      el.setAttribute('aria-hidden', 'true');
+      captions.before(el);
+      return el;
+    },
+    prop: (label, className) => {
+      const el = document.createElement('button') as HTMLButtonElement & {
+        show(): void;
+        hide(): void;
+      };
+      el.type = 'button';
+      el.className = `demo__prop ${className}`;
+      el.textContent = label;
+      el.show = () => {
+        el.dataset.shown = '';
+      };
+      el.hide = () => {
+        delete el.dataset.shown;
+      };
+      stage.append(el);
+      return el;
+    },
+    status,
+    note,
+    progress: () => trigger.progress,
+  };
+
+  window.__aliceDemo = {
+    progress: () => trigger.progress,
+    beat: () => activeIndex,
+    paused: () => paused,
+    reduced: () => reducedMotion,
+    mode: () => root.dataset.mode ?? '',
+  };
+
+  return shell;
+}
+
+/** Linear interpolation, kept here because every demo wants it. */
+export const mix = (a: number, b: number, t: number): number => a + (b - a) * t;
+
+/** A small deterministic random, so a composition looks the same on every load. */
+export function seeded(seed: number): () => number {
+  let state = seed >>> 0;
+  return () => {
+    state = (state * 1664525 + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+}

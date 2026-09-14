@@ -1,0 +1,35 @@
+{
+  "$schema": "../../../schema/locale-chapter.schema.json",
+  "locale": "en-simple",
+  "chapter": 12,
+  "title": "Alice's Evidence",
+  "sections": {
+    "sentence-first": "Sentence First",
+    "pack-of-cards": "A Pack of Cards",
+    "on-the-bank": "On the Bank"
+  },
+  "segments": {
+    "ch12.s0600": "Let the jury consider their verdict.",
+    "ch12.s0610": "He had said it for about the twentieth time that day.",
+    "ch12.s0620": "No, no!",
+    "ch12.s0630": "Sentence first, verdict afterwards.",
+    "ch12.s0640": "Stuff and nonsense!",
+    "ch12.s0650": "The idea of having the sentence first!",
+    "ch12.s0660": "Hold your tongue!",
+    "ch12.s0670": "I will not!",
+    "ch12.s0680": "Off with her head!",
+    "ch12.s0690": "Nobody moved.",
+    "ch12.s0700": "Alice had grown to her full size by this time.",
+    "ch12.s0710": "Who cares for you?",
+    "ch12.s0720": "You are nothing but a pack of cards!",
+    "ch12.s0730": "At this the whole pack rose up into the air.",
+    "ch12.s0740": "They came flying down upon her.",
+    "ch12.s0750": "She gave a little scream, half of fright and half of anger.",
+    "ch12.s0760": "She tried to beat them off.",
+    "ch12.s0770": "And found herself lying on the bank, with her head in her sister's lap.",
+    "ch12.s0780": "Her sister was gently brushing some dead leaves from her face.",
+    "ch12.s0790": "Wake up, Alice dear!",
+    "ch12.s0800": "Why, what a long sleep you have had!",
+    "ch12.s0810": "Oh, I have had such a curious dream!"
+  }
+}

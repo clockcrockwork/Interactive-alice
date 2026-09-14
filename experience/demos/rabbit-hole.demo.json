@@ -1,0 +1,48 @@
+{
+  "id": "rabbit-hole",
+  "titleChapter": 1,
+  "shots": [
+    {
+      "id": "edge-of-the-hole",
+      "beats": [
+        { "id": "after-him", "cue": "surface", "segments": ["ch01.s0190", "ch01.s0200", "ch01.s0210"] },
+        { "id": "tunnel", "segments": ["ch01.s0220", "ch01.s0230"] },
+        { "id": "well", "cue": "drop", "segments": ["ch01.s0240"] }
+      ]
+    },
+    {
+      "id": "the-well-opens",
+      "beats": [
+        { "id": "deep-or-slow", "segments": ["ch01.s0250", "ch01.s0260", "ch01.s0270"] },
+        { "id": "shelves", "segments": ["ch01.s0280", "ch01.s0290", "ch01.s0300"] },
+        { "id": "jar", "cue": "jar", "segments": ["ch01.s0310", "ch01.s0320", "ch01.s0330"] },
+        { "id": "tuck-it-away", "segments": ["ch01.s0340", "ch01.s0350"] }
+      ]
+    },
+    {
+      "id": "alice-talks",
+      "beats": [
+        { "id": "brave", "segments": ["ch01.s0360", "ch01.s0370", "ch01.s0380", "ch01.s0390"] },
+        { "id": "miles", "segments": ["ch01.s0400", "ch01.s0410", "ch01.s0420"] },
+        { "id": "upside-down", "cue": "flip", "segments": ["ch01.s0450", "ch01.s0460", "ch01.s0470"] },
+        { "id": "curtsey", "segments": ["ch01.s0480", "ch01.s0490"] }
+      ]
+    },
+    {
+      "id": "sleepy",
+      "beats": [
+        { "id": "down-down-down", "segments": ["ch01.s0500", "ch01.s0510", "ch01.s0530"] },
+        { "id": "bats", "cue": "bats", "segments": ["ch01.s0540", "ch01.s0550", "ch01.s0560", "ch01.s0570"] },
+        { "id": "cats-bats", "segments": ["ch01.s0580", "ch01.s0590", "ch01.s0600"] },
+        { "id": "dream", "cue": "dream", "segments": ["ch01.s0610", "ch01.s0620"] }
+      ]
+    },
+    {
+      "id": "the-ground",
+      "beats": [
+        { "id": "thump-thump", "cue": "thump", "segments": ["ch01.s0630", "ch01.s0640", "ch01.s0650"] },
+        { "id": "up-again", "cue": "end", "segments": ["ch01.s0660", "ch01.s0690", "ch01.s0700"] }
+      ]
+    }
+  ]
+}

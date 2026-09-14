@@ -67,6 +67,11 @@ private changes nothing about crediting it.
 Specification complete for the text layer and the engineering baseline. The first
 implementation milestone is the Rabbit Hole PoC, issue #1.
 
+Three standalone concept demos live under `/demos/` — the fall down the rabbit hole
+in WebGL, the Dormouse's tale on a treacle spiral in SVG, and the trial's pack of cards
+in CSS 3D. They show how far the interactive telling can go; they are not the product.
+See [`docs/concept-demos.md`](docs/concept-demos.md).
+
 ## Text and translation
 
 The story is kept in layers so that language is never baked into scene code: the

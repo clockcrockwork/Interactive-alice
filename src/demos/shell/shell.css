@@ -1,0 +1,305 @@
+/*
+ * Shared chrome for the concept demos: the bar, the sticky stage, the caption
+ * layer and the scroll track. Each demo brings its own sheet for its stage; this one
+ * owns only what every demo has. Layer names follow src/styles/base.css.
+ */
+
+/* Declared here as well as in base.css: whichever sheet the browser meets first
+   fixes the order, and on a demo page that can be this one. */
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    --demo-ink: oklch(94% 0.02 80);
+    --demo-ink-soft: oklch(78% 0.03 80);
+    --demo-ground: oklch(14% 0.02 270);
+    --demo-paper: oklch(93% 0.03 85);
+    --demo-paper-ink: oklch(24% 0.03 60);
+    --demo-accent: oklch(72% 0.17 45);
+    --demo-heart: oklch(58% 0.22 25);
+    --demo-glass: oklch(20% 0.02 270 / 0.72);
+    --demo-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --demo-bar-height: 3.25rem;
+    --demo-caption-size: clamp(1.15rem, 1rem + 1.2vw, 1.75rem);
+    --demo-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --demo-quick: 220ms;
+    --demo-calm: 600ms;
+    --demo-z-stage: 1;
+    --demo-z-captions: 5;
+    --demo-z-bar: 10;
+  }
+}
+
+@layer scene {
+  /* Every demo page shares one dark ground so the cross-document transition has
+     something stable to fade between. */
+  .demo-body {
+    background: var(--demo-ground);
+    color: var(--demo-ink);
+    font-family: var(--demo-serif);
+    overscroll-behavior: none;
+  }
+
+  .demo {
+    position: relative;
+    /* Scroll length: one viewport per beat, plus one to let the last beat settle.
+       Written by the shell from the number of beats it found. */
+    min-block-size: calc((var(--demo-beats, 12) + 1) * 100vh);
+  }
+
+  .demo__bar {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0;
+    z-index: var(--demo-z-bar);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    block-size: var(--demo-bar-height);
+    padding-inline: var(--space-2);
+    background: linear-gradient(to bottom, var(--demo-glass), transparent);
+    font-family: system-ui, sans-serif;
+    font-size: 0.85rem;
+  }
+
+  .demo__title {
+    flex: 1;
+    margin: 0;
+    font-family: var(--demo-serif);
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    view-transition-name: demo-title;
+  }
+
+  .demo__back,
+  .demo__motion,
+  .demo__next,
+  .demo__prop {
+    color: inherit;
+    font: inherit;
+    text-decoration: none;
+    border: 1px solid oklch(from var(--demo-ink) l c h / 0.4);
+    border-radius: 999px;
+    padding: 0.35em 0.9em;
+    background: var(--demo-glass);
+    cursor: pointer;
+  }
+
+  .demo__motion[aria-pressed="true"] {
+    background: var(--demo-ink);
+    color: var(--demo-ground);
+  }
+
+  .demo__hint {
+    position: fixed;
+    inset-block-end: var(--space-2);
+    inset-inline: 0;
+    z-index: var(--demo-z-bar);
+    margin: 0;
+    text-align: center;
+    font-family: system-ui, sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--demo-ink-soft);
+    opacity: var(--demo-hint-opacity, 1);
+    transition: opacity var(--demo-calm) var(--demo-ease);
+    pointer-events: none;
+  }
+
+  .demo__note {
+    position: fixed;
+    inset-block-start: calc(var(--demo-bar-height) + var(--space-1));
+    inset-inline: var(--space-2);
+    z-index: var(--demo-z-bar);
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    font-size: 0.8rem;
+    color: var(--demo-ink-soft);
+    text-align: center;
+  }
+
+  /* The stage: pinned to the viewport for the whole scroll. Demos draw into it. */
+  .demo__stage {
+    position: sticky;
+    inset-block-start: 0;
+    block-size: 100dvh;
+    overflow: hidden;
+    z-index: var(--demo-z-stage);
+    isolation: isolate;
+  }
+
+  .demo__layer {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* The captions: the story's own sentences, moved into the stage by the shell. */
+  .demo__captions {
+    position: absolute;
+    inset: 0;
+    z-index: var(--demo-z-captions);
+    pointer-events: none;
+  }
+
+  .demo-beat {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 14vh;
+    display: grid;
+    gap: 0.35em;
+    max-inline-size: min(34rem, 88vw);
+    margin-inline: auto;
+    padding-inline: var(--space-2);
+    visibility: hidden;
+    text-align: center;
+    text-wrap: balance;
+    font-size: var(--demo-caption-size);
+    line-height: 1.45;
+    text-shadow: 0 1px 12px oklch(0% 0 0 / 0.6);
+  }
+
+  .demo-beat[data-active] {
+    visibility: visible;
+  }
+
+  .line {
+    margin: 0;
+    opacity: var(--line-opacity, 1);
+    translate: 0 var(--line-rise, 0);
+  }
+
+  .line[data-kind="thought"] {
+    font-style: italic;
+  }
+
+  .line[data-kind="sound"] {
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  /* Before the shell attaches, the track is a readable document. Once the beats have
+     moved into the stage the track is only scroll distance. */
+  .demo__track {
+    padding-block: calc(var(--demo-bar-height) + var(--space-3)) var(--space-3);
+    padding-inline: var(--space-2);
+    max-inline-size: var(--measure);
+    margin-inline: auto;
+  }
+
+  .demo[data-attached] .demo__track {
+    display: none;
+  }
+
+  .demo-shot {
+    margin-block-end: var(--space-3);
+  }
+
+  .demo__end {
+    position: relative;
+    z-index: var(--demo-z-captions);
+    display: flex;
+    justify-content: center;
+    padding-block: var(--space-3) var(--space-4);
+    font-family: system-ui, sans-serif;
+  }
+
+  .demo[data-attached] .demo__end {
+    /* Pinned to the end of the scroll, over the stage's last frame. */
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline: 0;
+    pointer-events: none;
+  }
+
+  .demo[data-attached] .demo__next {
+    pointer-events: auto;
+  }
+
+  /* Interactive props sit above the captions, are real buttons, and only appear
+     when the moment they belong to is on screen. */
+  .demo__prop {
+    position: absolute;
+    z-index: calc(var(--demo-z-captions) + 1);
+    font-family: system-ui, sans-serif;
+    font-size: 0.85rem;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--demo-quick) var(--demo-ease),
+      visibility 0s linear var(--demo-quick);
+  }
+
+  .demo__prop[data-shown] {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .demo__status {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: calc(var(--demo-bar-height) + var(--space-2));
+    z-index: calc(var(--demo-z-captions) + 1);
+    margin: 0;
+    text-align: center;
+    font-family: system-ui, sans-serif;
+    font-size: 0.85rem;
+    color: var(--demo-ink-soft);
+    pointer-events: none;
+  }
+
+  .sr-only {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* The screen itself turns: leaving a demo, the old page drops away like a card
+     and the next is revealed through a widening iris. Cross-document, so it is a
+     progressive enhancement and falls back to a plain navigation. */
+  @media (prefers-reduced-motion: no-preference) {
+    @view-transition {
+      navigation: auto;
+    }
+
+    ::view-transition-old(root) {
+      animation: demo-page-drop 480ms cubic-bezier(0.5, 0, 0.9, 0.4) both;
+      transform-origin: 50% 120%;
+    }
+
+    ::view-transition-new(root) {
+      animation: demo-page-iris 640ms var(--demo-ease) both;
+    }
+  }
+
+  @keyframes demo-page-drop {
+    to {
+      transform: rotate(-14deg) translateY(30%) scale(0.85);
+      opacity: 0;
+    }
+  }
+
+  @keyframes demo-page-iris {
+    from {
+      clip-path: circle(0% at 50% 50%);
+    }
+    to {
+      clip-path: circle(80% at 50% 50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .demo__hint,
+    .demo__prop {
+      transition: none;
+    }
+  }
+}

@@ -4,17 +4,43 @@
   "title": "Locale UI strings",
   "description": "The words the site itself says in one language, as opposed to the words of the story. Every locale in text/locales.json must have this file in full: a language may be behind on chapters, but the chrome around the story cannot be half translated. Keys are added only when something on screen needs them; see docs/text-pipeline.md.",
   "type": "object",
-  "required": ["locale", "strings"],
+  "required": [
+    "locale",
+    "strings"
+  ],
   "additionalProperties": false,
   "properties": {
-    "$schema": { "type": "string", "description": "Optional editor hint; not part of the data." },
+    "$schema": {
+      "type": "string",
+      "description": "Optional editor hint; not part of the data."
+    },
     "locale": {
       "type": "string",
       "description": "Must equal the directory name, so a copied file cannot silently claim another language."
     },
     "strings": {
       "type": "object",
-      "required": ["partPending", "localePartial", "localeNone"],
+      "required": [
+        "partPending",
+        "localePartial",
+        "localeNone",
+        "demosTitle",
+        "demosIntro",
+        "demoBack",
+        "demoNext",
+        "demoPause",
+        "demoResume",
+        "demoScrollHint",
+        "demoTechRabbitHole",
+        "demoTechDormouse",
+        "demoTechTrial",
+        "demoGrabJar",
+        "demoJarTucked",
+        "demoPinch",
+        "demoBeatOff",
+        "demoFlatWell",
+        "demoReducedMotion"
+      ],
       "additionalProperties": false,
       "properties": {
         "partPending": {
@@ -31,6 +57,86 @@
           "type": "string",
           "minLength": 1,
           "description": "Shown beside a language on the home page when none of its parts can be read yet."
+        },
+        "demosTitle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Shown as the heading of the concept-demo index."
+        },
+        "demosIntro": {
+          "type": "string",
+          "minLength": 1,
+          "description": "One line under the demo index heading."
+        },
+        "demoBack": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Link from a demo back to the demo index."
+        },
+        "demoNext": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Link from a demo to the next demo."
+        },
+        "demoPause": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Label of the motion toggle while ambient motion is playing."
+        },
+        "demoResume": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Label of the motion toggle while ambient motion is paused."
+        },
+        "demoScrollHint": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Hint at the top of a demo that scrolling moves the story on."
+        },
+        "demoTechRabbitHole": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the rabbit hole."
+        },
+        "demoTechDormouse": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the Dormouse's tale."
+        },
+        "demoTechTrial": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the trial."
+        },
+        "demoGrabJar": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that takes the marmalade jar off its shelf."
+        },
+        "demoJarTucked": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status once the jar is tucked into a cupboard."
+        },
+        "demoPinch": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that pinches the Dormouse awake."
+        },
+        "demoBeatOff": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that brushes the cards off the screen."
+        },
+        "demoFlatWell": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Note shown when the well cannot be drawn with WebGL and is drawn flat instead."
+        },
+        "demoReducedMotion": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Note shown when the visitor prefers reduced motion."
         }
       }
     }

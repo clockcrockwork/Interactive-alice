@@ -1,0 +1,302 @@
+{
+  "$schema": "../../schema/chapter-structure.schema.json",
+  "chapter": 7,
+  "sourceFile": "text/raw/ch07-a-mad-tea-party.txt",
+  "sections": [
+    {
+      "id": "wake-up-dormouse"
+    },
+    {
+      "id": "three-sisters"
+    },
+    {
+      "id": "treacle-well"
+    },
+    {
+      "id": "learning-to-draw"
+    },
+    {
+      "id": "into-the-teapot"
+    }
+  ],
+  "segments": [
+    {
+      "id": "ch07.s0400",
+      "section": "wake-up-dormouse",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0410",
+      "section": "wake-up-dormouse",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0420",
+      "section": "wake-up-dormouse",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0430",
+      "section": "wake-up-dormouse",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0440",
+      "section": "wake-up-dormouse",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0450",
+      "section": "wake-up-dormouse",
+      "kind": "dialogue",
+      "speaker": "march-hare"
+    },
+    {
+      "id": "ch07.s0460",
+      "section": "wake-up-dormouse",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0470",
+      "section": "wake-up-dormouse",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0480",
+      "section": "three-sisters",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0490",
+      "section": "three-sisters",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0500",
+      "section": "three-sisters",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0510",
+      "section": "three-sisters",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0520",
+      "section": "three-sisters",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0530",
+      "section": "three-sisters",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0540",
+      "section": "three-sisters",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0550",
+      "section": "three-sisters",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0560",
+      "section": "three-sisters",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0570",
+      "section": "three-sisters",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0580",
+      "section": "treacle-well",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0590",
+      "section": "treacle-well",
+      "kind": "dialogue",
+      "speaker": "march-hare"
+    },
+    {
+      "id": "ch07.s0600",
+      "section": "treacle-well",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0610",
+      "section": "treacle-well",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0620",
+      "section": "treacle-well",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0630",
+      "section": "treacle-well",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0640",
+      "section": "treacle-well",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0650",
+      "section": "treacle-well",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0660",
+      "section": "treacle-well",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0670",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0680",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0690",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0700",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0710",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0720",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0730",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0740",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0750",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0760",
+      "section": "learning-to-draw",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0770",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0780",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0790",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0800",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "march-hare"
+    },
+    {
+      "id": "ch07.s0810",
+      "section": "learning-to-draw",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0820",
+      "section": "learning-to-draw",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0830",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0840",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0850",
+      "section": "into-the-teapot",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0860",
+      "section": "into-the-teapot",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0870",
+      "section": "into-the-teapot",
+      "kind": "narration"
+    }
+  ]
+}

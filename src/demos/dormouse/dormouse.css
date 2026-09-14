@@ -1,0 +1,321 @@
+/* The Dormouse's tale: a teacup seen from above, the tale written on the treacle
+   in a spiral that shrinks toward the centre, and a camera that turns to follow it. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    --dm-cloth: oklch(78% 0.05 150);
+    --dm-cloth-alt: oklch(92% 0.02 100);
+    --dm-china: oklch(96% 0.01 90);
+    --dm-china-shade: oklch(80% 0.02 80);
+    --dm-treacle: oklch(28% 0.07 55);
+    --dm-treacle-deep: oklch(18% 0.05 50);
+    --dm-treacle-shine: oklch(48% 0.1 60);
+    --dm-ink: oklch(94% 0.05 85);
+    --dm-mouse: oklch(62% 0.05 60);
+    --dm-bubble-alice: oklch(85% 0.08 240);
+    --dm-bubble-hatter: oklch(84% 0.1 300);
+    --dm-bubble-hare: oklch(84% 0.1 60);
+  }
+}
+
+@layer scene {
+  .demo--dormouse {
+    --demo-ground: var(--dm-cloth);
+  }
+
+  .demo-body:has(.demo--dormouse) {
+    background: var(--dm-cloth);
+  }
+
+  .dm__cloth {
+    background:
+      repeating-conic-gradient(from 45deg, var(--dm-cloth) 0 25%, var(--dm-cloth-alt) 0 50%) 50% 50%
+      / 9vmin 9vmin;
+    translate: calc(var(--px, 0) * -1.2vmin) calc(var(--py, 0) * -1.2vmin);
+    scale: 1.06;
+  }
+
+  .dm__svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .dm__text {
+    font-family: var(--demo-serif);
+    fill: var(--dm-ink);
+    letter-spacing: 0.02em;
+  }
+
+  .dm__text tspan {
+    fill-opacity: var(--tone, 0.4);
+  }
+
+  /* Bubbles: the others talk around the rim while the tale turns below. */
+  .demo--dormouse .demo-beat {
+    inset-block-end: auto;
+    inset-block-start: calc(var(--demo-bar-height) + 3vh);
+    max-inline-size: min(40rem, 94vw);
+    text-align: start;
+    text-shadow: none;
+    font-size: clamp(1rem, 0.9rem + 0.8vw, 1.35rem);
+  }
+
+  .demo--dormouse .line {
+    justify-self: center;
+    padding: 0.4em 0.9em;
+    border-radius: 1.2em;
+    background: oklch(100% 0 0 / 0.85);
+    color: var(--demo-paper-ink);
+    box-shadow: 0 6px 20px oklch(0% 0 0 / 0.18);
+    max-inline-size: 24rem;
+  }
+
+  .demo--dormouse .line[data-kind="narration"] {
+    background: oklch(96% 0.01 90 / 0.55);
+    box-shadow: none;
+    color: oklch(28% 0.03 60);
+    font-style: italic;
+    text-align: center;
+  }
+
+  .demo--dormouse .line[data-speaker="alice"] {
+    justify-self: start;
+    background: var(--dm-bubble-alice);
+    border-end-start-radius: 0.2em;
+  }
+
+  .demo--dormouse .line[data-speaker="hatter"] {
+    justify-self: end;
+    background: var(--dm-bubble-hatter);
+    border-end-end-radius: 0.2em;
+  }
+
+  .demo--dormouse .line[data-speaker="march-hare"] {
+    justify-self: end;
+    background: var(--dm-bubble-hare);
+    border-start-end-radius: 0.2em;
+  }
+
+  /* The Dormouse's own words are in the treacle; the paragraph stays for a reader
+     who is not looking. */
+  .demo--dormouse .line[data-speaker="dormouse"] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .dm__mouse {
+    position: absolute;
+    inset-inline-end: 4%;
+    inset-block-end: 6%;
+    inline-size: clamp(6rem, 16vmin, 10rem);
+    pointer-events: auto;
+    cursor: pointer;
+    filter: drop-shadow(0 8px 14px oklch(0% 0 0 / 0.3));
+  }
+
+  .dm__mouse svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .dm__eye-open {
+    opacity: var(--awake, 0);
+  }
+
+  .dm__eye-shut {
+    opacity: calc(1 - var(--awake, 0));
+  }
+
+  .dm__zzz {
+    font-family: var(--demo-serif);
+    font-weight: 700;
+    fill: oklch(40% 0.05 60);
+    opacity: calc(1 - var(--awake, 0));
+    animation: dm-zzz 2.4s ease-in-out infinite;
+  }
+
+  .dm__zzz--2 {
+    animation-delay: 0.8s;
+  }
+
+  .dm__zzz--3 {
+    animation-delay: 1.6s;
+  }
+
+  .dm__body {
+    transform-origin: 50% 80%;
+    animation: dm-breathe 3.4s ease-in-out infinite alternate;
+  }
+
+  .dm__mouse[data-shriek] .dm__body {
+    animation: dm-shriek 0.5s ease-out 1;
+  }
+
+  .dm__prop-pinch {
+    inset-inline-end: 4%;
+    inset-block-end: calc(6% + clamp(6rem, 16vmin, 10rem) + 0.5rem);
+  }
+
+  .dm__drips {
+    position: absolute;
+    inset: 0;
+    filter: url("#dm-goo");
+  }
+
+  .dm__drip {
+    position: absolute;
+    inset-block-start: -6vh;
+    inline-size: 3vmin;
+    block-size: 8vh;
+    border-radius: 50% 50% 55% 55% / 30% 30% 70% 70%;
+    background: var(--dm-treacle);
+    animation: dm-drip 6s ease-in infinite;
+    animation-delay: var(--delay, 0s);
+    opacity: var(--drips, 0);
+  }
+
+  .dm__letters {
+    font-family: var(--demo-serif);
+    font-size: clamp(2rem, 8vmin, 5rem);
+    color: var(--dm-ink);
+    opacity: 0;
+  }
+
+  .dm__letter {
+    position: absolute;
+    inset-inline-start: var(--lx, 50%);
+    inset-block-start: 100%;
+    text-shadow: 0 2px 10px oklch(0% 0 0 / 0.4);
+    animation: dm-float 7s linear infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  .dm__teapot {
+    position: absolute;
+    inset-inline-start: 6%;
+    inset-block-end: 8%;
+    inline-size: clamp(8rem, 22vmin, 14rem);
+    opacity: 0;
+    filter: drop-shadow(0 10px 18px oklch(0% 0 0 / 0.3));
+  }
+
+  .dm__teapot svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .dm__lid {
+    transform-origin: 20% 100%;
+    transform: rotate(calc(var(--lid, 0) * -35deg));
+  }
+
+  .demo[data-paused] .dm__zzz,
+  .demo[data-paused] .dm__body,
+  .demo[data-paused] .dm__drip,
+  .demo[data-paused] .dm__letter {
+    animation-play-state: paused;
+  }
+
+  @keyframes dm-zzz {
+    0% {
+      transform: translate(0, 0) scale(0.7);
+      opacity: 0;
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      transform: translate(14px, -34px) scale(1.2);
+      opacity: 0;
+    }
+  }
+
+  @keyframes dm-breathe {
+    from {
+      transform: scale(1, 1);
+    }
+    to {
+      transform: scale(1.03, 0.97);
+    }
+  }
+
+  @keyframes dm-shriek {
+    0% {
+      transform: scale(1, 1);
+    }
+    30% {
+      transform: scale(0.9, 1.25) translateY(-10px);
+    }
+    60% {
+      transform: scale(1.1, 0.9);
+    }
+    100% {
+      transform: scale(1, 1);
+    }
+  }
+
+  @keyframes dm-drip {
+    0% {
+      transform: translateY(0) scaleY(0.6);
+    }
+    70% {
+      transform: translateY(40vh) scaleY(1.6);
+    }
+    100% {
+      transform: translateY(110vh) scaleY(1);
+    }
+  }
+
+  @keyframes dm-float {
+    from {
+      transform: translateY(0) rotate(-10deg);
+      opacity: 0;
+    }
+    15% {
+      opacity: 1;
+    }
+    to {
+      transform: translateY(-110vh) rotate(12deg);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dm__zzz,
+    .dm__body,
+    .dm__letter {
+      animation: none;
+    }
+
+    .dm__zzz {
+      opacity: calc(0.7 - var(--awake, 0) * 0.7);
+    }
+
+    .dm__mouse[data-shriek] .dm__body {
+      animation: none;
+      transform: scale(0.95, 1.1);
+    }
+
+    /* The letters hang in the air instead of rising. */
+    .dm__letter {
+      inset-block-start: calc(20% + var(--ly, 0) * 60%);
+      opacity: 1;
+    }
+
+    .dm__drip {
+      animation: none;
+      transform: translateY(20vh);
+    }
+  }
+}

@@ -1,0 +1,123 @@
+/* The demo index: three playing cards fanned on the table, each a door. */
+
+@layer scene {
+  .demos {
+    min-block-size: 100dvh;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: var(--space-2);
+    padding-block: var(--space-4);
+    padding-inline: var(--space-2);
+    perspective: 1400px;
+  }
+
+  .demos__title {
+    margin: 0;
+    font-family: var(--demo-serif);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    view-transition-name: demo-title;
+  }
+
+  .demos__intro {
+    margin: 0 0 var(--space-3);
+    color: var(--demo-ink-soft);
+    text-align: center;
+  }
+
+  .demos__cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+    transform-style: preserve-3d;
+  }
+
+  .demos__card {
+    /* Unitless, so a script can tween them as plain numbers. */
+    --tilt-x: 0;
+    --tilt-y: 0;
+    --lift: 0;
+    inline-size: min(17rem, 78vw);
+    aspect-ratio: 5 / 7;
+    transform-style: preserve-3d;
+    transform: translateZ(calc(var(--lift) * 1px)) rotateX(calc(var(--tilt-x) * 1deg))
+      rotateY(calc(var(--tilt-y) * 1deg)) rotate(calc((var(--i) - 1) * 4deg));
+    transition: transform var(--demo-calm) var(--demo-ease);
+  }
+
+  .demos__link {
+    display: grid;
+    align-content: end;
+    gap: var(--space-1);
+    block-size: 100%;
+    padding: var(--space-2);
+    border-radius: 1rem;
+    background:
+      radial-gradient(120% 90% at 50% 0%, oklch(100% 0 0 / 0.1), transparent 60%), var(--demo-paper);
+    color: var(--demo-paper-ink);
+    text-decoration: none;
+    box-shadow:
+      0 30px 60px -20px oklch(0% 0 0 / 0.7),
+      inset 0 0 0 1px oklch(0% 0 0 / 0.08);
+    view-transition-name: var(--card-name);
+  }
+
+  .demos__pip {
+    position: absolute;
+    inset-block-start: var(--space-2);
+    inset-inline-start: var(--space-2);
+    inline-size: 2.4rem;
+    block-size: 2.4rem;
+    background: var(--demo-heart);
+    clip-path: path(
+      "M19 36 C19 36 2 24 2 12 A9 9 0 0 1 19 8 A9 9 0 0 1 36 12 C36 24 19 36 19 36 Z"
+    );
+    opacity: 0.85;
+  }
+
+  .demos__link {
+    position: relative;
+  }
+
+  .demos__card:nth-child(2) .demos__pip {
+    background: var(--demo-paper-ink);
+    clip-path: path(
+      "M19 2 C24 12 34 14 34 22 A8 8 0 0 1 21 27 L24 36 L14 36 L17 27 A8 8 0 0 1 4 22 C4 14 14 12 19 2 Z"
+    );
+  }
+
+  .demos__card:nth-child(3) .demos__pip {
+    background: var(--demo-heart);
+    clip-path: path("M19 2 L36 19 L19 36 L2 19 Z");
+  }
+
+  .demos__name {
+    font-family: var(--demo-serif);
+    font-size: 1.5rem;
+    line-height: 1.15;
+  }
+
+  .demos__tech {
+    font-family: system-ui, sans-serif;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: oklch(from var(--demo-paper-ink) l c h / 0.7);
+  }
+
+  .demos__link:hover,
+  .demos__link:focus-visible {
+    outline: 2px solid var(--demo-accent);
+    outline-offset: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .demos__card {
+      transition: none;
+      transform: none;
+    }
+  }
+}

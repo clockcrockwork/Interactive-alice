@@ -24,7 +24,10 @@ for (const page of pages) {
 test('the home page links to every locale entry', async ({ page }) => {
   await page.goto('./');
   for (const locale of locales()) {
-    await expect(page.locator(`a[lang="${locale}"]`)).toHaveAttribute('href', `./${locale}/`);
+    await expect(page.locator(`.home__locales a[lang="${locale}"]`)).toHaveAttribute(
+      'href',
+      `./${locale}/`,
+    );
   }
 });
 

@@ -1,0 +1,30 @@
+{
+  "$schema": "../../../schema/locale-chapter.schema.json",
+  "locale": "en-simple",
+  "chapter": 11,
+  "title": "Who Stole the Tarts?",
+  "sections": {
+    "the-court": "The Court",
+    "the-accusation": "The Accusation"
+  },
+  "segments": {
+    "ch11.s0010": "The King and Queen of Hearts sat on their throne.",
+    "ch11.s0020": "A great crowd was gathered about them.",
+    "ch11.s0030": "There were little birds and beasts, and the whole pack of cards.",
+    "ch11.s0040": "The Knave stood before them in chains, with a soldier on each side.",
+    "ch11.s0050": "Near the King stood the White Rabbit, with a trumpet and a scroll.",
+    "ch11.s0060": "In the middle of the court was a table, with a large dish of tarts upon it.",
+    "ch11.s0070": "I wish they would get the trial done, and hand round the refreshments!",
+    "ch11.s0080": "That is the judge, because of his great wig.",
+    "ch11.s0090": "The judge was the King, and he wore his crown over the wig.",
+    "ch11.s0100": "And that is the jury-box.",
+    "ch11.s0110": "Those twelve creatures must be the jurors.",
+    "ch11.s0120": "Herald, read the accusation!",
+    "ch11.s0130": "The White Rabbit blew three blasts on the trumpet.",
+    "ch11.s0140": "The Queen of Hearts, she made some tarts, all on a summer day.",
+    "ch11.s0150": "The Knave of Hearts, he stole those tarts, and took them quite away!",
+    "ch11.s0160": "Consider your verdict.",
+    "ch11.s0170": "Not yet, not yet!",
+    "ch11.s0180": "There is a great deal to come before that!"
+  }
+}

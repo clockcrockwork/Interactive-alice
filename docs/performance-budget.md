@@ -36,6 +36,13 @@ one scene page. Shared chunks count once.
 | audio per scene | ≤ 700 KB | BGM loop, fetched after the first interaction |
 | fonts | ≤ 100 KB | subset, `font-display: swap` |
 
+The concept demos under `/demos/` are outside these budgets by design; see
+[`concept-demos.md`](concept-demos.md) §2. For the record, gzip, on the build that
+introduced them: the shared demo shell (GSAP, ScrollTrigger and the shell) is 46 KB of
+JS; the Dormouse and trial pages add 4 and 5 KB to that; the rabbit hole adds 137 KB
+for Three.js and the well. Story pages are unaffected: they share none of these
+chunks, and their own sizes did not move.
+
 These are starting budgets for the PoC, chosen to keep a scene loadable on a
 mid-range phone over mobile data. They may be raised deliberately, in a pull
 request that says which budget moved and what the scene gained. They may not be

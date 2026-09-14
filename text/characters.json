@@ -1,7 +1,37 @@
 {
   "$schema": "../schema/characters.schema.json",
   "characters": [
-    { "id": "alice", "devLabel": "Alice" },
-    { "id": "white-rabbit", "devLabel": "the White Rabbit" }
+    {
+      "id": "alice",
+      "devLabel": "Alice"
+    },
+    {
+      "id": "white-rabbit",
+      "devLabel": "the White Rabbit"
+    },
+    {
+      "id": "dormouse",
+      "devLabel": "the Dormouse"
+    },
+    {
+      "id": "march-hare",
+      "devLabel": "the March Hare"
+    },
+    {
+      "id": "hatter",
+      "devLabel": "the Hatter"
+    },
+    {
+      "id": "king-of-hearts",
+      "devLabel": "the King of Hearts"
+    },
+    {
+      "id": "queen-of-hearts",
+      "devLabel": "the Queen of Hearts"
+    },
+    {
+      "id": "alices-sister",
+      "devLabel": "Alice's sister"
+    }
   ]
 }

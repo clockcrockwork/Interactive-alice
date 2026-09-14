@@ -1,0 +1,344 @@
+/* The rabbit hole demo: the well is WebGL; Alice, the jar, the bats and the sky
+   are DOM layers over it. */
+
+@layer scene {
+  .demo--rabbit-hole .demo__captions {
+    /* Sentences fly up out of the depth: the beat is the perspective origin. */
+    perspective: 800px;
+  }
+
+  .demo--rabbit-hole .demo-beat {
+    inset-block-end: auto;
+    inset-block-start: 62vh;
+    transform-style: preserve-3d;
+  }
+
+  .rh__canvas {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    opacity: 0;
+  }
+
+  /* Above ground: the field, the hedge, and the hole the rabbit went down. */
+  .rh__surface {
+    background: linear-gradient(
+      to bottom,
+      oklch(84% 0.07 230) 0%,
+      oklch(92% 0.05 100) 55%,
+      oklch(62% 0.12 130) 56%,
+      oklch(48% 0.1 135) 100%
+    );
+  }
+
+  .rh__hole {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 68%;
+    inline-size: min(60vw, 44vh);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle at 45% 40%, oklch(20% 0.02 60), oklch(8% 0.01 270) 70%);
+    box-shadow: inset 0 12px 30px oklch(0% 0 0 / 0.6);
+    translate: -50% -50%;
+    scale: var(--hole, 0.2);
+  }
+
+  .rh__sun {
+    position: absolute;
+    inset-inline-start: 78%;
+    inset-block-start: 14%;
+    inline-size: 12vmin;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      oklch(97% 0.08 95),
+      oklch(92% 0.12 90) 60%,
+      transparent 62%
+    );
+    box-shadow: 0 0 60px 20px oklch(95% 0.08 95 / 0.35);
+  }
+
+  .rh__tree {
+    position: absolute;
+    inset-inline-start: 12%;
+    inset-block-start: 50%;
+    inline-size: 18vmin;
+    aspect-ratio: 1 / 1.3;
+    translate: 0 -92%;
+    background:
+      radial-gradient(circle at 50% 35%, oklch(40% 0.11 140) 38%, transparent 39%),
+      radial-gradient(circle at 25% 55%, oklch(36% 0.1 140) 30%, transparent 31%),
+      radial-gradient(circle at 75% 55%, oklch(38% 0.1 140) 30%, transparent 31%),
+      linear-gradient(to right, transparent 44%, oklch(32% 0.05 60) 44% 56%, transparent 56%);
+  }
+
+  .rh__hedge {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 50%;
+    block-size: 12vh;
+    background:
+      radial-gradient(circle at 20% 60%, oklch(38% 0.1 140) 20%, transparent 21%),
+      radial-gradient(circle at 45% 40%, oklch(34% 0.1 140) 26%, transparent 27%),
+      radial-gradient(circle at 70% 55%, oklch(40% 0.1 140) 22%, transparent 23%),
+      radial-gradient(circle at 90% 45%, oklch(36% 0.1 140) 24%, transparent 25%);
+    background-size: 30vw 12vh;
+    translate: 0 -60%;
+  }
+
+  .rh__flat {
+    background: radial-gradient(circle at 50% 50%, oklch(30% 0.05 260) 0%, oklch(8% 0.01 270) 70%);
+    opacity: 0;
+  }
+
+  .rh__flat::before {
+    content: "";
+    position: absolute;
+    inset: -50%;
+    background: repeating-radial-gradient(
+      circle at 50% 50%,
+      transparent 0 6vmin,
+      oklch(40% 0.06 60 / 0.35) 6vmin 6.6vmin
+    );
+    scale: var(--fall-rings, 1);
+    opacity: 0.8;
+  }
+
+  .rh__alice {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 40%;
+    inline-size: clamp(6rem, 18vmin, 11rem);
+    translate: -50% -50%;
+    opacity: 0;
+    filter: drop-shadow(0 12px 18px oklch(0% 0 0 / 0.6));
+  }
+
+  .rh__alice-figure {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    animation: rh-sway 3.2s ease-in-out infinite alternate;
+  }
+
+  .rh__hair {
+    transform-origin: 50% 20%;
+    animation: rh-hair 2.1s ease-in-out infinite alternate;
+  }
+
+  .rh__skirt {
+    transform-origin: 50% 45%;
+    animation: rh-skirt 1.7s ease-in-out infinite alternate;
+  }
+
+  .rh__hand {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    inline-size: 0;
+    block-size: 0;
+    translate: 3.2rem -0.8rem;
+  }
+
+  .rh__jar-track {
+    position: absolute;
+    inset-inline-start: 74%;
+    inset-block-start: 50%;
+    inline-size: 0;
+    block-size: 0;
+  }
+
+  .rh__jar {
+    position: absolute;
+    inline-size: 4.2rem;
+    translate: -50% -50%;
+    cursor: pointer;
+    pointer-events: auto;
+    filter: drop-shadow(0 4px 8px oklch(0% 0 0 / 0.6));
+    transition: filter var(--demo-quick) var(--demo-ease);
+  }
+
+  .rh__jar:hover,
+  .rh__jar[data-hot] {
+    filter: drop-shadow(0 0 14px oklch(85% 0.15 70));
+  }
+
+  .rh__jar svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .rh__cupboard {
+    position: absolute;
+    inset-inline-start: 8%;
+    inset-block-start: 58%;
+    inline-size: 7rem;
+    aspect-ratio: 1 / 1.1;
+    border: 3px solid oklch(38% 0.06 60);
+    border-radius: 0.3rem;
+    background: linear-gradient(
+      to bottom,
+      oklch(22% 0.04 60) 0 48%,
+      oklch(34% 0.06 60) 48% 52%,
+      oklch(22% 0.04 60) 52%
+    );
+    box-shadow: inset 0 0 20px oklch(0% 0 0 / 0.7);
+    opacity: 0;
+  }
+
+  .rh__cupboard::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to right,
+      oklch(46% 0.08 60) 0 0.8rem,
+      oklch(42% 0.08 60) 0.8rem 1rem
+    );
+    border-radius: inherit;
+    transform-origin: 0 50%;
+    transform: rotateY(calc(var(--door, 0) * -110deg));
+  }
+
+  .rh__prop-jar {
+    inset-inline-start: 50%;
+    inset-block-start: 22vh;
+    translate: -50% 0;
+  }
+
+  .rh__bats {
+    opacity: 0;
+  }
+
+  .rh__bat {
+    position: absolute;
+    inset-block-start: var(--bat-y, 30%);
+    inset-inline-start: 0;
+    inline-size: 3.5rem;
+    color: oklch(12% 0.02 300);
+    filter: drop-shadow(0 0 6px oklch(30% 0.05 300));
+  }
+
+  .rh__bat svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .rh__wing {
+    transform-origin: 50% 50%;
+    animation: rh-flap 0.32s ease-in-out infinite alternate;
+  }
+
+  .rh__wing--right {
+    animation-delay: 0.05s;
+  }
+
+  .rh__dinah {
+    position: absolute;
+    inset-inline-start: 60%;
+    inset-block-start: 30%;
+    inline-size: 6rem;
+    opacity: 0;
+    color: oklch(25% 0.06 300);
+    filter: blur(0.5px) drop-shadow(0 0 20px oklch(70% 0.15 300 / 0.5));
+  }
+
+  .rh__dinah svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .rh__flash {
+    background: oklch(88% 0.06 80);
+    opacity: 0;
+  }
+
+  .rh__dark {
+    background: oklch(6% 0.01 270);
+    opacity: 0;
+  }
+
+  .rh__rabbit {
+    position: absolute;
+    inset-block-end: 14%;
+    inset-inline-start: 0;
+    inline-size: 5rem;
+    color: oklch(96% 0.01 90);
+  }
+
+  .rh__rabbit svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .demo[data-paused] .rh__alice-figure,
+  .demo[data-paused] .rh__hair,
+  .demo[data-paused] .rh__skirt,
+  .demo[data-paused] .rh__wing {
+    animation-play-state: paused;
+  }
+
+  @keyframes rh-sway {
+    from {
+      transform: rotate(-7deg);
+    }
+    to {
+      transform: rotate(7deg);
+    }
+  }
+
+  @keyframes rh-hair {
+    from {
+      transform: skewX(-6deg) scaleY(1);
+    }
+    to {
+      transform: skewX(8deg) scaleY(1.12);
+    }
+  }
+
+  @keyframes rh-skirt {
+    from {
+      transform: scaleX(1) skewX(-4deg);
+    }
+    to {
+      transform: scaleX(1.12) skewX(5deg);
+    }
+  }
+
+  @keyframes rh-flap {
+    from {
+      transform: scaleY(1) rotate(0deg);
+    }
+    to {
+      transform: scaleY(0.35) rotate(8deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .demo--rabbit-hole .demo-beat {
+      transform-style: flat;
+    }
+
+    /* Alice hangs still in the shaft; the wings hold a mid-beat pose. */
+    .rh__alice-figure,
+    .rh__hair,
+    .rh__skirt {
+      animation: none;
+    }
+
+    .rh__wing {
+      animation: none;
+      transform: scaleY(0.7);
+    }
+
+    .rh__jar {
+      transition: none;
+    }
+  }
+}

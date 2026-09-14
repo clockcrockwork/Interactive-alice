@@ -1,0 +1,383 @@
+/* The trial: a paper courtroom in CSS 3D that the camera dollies across, and a
+   pack of cards that rises, flies at the reader and sticks to the glass. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    --tr-curtain: oklch(34% 0.14 20);
+    --tr-curtain-deep: oklch(22% 0.1 20);
+    --tr-wall: oklch(62% 0.06 70);
+    --tr-floor: oklch(48% 0.08 60);
+    --tr-gold: oklch(80% 0.16 85);
+    --tr-card: oklch(97% 0.01 80);
+    --tr-card-ink: oklch(20% 0.02 30);
+    --tr-card-red: oklch(55% 0.22 25);
+    --tr-leaf: oklch(62% 0.14 55);
+    --tr-leaf-deep: oklch(48% 0.13 40);
+    --tr-sky: oklch(82% 0.08 60);
+    --tr-sky-high: oklch(70% 0.08 250);
+    --tr-alice: oklch(30% 0.08 250);
+    --tr-card-w: clamp(3.6rem, 9vmin, 6rem);
+  }
+}
+
+@layer scene {
+  .demo--trial .demo-beat {
+    inset-block-end: 10vh;
+    max-inline-size: min(40rem, 90vw);
+  }
+
+  .demo--trial .line[data-speaker="queen-of-hearts"] {
+    color: oklch(88% 0.12 20);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .demo--trial .line[data-speaker="king-of-hearts"] {
+    color: var(--tr-gold);
+  }
+
+  .demo--trial .line[data-speaker="alice"] {
+    color: oklch(88% 0.08 240);
+  }
+
+  .demo--trial .line[data-speaker="white-rabbit"] {
+    display: inline-block;
+    justify-self: center;
+    padding: 0.3em 1em;
+    background: oklch(92% 0.04 85);
+    color: var(--demo-paper-ink);
+    font-style: italic;
+    text-shadow: none;
+    clip-path: inset(0 0 calc((1 - var(--unroll, 1)) * 100%) 0);
+  }
+
+  .demo--trial .line[data-speaker="alices-sister"] {
+    color: oklch(40% 0.06 60);
+    text-shadow: none;
+  }
+
+  .demo--trial .demo-beat[data-cue="leaves"],
+  .demo--trial .demo-beat[data-cue="wake"] {
+    inset-block-end: auto;
+    inset-block-start: calc(var(--demo-bar-height) + 6vh);
+    color: oklch(30% 0.04 60);
+    text-shadow: none;
+  }
+
+  .tr__sky {
+    background: radial-gradient(
+      120% 80% at 50% 100%,
+      var(--tr-curtain),
+      var(--tr-curtain-deep) 70%
+    );
+  }
+
+  .tr__bank {
+    background: linear-gradient(
+      to bottom,
+      var(--tr-sky-high),
+      var(--tr-sky) 60%,
+      oklch(50% 0.09 130) 60.5%,
+      oklch(42% 0.08 130)
+    );
+    opacity: 0;
+  }
+
+  .tr__sister {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 0;
+    inline-size: clamp(22rem, 80vmin, 44rem);
+    translate: -50% 0;
+  }
+
+  .tr__sister svg,
+  .tr__piece svg,
+  .tr__alice svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* The world: a stage with depth. Pieces sit at different distances so a sideways
+     dolly separates them. Unitless camera numbers are tweened by the script. */
+  .tr__world {
+    perspective: 1200px;
+    perspective-origin: 50% 45%;
+    overflow: hidden;
+  }
+
+  .tr__court {
+    --cam-x: 0;
+    --cam-z: 0;
+    --cam-ry: 0;
+    --cam-y: 0;
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform: translate3d(
+        calc(var(--cam-x) * -1vw),
+        calc(var(--cam-y) * -1vh),
+        calc(var(--cam-z) * 1px)
+      )
+      rotateY(calc(var(--cam-ry) * 1deg));
+  }
+
+  .tr__piece {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 22%;
+    inline-size: var(--w, 12rem);
+    transform: translate3d(calc(-50% + var(--x, 0) * 1vw), 0, calc(var(--z, 0) * 1px));
+    filter: drop-shadow(0 18px 24px oklch(0% 0 0 / 0.45));
+  }
+
+  .tr__backdrop {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block: -10% 18%;
+    inline-size: 340vw;
+    transform: translate3d(-50%, 0, -700px);
+    background:
+      repeating-linear-gradient(to right, var(--tr-curtain) 0 6vw, var(--tr-curtain-deep) 6vw 8vw),
+      var(--tr-curtain);
+  }
+
+  .tr__backdrop::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: -12%;
+    block-size: 14%;
+    background: linear-gradient(to bottom, var(--tr-gold), transparent);
+    opacity: 0.35;
+  }
+
+  .tr__floor {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 0;
+    block-size: 24%;
+    inline-size: 360vw;
+    transform: translate3d(-50%, 0, -60px);
+    background:
+      repeating-linear-gradient(90deg, oklch(0% 0 0 / 0.08) 0 2px, transparent 2px 9vw),
+      linear-gradient(to bottom, var(--tr-floor), oklch(36% 0.07 60));
+  }
+
+  .tr__throne {
+    --w: clamp(10rem, 26vmin, 16rem);
+    --z: -320;
+  }
+
+  .tr__throne--king {
+    --x: -9;
+  }
+
+  .tr__throne--queen {
+    --x: 9;
+  }
+
+  .tr__jury {
+    --w: clamp(18rem, 52vmin, 34rem);
+    --x: -92;
+    --z: -180;
+  }
+
+  .tr__knave {
+    --w: clamp(7rem, 20vmin, 12rem);
+    --x: -46;
+    --z: -160;
+  }
+
+  .tr__soldier {
+    --w: clamp(6rem, 17vmin, 10rem);
+    --z: -140;
+  }
+
+  .tr__soldier--left {
+    --x: -60;
+  }
+
+  .tr__soldier--right {
+    --x: -32;
+  }
+
+  .tr__tarts {
+    --w: clamp(12rem, 34vmin, 22rem);
+    --x: 34;
+    --z: 40;
+  }
+
+  .tr__herald {
+    --w: clamp(7rem, 20vmin, 12rem);
+    --x: 62;
+    --z: -120;
+  }
+
+  .tr__pack {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+  }
+
+  .tr__card {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    inline-size: var(--tr-card-w);
+    aspect-ratio: 5 / 7;
+    margin-inline-start: calc(var(--tr-card-w) / -2);
+    margin-block-start: calc(var(--tr-card-w) / 10 * -7);
+    border-radius: 0.35rem;
+    background: var(--tr-card);
+    color: var(--tr-card-ink);
+    box-shadow:
+      0 2px 4px oklch(0% 0 0 / 0.35),
+      inset 0 0 0 2px oklch(0% 0 0 / 0.06);
+    backface-visibility: hidden;
+    font-family: var(--demo-serif);
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    pointer-events: none;
+  }
+
+  .tr__card[data-suit="hearts"],
+  .tr__card[data-suit="diamonds"] {
+    color: var(--tr-card-red);
+  }
+
+  .tr__card::before,
+  .tr__card::after {
+    position: absolute;
+    font-size: calc(var(--tr-card-w) * 0.24);
+    white-space: pre;
+  }
+
+  .tr__card::before {
+    content: attr(data-rank) "\A" attr(data-pip);
+    inset-inline-start: 0.35em;
+    inset-block-start: 0.35em;
+  }
+
+  .tr__card::after {
+    content: attr(data-pip);
+    inset-inline-end: 0.35em;
+    inset-block-end: 0.35em;
+    font-size: calc(var(--tr-card-w) * 0.5);
+  }
+
+  /* On the glass: a card that has reached the reader. */
+  .tr__glass {
+    pointer-events: none;
+  }
+
+  .tr__glass .tr__card {
+    --tr-card-w: clamp(7rem, 22vmin, 14rem);
+    inset-inline-start: var(--gx, 50%);
+    inset-block-start: var(--gy, 50%);
+    pointer-events: auto;
+    box-shadow:
+      0 0 0 1px oklch(0% 0 0 / 0.08),
+      0 24px 40px -10px oklch(0% 0 0 / 0.7);
+    /* A card and a leaf, with the same number of points, so one turns into the other. */
+    clip-path: path(
+      "M2 2 C2 2 50 2 98 2 C98 2 98 70 98 138 C98 138 50 138 2 138 C2 138 2 70 2 2 Z"
+    );
+    transition:
+      clip-path 900ms var(--demo-ease),
+      background-color 900ms var(--demo-ease),
+      color 900ms var(--demo-ease);
+  }
+
+  .tr__glass .tr__card[data-leaf] {
+    color: transparent;
+    background-color: var(--tr-leaf);
+    clip-path: path(
+      "M50 2 C50 2 96 30 96 78 C96 78 78 132 50 138 C50 138 22 132 4 78 C4 78 4 30 50 2 Z"
+    );
+  }
+
+  .tr__glass .tr__card[data-leaf]:nth-child(2n) {
+    background-color: var(--tr-leaf-deep);
+  }
+
+  .tr__pack[data-rising] .tr__card {
+    animation: tr-tremble 0.24s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -37ms);
+  }
+
+  .demo[data-paused] .tr__card {
+    animation-play-state: paused;
+  }
+
+  .tr__alice {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: -4%;
+    inline-size: clamp(9rem, 26vmin, 16rem);
+    color: var(--tr-alice);
+    translate: -50% 0;
+    transform-origin: 50% 100%;
+    scale: 0.7;
+    opacity: 0;
+  }
+
+  .tr__flash {
+    background: oklch(45% 0.2 25);
+    opacity: 0;
+    mix-blend-mode: multiply;
+  }
+
+  .tr__prop-beat {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: -50% 0;
+  }
+
+  .demo--trial[data-shake] .tr__world {
+    animation: tr-shake 0.5s linear;
+  }
+
+  @keyframes tr-tremble {
+    from {
+      translate: 0 0;
+    }
+    to {
+      translate: 0.3vmin -1.1vmin;
+    }
+  }
+
+  @keyframes tr-shake {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    20% {
+      transform: translate(-1.2%, 0.8%);
+    }
+    40% {
+      transform: translate(1%, -0.6%);
+    }
+    60% {
+      transform: translate(-0.8%, 0.4%);
+    }
+    80% {
+      transform: translate(0.6%, -0.3%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tr__glass .tr__card {
+      transition: none;
+    }
+
+    .demo--trial[data-shake] .tr__world,
+    .tr__pack[data-rising] .tr__card {
+      animation: none;
+    }
+  }
+}

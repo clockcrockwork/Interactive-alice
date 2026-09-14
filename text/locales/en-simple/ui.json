@@ -4,6 +4,22 @@
   "strings": {
     "partPending": "Not in this language yet",
     "localePartial": "Some parts ready",
-    "localeNone": "Not ready yet"
+    "localeNone": "Not ready yet",
+    "demosTitle": "Concept demos",
+    "demosIntro": "Three scenes, three ways of moving through them.",
+    "demoBack": "All demos",
+    "demoNext": "Next scene",
+    "demoPause": "Pause motion",
+    "demoResume": "Resume motion",
+    "demoScrollHint": "Scroll to go on",
+    "demoTechRabbitHole": "A WebGL well the camera falls down, with text that drifts past in depth.",
+    "demoTechDormouse": "A tale written on a treacle spiral, shrinking as it turns, in pure SVG.",
+    "demoTechTrial": "A paper courtroom in CSS 3D, and a pack of cards that comes for the screen.",
+    "demoGrabJar": "Take the jar",
+    "demoJarTucked": "Tucked into a cupboard",
+    "demoPinch": "Pinch the Dormouse",
+    "demoBeatOff": "Beat them off",
+    "demoFlatWell": "This browser cannot draw the well in 3D, so it is drawn flat.",
+    "demoReducedMotion": "Reduced motion is on: the scenes step instead of flowing."
   }
 }

@@ -4,6 +4,22 @@
   "strings": {
     "partPending": "この ことばでは まだ よめません",
     "localePartial": "いちぶ よめます",
-    "localeNone": "まだ よめません"
+    "localeNone": "まだ よめません",
+    "demosTitle": "コンセプトデモ",
+    "demosIntro": "みっつの ばめん、みっつの すすみかた。",
+    "demoBack": "デモいちらん",
+    "demoNext": "つぎの ばめん",
+    "demoPause": "うごきを とめる",
+    "demoResume": "うごきを つづける",
+    "demoScrollHint": "スクロールで すすむ",
+    "demoTechRabbitHole": "カメラが おちていく WebGL の いど。ことばが おくゆきを ながれる。",
+    "demoTechDormouse": "うずまきに かかれた おはなし。まわるほど ちいさくなる SVG。",
+    "demoTechTrial": "CSS 3D の かみの ほうてい。トランプが がめんに おそいかかる。",
+    "demoGrabJar": "びんを とる",
+    "demoJarTucked": "とだなに しまった",
+    "demoPinch": "ヤマネを つねる",
+    "demoBeatOff": "はらいのける",
+    "demoFlatWell": "この ブラウザでは いどを 3D で かけないので、たいらに かきます。",
+    "demoReducedMotion": "うごきを へらす せっていです。ばめんは ながれず、いっぽずつ すすみます。"
   }
 }

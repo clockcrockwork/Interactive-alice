@@ -1,0 +1,115 @@
+{
+  "$schema": "../../schema/chapter-structure.schema.json",
+  "chapter": 11,
+  "sourceFile": "text/raw/ch11-who-stole-the-tarts.txt",
+  "sections": [
+    {
+      "id": "the-court"
+    },
+    {
+      "id": "the-accusation"
+    }
+  ],
+  "segments": [
+    {
+      "id": "ch11.s0010",
+      "section": "the-court",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0020",
+      "section": "the-court",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0030",
+      "section": "the-court",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0040",
+      "section": "the-court",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0050",
+      "section": "the-court",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0060",
+      "section": "the-court",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0070",
+      "section": "the-court",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch11.s0080",
+      "section": "the-court",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch11.s0090",
+      "section": "the-court",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0100",
+      "section": "the-court",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch11.s0110",
+      "section": "the-court",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch11.s0120",
+      "section": "the-accusation",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch11.s0130",
+      "section": "the-accusation",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0140",
+      "section": "the-accusation",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch11.s0150",
+      "section": "the-accusation",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch11.s0160",
+      "section": "the-accusation",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch11.s0170",
+      "section": "the-accusation",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch11.s0180",
+      "section": "the-accusation",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    }
+  ]
+}

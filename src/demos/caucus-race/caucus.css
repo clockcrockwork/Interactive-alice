@@ -1,0 +1,259 @@
+/* The Caucus-race: a ring of runners in CSS 3D that the camera orbits. Rotation
+   is the parallax: the near runner sweeps past, the far one crawls. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    --cr-sky: oklch(86% 0.06 230);
+    --cr-sky-low: oklch(92% 0.05 90);
+    --cr-bank: oklch(58% 0.1 130);
+    --cr-bank-deep: oklch(42% 0.09 135);
+    --cr-chalk: oklch(96% 0.01 90 / 0.8);
+    --cr-comfit: oklch(80% 0.15 340);
+    --cr-thimble: oklch(80% 0.05 80);
+    --cr-radius: clamp(180px, 34vmin, 320px);
+  }
+}
+
+@layer scene {
+  .demo--caucus-race .demo-beat {
+    inset-block-end: 8vh;
+    color: oklch(22% 0.03 60);
+    text-shadow: 0 1px 0 oklch(100% 0 0 / 0.5);
+  }
+
+  .demo--caucus-race .line[data-speaker="dodo"] {
+    font-weight: 700;
+    color: oklch(34% 0.06 250);
+  }
+
+  .cr__sky {
+    background: linear-gradient(
+      to bottom,
+      var(--cr-sky),
+      var(--cr-sky-low) 55%,
+      var(--cr-bank) 55.5%,
+      var(--cr-bank-deep)
+    );
+  }
+
+  .cr__world {
+    perspective: 1100px;
+    perspective-origin: 50% 40%;
+    overflow: hidden;
+  }
+
+  .cr__ring {
+    --spin: 0;
+    --tilt: -10;
+    --dolly: 0;
+    --lift: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 58%;
+    inline-size: 0;
+    block-size: 0;
+    transform-style: preserve-3d;
+    transform: translate3d(0, calc(var(--lift) * 1px), calc(var(--dolly) * 1px))
+      rotateX(calc(var(--tilt) * 1deg)) rotateY(calc(var(--spin) * 1deg));
+  }
+
+  .cr__course {
+    position: absolute;
+    inset-inline-start: calc(var(--cr-radius) * -1.15);
+    inset-block-start: calc(var(--cr-radius) * -1.15);
+    inline-size: calc(var(--cr-radius) * 2.3);
+    block-size: calc(var(--cr-radius) * 2.3);
+    transform: rotateX(90deg);
+  }
+
+  .cr__course circle {
+    fill: none;
+    stroke: var(--cr-chalk);
+    stroke-width: 6;
+    stroke-dasharray: 1;
+    stroke-dashoffset: calc(1 - var(--drawn, 0));
+    stroke-linecap: round;
+  }
+
+  /* A runner stands on the ring at its own angle and always faces the camera. */
+  .cr__runner {
+    --a: 0;
+    --r: 1;
+    --bob: 0;
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: clamp(4.5rem, 14vmin, 8rem);
+    margin-inline-start: calc(clamp(4.5rem, 14vmin, 8rem) / -2);
+    margin-block-start: calc(clamp(4.5rem, 14vmin, 8rem) * -1.4);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    pointer-events: auto;
+    transform-style: preserve-3d;
+    transform: rotateY(calc(var(--a) * 1deg)) translateZ(calc(var(--cr-radius) * var(--r)))
+      rotateY(calc((var(--a) + var(--spin)) * -1deg)) rotateX(calc(var(--tilt) * -1deg));
+    filter: drop-shadow(0 10px 8px oklch(0% 0 0 / 0.3));
+  }
+
+  .cr__runner:focus-visible {
+    outline: 3px solid oklch(40% 0.15 250);
+    outline-offset: 4px;
+  }
+
+  .cr__runner svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .cr__figure {
+    transform-origin: 50% 100%;
+  }
+
+  .cr__runner[aria-pressed="true"] .cr__figure {
+    animation: cr-run 0.42s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -90ms);
+  }
+
+  .cr__runner[data-drip] .cr__figure {
+    animation: cr-shiver 0.3s ease-in-out infinite alternate;
+  }
+
+  .cr__runner[data-bow] .cr__figure {
+    animation: cr-bow 1.2s ease-in-out 1 both;
+  }
+
+  .cr__drips {
+    opacity: 1;
+  }
+
+  .cr__drips circle {
+    fill: oklch(70% 0.08 230 / 0.8);
+    animation: cr-drop 1.6s ease-in infinite;
+    animation-delay: calc(var(--i, 0) * -0.5s);
+  }
+
+  .cr__comfits {
+    opacity: 0;
+  }
+
+  .cr__comfit {
+    position: absolute;
+    inset-inline-start: var(--x, 50%);
+    inset-block-start: -6vh;
+    inline-size: 2.2vmin;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 35% 35%,
+      oklch(100% 0 0 / 0.8),
+      var(--c, var(--cr-comfit)) 55%
+    );
+    animation: cr-comfit 2.6s linear infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  .cr__thimble {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 30%;
+    inline-size: clamp(3rem, 9vmin, 6rem);
+    translate: -50% -50%;
+    scale: 0;
+    filter: drop-shadow(0 10px 20px oklch(0% 0 0 / 0.35));
+  }
+
+  .cr__thimble svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .cr__prop {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: -50% 0;
+  }
+
+  .demo[data-paused] .cr__figure,
+  .demo[data-paused] .cr__comfit,
+  .demo[data-paused] .cr__drips circle {
+    animation-play-state: paused;
+  }
+
+  @keyframes cr-run {
+    from {
+      transform: translateY(0) rotate(-4deg) scaleY(1);
+    }
+    to {
+      transform: translateY(-9%) rotate(4deg) scaleY(1.04);
+    }
+  }
+
+  @keyframes cr-shiver {
+    from {
+      transform: translateX(-1.5%);
+    }
+    to {
+      transform: translateX(1.5%);
+    }
+  }
+
+  @keyframes cr-bow {
+    0%,
+    100% {
+      transform: rotateX(0deg);
+    }
+    50% {
+      transform: rotateX(30deg) translateY(4%);
+    }
+  }
+
+  @keyframes cr-drop {
+    from {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateY(40px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes cr-comfit {
+    from {
+      transform: translateY(0) rotate(0deg);
+    }
+    to {
+      transform: translateY(120vh) rotate(300deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cr__runner[aria-pressed="true"] .cr__figure,
+    .cr__runner[data-drip] .cr__figure,
+    .cr__drips circle,
+    .cr__comfit {
+      animation: none;
+    }
+
+    /* A running figure leans into it; a resting one stands straight. */
+    .cr__runner[aria-pressed="true"] .cr__figure {
+      transform: rotate(6deg) translateY(-4%);
+    }
+
+    .cr__runner[data-bow] .cr__figure {
+      animation: none;
+      transform: rotateX(30deg);
+    }
+
+    .cr__comfit {
+      transform: translateY(calc(var(--ly, 0) * 100vh));
+    }
+  }
+}

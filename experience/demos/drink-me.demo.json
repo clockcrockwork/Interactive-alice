@@ -1,0 +1,161 @@
+{
+  "id": "drink-me",
+  "titleChapter": 1,
+  "titleSection": "drink-me",
+  "shots": [
+    {
+      "id": "the-little-door",
+      "beats": [
+        {
+          "id": "curtain",
+          "cue": "hall",
+          "segments": [
+            "ch01.s0830",
+            "ch01.s0840",
+            "ch01.s0850"
+          ]
+        },
+        {
+          "id": "key-fits",
+          "cue": "key",
+          "segments": [
+            "ch01.s0860",
+            "ch01.s0870"
+          ]
+        },
+        {
+          "id": "garden",
+          "cue": "garden",
+          "segments": [
+            "ch01.s0880",
+            "ch01.s0890",
+            "ch01.s0900",
+            "ch01.s0910"
+          ]
+        },
+        {
+          "id": "telescope-wish",
+          "cue": "wish",
+          "segments": [
+            "ch01.s0920",
+            "ch01.s0930",
+            "ch01.s0940"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-bottle",
+      "beats": [
+        {
+          "id": "bottle-appears",
+          "cue": "bottle",
+          "segments": [
+            "ch01.s0950",
+            "ch01.s0960",
+            "ch01.s0970",
+            "ch01.s0980",
+            "ch01.s0990"
+          ]
+        },
+        {
+          "id": "poison",
+          "cue": "poison",
+          "segments": [
+            "ch01.s1000",
+            "ch01.s1010",
+            "ch01.s1020"
+          ]
+        },
+        {
+          "id": "taste",
+          "cue": "taste",
+          "segments": [
+            "ch01.s1030",
+            "ch01.s1040",
+            "ch01.s1050"
+          ]
+        },
+        {
+          "id": "folding-up",
+          "cue": "shrink",
+          "segments": [
+            "ch01.s1060",
+            "ch01.s1070",
+            "ch01.s1080",
+            "ch01.s1090"
+          ]
+        },
+        {
+          "id": "right-size",
+          "cue": "small",
+          "segments": [
+            "ch01.s1100",
+            "ch01.s1110",
+            "ch01.s1120"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-cake",
+      "beats": [
+        {
+          "id": "key-out-of-reach",
+          "cue": "key-lost",
+          "segments": [
+            "ch01.s1130",
+            "ch01.s1140",
+            "ch01.s1150",
+            "ch01.s1160",
+            "ch01.s1170"
+          ]
+        },
+        {
+          "id": "good-advice",
+          "cue": "cry",
+          "segments": [
+            "ch01.s1180",
+            "ch01.s1190",
+            "ch01.s1200",
+            "ch01.s1210",
+            "ch01.s1220"
+          ]
+        },
+        {
+          "id": "eat-me",
+          "cue": "cake",
+          "segments": [
+            "ch01.s1230",
+            "ch01.s1240",
+            "ch01.s1250",
+            "ch01.s1260",
+            "ch01.s1270",
+            "ch01.s1280",
+            "ch01.s1290"
+          ]
+        },
+        {
+          "id": "one-bite",
+          "cue": "bite",
+          "segments": [
+            "ch01.s1300",
+            "ch01.s1310",
+            "ch01.s1320"
+          ]
+        },
+        {
+          "id": "whole-cake",
+          "cue": "grow",
+          "segments": [
+            "ch01.s1330",
+            "ch01.s1340",
+            "ch01.s1350",
+            "ch01.s1360",
+            "ch01.s1370"
+          ]
+        }
+      ]
+    }
+  ]
+}

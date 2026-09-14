@@ -1,17 +1,20 @@
 # Concept demos
 
-> Canonical document for the three standalone concept demos under `/demos/`: what they are for, how they relate to the story runtime, what each one stages, and how they are checked. Product intent is in [`product-principles.md`](product-principles.md); the story runtime is in [`scene-shot-model.md`](scene-shot-model.md) and [`frontend-architecture.md`](frontend-architecture.md).
+> Canonical document for the six standalone concept demos under `/demos/`: what they are for, how they relate to the story runtime, what each one stages, and how they are checked. Product intent is in [`product-principles.md`](product-principles.md); the story runtime is in [`scene-shot-model.md`](scene-shot-model.md) and [`frontend-architecture.md`](frontend-architecture.md).
 
 ## 1. What they are
 
-Three ambitious, self-contained stagings of one moment of the book each, built to
+Six ambitious, self-contained stagings of one moment of the book each, built to
 show how far an interactive telling can go before the story runtime is asked to carry
 it. They are demonstrations, not the product: each one chooses the technique that
 makes its moment strongest and spends its budget on that.
 
 ```text
-/demos/                  the index: three cards on a table
+/demos/                  the index: six cards on a table
 /demos/rabbit-hole/      Down the Rabbit-Hole: a WebGL well the camera falls down
+/demos/drink-me/         Drink Me: a first-person hall in CSS 3D that scales around her
+/demos/pool-of-tears/    The Pool of Tears: a Canvas sea the reader can stir
+/demos/caucus-race/      A Caucus-Race: a ring of runners the camera orbits, CSS 3D
 /demos/dormouse/         A Mad Tea-Party: the Dormouse's tale on a treacle spiral, SVG
 /demos/trial/            Who Stole the Tarts?: a paper courtroom in CSS 3D, and the pack
 ```
@@ -24,16 +27,22 @@ by segment id at build time, the same way a story page resolves its text.
 
 **Shared: the text layer.** Every sentence a demo shows is a segment of
 `text/locales/<locale>/chNN.json`, ordered by the structure file. The demos added the
-adapted text they needed: the Dormouse's tale in chapter 7, the opening of the court in
-chapter 11, and the sentence-first climax and waking in chapter 12. Those chapter files
-are partial on purpose: they hold the sections the demos stage, with segment ids
-numbered to leave room before and after, so the rest of each chapter can be adapted
-later without renumbering. `npm run check:text` treats them like any other chapter.
+adapted text they needed: the giant Alice, the pool and the Mouse in chapter 2, the
+race and the prizes in chapter 3, the Dormouse's tale in chapter 7, the opening of the
+court in chapter 11, and the sentence-first climax and waking in chapter 12. Drink Me
+uses chapter 1's existing text. The added chapter files are partial on purpose: they
+hold the sections the demos stage, with segment ids numbered to leave room before and
+after, so the rest of each chapter can be adapted later without renumbering.
+`npm run check:text` treats them like any other chapter.
 
 **Shared: the hard rules.** No prose in code, relative paths only, scroll as the
 guaranteed path, a designed reduced-motion version, a pause control for looping
 motion, one `<main>` and one `h1` per page, and text in the accessibility tree once and
 in reading order.
+
+A demo is named after its chapter's localized title, or, when two demos draw on one
+chapter, after one of its story sections (`titleSection`): the rabbit hole and Drink
+Me both come from chapter 1.
 
 **Not shared: the story runtime.** A demo is not a Scene. It has no pacing plan, no
 Part, and no entry in `experience/story.json`; the runtime in `src/runtime/` never
@@ -78,7 +87,7 @@ effect (§4). Nothing is merely switched off.
 `window.__aliceDemo` is the test seam: progress, active beat, paused, reduced, and a
 per-demo `mode` (the rabbit hole reports `webgl` or `flat`).
 
-## 4. The three demos
+## 4. The six demos
 
 ### Down the Rabbit-Hole: the fall is the parallax
 
@@ -109,6 +118,72 @@ stepped beat by beat by the shell.
 
 **Degraded mode.** If a WebGL context cannot be created, the well is drawn flat with
 CSS rings that scale with the fall, the page says so, and the seam reports `flat`.
+
+### Drink Me: scale is the parallax
+
+Alice is the camera. The hall of doors is a CSS 3D corridor: a floor and a ceiling,
+two walls of arched doors, lamps, a curtain on the end wall with the little door in it
+and a garden behind it, and the glass table with the key on top. The camera walks to
+the table, kneels at the little door to see the garden through it, and comes back for
+the bottle. All of that is one `perspective` and a transform on the hall.
+
+When she drinks, the hall scales up around the point on the floor under her feet
+(`transform-origin` at eye height, scale on the hall, the walk distance rescaled to
+match), so the table becomes a building and the little door a real one; the view folds
+in from the top and bottom like a telescope closing and lets go again a little
+smaller. Later she looks up at the key through the glass with the table legs towering,
+tears run down the lens, and when she finishes the cake the hall scales down until the
+roof arrives with a flash.
+
+The bottle's and the cake's labels are the capitalized words the sentences themselves
+quote, read from the text at mount, never written in code.
+
+**Interaction.** The bottle and the cake come to her hand. Press either, or the
+*Drink it* and *Eat it* buttons, and it drains or gets bitten; the story drinks and
+eats anyway before the beat is out. The pointer turns her head a little.
+
+**Reduced motion.** Every walk is a cut with a blink; the telescope fold becomes a
+flash; no wobble, no head-turn; tears and flavours hang still.
+
+### The Pool of Tears: the swell is the parallax
+
+A 2D Canvas draws the hall from a giant's eye, with a horizon that climbs as she
+shrinks. Tears fall as particles and ring the water where they land; the water line
+rises through the hall four inches deep, then, when the fan has shrunk her, comes up
+to her chin with a splash. The surface is a sum of sines plus the rings the reader
+stirs into it; a body of water with caustic bands lies under it; the Mouse, Alice,
+and later a Duck and a Dodo, a Lory and an Eaglet sit on the surface, tilted to its
+slope, and the shore slides in from the right at the end.
+
+The captions ride the swell: each frame the stage samples the surface under the
+middle of the screen and writes its height and slope into two custom properties, and
+the beat translates and rotates with them.
+
+**Interaction.** Press or drag on the water to stir it; a fine pointer stirs it by
+moving quickly; the *Stir the water* button does it for a keyboard. The Mouse leaps at
+*Où est ma chatte?* and bristles at the mention of Dinah on its own.
+
+**Reduced motion.** The swell is a quarter as fast and a third as high, rings spread
+slowly, tears fall at half speed, and the captions do not ride the water.
+
+### A Caucus-Race: rotation is the parallax
+
+The party stands in a ring on the bank, each runner an SVG cutout on a CSS 3D circle
+that always faces the camera (its own angle, then the ring's spin, undone in the
+runner's transform). The camera walks round the party as they drip, comes to the Dodo
+for its proposal, looks down as the chalk course draws itself, and then circles the
+course a full turn while the race is run: the near runner sweeps past, the far one
+crawls. When the Dodo calls it over they crowd round it, then round Alice; comfits come
+down as prizes, the thimble rises, turns, and is handed back, and Alice bows.
+
+**Interaction.** They began running when they liked, and left off when they liked:
+every runner is a real button, `aria-pressed` while running, and pressing one makes it
+rest or run. *Everybody run!* sets them all off. Each runner has its own pace, so the
+ring never looks the same twice.
+
+**Reduced motion.** The runners hold their places and lean into the run instead of
+bobbing; the camera cuts between its shots and does not circle; the comfits hang in
+the air.
 
 ### A Mad Tea-Party: rotation and zoom are the parallax
 
@@ -181,7 +256,10 @@ page loads without console, page or request errors; carries its sentences in ord
 before and after the shell attaches; reaches its last beat by scrolling alone; the
 motion toggle pauses and resumes; under reduced motion the note shows and the end is
 still reached; the trial's pack reaches the glass and the button clears it; the
-Dormouse's spiral carries exactly the sentences the Dormouse says, shrinking.
+Dormouse's spiral carries exactly the sentences the Dormouse says, shrinking; Drink
+Me's hall scales past four when she is small and under one when she has grown; every
+Caucus-race runner is a button that toggles between resting and running; the pool's
+captions ride the swell once she is in the water.
 
 `npm run check:frontend` covers the demo code with the same rules as the scenes:
 no prose in code, no absolute paths, no inline style writes other than custom

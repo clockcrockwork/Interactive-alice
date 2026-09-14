@@ -55,8 +55,8 @@ npm run scene -- rabbit-hole --locale ja
 npm run scene -- rabbit-hole --plan    # derived progress ranges
 ```
 
-The three concept demos under `/demos/` (rabbit hole, Dormouse, trial) are built with
-the site; see `docs/concept-demos.md`. They share the text layer and the hard rules
+The six concept demos under `/demos/` (rabbit hole, Drink Me, pool of tears, Caucus-race,
+Dormouse, trial) are built with the site; see `docs/concept-demos.md`. They share the text layer and the hard rules
 with the story, not its runtime or its budgets.
 
 ```
@@ -94,7 +94,7 @@ pull request; see `docs/deployment.md` §4.
 | Images, music, sound effects | `docs/assets-and-audio.md` |
 | Preview and production deploy | `docs/deployment.md` |
 | First executable milestone | `docs/poc/rabbit-hole.md`, issue #1 |
-| The three standalone concept demos under `/demos/` | `docs/concept-demos.md` |
+| The standalone concept demos under `/demos/` | `docs/concept-demos.md` |
 
 When implementation proves a documented decision wrong, change the document in
 the same body of work. Do not let code and docs disagree on purpose.

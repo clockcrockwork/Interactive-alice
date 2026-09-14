@@ -1,0 +1,31 @@
+{
+  "id": "caucus-race",
+  "titleChapter": 3,
+  "shots": [
+    {
+      "id": "a-queer-looking-party",
+      "beats": [
+        { "id": "dripping", "cue": "bank", "segments": ["ch03.s0300", "ch03.s0310"] },
+        { "id": "proposal", "cue": "proposal", "segments": ["ch03.s0320", "ch03.s0330", "ch03.s0340", "ch03.s0350"] }
+      ]
+    },
+    {
+      "id": "the-race",
+      "beats": [
+        { "id": "course", "cue": "course", "segments": ["ch03.s0360", "ch03.s0370", "ch03.s0380"] },
+        { "id": "running", "cue": "running", "segments": ["ch03.s0390", "ch03.s0400", "ch03.s0410"] },
+        { "id": "over", "cue": "over", "segments": ["ch03.s0420", "ch03.s0430", "ch03.s0440"] },
+        { "id": "who-has-won", "cue": "thinking", "segments": ["ch03.s0450", "ch03.s0460"] }
+      ]
+    },
+    {
+      "id": "prizes",
+      "beats": [
+        { "id": "who-gives", "cue": "she", "segments": ["ch03.s0470", "ch03.s0480", "ch03.s0490"] },
+        { "id": "comfits", "cue": "comfits", "segments": ["ch03.s0500", "ch03.s0510", "ch03.s0520"] },
+        { "id": "thimble", "cue": "thimble", "segments": ["ch03.s0530", "ch03.s0540", "ch03.s0550", "ch03.s0560"] },
+        { "id": "acceptance", "cue": "bow", "segments": ["ch03.s0570"] }
+      ]
+    }
+  ]
+}

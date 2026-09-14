@@ -163,3 +163,93 @@ test('the dormouse: the tale is written on the spiral, one sentence per segment'
     expect(sizes[i]).toBeLessThan(sizes[i - 1] ?? 0);
   }
 });
+
+test('drink me: the hall grows around her when she drinks, and shrinks back when she eats', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'drink-me');
+  test.skip(!demo, 'no drink-me demo in this build');
+  await page.goto(demo?.url ?? '');
+  const beatCount = await page.locator('.demo__stage .demo-beat').count();
+  const room = () =>
+    page.evaluate(() =>
+      Number(
+        getComputedStyle(document.querySelector('.dk__hall') as Element).getPropertyValue('--room'),
+      ),
+    );
+  const at = (cue: string, within = 0.95) =>
+    page.evaluate(
+      ([name, count, fraction]) => {
+        const beats = [...document.querySelectorAll<HTMLElement>('.demo__stage .demo-beat')];
+        const index = beats.findIndex((beat) => beat.dataset.cue === name);
+        window.scrollTo(
+          0,
+          (document.documentElement.scrollHeight - window.innerHeight) *
+            ((index + Number(fraction)) / Number(count)),
+        );
+      },
+      [cue, beatCount, within] as const,
+    );
+  await expect.poll(room).toBeCloseTo(1, 1);
+  // The drink is optional play: a real button, offered while the bottle is in hand
+  // and before the story drinks it herself.
+  await at('taste', 0.3);
+  await expect(page.locator('.dk__prop').first()).toBeVisible();
+  await at('small');
+  await expect.poll(room, { timeout: 8000 }).toBeGreaterThan(4);
+  await at('grow');
+  await expect.poll(room, { timeout: 8000 }).toBeLessThan(0.6);
+});
+
+test('the caucus-race: every runner is a button that rests or runs', async ({ page }) => {
+  const demo = demos.find((candidate) => candidate.demo === 'caucus-race');
+  test.skip(!demo, 'no caucus-race demo in this build');
+  await page.goto(demo?.url ?? '');
+  const runners = page.locator('.cr__runner');
+  await expect(runners).toHaveCount(8);
+  for (const runner of await runners.all()) {
+    await expect(runner).toHaveAttribute('aria-pressed', 'false');
+    await expect(runner).toHaveAttribute('aria-label', /.+/);
+  }
+  const beatCount = await page.locator('.demo__stage .demo-beat').count();
+  await page.evaluate((count) => {
+    const beats = [...document.querySelectorAll<HTMLElement>('.demo__stage .demo-beat')];
+    const index = beats.findIndex((beat) => beat.dataset.cue === 'running');
+    window.scrollTo(
+      0,
+      (document.documentElement.scrollHeight - window.innerHeight) * ((index + 0.5) / count),
+    );
+  }, beatCount);
+  await expect(runners.first()).toHaveAttribute('aria-pressed', 'true', { timeout: 8000 });
+  // A running figure is never still and sits in a 3D ring where another may cover
+  // it, so the press is delivered to the button itself rather than aimed at a pixel.
+  await runners.first().dispatchEvent('click');
+  await expect(runners.first()).toHaveAttribute('aria-pressed', 'false');
+  await runners.first().dispatchEvent('click');
+  await expect(runners.first()).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('the pool of tears: the sentences ride the swell once she is in the water', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'pool-of-tears');
+  test.skip(!demo, 'no pool-of-tears demo in this build');
+  await page.goto(demo?.url ?? '');
+  await expect(page.locator('.pt__canvas')).toBeVisible();
+  await scrollTo(page, 0.6);
+  await page.waitForTimeout(800);
+  const samples: number[] = [];
+  for (let i = 0; i < 12; i += 1) {
+    samples.push(
+      await page.evaluate(() =>
+        Number(
+          document.querySelector<HTMLElement>('.demo__captions')?.style.getPropertyValue('--bob') ??
+            0,
+        ),
+      ),
+    );
+    await page.waitForTimeout(120);
+  }
+  expect(Math.max(...samples) - Math.min(...samples)).toBeGreaterThan(0.5);
+  await expect(page.locator('.pt__prop')).toBeVisible();
+});

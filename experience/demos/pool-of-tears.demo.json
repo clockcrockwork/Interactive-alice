@@ -1,0 +1,36 @@
+{
+  "id": "pool-of-tears",
+  "titleChapter": 2,
+  "shots": [
+    {
+      "id": "nine-feet-high",
+      "beats": [
+        { "id": "curiouser", "cue": "giant", "segments": ["ch02.s0010", "ch02.s0020", "ch02.s0030"] },
+        { "id": "roof", "cue": "roof", "segments": ["ch02.s0040", "ch02.s0050", "ch02.s0060"] },
+        { "id": "scolding", "cue": "tears", "segments": ["ch02.s0070", "ch02.s0080", "ch02.s0090", "ch02.s0100"] },
+        { "id": "rabbit-drops-fan", "cue": "rabbit", "segments": ["ch02.s0110", "ch02.s0120", "ch02.s0130"] },
+        { "id": "fanning", "cue": "fan", "segments": ["ch02.s0140", "ch02.s0150", "ch02.s0160"] }
+      ]
+    },
+    {
+      "id": "in-the-pool",
+      "beats": [
+        { "id": "splash", "cue": "splash", "segments": ["ch02.s0170", "ch02.s0180", "ch02.s0190"] },
+        { "id": "drowned-in-tears", "cue": "swim", "segments": ["ch02.s0200", "ch02.s0210"] },
+        { "id": "something-splashing", "cue": "mouse", "segments": ["ch02.s0220", "ch02.s0230"] },
+        { "id": "o-mouse", "segments": ["ch02.s0240", "ch02.s0250", "ch02.s0260"] },
+        { "id": "french", "cue": "french", "segments": ["ch02.s0270", "ch02.s0280", "ch02.s0290", "ch02.s0300", "ch02.s0310"] },
+        { "id": "cats", "cue": "cats", "segments": ["ch02.s0320", "ch02.s0330", "ch02.s0340", "ch02.s0350", "ch02.s0360", "ch02.s0370"] },
+        { "id": "dogs", "cue": "dogs", "segments": ["ch02.s0380", "ch02.s0390"] },
+        { "id": "come-back", "cue": "back", "segments": ["ch02.s0400", "ch02.s0410", "ch02.s0420", "ch02.s0430"] }
+      ]
+    },
+    {
+      "id": "to-the-shore",
+      "beats": [
+        { "id": "crowded-pool", "cue": "crowd", "segments": ["ch02.s0440", "ch02.s0450"] },
+        { "id": "shore", "cue": "shore", "segments": ["ch02.s0460"] }
+      ]
+    }
+  ]
+}

@@ -32,6 +32,14 @@
     {
       "id": "alices-sister",
       "devLabel": "Alice's sister"
+    },
+    {
+      "id": "mouse",
+      "devLabel": "the Mouse"
+    },
+    {
+      "id": "dodo",
+      "devLabel": "the Dodo"
     }
   ]
 }

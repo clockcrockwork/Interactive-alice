@@ -6,7 +6,7 @@
     "localePartial": "いちぶ よめます",
     "localeNone": "まだ よめません",
     "demosTitle": "コンセプトデモ",
-    "demosIntro": "みっつの ばめん、みっつの すすみかた。",
+    "demosIntro": "むっつの ばめん、むっつの すすみかた。",
     "demoBack": "デモいちらん",
     "demoNext": "つぎの ばめん",
     "demoPause": "うごきを とめる",
@@ -20,6 +20,14 @@
     "demoPinch": "ヤマネを つねる",
     "demoBeatOff": "はらいのける",
     "demoFlatWell": "この ブラウザでは いどを 3D で かけないので、たいらに かきます。",
-    "demoReducedMotion": "うごきを へらす せっていです。ばめんは ながれず、いっぽずつ すすみます。"
+    "demoReducedMotion": "うごきを へらす せっていです。ばめんは ながれず、いっぽずつ すすみます。",
+    "demoTechDrinkMe": "アリスが ちぢむと ひろがる CSS 3D の ひろま。おおきさが パララックス。",
+    "demoTechPool": "ゆびで かきまぜられる Canvas の なみだの うみ。ことばが なみに ゆれる。",
+    "demoTechCaucus": "カメラが まわりを めぐる CSS 3D の はしる わ。タップで やすませる。",
+    "demoDrink": "のむ",
+    "demoEat": "たべる",
+    "demoRipple": "みずを かきまぜる",
+    "demoRunToggle": "はしる・やすむ",
+    "demoRaceStart": "みんな はしれ！"
   }
 }

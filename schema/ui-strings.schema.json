@@ -39,7 +39,15 @@
         "demoPinch",
         "demoBeatOff",
         "demoFlatWell",
-        "demoReducedMotion"
+        "demoReducedMotion",
+        "demoTechDrinkMe",
+        "demoTechPool",
+        "demoTechCaucus",
+        "demoDrink",
+        "demoEat",
+        "demoRipple",
+        "demoRunToggle",
+        "demoRaceStart"
       ],
       "additionalProperties": false,
       "properties": {
@@ -137,6 +145,46 @@
           "type": "string",
           "minLength": 1,
           "description": "Note shown when the visitor prefers reduced motion."
+        },
+        "demoTechDrinkMe": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for Drink Me."
+        },
+        "demoTechPool": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the pool of tears."
+        },
+        "demoTechCaucus": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the Caucus-race."
+        },
+        "demoDrink": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that drinks from the bottle."
+        },
+        "demoEat": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that eats the cake."
+        },
+        "demoRipple": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that stirs the water."
+        },
+        "demoRunToggle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Accessible name of a runner in the Caucus-race; pressing it stops or starts that runner."
+        },
+        "demoRaceStart": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that sets every runner running."
         }
       }
     }

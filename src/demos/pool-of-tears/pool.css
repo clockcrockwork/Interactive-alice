@@ -1,0 +1,124 @@
+/* The pool of tears: a Canvas sea the reader can stir, and sentences that ride
+   the swell. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    --pt-hall: oklch(44% 0.05 60);
+    --pt-hall-deep: oklch(30% 0.04 55);
+    --pt-water: oklch(62% 0.1 230);
+    --pt-water-deep: oklch(38% 0.1 240);
+    --pt-foam: oklch(94% 0.03 220);
+    --pt-mouse: oklch(58% 0.05 60);
+    --pt-shore: oklch(52% 0.08 70);
+  }
+}
+
+@layer scene {
+  .demo--pool-of-tears .demo-beat {
+    inset-block-end: auto;
+    inset-block-start: 54vh;
+    padding-block: 0.4em;
+    border-radius: 1rem;
+    background: oklch(20% 0.05 240 / 0.35);
+    backdrop-filter: blur(4px);
+    translate: 0 calc(var(--bob, 0) * 1px);
+    rotate: calc(var(--tilt, 0) * 1deg);
+  }
+
+  .demo--pool-of-tears .line[data-speaker="mouse"] {
+    color: oklch(88% 0.06 60);
+    font-style: italic;
+  }
+
+  .pt__canvas {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    touch-action: pan-y;
+    pointer-events: auto;
+  }
+
+  .pt__rabbit {
+    position: absolute;
+    inset-block-end: 40%;
+    inset-inline-start: 0;
+    inline-size: clamp(4rem, 12vmin, 8rem);
+    color: oklch(96% 0.01 90);
+    opacity: 0;
+  }
+
+  .pt__rabbit svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .pt__fan {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: -4%;
+    inline-size: clamp(10rem, 34vmin, 20rem);
+    translate: -50% 0;
+    transform-origin: 50% 100%;
+    opacity: 0;
+    filter: drop-shadow(0 16px 24px oklch(0% 0 0 / 0.5));
+  }
+
+  .pt__fan svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .pt__fan[data-waving] {
+    animation: pt-fan 0.9s ease-in-out infinite alternate;
+  }
+
+  .pt__dinah {
+    position: absolute;
+    inset-inline-end: 8%;
+    inset-block-start: 12%;
+    inline-size: clamp(5rem, 16vmin, 9rem);
+    color: oklch(85% 0.04 60 / 0.55);
+    opacity: 0;
+    filter: blur(1px);
+  }
+
+  .pt__dinah svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .pt__prop {
+    inset-inline-end: var(--space-2);
+    inset-block-end: calc(var(--space-4) + 1rem);
+  }
+
+  .demo[data-paused] .pt__fan[data-waving] {
+    animation-play-state: paused;
+  }
+
+  @keyframes pt-fan {
+    from {
+      transform: rotate(-14deg);
+    }
+    to {
+      transform: rotate(14deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .demo--pool-of-tears .demo-beat {
+      translate: 0 0;
+      rotate: 0deg;
+    }
+
+    .pt__fan[data-waving] {
+      animation: none;
+      transform: rotate(8deg);
+    }
+  }
+}

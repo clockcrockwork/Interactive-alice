@@ -24,7 +24,14 @@ import { assertValid } from './schema.ts';
 const PROJECT_NAME = 'Interactive Alice';
 
 /** Order the index lists them in, and the order "next scene" follows. */
-export const DEMO_ORDER = ['rabbit-hole', 'dormouse', 'trial'] as const;
+export const DEMO_ORDER = [
+  'rabbit-hole',
+  'drink-me',
+  'pool-of-tears',
+  'caucus-race',
+  'dormouse',
+  'trial',
+] as const;
 
 export interface DemoText {
   title: string;
@@ -38,6 +45,8 @@ export interface DemoProject {
   ui: LocaleUIStrings['strings'];
   /** Chapter title by number, in the demo locale. */
   titles: Map<number, string>;
+  /** Section titles by chapter number, in the demo locale. */
+  sectionTitles: Map<number, Record<string, string>>;
   /** Sentence and metadata by segment id, in the demo locale. */
   lines: DemoText['lines'];
 }
@@ -96,12 +105,14 @@ export function loadDemoProject(root: string, locale?: string): DemoProject {
   }
 
   const titles = new Map<number, string>();
+  const sectionTitles = new Map<number, Record<string, string>>();
   const lines: DemoText['lines'] = new Map();
   for (const chapter of chapters) {
     const name = chapterName(chapter);
     const structure = read(root, 'text', 'story', `${name}.structure.json`) as ChapterStructureFile;
     const text = read(root, 'text', 'locales', chosen, `${name}.json`) as LocaleChapterFile;
     titles.set(chapter, text.title);
+    sectionTitles.set(chapter, text.sections);
     for (const segment of structure.segments) {
       const sentence = text.segments[segment.id];
       if (sentence === undefined) {
@@ -111,10 +122,23 @@ export function loadDemoProject(root: string, locale?: string): DemoProject {
     }
   }
 
-  return { locale: chosen, dir: settings.dir, demos, ui: uiFile.strings, titles, lines };
+  return {
+    locale: chosen,
+    dir: settings.dir,
+    demos,
+    ui: uiFile.strings,
+    titles,
+    sectionTitles,
+    lines,
+  };
 }
 
 const UI_FOR_SCRIPT = [
+  'demoDrink',
+  'demoEat',
+  'demoRipple',
+  'demoRunToggle',
+  'demoRaceStart',
   'demoPause',
   'demoResume',
   'demoGrabJar',
@@ -125,10 +149,14 @@ const UI_FOR_SCRIPT = [
   'demoReducedMotion',
 ] as const;
 
-function titleOf(project: DemoProject, demo: ExperienceConceptDemoFile): string {
-  const title = project.titles.get(demo.titleChapter);
+export function titleOf(project: DemoProject, demo: ExperienceConceptDemoFile): string {
+  const title = demo.titleSection
+    ? project.sectionTitles.get(demo.titleChapter)?.[demo.titleSection]
+    : project.titles.get(demo.titleChapter);
   if (!title) {
-    throw new Error(`no title for chapter ${demo.titleChapter}`);
+    throw new Error(
+      `no title for chapter ${demo.titleChapter}${demo.titleSection ? ` section ${demo.titleSection}` : ''}`,
+    );
   }
   return title;
 }
@@ -199,6 +227,9 @@ ${renderTrack(project, demo)}
 
 const TECH_KEY = {
   'rabbit-hole': 'demoTechRabbitHole',
+  'drink-me': 'demoTechDrinkMe',
+  'pool-of-tears': 'demoTechPool',
+  'caucus-race': 'demoTechCaucus',
   dormouse: 'demoTechDormouse',
   trial: 'demoTechTrial',
 } as const;

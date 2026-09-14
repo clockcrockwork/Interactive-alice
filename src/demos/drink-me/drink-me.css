@@ -1,0 +1,435 @@
+/* Drink Me: a first-person hall in CSS 3D. Alice is the camera; when she shrinks
+   the hall scales up around the floor under her feet, and when she grows it scales
+   down until the roof arrives. Scale is the parallax. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    --dk-wall: oklch(52% 0.06 60);
+    --dk-wall-deep: oklch(36% 0.05 55);
+    --dk-tile: oklch(90% 0.02 90);
+    --dk-tile-dark: oklch(22% 0.02 270);
+    --dk-door: oklch(38% 0.08 50);
+    --dk-door-frame: oklch(26% 0.05 50);
+    --dk-gold: oklch(82% 0.15 85);
+    --dk-glass: oklch(88% 0.03 220 / 0.35);
+    --dk-glass-edge: oklch(96% 0.02 220 / 0.7);
+    --dk-drink: oklch(70% 0.18 25);
+    --dk-label: oklch(95% 0.02 85);
+    --dk-label-ink: oklch(25% 0.03 60);
+    --dk-cake: oklch(80% 0.09 70);
+    --dk-currant: oklch(35% 0.12 320);
+    --dk-garden: oklch(85% 0.12 130);
+    --dk-curtain: oklch(48% 0.14 20);
+    --dk-tear: oklch(90% 0.04 230 / 0.7);
+    --dk-hall-length: 3200px;
+    --dk-hall-width: 1400px;
+    --dk-hall-height: 900px;
+  }
+}
+
+@layer scene {
+  .demo--drink-me .demo-beat {
+    inset-block-end: 8vh;
+    padding-block: 0.4em;
+    border-radius: 1rem;
+    background: oklch(10% 0.02 60 / 0.45);
+    backdrop-filter: blur(6px);
+  }
+
+  .dk__world {
+    perspective: 900px;
+    perspective-origin: 50% 50%;
+    overflow: hidden;
+    background: var(--dk-wall-deep);
+  }
+
+  /* The hall. Camera numbers are unitless and tweened by the script. */
+  .dk__hall {
+    --room: 1;
+    --cam-z: 0;
+    --cam-y: 0;
+    --look-x: 0;
+    --look-y: 0;
+    --cam-pitch: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    inline-size: 0;
+    block-size: 0;
+    transform-style: preserve-3d;
+    transform: rotateX(calc((var(--cam-pitch) + var(--look-y)) * 1deg))
+      rotateY(calc(var(--look-x) * 1deg))
+      translate3d(0, calc(var(--cam-y) * 1px), calc(var(--cam-z) * 1px))
+      scale3d(var(--room), var(--room), var(--room));
+    transform-origin: 0 var(--dk-eye, 240px) 0;
+  }
+
+  .dk__plane {
+    position: absolute;
+    transform-style: preserve-3d;
+  }
+
+  .dk__floor {
+    inline-size: var(--dk-hall-width);
+    block-size: var(--dk-hall-length);
+    inset-inline-start: calc(var(--dk-hall-width) / -2);
+    inset-block-start: 0;
+    transform-origin: 50% 0;
+    background:
+      repeating-conic-gradient(var(--dk-tile-dark) 0 25%, var(--dk-tile) 0 50%) 0 0 / 140px 140px;
+    /* Rotated so the plane runs away from the camera, not toward it. */
+    transform: translateY(var(--dk-eye, 240px)) rotateX(-90deg);
+  }
+
+  .dk__ceiling {
+    inline-size: var(--dk-hall-width);
+    block-size: var(--dk-hall-length);
+    inset-inline-start: calc(var(--dk-hall-width) / -2);
+    inset-block-start: 0;
+    transform-origin: 50% 0;
+    transform: translateY(calc(var(--dk-eye, 240px) - var(--dk-hall-height))) rotateX(-90deg);
+    background: linear-gradient(to bottom, var(--dk-wall-deep), oklch(30% 0.04 55));
+  }
+
+  .dk__wall {
+    inline-size: var(--dk-hall-length);
+    block-size: var(--dk-hall-height);
+    inset-block-start: calc(var(--dk-eye, 240px) - var(--dk-hall-height));
+    background:
+      linear-gradient(to bottom, transparent 82%, var(--dk-wall-deep) 82.5%), var(--dk-wall);
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    padding-block-end: 0;
+  }
+
+  .dk__wall--left {
+    inset-inline-start: calc(var(--dk-hall-width) / -2);
+    transform-origin: 0 50%;
+    transform: rotateY(90deg);
+  }
+
+  .dk__wall--right {
+    inset-inline-start: calc(var(--dk-hall-width) / 2);
+    transform-origin: 0 50%;
+    transform: rotateY(-90deg) translateX(calc(var(--dk-hall-length) * -1));
+  }
+
+  .dk__wall--end {
+    inline-size: var(--dk-hall-width);
+    inset-inline-start: calc(var(--dk-hall-width) / -2);
+    transform: translateZ(calc(var(--dk-hall-length) * -1));
+    justify-content: center;
+  }
+
+  .dk__door {
+    inline-size: 220px;
+    block-size: 520px;
+    border: 14px solid var(--dk-door-frame);
+    border-block-end: 0;
+    border-radius: 110px 110px 0 0;
+    background:
+      radial-gradient(circle at 78% 52%, var(--dk-gold) 8px, transparent 9px),
+      linear-gradient(to right, transparent 48%, var(--dk-door-frame) 48% 52%, transparent 52%),
+      var(--dk-door);
+    box-shadow: inset 0 0 40px oklch(0% 0 0 / 0.4);
+  }
+
+  .dk__lamp {
+    position: absolute;
+    inset-inline-start: -14px;
+    inset-block-start: 0;
+    inline-size: 28px;
+    block-size: 28px;
+    border-radius: 50%;
+    background: oklch(95% 0.1 85);
+    box-shadow: 0 0 60px 30px oklch(90% 0.12 85 / 0.55);
+    transform: translateY(calc(var(--dk-eye, 240px) - var(--dk-hall-height) + 120px))
+      translateZ(calc(var(--i) * -520px - 300px));
+  }
+
+  /* The curtain and the little door on the end wall. */
+  .dk__curtain {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 0;
+    inline-size: 190px;
+    block-size: 260px;
+    translate: -50% 0;
+    background: repeating-linear-gradient(
+      to right,
+      var(--dk-curtain) 0 22px,
+      oklch(38% 0.13 20) 22px 34px
+    );
+    border-radius: 12px 12px 0 0;
+    transform-origin: 0 0;
+    transform: scaleX(var(--curtain, 1));
+    transform-style: preserve-3d;
+  }
+
+  .dk__little-door {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 0;
+    inline-size: 96px;
+    block-size: 150px;
+    translate: -50% 0;
+    border: 8px solid var(--dk-door-frame);
+    border-block-end: 0;
+    border-radius: 48px 48px 0 0;
+    background: var(--dk-door);
+    overflow: hidden;
+    transform-style: preserve-3d;
+  }
+
+  .dk__garden {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 30% 80%, oklch(70% 0.2 25) 6px, transparent 7px),
+      radial-gradient(circle at 60% 85%, oklch(75% 0.18 300) 6px, transparent 7px),
+      radial-gradient(circle at 80% 78%, oklch(80% 0.17 60) 5px, transparent 6px),
+      radial-gradient(circle at 50% 40%, oklch(92% 0.06 220) 14px, transparent 15px),
+      linear-gradient(to bottom, oklch(88% 0.07 220), var(--dk-garden) 60%, oklch(62% 0.13 135));
+    opacity: 0.001;
+  }
+
+  .dk__door-leaf {
+    position: absolute;
+    inset: 0;
+    background: var(--dk-door);
+    transform-origin: 0 50%;
+    transform: rotateY(calc(var(--open, 0) * -100deg));
+    box-shadow: inset 0 0 20px oklch(0% 0 0 / 0.5);
+  }
+
+  .dk__door-leaf::after {
+    content: "";
+    position: absolute;
+    inset-inline-end: 12px;
+    inset-block-start: 50%;
+    inline-size: 8px;
+    block-size: 8px;
+    border-radius: 50%;
+    background: var(--dk-gold);
+  }
+
+  /* The glass table, in the middle of the hall. */
+  .dk__table {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    transform-style: preserve-3d;
+    transform: translate3d(0, var(--dk-eye, 240px), -900px);
+  }
+
+  .dk__table-top {
+    position: absolute;
+    inline-size: 260px;
+    block-size: 180px;
+    inset-inline-start: -130px;
+    inset-block-start: -90px;
+    transform: translateY(-170px) rotateX(90deg);
+    background: var(--dk-glass);
+    border: 3px solid var(--dk-glass-edge);
+    border-radius: 8px;
+  }
+
+  .dk__table-leg {
+    position: absolute;
+    inline-size: 10px;
+    block-size: 170px;
+    inset-block-start: -170px;
+    background: linear-gradient(to right, var(--dk-glass-edge), var(--dk-glass));
+    transform: translate3d(calc(var(--lx) * 1px), 0, calc(var(--lz) * 1px));
+  }
+
+  .dk__key {
+    position: absolute;
+    inset-inline-start: -30px;
+    inset-block-start: -200px;
+    inline-size: 60px;
+    transform: rotateX(90deg) rotate(-20deg);
+    transform-origin: 50% 100%;
+    color: var(--dk-gold);
+    filter: drop-shadow(0 0 8px oklch(90% 0.15 85 / 0.6));
+  }
+
+  .dk__key svg,
+  .dk__bottle svg,
+  .dk__cake svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* The bottle and the cake stand on or under the table until they come forward. */
+  .dk__bottle {
+    position: absolute;
+    inset-inline-start: -26px;
+    inset-block-start: -300px;
+    inline-size: 52px;
+    opacity: 0;
+    transform-origin: 50% 100%;
+  }
+
+  .dk__cake {
+    position: absolute;
+    inset-inline-start: -40px;
+    inset-block-start: -70px;
+    inline-size: 80px;
+    opacity: 0;
+  }
+
+  .dk__label-text {
+    font-family: var(--demo-serif);
+    font-weight: 700;
+    fill: var(--dk-label-ink);
+  }
+
+  .dk__liquid {
+    transform-origin: 50% 100%;
+    transform: scaleY(var(--fill, 1));
+  }
+
+  .dk__bite {
+    opacity: var(--bites, 0);
+  }
+
+  /* Hand-held props: what Alice raises to her lips, over everything. */
+  .dk__hand {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: -6%;
+    inline-size: clamp(9rem, 30vmin, 18rem);
+    translate: -50% 0;
+    transform-origin: 50% 100%;
+    opacity: 0;
+    pointer-events: auto;
+    cursor: pointer;
+    filter: drop-shadow(0 20px 30px oklch(0% 0 0 / 0.5));
+  }
+
+  .dk__hand svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .dk__hand[data-held] {
+    filter: drop-shadow(0 0 24px oklch(90% 0.12 85 / 0.7));
+  }
+
+  .dk__prop {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: -50% 0;
+  }
+
+  /* The telescope: the view folds up from the top and bottom as she shrinks. */
+  .dk__iris {
+    background: oklch(4% 0 0);
+    clip-path: inset(0 0 100% 0);
+    opacity: 0;
+  }
+
+  .dk__iris--top {
+    clip-path: inset(0 0 calc(100% - var(--fold, 0) * 50%) 0);
+    opacity: 1;
+  }
+
+  .dk__iris--bottom {
+    clip-path: inset(calc(100% - var(--fold, 0) * 50%) 0 0 0);
+    opacity: 1;
+  }
+
+  .dk__tears {
+    opacity: 0;
+  }
+
+  .dk__tear {
+    position: absolute;
+    inset-inline-start: var(--x, 50%);
+    inset-block-start: -8vh;
+    inline-size: 1.4vmin;
+    block-size: 9vh;
+    border-radius: 50% 50% 60% 60% / 20% 20% 80% 80%;
+    background: linear-gradient(to bottom, transparent, var(--dk-tear));
+    animation: dk-tear 3.2s ease-in infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  .dk__flavours {
+    opacity: 0;
+  }
+
+  .dk__flavour {
+    position: absolute;
+    inset-inline-start: var(--x, 50%);
+    inset-block-end: 20%;
+    inline-size: var(--s, 4vmin);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 35% 35%,
+      oklch(100% 0 0 / 0.7),
+      var(--c, oklch(70% 0.18 25)) 60%
+    );
+    animation: dk-bubble 2.8s ease-out infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  .dk__flash {
+    background: oklch(95% 0.02 90);
+    opacity: 0;
+  }
+
+  .demo[data-paused] .dk__tear,
+  .demo[data-paused] .dk__flavour {
+    animation-play-state: paused;
+  }
+
+  @keyframes dk-tear {
+    from {
+      transform: translateY(0) scaleY(0.6);
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    to {
+      transform: translateY(120vh) scaleY(1.4);
+      opacity: 0.2;
+    }
+  }
+
+  @keyframes dk-bubble {
+    from {
+      transform: translateY(0) scale(0.4);
+      opacity: 0;
+    }
+    30% {
+      opacity: 1;
+    }
+    to {
+      transform: translateY(-70vh) scale(1.1);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dk__tear {
+      animation: none;
+      transform: translateY(calc(var(--ly, 0) * 100vh));
+      opacity: 0.8;
+    }
+
+    .dk__flavour {
+      animation: none;
+      transform: translateY(calc(var(--ly, 0) * -50vh));
+      opacity: 0.9;
+    }
+  }
+}

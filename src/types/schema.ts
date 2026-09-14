@@ -151,6 +151,10 @@ export interface ExperienceConceptDemoFile {
       ];
     }[],
   ];
+  /**
+   * Optional: a story section of titleChapter whose localized title names this demo instead of the chapter's, for a second demo drawn from the same chapter.
+   */
+  titleSection?: string;
 }
 
 // experience-scene.schema.json
@@ -509,5 +513,37 @@ export interface LocaleUIStrings {
      * Note shown when the visitor prefers reduced motion.
      */
     demoReducedMotion: string;
+    /**
+     * Technique note on the demo index card for Drink Me.
+     */
+    demoTechDrinkMe: string;
+    /**
+     * Technique note on the demo index card for the pool of tears.
+     */
+    demoTechPool: string;
+    /**
+     * Technique note on the demo index card for the Caucus-race.
+     */
+    demoTechCaucus: string;
+    /**
+     * Button that drinks from the bottle.
+     */
+    demoDrink: string;
+    /**
+     * Button that eats the cake.
+     */
+    demoEat: string;
+    /**
+     * Button that stirs the water.
+     */
+    demoRipple: string;
+    /**
+     * Accessible name of a runner in the Caucus-race; pressing it stops or starts that runner.
+     */
+    demoRunToggle: string;
+    /**
+     * Button that sets every runner running.
+     */
+    demoRaceStart: string;
   };
 }

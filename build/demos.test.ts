@@ -1,6 +1,12 @@
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { DEMO_ORDER, generateDemoPages, generateDemoPagesFrom, loadDemoProject } from './demos.ts';
+import {
+  DEMO_ORDER,
+  generateDemoPages,
+  generateDemoPagesFrom,
+  loadDemoProject,
+  titleOf,
+} from './demos.ts';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const project = loadDemoProject(root);
@@ -51,11 +57,15 @@ describe('the concept-demo pages', () => {
     }
   });
 
-  it('names each demo after its chapter, in the demo locale, and links them in a ring', () => {
+  it('names each demo after its chapter or section, in the demo locale, and links them in a ring', () => {
     const index = pages.find((page) => page.path === 'demos/index.html');
     for (const [position, demo] of project.demos.entries()) {
-      const title = project.titles.get(demo.titleChapter) ?? '';
+      const title = titleOf(project, demo);
       expect(title).not.toBe('');
+      // A second demo from the same chapter takes its name from a section instead.
+      if (demo.titleSection) {
+        expect(title).not.toBe(project.titles.get(demo.titleChapter));
+      }
       expect(index?.html).toContain(`href="./${demo.id}/"`);
       expect(index?.html).toContain(title);
       const page = pages.find((candidate) => candidate.path === `demos/${demo.id}/index.html`);

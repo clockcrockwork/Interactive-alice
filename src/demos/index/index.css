@@ -34,6 +34,7 @@
     padding: 0;
     list-style: none;
     transform-style: preserve-3d;
+    max-inline-size: 60rem;
   }
 
   .demos__card {
@@ -41,11 +42,11 @@
     --tilt-x: 0;
     --tilt-y: 0;
     --lift: 0;
-    inline-size: min(17rem, 78vw);
+    inline-size: min(13.5rem, 78vw);
     aspect-ratio: 5 / 7;
     transform-style: preserve-3d;
     transform: translateZ(calc(var(--lift) * 1px)) rotateX(calc(var(--tilt-x) * 1deg))
-      rotateY(calc(var(--tilt-y) * 1deg)) rotate(calc((var(--i) - 1) * 4deg));
+      rotateY(calc(var(--tilt-y) * 1deg)) rotate(calc((var(--i) - 2.5) * 2.5deg));
     transition: transform var(--demo-calm) var(--demo-ease);
   }
 
@@ -83,14 +84,15 @@
     position: relative;
   }
 
-  .demos__card:nth-child(2) .demos__pip {
+  .demos__card:nth-child(2n) .demos__pip {
     background: var(--demo-paper-ink);
     clip-path: path(
       "M19 2 C24 12 34 14 34 22 A8 8 0 0 1 21 27 L24 36 L14 36 L17 27 A8 8 0 0 1 4 22 C4 14 14 12 19 2 Z"
     );
   }
 
-  .demos__card:nth-child(3) .demos__pip {
+  .demos__card:nth-child(3) .demos__pip,
+  .demos__card:nth-child(5) .demos__pip {
     background: var(--demo-heart);
     clip-path: path("M19 2 L36 19 L19 36 L2 19 Z");
   }

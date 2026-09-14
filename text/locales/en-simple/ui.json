@@ -6,7 +6,7 @@
     "localePartial": "Some parts ready",
     "localeNone": "Not ready yet",
     "demosTitle": "Concept demos",
-    "demosIntro": "Three scenes, three ways of moving through them.",
+    "demosIntro": "Six scenes, six ways of moving through them.",
     "demoBack": "All demos",
     "demoNext": "Next scene",
     "demoPause": "Pause motion",
@@ -20,6 +20,14 @@
     "demoPinch": "Pinch the Dormouse",
     "demoBeatOff": "Beat them off",
     "demoFlatWell": "This browser cannot draw the well in 3D, so it is drawn flat.",
-    "demoReducedMotion": "Reduced motion is on: the scenes step instead of flowing."
+    "demoReducedMotion": "Reduced motion is on: the scenes step instead of flowing.",
+    "demoTechDrinkMe": "A hall that grows around Alice as she shrinks, in CSS 3D: scale is the parallax.",
+    "demoTechPool": "A Canvas sea of tears the reader can stir, with sentences that ride the swell.",
+    "demoTechCaucus": "A ring of runners the camera orbits, in CSS 3D; tap one to make it rest.",
+    "demoDrink": "Drink it",
+    "demoEat": "Eat it",
+    "demoRipple": "Stir the water",
+    "demoRunToggle": "Run or rest",
+    "demoRaceStart": "Everybody run!"
   }
 }

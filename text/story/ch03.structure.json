@@ -1,0 +1,171 @@
+{
+  "$schema": "../../schema/chapter-structure.schema.json",
+  "chapter": 3,
+  "sourceFile": "text/raw/ch03-a-caucus-race-and-a-long-tale.txt",
+  "sections": [
+    {
+      "id": "getting-dry"
+    },
+    {
+      "id": "the-race"
+    },
+    {
+      "id": "prizes"
+    }
+  ],
+  "segments": [
+    {
+      "id": "ch03.s0300",
+      "section": "getting-dry",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0310",
+      "section": "getting-dry",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0320",
+      "section": "getting-dry",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0330",
+      "section": "getting-dry",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0340",
+      "section": "getting-dry",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0350",
+      "section": "getting-dry",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0360",
+      "section": "the-race",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0370",
+      "section": "the-race",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0380",
+      "section": "the-race",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0390",
+      "section": "the-race",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0400",
+      "section": "the-race",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0410",
+      "section": "the-race",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0420",
+      "section": "the-race",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0430",
+      "section": "the-race",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0440",
+      "section": "the-race",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0450",
+      "section": "the-race",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0460",
+      "section": "the-race",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0470",
+      "section": "prizes",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0480",
+      "section": "prizes",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0490",
+      "section": "prizes",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0500",
+      "section": "prizes",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0510",
+      "section": "prizes",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0520",
+      "section": "prizes",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0530",
+      "section": "prizes",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0540",
+      "section": "prizes",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0550",
+      "section": "prizes",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0560",
+      "section": "prizes",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0570",
+      "section": "prizes",
+      "kind": "narration"
+    }
+  ]
+}

@@ -4,10 +4,17 @@
   "title": "Experience concept-demo file",
   "description": "Composition plan for one standalone concept demo under /demos/: its shots, their beats, and the narrative segment ids each beat carries, in reading order. Holds no visible text. A demo is not a story Scene: it has no pacing plan, no part, and its page is built by build/demos.ts rather than the story runtime. See docs/concept-demos.md.",
   "type": "object",
-  "required": ["id", "titleChapter", "shots"],
+  "required": [
+    "id",
+    "titleChapter",
+    "shots"
+  ],
   "additionalProperties": false,
   "properties": {
-    "$schema": { "type": "string", "description": "Optional editor hint; not part of the data." },
+    "$schema": {
+      "type": "string",
+      "description": "Optional editor hint; not part of the data."
+    },
     "id": {
       "type": "string",
       "pattern": "^[a-z0-9-]+$",
@@ -24,19 +31,31 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["id", "beats"],
+        "required": [
+          "id",
+          "beats"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$"
+          },
           "beats": {
             "type": "array",
             "minItems": 1,
             "items": {
               "type": "object",
-              "required": ["id", "segments"],
+              "required": [
+                "id",
+                "segments"
+              ],
               "additionalProperties": false,
               "properties": {
-                "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+                "id": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9-]+$"
+                },
                 "cue": {
                   "type": "string",
                   "pattern": "^[a-z0-9-]+$",
@@ -44,13 +63,21 @@
                 },
                 "segments": {
                   "type": "array",
-                  "items": { "type": "string", "pattern": "^ch[0-9]{2}\\.s[0-9]{4}$" }
+                  "items": {
+                    "type": "string",
+                    "pattern": "^ch[0-9]{2}\\.s[0-9]{4}$"
+                  }
                 }
               }
             }
           }
         }
       }
+    },
+    "titleSection": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Optional: a story section of titleChapter whose localized title names this demo instead of the chapter's, for a second demo drawn from the same chapter."
     }
   }
 }

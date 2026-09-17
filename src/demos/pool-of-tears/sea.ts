@@ -81,6 +81,9 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
     foam: css('--pt-foam') || '#e8f0f6',
     mouse: css('--pt-mouse') || '#8a7a66',
     shore: css('--pt-shore') || '#8a6a44',
+    hair: css('--alice-hair') || '#f0cb64',
+    skin: css('--alice-skin') || '#f6d9c1',
+    dress: css('--alice-dress') || '#3d6be8',
   };
 
   const state: SeaState = {
@@ -167,15 +170,15 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
         break;
       }
       case 'alice': {
-        ctx.fillStyle = '#f0cb64';
+        ctx.fillStyle = colours.hair;
         ctx.beginPath();
         ctx.ellipse(0, -30, 26, 24, 0, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = '#f6d9c1';
+        ctx.fillStyle = colours.skin;
         ctx.beginPath();
         ctx.ellipse(0, -24, 20, 20, 0, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = '#3d6be8';
+        ctx.fillStyle = colours.dress;
         ctx.beginPath();
         ctx.ellipse(0, 4, 36, 10, 0, 0, Math.PI);
         ctx.fill();

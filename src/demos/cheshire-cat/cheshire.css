@@ -1,0 +1,197 @@
+/* The Cheshire Cat: a night wood in depth, and a Cat that vanishes through an
+   SVG mask, tail first and grin last. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    --cc-night: oklch(22% 0.06 280);
+    --cc-night-low: oklch(30% 0.08 300);
+    --cc-mad: oklch(36% 0.16 320);
+    --cc-moon: oklch(94% 0.05 95);
+    --cc-tree-far: oklch(26% 0.05 280);
+    --cc-tree-mid: oklch(18% 0.04 280);
+    --cc-tree-near: oklch(10% 0.02 280);
+    --cc-mist: oklch(60% 0.05 280 / 0.35);
+    --cc-cat: oklch(72% 0.12 320);
+    --cc-cat-stripe: oklch(52% 0.14 320);
+    --cc-grin: oklch(97% 0.02 90);
+  }
+}
+
+@layer scene {
+  .demo--cheshire-cat .demo-beat {
+    inset-block-end: 8vh;
+  }
+
+  .demo--cheshire-cat .line[data-speaker="cheshire-cat"] {
+    color: oklch(90% 0.08 320);
+    font-style: italic;
+    letter-spacing: 0.02em;
+  }
+
+  .demo--cheshire-cat .demo-beat[data-cue="mad"] .line {
+    animation: cc-wobble 2.4s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * -0.4s);
+  }
+
+  .cc__wood {
+    --px: 0;
+    --mad: 0;
+    --tilt: 0;
+    overflow: hidden;
+    background: linear-gradient(to bottom, var(--cc-night), var(--cc-night-low));
+    transform: rotate(calc(var(--tilt) * 1deg)) scale(calc(1 + var(--tilt) * 0.02));
+    filter: hue-rotate(calc(var(--mad) * 40deg)) saturate(calc(1 + var(--mad) * 0.6));
+  }
+
+  .cc__moon {
+    position: absolute;
+    inset-inline-start: 72%;
+    inset-block-start: 14%;
+    inline-size: 12vmin;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--cc-moon);
+    box-shadow: 0 0 60px 20px oklch(94% 0.05 95 / 0.25);
+    translate: calc(var(--px) * -1vmin) 0;
+  }
+
+  .cc__trees {
+    position: absolute;
+    inset-inline: -20%;
+    inset-block-end: 0;
+    block-size: 100%;
+    background-repeat: repeat-x;
+    background-position: bottom;
+  }
+
+  .cc__trees--far {
+    --rate: 2;
+    background-image: radial-gradient(
+      ellipse 5vmin 30vmin at 50% 100%,
+      var(--cc-tree-far) 60%,
+      transparent 61%
+    );
+    background-size: 20vmin 100%;
+    opacity: 0.8;
+  }
+
+  .cc__trees--mid {
+    --rate: 5;
+    background-image:
+      linear-gradient(to right, transparent 44%, var(--cc-tree-mid) 44% 56%, transparent 56%),
+      radial-gradient(ellipse 14vmin 12vmin at 50% 30%, var(--cc-tree-mid) 60%, transparent 61%);
+    background-size: 46vmin 100%;
+  }
+
+  .cc__trees--near {
+    --rate: 11;
+    background-image: linear-gradient(
+      to right,
+      transparent 40%,
+      var(--cc-tree-near) 40% 60%,
+      transparent 60%
+    );
+    background-size: 90vmin 100%;
+    /* Offset so no near trunk stands in front of the bough. */
+    background-position: 30vmin bottom;
+  }
+
+  .cc__trees,
+  .cc__bough-layer {
+    translate: calc(var(--px) * var(--rate, 1) * -0.5vmin) 0;
+  }
+
+  .cc__mist {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    block-size: 40%;
+    background: linear-gradient(to top, var(--cc-mist), transparent);
+  }
+
+  .cc__bough-layer {
+    --rate: 6;
+    position: absolute;
+    inset: 0;
+  }
+
+  .cc__bough {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 26%;
+    inline-size: clamp(16rem, 60vmin, 34rem);
+    translate: -50% 0;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .cc__bough svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .cc__alice {
+    position: absolute;
+    inset-inline-start: 22%;
+    inset-block-end: -4%;
+    inline-size: clamp(7rem, 24vmin, 14rem);
+    color: var(--alice-shadow);
+    filter: drop-shadow(0 0 20px oklch(0% 0 0 / 0.6));
+  }
+
+  .cc__alice svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .cc__prop {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: -50% 0;
+  }
+
+  .cc__tail {
+    transform-box: fill-box;
+    transform-origin: 0 50%;
+    animation: cc-tail 3.6s ease-in-out infinite alternate;
+  }
+
+  .demo[data-paused] .cc__tail,
+  .demo[data-paused] .demo-beat[data-cue="mad"] .line {
+    animation-play-state: paused;
+  }
+
+  @keyframes cc-tail {
+    from {
+      transform: rotate(-8deg);
+    }
+    to {
+      transform: rotate(10deg);
+    }
+  }
+
+  @keyframes cc-wobble {
+    0%,
+    100% {
+      transform: rotate(-1.5deg) translateY(0);
+    }
+    50% {
+      transform: rotate(1.5deg) translateY(-3px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cc__tail,
+    .demo--cheshire-cat .demo-beat[data-cue="mad"] .line {
+      animation: none;
+    }
+
+    .cc__wood {
+      transform: none;
+    }
+  }
+}

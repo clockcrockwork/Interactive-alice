@@ -1,0 +1,265 @@
+{
+  "$schema": "../../schema/chapter-structure.schema.json",
+  "chapter": 6,
+  "sourceFile": "text/raw/ch06-pig-and-pepper.txt",
+  "sections": [
+    {
+      "id": "cheshire-puss"
+    },
+    {
+      "id": "all-mad-here"
+    },
+    {
+      "id": "vanishing"
+    }
+  ],
+  "segments": [
+    {
+      "id": "ch06.s0400",
+      "section": "cheshire-puss",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0410",
+      "section": "cheshire-puss",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0420",
+      "section": "cheshire-puss",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0430",
+      "section": "cheshire-puss",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0440",
+      "section": "cheshire-puss",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0450",
+      "section": "cheshire-puss",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0460",
+      "section": "cheshire-puss",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0470",
+      "section": "cheshire-puss",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0480",
+      "section": "cheshire-puss",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0490",
+      "section": "cheshire-puss",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0500",
+      "section": "cheshire-puss",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0510",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0520",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0530",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0540",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0550",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0560",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0570",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0580",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0590",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0600",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0610",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0620",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0630",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0640",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0650",
+      "section": "vanishing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0660",
+      "section": "vanishing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0670",
+      "section": "vanishing",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0680",
+      "section": "vanishing",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0690",
+      "section": "vanishing",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0700",
+      "section": "vanishing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0710",
+      "section": "vanishing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0720",
+      "section": "vanishing",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0730",
+      "section": "vanishing",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0740",
+      "section": "vanishing",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0750",
+      "section": "vanishing",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0760",
+      "section": "vanishing",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0770",
+      "section": "vanishing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0780",
+      "section": "vanishing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0790",
+      "section": "vanishing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0800",
+      "section": "vanishing",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0810",
+      "section": "vanishing",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0820",
+      "section": "vanishing",
+      "kind": "thought",
+      "speaker": "alice"
+    }
+  ]
+}

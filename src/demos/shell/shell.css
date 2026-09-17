@@ -27,6 +27,29 @@
     --demo-z-stage: 1;
     --demo-z-captions: 5;
     --demo-z-bar: 10;
+
+    /* Alice, as everyone knows her: blue dress, white apron, fair hair. */
+    --alice-hair: #f0cb64;
+    --alice-hair-deep: #e9c35a;
+    --alice-dress: #3d6be8;
+    --alice-dress-deep: #2a4fb8;
+    --alice-apron: #f7f4ec;
+    --alice-skin: #f6d9c1;
+    --alice-band: #1f2a6b;
+    --alice-shadow: oklch(30% 0.08 250);
+  }
+
+  /* The earlier Alice, for those who remember her: yellow dress, brown hair. Set
+     on the root by the picker on the demo index and remembered per visitor. */
+  :root[data-alice="yellow"] {
+    --alice-hair: #7a5230;
+    --alice-hair-deep: #5e3d22;
+    --alice-dress: #f2c94c;
+    --alice-dress-deep: #d9a92e;
+    --alice-apron: #fbf7ee;
+    --alice-skin: #f6dcc6;
+    --alice-band: #3b6fd6;
+    --alice-shadow: oklch(38% 0.09 80);
   }
 }
 

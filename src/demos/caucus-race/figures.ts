@@ -71,11 +71,11 @@ export function runnerSvg(kind: RunnerKind): string {
       break;
     case 'alice':
       inner =
-        '<path d="M34 60 C24 74 22 96 22 108 L78 108 C78 96 76 74 66 60 Z" fill="#3d6be8"/>' +
-        '<path d="M40 62 C36 80 36 96 36 104 L64 104 C64 96 64 80 60 62 Z" fill="#f7f4ec"/>' +
-        '<circle cx="50" cy="38" r="18" fill="#f6d9c1"/>' +
-        '<path d="M32 36 Q50 12 68 36 Q64 24 50 24 Q36 24 32 36 Z" fill="#f0cb64"/>' +
-        '<path d="M32 40 q-6 20 0 34 M68 40 q6 20 0 34" stroke="#f0cb64" stroke-width="8" stroke-linecap="round" fill="none"/>' +
+        '<path d="M34 60 C24 74 22 96 22 108 L78 108 C78 96 76 74 66 60 Z" fill="var(--alice-dress)"/>' +
+        '<path d="M40 62 C36 80 36 96 36 104 L64 104 C64 96 64 80 60 62 Z" fill="var(--alice-apron)"/>' +
+        '<circle cx="50" cy="38" r="18" fill="var(--alice-skin)"/>' +
+        '<path d="M32 36 Q50 12 68 36 Q64 24 50 24 Q36 24 32 36 Z" fill="var(--alice-hair)"/>' +
+        '<path d="M32 40 q-6 20 0 34 M68 40 q6 20 0 34" stroke="var(--alice-hair)" stroke-width="8" stroke-linecap="round" fill="none"/>' +
         '<circle cx="44" cy="40" r="2" fill="#222"/><circle cx="56" cy="40" r="2" fill="#222"/>';
       break;
     case 'crab':

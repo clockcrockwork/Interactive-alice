@@ -11,6 +11,7 @@
 
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
+import { ALICE_SVG } from '../src/demos/rabbit-hole/figures.ts';
 import type {
   ChapterStructureFile,
   ExperienceConceptDemoFile,
@@ -23,13 +24,24 @@ import { assertValid } from './schema.ts';
 
 const PROJECT_NAME = 'Interactive Alice';
 
+/**
+ * Which Alice the visitor chose, applied before first paint so the figures never
+ * flash the other one. The key is the demos' own; the picker on the index writes it.
+ */
+const ALICE_SCRIPT =
+  '<script>try{var a=localStorage.getItem("alice-demos:alice");' +
+  'if(a==="yellow")document.documentElement.dataset.alice=a}catch(e){}</script>';
+
 /** Order the index lists them in, and the order "next scene" follows. */
 export const DEMO_ORDER = [
   'rabbit-hole',
   'drink-me',
   'pool-of-tears',
   'caucus-race',
+  'rabbit-house',
+  'bill-the-lizard',
   'dormouse',
+  'cheshire-cat',
   'trial',
 ] as const;
 
@@ -134,6 +146,9 @@ export function loadDemoProject(root: string, locale?: string): DemoProject {
 }
 
 const UI_FOR_SCRIPT = [
+  'demoSnatch',
+  'demoKick',
+  'demoVanish',
   'demoDrink',
   'demoEat',
   'demoRipple',
@@ -202,6 +217,7 @@ function renderDemo(project: DemoProject, demo: ExperienceConceptDemoFile): stri
     <title>${escapeHtml(title)} · ${PROJECT_NAME}</title>
     <link rel="icon" href="${root}assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="${root}styles/base.css" />
+    ${ALICE_SCRIPT}
     <script type="module" src="${root}demos/${demo.id}/main.ts"></script>
     <script type="application/json" id="demo-ui">${escapeHtml(JSON.stringify(forScript)).replace(/&quot;/g, '"')}</script>
   </head>
@@ -230,6 +246,9 @@ const TECH_KEY = {
   'drink-me': 'demoTechDrinkMe',
   'pool-of-tears': 'demoTechPool',
   'caucus-race': 'demoTechCaucus',
+  'rabbit-house': 'demoTechRabbitHouse',
+  'bill-the-lizard': 'demoTechBill',
+  'cheshire-cat': 'demoTechCheshire',
   dormouse: 'demoTechDormouse',
   trial: 'demoTechTrial',
 } as const;
@@ -258,12 +277,26 @@ function renderIndex(project: DemoProject): string {
     <title>${escapeHtml(ui.demosTitle)} · ${PROJECT_NAME}</title>
     <link rel="icon" href="${root}assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="${root}styles/base.css" />
+    ${ALICE_SCRIPT}
     <script type="module" src="${root}demos/index/main.ts"></script>
   </head>
   <body class="demo-body">
     <main class="demos" id="demos">
       <h1 class="demos__title">${escapeHtml(ui.demosTitle)}</h1>
       <p class="demos__intro">${escapeHtml(ui.demosIntro)}</p>
+      <fieldset class="demos__alice">
+        <legend class="demos__alice-title">${escapeHtml(ui.demoAliceTitle)}</legend>
+        <button class="demos__alice-choice" type="button" data-alice="blue" aria-pressed="true">
+          <span class="demos__alice-figure" data-alice="blue" aria-hidden="true">${ALICE_SVG}</span>
+          <span class="demos__alice-name">${escapeHtml(ui.demoAliceBlue)}</span>
+          <span class="demos__alice-note">${escapeHtml(ui.demoAliceBlueNote)}</span>
+        </button>
+        <button class="demos__alice-choice" type="button" data-alice="yellow" aria-pressed="false">
+          <span class="demos__alice-figure" data-alice="yellow" aria-hidden="true">${ALICE_SVG}</span>
+          <span class="demos__alice-name">${escapeHtml(ui.demoAliceYellow)}</span>
+          <span class="demos__alice-note">${escapeHtml(ui.demoAliceYellowNote)}</span>
+        </button>
+      </fieldset>
       <ul class="demos__cards">
 ${cards}
       </ul>

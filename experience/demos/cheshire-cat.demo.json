@@ -1,0 +1,33 @@
+{
+  "id": "cheshire-cat",
+  "titleChapter": 6,
+  "titleSection": "cheshire-puss",
+  "shots": [
+    {
+      "id": "on-a-bough",
+      "beats": [
+        { "id": "grinning", "cue": "bough", "segments": ["ch06.s0400", "ch06.s0410", "ch06.s0420"] },
+        { "id": "puss", "cue": "puss", "segments": ["ch06.s0430", "ch06.s0440", "ch06.s0450"] },
+        { "id": "which-way", "cue": "ways", "segments": ["ch06.s0460", "ch06.s0470", "ch06.s0480", "ch06.s0490", "ch06.s0500"] }
+      ]
+    },
+    {
+      "id": "all-mad-here",
+      "beats": [
+        { "id": "hatter-or-hare", "cue": "signs", "segments": ["ch06.s0510", "ch06.s0520", "ch06.s0530", "ch06.s0540"] },
+        { "id": "mad", "cue": "mad", "segments": ["ch06.s0550", "ch06.s0560", "ch06.s0570", "ch06.s0580", "ch06.s0590"] },
+        { "id": "you-must-be", "cue": "croquet", "segments": ["ch06.s0600", "ch06.s0610", "ch06.s0620", "ch06.s0630", "ch06.s0640"] }
+      ]
+    },
+    {
+      "id": "vanishing",
+      "beats": [
+        { "id": "vanished", "cue": "vanish-1", "segments": ["ch06.s0650", "ch06.s0660"] },
+        { "id": "the-baby", "cue": "baby", "segments": ["ch06.s0670", "ch06.s0680", "ch06.s0690", "ch06.s0700"] },
+        { "id": "pig-or-fig", "cue": "again", "segments": ["ch06.s0710", "ch06.s0720", "ch06.s0730", "ch06.s0740", "ch06.s0750"] },
+        { "id": "slowly", "cue": "slowly", "segments": ["ch06.s0760", "ch06.s0770", "ch06.s0780", "ch06.s0790"] },
+        { "id": "grin-without-a-cat", "cue": "grin", "segments": ["ch06.s0800", "ch06.s0810", "ch06.s0820"] }
+      ]
+    }
+  ]
+}

@@ -17,7 +17,6 @@
     --tr-leaf-deep: oklch(48% 0.13 40);
     --tr-sky: oklch(82% 0.08 60);
     --tr-sky-high: oklch(70% 0.08 250);
-    --tr-alice: oklch(30% 0.08 250);
     --tr-card-w: clamp(3.6rem, 9vmin, 6rem);
   }
 }
@@ -319,7 +318,7 @@
     inset-inline-start: 50%;
     inset-block-end: -4%;
     inline-size: clamp(9rem, 26vmin, 16rem);
-    color: var(--tr-alice);
+    color: var(--alice-shadow);
     translate: -50% 0;
     transform-origin: 50% 100%;
     scale: 0.7;

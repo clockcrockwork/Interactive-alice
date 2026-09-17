@@ -40,6 +40,14 @@
     {
       "id": "dodo",
       "devLabel": "the Dodo"
+    },
+    {
+      "id": "cheshire-cat",
+      "devLabel": "the Cheshire Cat"
+    },
+    {
+      "id": "bill",
+      "devLabel": "Bill the Lizard"
     }
   ]
 }

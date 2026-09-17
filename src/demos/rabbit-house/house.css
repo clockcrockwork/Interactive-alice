@@ -1,0 +1,144 @@
+/* The White Rabbit's house: a dollhouse cutaway in SVG. The camera starts inside
+   the tidy little room and pulls out as Alice fills it. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    --hs-sky: oklch(88% 0.05 220);
+    --hs-sky-low: oklch(94% 0.03 90);
+    --hs-grass: oklch(62% 0.12 130);
+    --hs-grass-deep: oklch(48% 0.1 135);
+    --hs-wall: oklch(92% 0.03 85);
+    --hs-wall-shade: oklch(80% 0.04 80);
+    --hs-roof: oklch(48% 0.1 30);
+    --hs-roof-deep: oklch(36% 0.09 30);
+    --hs-timber: oklch(40% 0.06 50);
+    --hs-room: oklch(84% 0.05 70);
+    --hs-floor: oklch(58% 0.08 60);
+    --hs-glass: oklch(85% 0.04 220 / 0.55);
+    --hs-rabbit: oklch(96% 0.01 90);
+  }
+}
+
+@layer scene {
+  .demo--rabbit-house .demo-beat {
+    inset-block-end: 6vh;
+    padding-block: 0.4em;
+    border-radius: 1rem;
+    background: oklch(15% 0.03 60 / 0.5);
+    backdrop-filter: blur(6px);
+  }
+
+  .hs__garden {
+    background: linear-gradient(
+      to bottom,
+      var(--hs-sky),
+      var(--hs-sky-low) 58%,
+      var(--hs-grass) 58.5%,
+      var(--hs-grass-deep)
+    );
+  }
+
+  .hs__svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .hs__wall {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    transform: scale(calc(1 + var(--bulge, 0) * 0.06), calc(1 + var(--bulge, 0) * 0.03));
+  }
+
+  .hs__roof {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    transform: translateY(calc(var(--bulge, 0) * -12px)) rotate(calc(var(--bulge, 0) * -1.5deg));
+  }
+
+  .hs__alice-pose {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    opacity: 0;
+  }
+
+  .hs__door {
+    transform-box: fill-box;
+    transform-origin: 0 50%;
+    transform: rotate(calc(var(--rattle, 0) * -3deg));
+  }
+
+  .hs__hand {
+    transform-box: fill-box;
+    transform-origin: 100% 0;
+    transform: rotate(calc(var(--snatch, 0) * 70deg));
+  }
+
+  .hs__rabbit {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+  }
+
+  .hs__shards {
+    opacity: 0;
+  }
+
+  .hs__shard {
+    position: absolute;
+    inset-inline-start: var(--x, 20%);
+    inset-block-start: var(--y, 70%);
+    inline-size: 1.4vmin;
+    block-size: 2vmin;
+    background: var(--hs-glass);
+    clip-path: polygon(50% 0, 100% 60%, 30% 100%, 0 40%);
+    animation: hs-shard 1.4s ease-out infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  .hs__prop {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: -50% 0;
+  }
+
+  .hs__window-target {
+    position: absolute;
+    inset-inline-start: 10%;
+    inset-block-start: 30%;
+    inline-size: 26%;
+    block-size: 40%;
+    pointer-events: auto;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .hs__window-target[data-shown] {
+    visibility: visible;
+  }
+
+  .demo[data-paused] .hs__shard {
+    animation-play-state: paused;
+  }
+
+  @keyframes hs-shard {
+    from {
+      transform: translateY(0) rotate(0deg);
+      opacity: 1;
+    }
+    to {
+      transform: translateY(18vh) rotate(160deg);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hs__shard {
+      animation: none;
+      transform: translateY(calc(var(--ly, 0) * 14vh));
+      opacity: 0.8;
+    }
+  }
+}

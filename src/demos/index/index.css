@@ -26,6 +26,100 @@
     text-align: center;
   }
 
+  /* The picker: two Alices side by side, each drawn in her own colours whatever
+     the page's current choice, so the visitor sees what they are choosing. */
+  .demos__alice {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-3);
+    padding: var(--space-2);
+    border: 1px solid oklch(from var(--demo-ink) l c h / 0.2);
+    border-radius: 1rem;
+  }
+
+  .demos__alice-title {
+    padding-inline: 0.5em;
+    font-family: system-ui, sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--demo-ink-soft);
+  }
+
+  .demos__alice-choice {
+    display: grid;
+    grid-template-columns: 4rem 1fr;
+    grid-template-rows: auto auto;
+    column-gap: var(--space-2);
+    align-items: center;
+    inline-size: min(20rem, 100%);
+    padding: var(--space-1) var(--space-2);
+    border: 2px solid transparent;
+    border-radius: 0.8rem;
+    background: oklch(from var(--demo-ink) l c h / 0.06);
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    transition: border-color var(--demo-quick) var(--demo-ease);
+  }
+
+  .demos__alice-choice[aria-pressed="true"] {
+    border-color: var(--demo-accent);
+  }
+
+  .demos__alice-choice:focus-visible {
+    outline: 2px solid var(--demo-accent);
+    outline-offset: 3px;
+  }
+
+  .demos__alice-figure {
+    grid-row: 1 / 3;
+    inline-size: 3.2rem;
+  }
+
+  .demos__alice-figure svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .demos__alice-figure .rh__alice-figure,
+  .demos__alice-figure .rh__hair,
+  .demos__alice-figure .rh__skirt {
+    animation: none;
+  }
+
+  .demos__alice-figure[data-alice="yellow"] {
+    --alice-hair: #7a5230;
+    --alice-hair-deep: #5e3d22;
+    --alice-dress: #f2c94c;
+    --alice-dress-deep: #d9a92e;
+    --alice-band: #3b6fd6;
+  }
+
+  .demos__alice-figure[data-alice="blue"] {
+    --alice-hair: #f0cb64;
+    --alice-hair-deep: #e9c35a;
+    --alice-dress: #3d6be8;
+    --alice-dress-deep: #2a4fb8;
+    --alice-band: #1f2a6b;
+  }
+
+  .demos__alice-name {
+    font-family: var(--demo-serif);
+    font-size: 1.15rem;
+  }
+
+  .demos__alice-note {
+    font-family: system-ui, sans-serif;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: var(--demo-ink-soft);
+  }
+
   .demos__cards {
     display: flex;
     flex-wrap: wrap;
@@ -117,6 +211,10 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .demos__alice-choice {
+      transition: none;
+    }
+
     .demos__card {
       transition: none;
       transform: none;

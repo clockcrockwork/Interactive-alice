@@ -1,0 +1,225 @@
+/* Bill the Lizard: the reader is Bill. Down the chimney in layered parallax,
+   a foot from below, and up like a sky-rocket. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    --bl-sky: oklch(76% 0.1 230);
+    --bl-sky-high: oklch(58% 0.12 250);
+    --bl-cloud: oklch(97% 0.01 90);
+    --bl-brick: oklch(38% 0.08 30);
+    --bl-brick-dark: oklch(24% 0.05 30);
+    --bl-soot: oklch(12% 0.01 30);
+    --bl-roof: oklch(48% 0.1 30);
+    --bl-hedge: oklch(46% 0.1 135);
+    --bl-lizard: oklch(66% 0.12 130);
+  }
+}
+
+@layer scene {
+  .demo--bill-the-lizard .demo-beat {
+    inset-block-end: 8vh;
+  }
+
+  .demo--bill-the-lizard .line[data-speaker="bill"] {
+    color: oklch(88% 0.1 130);
+    font-style: italic;
+  }
+
+  /* The world moves; the camera is Bill. Each layer follows the camera at its
+     own rate, so the chimney rushes and the sky barely turns. Unitless px. */
+  .bl__world {
+    --cam: 0;
+    --spin: 0;
+    --daze: 0;
+    overflow: hidden;
+    background: linear-gradient(
+      to bottom,
+      var(--bl-sky-high),
+      var(--bl-sky) 60%,
+      oklch(86% 0.05 90)
+    );
+    transform: rotate(calc(var(--spin) * 1deg));
+    filter: blur(calc(var(--daze) * 3px));
+  }
+
+  /* Camera height: negative is down the chimney, positive is up in the air. A
+     layer slides with the camera at its rate; wide enough to spin without edges. */
+  .bl__layer {
+    position: absolute;
+    inset-inline: -60%;
+    block-size: 400vh;
+    inset-block-start: -150vh;
+    translate: 0 calc(var(--cam) * var(--rate, 1) * 1px);
+  }
+
+  .bl__clouds {
+    --rate: 0.12;
+    background:
+      radial-gradient(ellipse 12vmin 5vmin at 20% 42%, var(--bl-cloud) 60%, transparent 61%),
+      radial-gradient(ellipse 16vmin 6vmin at 70% 38%, var(--bl-cloud) 60%, transparent 61%),
+      radial-gradient(ellipse 10vmin 4vmin at 45% 30%, var(--bl-cloud) 60%, transparent 61%),
+      radial-gradient(ellipse 14vmin 5vmin at 85% 26%, var(--bl-cloud) 60%, transparent 61%);
+  }
+
+  .bl__house {
+    --rate: 0.6;
+  }
+
+  .bl__roof {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 40%;
+    block-size: 30%;
+    background: linear-gradient(to bottom, var(--bl-roof), oklch(36% 0.09 30));
+    clip-path: polygon(0 40%, 50% 0, 100% 40%, 100% 100%, 0 100%);
+  }
+
+  .bl__stack {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 36%;
+    inline-size: min(28vw, 22rem);
+    block-size: 30%;
+    translate: -50% 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--bl-brick) 0 3vmin,
+      var(--bl-brick-dark) 3vmin 3.4vmin
+    );
+  }
+
+  .bl__hedge {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 70%;
+    block-size: 30%;
+    background:
+      radial-gradient(circle at 10% 20%, var(--bl-hedge) 8vmin, transparent 8.2vmin),
+      radial-gradient(circle at 35% 10%, oklch(42% 0.1 135) 9vmin, transparent 9.2vmin),
+      radial-gradient(circle at 62% 18%, var(--bl-hedge) 8vmin, transparent 8.2vmin),
+      radial-gradient(circle at 88% 12%, oklch(50% 0.1 135) 9vmin, transparent 9.2vmin),
+      linear-gradient(to bottom, transparent 10%, oklch(40% 0.09 135) 10%);
+  }
+
+  .bl__chimney {
+    --rate: 1;
+    inset-inline: 0;
+    background:
+      linear-gradient(to right, var(--bl-soot) 0 30%, transparent 30% 70%, var(--bl-soot) 70%),
+      repeating-linear-gradient(
+        to bottom,
+        var(--bl-brick) 0 6vmin,
+        var(--bl-brick-dark) 6vmin 6.8vmin
+      );
+    opacity: 0;
+    mask-image: linear-gradient(to bottom, transparent 0 46%, black 48%);
+  }
+
+  .bl__soot {
+    position: absolute;
+    inset-inline-start: var(--x, 50%);
+    inset-block-start: var(--y, 50%);
+    inline-size: 1.2vmin;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--bl-soot);
+    animation: bl-soot 2.6s linear infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  .bl__foot {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: -60%;
+    inline-size: clamp(12rem, 40vmin, 26rem);
+    translate: -50% 0;
+    transform-origin: 50% 100%;
+    filter: drop-shadow(0 -10px 20px oklch(0% 0 0 / 0.5));
+  }
+
+  .bl__foot svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .bl__bill {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 6%;
+    inline-size: clamp(5rem, 16vmin, 9rem);
+    translate: -50% 0;
+    opacity: 0;
+  }
+
+  .bl__bill svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .bl__crowd {
+    position: absolute;
+    inset-inline: 20%;
+    inset-block-start: 74%;
+    block-size: 8%;
+    opacity: 0;
+  }
+
+  .bl__crowd svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .bl__flash {
+    background: oklch(95% 0.05 90);
+    opacity: 0;
+  }
+
+  .bl__prop {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: -50% 0;
+  }
+
+  .bl__kick-target {
+    position: absolute;
+    inset: 0;
+    pointer-events: auto;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .bl__kick-target[data-shown] {
+    visibility: visible;
+  }
+
+  .demo[data-paused] .bl__soot {
+    animation-play-state: paused;
+  }
+
+  @keyframes bl-soot {
+    from {
+      transform: translateY(-30vh) scale(0.6);
+      opacity: 0;
+    }
+    30% {
+      opacity: 0.9;
+    }
+    to {
+      transform: translateY(40vh) scale(1.2);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bl__soot {
+      animation: none;
+      transform: translateY(calc(var(--ly, 0) * 30vh));
+      opacity: 0.6;
+    }
+  }
+}

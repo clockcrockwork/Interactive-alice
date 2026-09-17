@@ -47,7 +47,18 @@
         "demoEat",
         "demoRipple",
         "demoRunToggle",
-        "demoRaceStart"
+        "demoRaceStart",
+        "demoTechRabbitHouse",
+        "demoTechBill",
+        "demoTechCheshire",
+        "demoSnatch",
+        "demoKick",
+        "demoVanish",
+        "demoAliceTitle",
+        "demoAliceBlue",
+        "demoAliceBlueNote",
+        "demoAliceYellow",
+        "demoAliceYellowNote"
       ],
       "additionalProperties": false,
       "properties": {
@@ -185,6 +196,61 @@
           "type": "string",
           "minLength": 1,
           "description": "Button that sets every runner running."
+        },
+        "demoTechRabbitHouse": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the White Rabbit's house."
+        },
+        "demoTechBill": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for Bill the Lizard."
+        },
+        "demoTechCheshire": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the Cheshire Cat."
+        },
+        "demoSnatch": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that makes the snatch out of the window."
+        },
+        "demoKick": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that gives the sharp kick up the chimney."
+        },
+        "demoVanish": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that makes the Cat vanish or appear."
+        },
+        "demoAliceTitle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Heading of the Alice picker on the demo index."
+        },
+        "demoAliceBlue": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Name of the blue Alice."
+        },
+        "demoAliceBlueNote": {
+          "type": "string",
+          "minLength": 1,
+          "description": "One line under the blue Alice: the look everyone knows."
+        },
+        "demoAliceYellow": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Name of the yellow Alice."
+        },
+        "demoAliceYellowNote": {
+          "type": "string",
+          "minLength": 1,
+          "description": "One line under the yellow Alice: the earlier look, for those who remember it."
         }
       }
     }

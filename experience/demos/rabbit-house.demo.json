@@ -1,0 +1,32 @@
+{
+  "id": "rabbit-house",
+  "titleChapter": 4,
+  "titleSection": "growing",
+  "shots": [
+    {
+      "id": "the-bottle-by-the-glass",
+      "beats": [
+        { "id": "tidy-room", "cue": "room", "segments": ["ch04.s0200", "ch04.s0210", "ch04.s0220"] },
+        { "id": "hope", "cue": "sip", "segments": ["ch04.s0230", "ch04.s0240"] }
+      ]
+    },
+    {
+      "id": "growing",
+      "beats": [
+        { "id": "ceiling", "cue": "ceiling", "segments": ["ch04.s0250", "ch04.s0260", "ch04.s0270", "ch04.s0280"] },
+        { "id": "kneel", "cue": "kneel", "segments": ["ch04.s0290", "ch04.s0300", "ch04.s0310"] },
+        { "id": "lie-down", "cue": "lie", "segments": ["ch04.s0320", "ch04.s0330"] },
+        { "id": "arm-out", "cue": "arm", "segments": ["ch04.s0340", "ch04.s0350", "ch04.s0360"] },
+        { "id": "no-larger", "cue": "outside", "segments": ["ch04.s0370"] }
+      ]
+    },
+    {
+      "id": "the-window",
+      "beats": [
+        { "id": "door-inwards", "cue": "door", "segments": ["ch04.s0380", "ch04.s0390", "ch04.s0400", "ch04.s0410"] },
+        { "id": "snatch", "cue": "snatch", "segments": ["ch04.s0420", "ch04.s0430"] },
+        { "id": "crash", "cue": "crash", "segments": ["ch04.s0440", "ch04.s0450", "ch04.s0460"] }
+      ]
+    }
+  ]
+}

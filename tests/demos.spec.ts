@@ -253,3 +253,98 @@ test('the pool of tears: the sentences ride the swell once she is in the water',
   expect(Math.max(...samples) - Math.min(...samples)).toBeGreaterThan(0.5);
   await expect(page.locator('.pt__prop')).toBeVisible();
 });
+
+test('the index: the visitor chooses an Alice, and the demos remember her', async ({ page }) => {
+  await page.goto('./demos/');
+  const blue = page.locator('.demos__alice-choice[data-alice="blue"]');
+  const yellow = page.locator('.demos__alice-choice[data-alice="yellow"]');
+  await expect(blue).toHaveAttribute('aria-pressed', 'true');
+  await expect(yellow).toHaveAttribute('aria-pressed', 'false');
+  await yellow.click();
+  await expect(yellow).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('html')).toHaveAttribute('data-alice', 'yellow');
+  // Every demo page applies the choice before its own script runs.
+  const first = demos[0];
+  await page.goto(first?.url ?? './demos/');
+  await expect(page.locator('html')).toHaveAttribute('data-alice', 'yellow');
+  const dress = await page.evaluate(() =>
+    getComputedStyle(document.documentElement).getPropertyValue('--alice-dress').trim(),
+  );
+  expect(dress).toBe('#f2c94c');
+  await page.goto('./demos/');
+  await blue.click();
+  await expect(page.locator('html')).not.toHaveAttribute('data-alice', 'yellow');
+});
+
+test("the rabbit's house: the camera pulls out as Alice fills the room", async ({ page }) => {
+  const demo = demos.find((candidate) => candidate.demo === 'rabbit-house');
+  test.skip(!demo, 'no rabbit-house demo in this build');
+  await page.goto(demo?.url ?? '');
+  const scale = () =>
+    page.evaluate(() => {
+      const transform = document.querySelector('.hs__camera')?.getAttribute('transform') ?? '';
+      return Number(/scale\(([^)]+)\)/.exec(transform)?.[1] ?? 0);
+    });
+  await expect.poll(scale).toBeGreaterThan(2);
+  await scrollTo(page, 0.62);
+  await expect.poll(scale, { timeout: 8000 }).toBeLessThan(1);
+  await expect(page.locator('.hs__pose--filling')).toHaveCSS('opacity', '1');
+});
+
+test('bill the lizard: down the chimney, then up like a sky-rocket', async ({ page }) => {
+  const demo = demos.find((candidate) => candidate.demo === 'bill-the-lizard');
+  test.skip(!demo, 'no bill-the-lizard demo in this build');
+  await page.goto(demo?.url ?? '');
+  const beatCount = await page.locator('.demo__stage .demo-beat').count();
+  const cam = () =>
+    page.evaluate(() =>
+      Number(
+        document.querySelector<HTMLElement>('.bl__world')?.style.getPropertyValue('--cam') ?? 0,
+      ),
+    );
+  const at = (cue: string, within: number) =>
+    page.evaluate(
+      ([name, count, fraction]) => {
+        const beats = [...document.querySelectorAll<HTMLElement>('.demo__stage .demo-beat')];
+        const index = beats.findIndex((beat) => beat.dataset.cue === name);
+        window.scrollTo(
+          0,
+          (document.documentElement.scrollHeight - window.innerHeight) *
+            ((index + Number(fraction)) / Number(count)),
+        );
+      },
+      [cue, beatCount, within] as const,
+    );
+  await at('foot', 0.9);
+  await expect.poll(cam, { timeout: 8000 }).toBeLessThan(-1000);
+  // The kick is the reader's to give: a real button, and the world goes up.
+  await at('kick', 0.3);
+  await expect(page.locator('.bl__prop')).toBeVisible();
+  await page.locator('.bl__prop').click();
+  await expect.poll(cam, { timeout: 8000 }).toBeGreaterThan(500);
+});
+
+test('the cheshire cat: it goes tail first, and the grin stays a while', async ({ page }) => {
+  const demo = demos.find((candidate) => candidate.demo === 'cheshire-cat');
+  test.skip(!demo, 'no cheshire-cat demo in this build');
+  await page.goto(demo?.url ?? '');
+  const beatCount = await page.locator('.demo__stage .demo-beat').count();
+  const state = () =>
+    page.evaluate(() => ({
+      slide: Number(document.querySelector('.cc__mask-slide')?.getAttribute('x') ?? 0),
+      grin: Number(document.querySelector('.cc__grin')?.getAttribute('opacity') ?? 1),
+    }));
+  expect((await state()).slide).toBeLessThan(-700);
+  await page.evaluate((count) => {
+    const beats = [...document.querySelectorAll<HTMLElement>('.demo__stage .demo-beat')];
+    const index = beats.findIndex((beat) => beat.dataset.cue === 'grin');
+    window.scrollTo(
+      0,
+      (document.documentElement.scrollHeight - window.innerHeight) * ((index + 0.2) / count),
+    );
+  }, beatCount);
+  await expect.poll(async () => (await state()).slide, { timeout: 8000 }).toBeGreaterThan(-300);
+  expect((await state()).grin).toBeGreaterThan(0.5);
+  await scrollTo(page, 1);
+  await expect.poll(async () => (await state()).grin, { timeout: 8000 }).toBeLessThan(0.05);
+});

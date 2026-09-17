@@ -6,7 +6,7 @@
     "localePartial": "Some parts ready",
     "localeNone": "Not ready yet",
     "demosTitle": "Concept demos",
-    "demosIntro": "Six scenes, six ways of moving through them.",
+    "demosIntro": "Nine scenes, nine ways of moving through them.",
     "demoBack": "All demos",
     "demoNext": "Next scene",
     "demoPause": "Pause motion",
@@ -28,6 +28,17 @@
     "demoEat": "Eat it",
     "demoRipple": "Stir the water",
     "demoRunToggle": "Run or rest",
-    "demoRaceStart": "Everybody run!"
+    "demoRaceStart": "Everybody run!",
+    "demoTechRabbitHouse": "A dollhouse cutaway in SVG the camera pulls out of as Alice fills the room.",
+    "demoTechBill": "You are Bill: down the chimney in layered parallax, then up like a sky-rocket.",
+    "demoTechCheshire": "A night wood in depth, and a Cat that vanishes through an SVG mask, grin last.",
+    "demoSnatch": "Make a snatch",
+    "demoKick": "Kick!",
+    "demoVanish": "Vanish",
+    "demoAliceTitle": "Choose your Alice",
+    "demoAliceBlue": "Blue Alice",
+    "demoAliceBlueNote": "The Alice everyone knows.",
+    "demoAliceYellow": "Yellow Alice",
+    "demoAliceYellowNote": "For those who know: the first Alice, yellow dress and brown hair, close to memory."
   }
 }

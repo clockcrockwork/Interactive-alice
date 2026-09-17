@@ -1,23 +1,38 @@
 # Concept demos
 
-> Canonical document for the six standalone concept demos under `/demos/`: what they are for, how they relate to the story runtime, what each one stages, and how they are checked. Product intent is in [`product-principles.md`](product-principles.md); the story runtime is in [`scene-shot-model.md`](scene-shot-model.md) and [`frontend-architecture.md`](frontend-architecture.md).
+> Canonical document for the nine standalone concept demos under `/demos/`: what they are for, how they relate to the story runtime, what each one stages, and how they are checked. Product intent is in [`product-principles.md`](product-principles.md); the story runtime is in [`scene-shot-model.md`](scene-shot-model.md) and [`frontend-architecture.md`](frontend-architecture.md).
 
 ## 1. What they are
 
-Six ambitious, self-contained stagings of one moment of the book each, built to
+Nine ambitious, self-contained stagings of one moment of the book each, built to
 show how far an interactive telling can go before the story runtime is asked to carry
 it. They are demonstrations, not the product: each one chooses the technique that
 makes its moment strongest and spends its budget on that.
 
 ```text
-/demos/                  the index: six cards on a table
+/demos/                  the index: nine cards on a table, and the choice of Alice
 /demos/rabbit-hole/      Down the Rabbit-Hole: a WebGL well the camera falls down
 /demos/drink-me/         Drink Me: a first-person hall in CSS 3D that scales around her
 /demos/pool-of-tears/    The Pool of Tears: a Canvas sea the reader can stir
 /demos/caucus-race/      A Caucus-Race: a ring of runners the camera orbits, CSS 3D
+/demos/rabbit-house/     Growing in the House: a dollhouse cutaway in SVG the camera leaves
+/demos/bill-the-lizard/  There Goes Bill: the reader is Bill, down the chimney and up
 /demos/dormouse/         A Mad Tea-Party: the Dormouse's tale on a treacle spiral, SVG
+/demos/cheshire-cat/     The Cheshire Cat: a night wood in depth, a Cat masked away
 /demos/trial/            Who Stole the Tarts?: a paper courtroom in CSS 3D, and the pack
 ```
+
+### Which Alice
+
+The index offers two Alices, and every demo draws the one chosen. The **blue Alice**
+is the one everyone knows: blue dress, white apron, fair hair. The **yellow Alice** is
+the earlier one, for those who remember her: yellow dress, white apron, brown hair.
+The choice is a set of colour tokens (`--alice-hair`, `--alice-dress`, `--alice-apron`,
+`--alice-skin`, `--alice-band`, `--alice-shadow`) on the root, switched by
+`data-alice="yellow"`, remembered in the visitor's own browser under the demos' key,
+and applied by a line in each page's head before first paint so no figure flashes the
+other colours. Every Alice in the demos, SVG or Canvas, reads those tokens; nothing
+names a colour of hers directly. The words on the picker are UI copy in `ui.json`.
 
 They are staged in the base locale (`en-simple`) for now. A locale switch is a later
 step and nothing in the build prevents it: every sentence on a demo page is resolved
@@ -28,7 +43,8 @@ by segment id at build time, the same way a story page resolves its text.
 **Shared: the text layer.** Every sentence a demo shows is a segment of
 `text/locales/<locale>/chNN.json`, ordered by the structure file. The demos added the
 adapted text they needed: the giant Alice, the pool and the Mouse in chapter 2, the
-race and the prizes in chapter 3, the Dormouse's tale in chapter 7, the opening of the
+race and the prizes in chapter 3, the little bottle, the window and Bill in chapter
+4, the Cheshire Cat in chapter 6, the Dormouse's tale in chapter 7, the opening of the
 court in chapter 11, and the sentence-first climax and waking in chapter 12. Drink Me
 uses chapter 1's existing text. The added chapter files are partial on purpose: they
 hold the sections the demos stage, with segment ids numbered to leave room before and
@@ -42,7 +58,7 @@ in reading order.
 
 A demo is named after its chapter's localized title, or, when two demos draw on one
 chapter, after one of its story sections (`titleSection`): the rabbit hole and Drink
-Me both come from chapter 1.
+Me both come from chapter 1, the house and Bill both from chapter 4.
 
 **Not shared: the story runtime.** A demo is not a Scene. It has no pacing plan, no
 Part, and no entry in `experience/story.json`; the runtime in `src/runtime/` never
@@ -87,7 +103,7 @@ effect (§4). Nothing is merely switched off.
 `window.__aliceDemo` is the test seam: progress, active beat, paused, reduced, and a
 per-demo `mode` (the rabbit hole reports `webgl` or `flat`).
 
-## 4. The six demos
+## 4. The nine demos
 
 ### Down the Rabbit-Hole: the fall is the parallax
 
@@ -185,6 +201,59 @@ ring never looks the same twice.
 bobbing; the camera cuts between its shots and does not circle; the comfits hang in
 the air.
 
+### Growing in the House: zoom is the parallax
+
+One SVG: a dollhouse cutaway with its front wall gone, the tidy little room inside,
+the table in the window with the bottle by the looking-glass, the door, the chimney,
+and the cucumber-frame in the garden below. The camera is a transform on one group:
+it starts close on the table, and pulls out as Alice grows from standing at the
+table to kneeling under the ceiling to lying with an elbow at the door, an arm out of
+the window and a foot up the chimney, three poses cross-faded and scaled from their
+feet. The walls bulge and the roof lifts as she fills the room; then the camera steps
+outside for the Rabbit's visit: the door rattles against her elbow, he goes round to
+the window, and her hand sweeps down.
+
+**Interaction.** Press the window, or *Make a snatch*, and her hand comes out; the
+Rabbit tumbles into the cucumber-frame in a shower of glass. The story makes the
+snatch before the beat is out if the reader does not. The pointer leans the house.
+
+**Reduced motion.** Cuts between poses and camera positions; no rattle, no bulge
+easing, no tumble spin; the glass hangs in the air.
+
+### There Goes Bill: vertical parallax, and the screen takes the kick
+
+The reader is Bill. The world is layers that follow the camera's height at their own
+rates: clouds hardly, the roof and hedge slowly, the brick shaft one to one. Sent
+down, the camera sinks into the chimney with soot drifting past; a foot rises from
+below and waits; the kick is a burst in time, a flash and a launch that sends the
+camera up past the roof and into the clouds, spinning, then down to the hedge on the
+ground among the others with the brandy, where the view stays a little dazed (a
+`filter: blur` on the world) while Bill explains.
+
+**Interaction.** During the waiting beat the whole stage is a button, and so is
+*Kick!*: press either and the kick lands then; otherwise the story kicks. Scrolling
+back above the kick resets it for another go.
+
+**Reduced motion.** No spin, no daze; the launch is a cut; soot hangs still.
+
+### The Cheshire Cat: depth and a mask
+
+A night wood in layers: far trunks, mid trunks with the bough, mist, near trunks, a
+moon, and Alice's silhouette in front looking up. The layers slide sideways at their
+own rates with the pointer, so the wood has depth. The Cat sits on the bough with its
+tail swinging. Its body is under an SVG mask holding a wide gradient; sliding the
+gradient along the body hides it from the tail end, so a vanishing can be a snap or a
+slow sweep, tail first and head last. The grin is drawn outside the mask, so it stays
+when the rest has gone, and fades on its own afterward. At *we're all mad here* the
+wood tilts and turns a madder colour (`hue-rotate` on the world) and the Cat's lines
+wobble.
+
+**Interaction.** Press the Cat, or *Vanish*, to make it go and come back at any
+point before the story's own vanishings begin.
+
+**Reduced motion.** The Cat cross-fades rather than sweeps; the wood does not tilt;
+the tail is still; the lines hold still.
+
 ### A Mad Tea-Party: rotation and zoom are the parallax
 
 Carroll set the Mouse's tale in the shape of a tail, shrinking as it went. Here the
@@ -259,7 +328,10 @@ still reached; the trial's pack reaches the glass and the button clears it; the
 Dormouse's spiral carries exactly the sentences the Dormouse says, shrinking; Drink
 Me's hall scales past four when she is small and under one when she has grown; every
 Caucus-race runner is a button that toggles between resting and running; the pool's
-captions ride the swell once she is in the water.
+captions ride the swell once she is in the water; the house's camera pulls out past
+the filling pose; Bill's camera sinks below the roof and rises after the kick; the
+Cat's mask slides past its head while the grin is still there, and the grin goes
+last; and the index's picker chooses an Alice the next page still wears.
 
 `npm run check:frontend` covers the demo code with the same rules as the scenes:
 no prose in code, no absolute paths, no inline style writes other than custom

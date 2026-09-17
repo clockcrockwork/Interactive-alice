@@ -545,5 +545,49 @@ export interface LocaleUIStrings {
      * Button that sets every runner running.
      */
     demoRaceStart: string;
+    /**
+     * Technique note on the demo index card for the White Rabbit's house.
+     */
+    demoTechRabbitHouse: string;
+    /**
+     * Technique note on the demo index card for Bill the Lizard.
+     */
+    demoTechBill: string;
+    /**
+     * Technique note on the demo index card for the Cheshire Cat.
+     */
+    demoTechCheshire: string;
+    /**
+     * Button that makes the snatch out of the window.
+     */
+    demoSnatch: string;
+    /**
+     * Button that gives the sharp kick up the chimney.
+     */
+    demoKick: string;
+    /**
+     * Button that makes the Cat vanish or appear.
+     */
+    demoVanish: string;
+    /**
+     * Heading of the Alice picker on the demo index.
+     */
+    demoAliceTitle: string;
+    /**
+     * Name of the blue Alice.
+     */
+    demoAliceBlue: string;
+    /**
+     * One line under the blue Alice: the look everyone knows.
+     */
+    demoAliceBlueNote: string;
+    /**
+     * Name of the yellow Alice.
+     */
+    demoAliceYellow: string;
+    /**
+     * One line under the yellow Alice: the earlier look, for those who remember it.
+     */
+    demoAliceYellowNote: string;
   };
 }

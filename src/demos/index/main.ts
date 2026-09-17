@@ -1,5 +1,6 @@
 /**
- * The demo index. Three cards on a table that lean toward the pointer; the page
+ * The demo index. Cards on a table that lean toward the pointer, and the choice of
+ * which Alice walks through them; the page
  * itself falls away like a dropped card when one is chosen (see shell.css).
  */
 
@@ -10,6 +11,32 @@ import './index.css';
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const cards = [...document.querySelectorAll<HTMLElement>('.demos__card')];
+
+// --- Which Alice. The page head already applied the remembered choice; the
+// buttons show it and change it, for this page and every demo after it.
+const ALICE_KEY = 'alice-demos:alice';
+const choices = [...document.querySelectorAll<HTMLButtonElement>('.demos__alice-choice')];
+const chooseAlice = (name: string, remember: boolean): void => {
+  if (name === 'yellow') {
+    document.documentElement.dataset.alice = 'yellow';
+  } else {
+    delete document.documentElement.dataset.alice;
+  }
+  for (const choice of choices) {
+    choice.setAttribute('aria-pressed', String(choice.dataset.alice === name));
+  }
+  if (remember) {
+    try {
+      localStorage.setItem(ALICE_KEY, name);
+    } catch {
+      // A private window may refuse; the choice still holds for this visit.
+    }
+  }
+};
+chooseAlice(document.documentElement.dataset.alice === 'yellow' ? 'yellow' : 'blue', false);
+for (const choice of choices) {
+  choice.addEventListener('click', () => chooseAlice(choice.dataset.alice ?? 'blue', true));
+}
 
 for (const card of cards) {
   // Each card names itself for the cross-document transition, so the card a

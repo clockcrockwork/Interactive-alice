@@ -6,7 +6,7 @@
     "localePartial": "いちぶ よめます",
     "localeNone": "まだ よめません",
     "demosTitle": "コンセプトデモ",
-    "demosIntro": "むっつの ばめん、むっつの すすみかた。",
+    "demosIntro": "ここのつの ばめん、ここのつの すすみかた。",
     "demoBack": "デモいちらん",
     "demoNext": "つぎの ばめん",
     "demoPause": "うごきを とめる",
@@ -28,6 +28,17 @@
     "demoEat": "たべる",
     "demoRipple": "みずを かきまぜる",
     "demoRunToggle": "はしる・やすむ",
-    "demoRaceStart": "みんな はしれ！"
+    "demoRaceStart": "みんな はしれ！",
+    "demoTechRabbitHouse": "アリスが へやを うめると カメラが ひいていく SVG の ドールハウス。",
+    "demoTechBill": "きみは ビル。えんとつを パララックスで おりて、ロケットのように とびあがる。",
+    "demoTechCheshire": "おくゆきの ある よるの もり。SVG マスクで きえる ねこ、さいごに わらい。",
+    "demoSnatch": "てを のばす",
+    "demoKick": "ける！",
+    "demoVanish": "きえる",
+    "demoAliceTitle": "アリスを えらぶ",
+    "demoAliceBlue": "あおい アリス",
+    "demoAliceBlueNote": "だれもが しっている すがた。",
+    "demoAliceYellow": "きいろい アリス",
+    "demoAliceYellowNote": "しっている ひとは しっている、きおくに よりそった すがた。"
   }
 }

@@ -11,7 +11,7 @@
 
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { ALICE_SVG } from '../src/demos/rabbit-hole/figures.ts';
+import { figure } from '../src/demos/art/art.ts';
 import type {
   ChapterStructureFile,
   ExperienceConceptDemoFile,
@@ -287,12 +287,12 @@ function renderIndex(project: DemoProject): string {
       <fieldset class="demos__alice">
         <legend class="demos__alice-title">${escapeHtml(ui.demoAliceTitle)}</legend>
         <button class="demos__alice-choice" type="button" data-alice="blue" aria-pressed="true">
-          <span class="demos__alice-figure" data-alice="blue" aria-hidden="true">${ALICE_SVG}</span>
+          <span class="demos__alice-figure" data-alice="blue" aria-hidden="true">${figure('alice/falling')}</span>
           <span class="demos__alice-name">${escapeHtml(ui.demoAliceBlue)}</span>
           <span class="demos__alice-note">${escapeHtml(ui.demoAliceBlueNote)}</span>
         </button>
         <button class="demos__alice-choice" type="button" data-alice="yellow" aria-pressed="false">
-          <span class="demos__alice-figure" data-alice="yellow" aria-hidden="true">${ALICE_SVG}</span>
+          <span class="demos__alice-figure" data-alice="yellow" aria-hidden="true">${figure('alice/falling')}</span>
           <span class="demos__alice-name">${escapeHtml(ui.demoAliceYellow)}</span>
           <span class="demos__alice-note">${escapeHtml(ui.demoAliceYellowNote)}</span>
         </button>

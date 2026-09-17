@@ -1,22 +1,27 @@
 /**
  * Drink Me: the concept demo.
  *
- * Alice is the camera. The hall of doors is a CSS 3D corridor she walks along,
- * kneels in, and looks up at; when she drinks, the whole hall scales up around the
- * floor under her feet until the glass table is a building, and when she eats the
- * cake it scales down until the roof arrives. Scale is the parallax. The bottle and
- * the cake come to her hand; drinking and eating are hers to do, or the story does
- * them for her.
+ * The hall of doors is a round room in CSS 3D: the glass table in the middle, twelve
+ * doors of twelve shapes round the walls, and the strange door in the ceiling she
+ * fell through. We watch her fall in from the floor; she lands on us, and from then
+ * on Alice is the camera: turning to see every door, kneeling at the little one,
+ * coming back for the bottle. When she drinks, the whole hall scales up around the
+ * floor under her feet until the table is a building, and when she eats the cake it
+ * scales down until the roof arrives. Scale is the parallax. Drinking and eating are
+ * hers to do, or the story does them for her.
  */
 
 import gsap from 'gsap';
+import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import './drink-me.css';
 import { bottleSvg, cakeSvg, KEY_SVG } from './figures.ts';
 
 const EYE = 240;
-const TABLE_Z = -900;
-const HALL_LENGTH = 3200;
+const TABLE_Z = -600;
+/** The wall ring's radius round the table; the curtain panel is straight ahead. */
+const RADIUS = 1100;
+const CURTAIN_Z = TABLE_Z - RADIUS;
 
 interface Camera {
   /** Scale of the hall around the floor point under the camera. */
@@ -27,6 +32,8 @@ interface Camera {
   /** Eye offset from standing height, screen px; negative kneels. */
   y: number;
   pitch: number;
+  /** Turning on the spot, degrees. */
+  yaw: number;
   lookX: number;
   lookY: number;
 }
@@ -42,8 +49,30 @@ function labelIn(lines: HTMLElement[]): string {
   return '';
 }
 
+const DOORS = [
+  'curtain',
+  'arched',
+  'gothic',
+  'round',
+  'double',
+  'tiny',
+  'keyhole',
+  'dutch',
+  'square',
+  'trapezoid',
+  'windowed',
+  'oval',
+] as const;
+
 function buildHall(hall: HTMLElement, bottleLabel: string, cakeLabel: string): void {
-  const doors = Array.from({ length: 5 }, () => '<div class="dk__door"></div>').join('');
+  const panels = DOORS.map((shape, i) => {
+    const door =
+      shape === 'curtain'
+        ? '<div class="dk__curtain"></div>' +
+          '<div class="dk__little-door"><div class="dk__garden"></div><div class="dk__door-leaf"></div></div>'
+        : `<div class="dk__door dk__door--${shape}" style="--i: ${i}"></div>`;
+    return `<div class="dk__panel" style="--i: ${i}">${door}</div>`;
+  }).join('');
   const lamps = Array.from(
     { length: 6 },
     (_, i) => `<div class="dk__lamp" style="--i: ${i}"></div>`,
@@ -57,15 +86,12 @@ function buildHall(hall: HTMLElement, bottleLabel: string, cakeLabel: string): v
     .map(([x, z]) => `<div class="dk__table-leg" style="--lx: ${x}; --lz: ${z}"></div>`)
     .join('');
   hall.innerHTML =
+    '<div class="dk__ring">' +
     '<div class="dk__plane dk__floor"></div>' +
-    '<div class="dk__plane dk__ceiling"></div>' +
-    `<div class="dk__plane dk__wall dk__wall--left">${doors}</div>` +
-    `<div class="dk__plane dk__wall dk__wall--right">${doors}</div>` +
-    '<div class="dk__plane dk__wall dk__wall--end">' +
-    '<div class="dk__curtain"></div>' +
-    '<div class="dk__little-door"><div class="dk__garden"></div><div class="dk__door-leaf"></div></div>' +
-    '</div>' +
+    '<div class="dk__plane dk__ceiling"><div class="dk__trapdoor"><div class="dk__trapdoor-leaf"></div></div></div>' +
+    panels +
     lamps +
+    '</div>' +
     `<div class="dk__table">${legs}<div class="dk__table-top"></div>` +
     `<div class="dk__key">${KEY_SVG}</div>` +
     `<div class="dk__bottle">${bottleSvg(bottleLabel)}</div>` +
@@ -75,6 +101,10 @@ function buildHall(hall: HTMLElement, bottleLabel: string, cakeLabel: string): v
 function mount(shell: DemoShell): void {
   const { master, reducedMotion } = shell;
   const cue = shell.cue;
+  const iFall = cue('fall');
+  const iDoors = cue('doors');
+  const iLocked = cue('locked');
+  const iHall = cue('hall');
   const iKey = cue('key');
   const iGarden = cue('garden');
   const iWish = cue('wish');
@@ -107,6 +137,10 @@ function mount(shell: DemoShell): void {
     `<div class="dk__hand dk__hand--bottle">${bottleSvg(bottleLabel)}</div>` +
     `<div class="dk__hand dk__hand--cake">${cakeSvg(cakeLabel)}</div>`;
   const flash = shell.layer('dk__flash');
+  const fallingLayer = shell.layer('dk__falling-layer');
+  fallingLayer.innerHTML = `<div class="dk__falling">${figure('alice/falling')}</div>`;
+  const falling = fallingLayer.querySelector<HTMLElement>('.dk__falling');
+  const trapdoor = hall.querySelector<HTMLElement>('.dk__trapdoor-leaf');
 
   const random = seeded(19);
   tears.innerHTML = Array.from(
@@ -121,7 +155,6 @@ function mount(shell: DemoShell): void {
       `<div class="dk__flavour" style="--x: ${(20 + random() * 60).toFixed(1)}%; --s: ${(3 + random() * 4).toFixed(1)}vmin; --c: ${flavourColours[i % 3]}; --delay: ${(-random() * 2.8).toFixed(2)}s; --ly: ${random().toFixed(2)}"></div>`,
   ).join('');
 
-  const littleDoor = hall.querySelector<HTMLElement>('.dk__little-door');
   const garden = hall.querySelector<HTMLElement>('.dk__garden');
   const doorLeaf = hall.querySelector<HTMLElement>('.dk__door-leaf');
   const bottle = hall.querySelector<HTMLElement>('.dk__bottle');
@@ -130,12 +163,24 @@ function mount(shell: DemoShell): void {
   const handCake = hands.querySelector<HTMLElement>('.dk__hand--cake');
 
   // --- The camera.
-  const camera: Camera = { room: 1, z: 0, distance: 0, y: 0, pitch: 0, lookX: 0, lookY: 0 };
+  // We start on the floor under the strange door, looking straight up at it.
+  const camera: Camera = {
+    room: 1,
+    z: TABLE_Z,
+    distance: 0,
+    y: 0,
+    pitch: 80,
+    yaw: 0,
+    lookX: 0,
+    lookY: 0,
+  };
   const apply = (): void => {
     hall.style.setProperty('--room', camera.room.toFixed(4));
-    hall.style.setProperty('--cam-z', (-camera.z * camera.room - camera.distance).toFixed(1));
+    // The eye sits the perspective distance (900px) in front of the hall's plane.
+    hall.style.setProperty('--cam-z', (900 - camera.z * camera.room - camera.distance).toFixed(1));
     hall.style.setProperty('--cam-y', camera.y.toFixed(1));
     hall.style.setProperty('--cam-pitch', camera.pitch.toFixed(2));
+    hall.style.setProperty('--yaw', camera.yaw.toFixed(2));
     hall.style.setProperty('--look-x', camera.lookX.toFixed(2));
     hall.style.setProperty('--look-y', camera.lookY.toFixed(2));
   };
@@ -152,9 +197,31 @@ function mount(shell: DemoShell): void {
     }
   };
 
-  move(0, { z: -300, distance: 0 }, 0.9);
-  move(iKey, { z: TABLE_Z, distance: 330, pitch: -18 });
-  move(iGarden, { z: -HALL_LENGTH, distance: 260, y: -150, pitch: 4 });
+  // --- She falls in through the strange door in the ceiling. We watch from the
+  // floor, looking up; she lands on us, and from then on we are Alice.
+  master.to(trapdoor, { '--open': 1, duration: 0.35, ease: 'back.out(1.6)' }, iFall + 0.05);
+  master.fromTo(
+    falling,
+    { opacity: 0, scale: 0.15, rotation: -20, y: '-10vh' },
+    { opacity: 1, scale: 3.2, rotation: 400, y: '30vh', duration: 0.6, ease: 'power2.in' },
+    iFall + 0.2,
+  );
+  master.fromTo(flash, { opacity: 0 }, { opacity: 1, duration: 0.05 }, iFall + 0.8);
+  master.set(falling, { opacity: 0 }, iFall + 0.82);
+  master.to(flash, { opacity: 0, duration: 0.5 }, iFall + 0.85);
+  master.to(trapdoor, { '--open': 0.1, duration: 0.3 }, iFall + 0.9);
+  move(iFall + 0.85, { pitch: 0 }, 0.5);
+  // Doors all round: a slow turn on the spot to see every one, then every one locked.
+  move(iDoors, { yaw: 360, z: TABLE_Z + 150, distance: 0 }, 1.9, 'sine.inOut');
+  master.call(
+    () => hall.toggleAttribute('data-locked', master.time() >= iLocked + 0.1),
+    [],
+    iLocked + 0.1,
+  );
+  master.call(() => hall.toggleAttribute('data-locked', master.time() < iHall), [], iHall);
+  move(iHall, { yaw: 360, z: TABLE_Z - 200, distance: 0 }, 0.8);
+  move(iKey, { z: TABLE_Z, distance: 330, pitch: -18 }, 0.7);
+  move(iGarden, { z: CURTAIN_Z, distance: 260, y: -150, pitch: 4 });
   master.to(doorLeaf, { '--open': 1, duration: 0.4 }, iGarden + 0.3);
   master.to(garden, { opacity: 1, duration: 0.4 }, iGarden + 0.3);
   if (!reducedMotion) {
@@ -231,7 +298,7 @@ function mount(shell: DemoShell): void {
       iShrink + 0.6,
     );
   }
-  move(iSmall, { z: -HALL_LENGTH, distance: 80 * 5.5, y: 0, pitch: 6 }, 0.9);
+  move(iSmall, { z: CURTAIN_Z, distance: 80 * 5.5, y: 0, pitch: 6 }, 0.9);
   move(iKeyLost, { z: TABLE_Z, distance: 60 * 5.5, pitch: 26 }, 0.8);
   master.to(tears, { opacity: 1, duration: 0.4 }, iCry);
   master.to(tears, { opacity: 0, duration: 0.4 }, iCake);
@@ -313,11 +380,6 @@ function mount(shell: DemoShell): void {
     camera.lookY = mix(camera.lookY, targetY, k);
     apply();
   });
-
-  if (littleDoor) {
-    // The door is where the garden is: something to come back to.
-    littleDoor.dataset.ready = '';
-  }
 }
 
 const shell = attachDemo();

@@ -4,6 +4,35 @@
   "titleSection": "drink-me",
   "shots": [
     {
+      "id": "through-the-trapdoor",
+      "beats": [
+        {
+          "id": "trapdoor",
+          "cue": "fall",
+          "segments": [
+            "ch01.s0630",
+            "ch01.s0640"
+          ]
+        },
+        {
+          "id": "doors-round",
+          "cue": "doors",
+          "segments": [
+            "ch01.s0750",
+            "ch01.s0760"
+          ]
+        },
+        {
+          "id": "all-locked",
+          "cue": "locked",
+          "segments": [
+            "ch01.s0770",
+            "ch01.s0780"
+          ]
+        }
+      ]
+    },
+    {
       "id": "the-little-door",
       "beats": [
         {

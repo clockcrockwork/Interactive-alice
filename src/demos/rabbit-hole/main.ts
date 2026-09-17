@@ -9,8 +9,9 @@
  */
 
 import gsap from 'gsap';
+import { figure } from '../art/art.ts';
 import { attachDemo, type Beat, type DemoShell, mix } from '../shell/shell.ts';
-import { ALICE_SVG, BAT_SVG, DINAH_SVG, JAR_SVG, RABBIT_SVG } from './figures.ts';
+import { JAR_SVG } from './figures.ts';
 import './rabbit-hole.css';
 import { createWell, type Well } from './well.ts';
 
@@ -49,7 +50,7 @@ function mount(shell: DemoShell): void {
   const iFlip = shell.cue('flip');
   const iBats = shell.cue('bats');
   const iDream = shell.cue('dream');
-  const iThump = shell.cue('thump');
+  const iThump = shell.cue('ground');
   const iEnd = shell.cue('end');
   const { master, ambient, reducedMotion } = shell;
 
@@ -71,13 +72,13 @@ function mount(shell: DemoShell): void {
   const props = shell.layer('rh__props');
   props.innerHTML =
     `<div class="rh__cupboard"></div>` +
-    `<div class="rh__alice">${ALICE_SVG}<div class="rh__hand"></div></div>` +
+    `<div class="rh__alice">${figure('alice/falling')}<div class="rh__hand"></div></div>` +
     `<div class="rh__jar-track"><div class="rh__jar" data-jar>${JAR_SVG}</div></div>` +
-    `<div class="rh__dinah">${DINAH_SVG}</div>` +
-    `<div class="rh__rabbit">${RABBIT_SVG}</div>`;
+    `<div class="rh__dinah">${figure('dinah-cat')}</div>` +
+    `<div class="rh__rabbit">${figure('white-rabbit/running')}</div>`;
   const bats = shell.layer('rh__bats');
   bats.innerHTML = [0.22, 0.4, 0.58]
-    .map((y) => `<div class="rh__bat" style="--bat-y: ${y * 100}%">${BAT_SVG}</div>`)
+    .map((y) => `<div class="rh__bat" style="--bat-y: ${y * 100}%">${figure('bat')}</div>`)
     .join('');
   const flash = shell.layer('rh__flash');
   const dark = shell.layer('rh__dark');

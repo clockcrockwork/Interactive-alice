@@ -60,6 +60,25 @@ A demo is named after its chapter's localized title, or, when two demos draw on 
 chapter, after one of its story sections (`titleSection`): the rabbit hole and Drink
 Me both come from chapter 1, the house and Bill both from chapter 4.
 
+### The characters are one replaceable layer
+
+No demo inlines a drawing of a character. It asks `src/demos/art/` for a figure by
+id (`alice/falling`, `white-rabbit/herald`, `runner/dodo`) and gets a box to place
+and animate; what is in the box is the registry's business. Today the registry
+answers with the small SVGs in `art/vectors.ts`. The plan is retro, engraving-style
+cut-out illustrations, generated and taken in through the asset-intake skill, and a
+cut-out drops in by changing the registry entry to an image, not the demo:
+
+- transparent WebP or AVIF, feet on the bottom edge, centred horizontally;
+- one file per Alice variant (blue, yellow) for Alice, one file for anyone else;
+- the same aspect box as the vector it replaces, so placement holds.
+
+The three contexts are covered: `figure()` for HTML (an `<img>` per variant, the
+page's `data-alice` showing one), `svgFigure()` for a figure placed inside another
+SVG (an `<image>` per variant), and `loadArtImage()` for a Canvas, which draws its
+own vector stand-in until an image is registered. Alice's two looks come from tokens
+for vectors and from a file per variant for images; the picker changes nothing else.
+
 **Not shared: the story runtime.** A demo is not a Scene. It has no pacing plan, no
 Part, and no entry in `experience/story.json`; the runtime in `src/runtime/` never
 sees it. Its composition lives in `experience/demos/<id>.demo.json`, validated by
@@ -137,11 +156,16 @@ CSS rings that scale with the fall, the page says so, and the seam reports `flat
 
 ### Drink Me: scale is the parallax
 
-Alice is the camera. The hall of doors is a CSS 3D corridor: a floor and a ceiling,
-two walls of arched doors, lamps, a curtain on the end wall with the little door in it
-and a garden behind it, and the glass table with the key on top. The camera walks to
-the table, kneels at the little door to see the garden through it, and comes back for
-the bottle. All of that is one `perspective` and a transform on the hall.
+The hall of doors is a round room in CSS 3D: a checkered floor, a ceiling with the
+strange door she fell through, twelve wall panels round the table each with a door
+of its own shape (arched, gothic, round, double, tiny, keyhole, dutch, riveted,
+trapezoid, windowed, oval, and the curtain with the little door and the garden behind
+it), lamps, and the glass table with the key on top. It opens on the floor looking up:
+the strange door swings open, Alice tumbles in and lands on the camera, and from then
+on Alice is the camera. She turns on the spot to see every door, tries them (every
+knob jiggles), kneels at the little door to see the garden, and comes back for the
+bottle. All of that is one `perspective` and one transform on the hall, pivoting at
+the eye, which CSS puts the perspective distance in front of the plane.
 
 When she drinks, the hall scales up around the point on the floor under her feet
 (`transform-origin` at eye height, scale on the hall, the walk distance rescaled to

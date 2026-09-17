@@ -1,0 +1,32 @@
+/* The art box: whatever is inside fills it. A cut-out image shows the file for
+   the page's Alice; a vector reads the --alice-* tokens instead. */
+
+@layer scene {
+  .art {
+    display: block;
+    inline-size: 100%;
+  }
+
+  .art > svg,
+  .art__image {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .art__image {
+    display: none;
+  }
+
+  .art__image[data-variant="any"],
+  :root:not([data-alice="yellow"]) .art__image[data-variant="blue"],
+  :root[data-alice="yellow"] .art__image[data-variant="yellow"] {
+    display: block;
+  }
+
+  svg .art__image[data-variant="any"],
+  :root:not([data-alice="yellow"]) svg .art__image[data-variant="blue"],
+  :root[data-alice="yellow"] svg .art__image[data-variant="yellow"] {
+    display: inline;
+  }
+}

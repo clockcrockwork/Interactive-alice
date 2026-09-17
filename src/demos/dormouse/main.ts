@@ -10,9 +10,10 @@
  */
 
 import gsap from 'gsap';
+import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
+import { TEAPOT_SVG } from './figures.ts';
 import './dormouse.css';
-import { MOUSE_SVG, TEAPOT_SVG } from './figures.ts';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const CENTRE = 500;
@@ -277,7 +278,7 @@ function mount(shell: DemoShell): void {
 
   // --- The Dormouse itself, on the rim. Pinch it and it wakes with a shriek.
   const mouseLayer = shell.layer('dm__mouse-layer');
-  mouseLayer.innerHTML = `<div class="dm__mouse">${MOUSE_SVG}</div>`;
+  mouseLayer.innerHTML = `<div class="dm__mouse">${figure('dormouse')}</div>`;
   const mouse = mouseLayer.querySelector<HTMLElement>('.dm__mouse');
   const pinchButton = shell.prop(shell.ui.demoPinch ?? '', 'dm__prop-pinch');
   let awakeTimer: ReturnType<typeof setTimeout> | undefined;

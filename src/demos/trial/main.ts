@@ -10,18 +10,9 @@
  */
 
 import gsap from 'gsap';
+import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, seeded } from '../shell/shell.ts';
-import {
-  ALICE_SILHOUETTE_SVG,
-  JURY_SVG,
-  KING_SVG,
-  KNAVE_SVG,
-  QUEEN_SVG,
-  RABBIT_HERALD_SVG,
-  SISTER_SVG,
-  SOLDIER_SVG,
-  TARTS_SVG,
-} from './figures.ts';
+import { TARTS_SVG } from './figures.ts';
 import './trial.css';
 
 const SUITS = [
@@ -58,13 +49,13 @@ function buildCourt(court: HTMLElement): void {
     `<div class="tr__piece ${className}">${svg}</div>`;
   court.innerHTML =
     '<div class="tr__backdrop"></div><div class="tr__floor"></div>' +
-    piece('tr__jury', JURY_SVG) +
-    piece('tr__soldier tr__soldier--left', SOLDIER_SVG) +
-    piece('tr__knave', KNAVE_SVG) +
-    piece('tr__soldier tr__soldier--right', SOLDIER_SVG) +
-    piece('tr__throne tr__throne--king', KING_SVG) +
-    piece('tr__throne tr__throne--queen', QUEEN_SVG) +
-    piece('tr__herald', RABBIT_HERALD_SVG) +
+    piece('tr__jury', figure('jury')) +
+    piece('tr__soldier tr__soldier--left', figure('card-soldier')) +
+    piece('tr__knave', figure('knave-of-hearts')) +
+    piece('tr__soldier tr__soldier--right', figure('card-soldier')) +
+    piece('tr__throne tr__throne--king', figure('king-of-hearts')) +
+    piece('tr__throne tr__throne--queen', figure('queen-of-hearts')) +
+    piece('tr__herald', figure('white-rabbit/herald')) +
     piece('tr__tarts', TARTS_SVG) +
     '<div class="tr__pack"></div>';
 }
@@ -133,14 +124,14 @@ function mount(shell: DemoShell): void {
   // --- Layers, back to front.
   const sky = shell.layer('tr__sky');
   const bank = shell.layer('tr__bank');
-  bank.innerHTML = `<div class="tr__sister">${SISTER_SVG}</div>`;
+  bank.innerHTML = `<div class="tr__sister">${figure('alices-sister')}</div>`;
   const world = shell.layer('tr__world');
   const court = document.createElement('div');
   court.className = 'tr__court';
   buildCourt(court);
   world.append(court);
   const aliceLayer = shell.layer('tr__alice-layer');
-  aliceLayer.innerHTML = `<div class="tr__alice">${ALICE_SILHOUETTE_SVG}</div>`;
+  aliceLayer.innerHTML = `<div class="tr__alice">${figure('alice/silhouette')}</div>`;
   const alice = aliceLayer.querySelector<HTMLElement>('.tr__alice');
   const flash = shell.layer('tr__flash');
   const glass = shell.layer('tr__glass');

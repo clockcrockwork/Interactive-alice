@@ -10,9 +10,9 @@
  */
 
 import gsap from 'gsap';
+import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, seeded } from '../shell/shell.ts';
 import './bill.css';
-import { BILL_SVG, CROWD_SVG, FOOT_SVG } from './figures.ts';
 
 function mount(shell: DemoShell): void {
   const { master, reducedMotion } = shell;
@@ -29,14 +29,14 @@ function mount(shell: DemoShell): void {
   world.innerHTML =
     '<div class="bl__layer bl__clouds"></div>' +
     '<div class="bl__layer bl__house"><div class="bl__roof"></div><div class="bl__stack"></div><div class="bl__hedge"></div>' +
-    `<div class="bl__crowd">${CROWD_SVG}</div></div>` +
+    `<div class="bl__crowd">${figure('guinea-pigs')}</div></div>` +
     `<div class="bl__layer bl__chimney">${Array.from(
       { length: 18 },
       () =>
         `<div class="bl__soot" style="--x: ${(35 + random() * 30).toFixed(1)}%; --y: ${(50 + random() * 40).toFixed(1)}%; --delay: ${(-random() * 2.6).toFixed(2)}s; --ly: ${random().toFixed(2)}"></div>`,
     ).join('')}</div>` +
-    `<div class="bl__foot">${FOOT_SVG}</div>` +
-    `<div class="bl__bill">${BILL_SVG}</div>`;
+    `<div class="bl__foot">${figure('alice/foot')}</div>` +
+    `<div class="bl__bill">${figure('bill')}</div>`;
   const chimney = world.querySelector<HTMLElement>('.bl__chimney');
   const foot = world.querySelector<HTMLElement>('.bl__foot');
   const bill = world.querySelector<HTMLElement>('.bl__bill');

@@ -10,7 +10,7 @@
  */
 
 import gsap from 'gsap';
-import { DINAH_SVG, RABBIT_SVG } from '../rabbit-hole/figures.ts';
+import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix } from '../shell/shell.ts';
 import { FAN_SVG } from './figures.ts';
 import './pool.css';
@@ -43,8 +43,8 @@ function mount(shell: DemoShell): void {
   }
   const props = shell.layer('pt__props');
   props.innerHTML =
-    `<div class="pt__rabbit">${RABBIT_SVG}</div>` +
-    `<div class="pt__dinah">${DINAH_SVG}</div>` +
+    `<div class="pt__rabbit">${figure('white-rabbit/running')}</div>` +
+    `<div class="pt__dinah">${figure('dinah-cat')}</div>` +
     `<div class="pt__fan">${FAN_SVG}</div>`;
   const rabbit = props.querySelector<HTMLElement>('.pt__rabbit');
   const dinah = props.querySelector<HTMLElement>('.pt__dinah');

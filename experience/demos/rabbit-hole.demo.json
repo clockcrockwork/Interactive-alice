@@ -40,7 +40,7 @@
     {
       "id": "the-ground",
       "beats": [
-        { "id": "thump-thump", "cue": "thump", "segments": ["ch01.s0630", "ch01.s0640", "ch01.s0650"] },
+        { "id": "thump-thump", "cue": "ground", "segments": ["ch01.s0630", "ch01.s0640", "ch01.s0650"] },
         { "id": "up-again", "cue": "end", "segments": ["ch01.s0660", "ch01.s0690", "ch01.s0700"] }
       ]
     }

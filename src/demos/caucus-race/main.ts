@@ -11,9 +11,10 @@
  */
 
 import gsap from 'gsap';
+import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import './caucus.css';
-import { RUNNERS, type RunnerKind, runnerSvg, THIMBLE_SVG } from './figures.ts';
+import { RUNNERS, type RunnerKind, THIMBLE_SVG } from './figures.ts';
 
 interface Runner {
   kind: RunnerKind;
@@ -57,7 +58,7 @@ function mount(shell: DemoShell): void {
     el.setAttribute('aria-pressed', 'false');
     el.setAttribute('data-drip', '');
     el.style.setProperty('--i', String(index));
-    el.innerHTML = runnerSvg(kind);
+    el.innerHTML = figure(`runner/${kind}`);
     ring.append(el);
     return {
       kind,

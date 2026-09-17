@@ -10,10 +10,9 @@
  */
 
 import gsap from 'gsap';
+import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix } from '../shell/shell.ts';
-import { ALICE_SILHOUETTE_SVG } from '../trial/figures.ts';
 import './cheshire.css';
-import { CAT_SVG } from './figures.ts';
 
 function mount(shell: DemoShell): void {
   const { master, reducedMotion } = shell;
@@ -33,10 +32,10 @@ function mount(shell: DemoShell): void {
     '<div class="cc__moon"></div>' +
     '<div class="cc__trees cc__trees--far"></div>' +
     '<div class="cc__trees cc__trees--mid"></div>' +
-    `<div class="cc__bough-layer"><div class="cc__bough">${CAT_SVG}</div></div>` +
+    `<div class="cc__bough-layer"><div class="cc__bough">${figure('cheshire-cat/on-bough')}</div></div>` +
     '<div class="cc__mist"></div>' +
     '<div class="cc__trees cc__trees--near"></div>' +
-    `<div class="cc__alice">${ALICE_SILHOUETTE_SVG}</div>`;
+    `<div class="cc__alice">${figure('alice/silhouette')}</div>`;
   const bough = wood.querySelector<HTMLElement>('.cc__bough');
   const slide = wood.querySelector<SVGRectElement>('.cc__mask-slide');
   const grin = wood.querySelector<SVGGElement>('.cc__grin');

@@ -146,6 +146,11 @@ export function loadDemoProject(root: string, locale?: string): DemoProject {
 }
 
 const UI_FOR_SCRIPT = [
+  'demoWayHatter',
+  'demoWayHare',
+  'demoCallCat',
+  'demoTryDoor',
+  'demoTeleportHint',
   'demoSnatch',
   'demoKick',
   'demoVanish',

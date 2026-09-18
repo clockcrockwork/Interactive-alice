@@ -589,5 +589,25 @@ export interface LocaleUIStrings {
      * One line under the yellow Alice: the earlier look, for those who remember it.
      */
     demoAliceYellowNote: string;
+    /**
+     * Signpost button toward the Hatter's house.
+     */
+    demoWayHatter: string;
+    /**
+     * Signpost button toward the March Hare's house.
+     */
+    demoWayHare: string;
+    /**
+     * Button that calls the Cat to another bough.
+     */
+    demoCallCat: string;
+    /**
+     * Accessible name of a door in the hall; pressing it tries the lock.
+     */
+    demoTryDoor: string;
+    /**
+     * Hint under the Cheshire Cat: tap the wood to move the Cat there.
+     */
+    demoTeleportHint: string;
   };
 }

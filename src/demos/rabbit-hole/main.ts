@@ -286,6 +286,33 @@ function mount(shell: DemoShell): void {
     master.to(rabbit, { x: '-40vw', duration: 0.9, ease: 'power1.in' }, iEnd + 0.1);
   }
 
+  // --- Drag anywhere to tumble her: the spin keeps going and settles by itself.
+  let spin = 0;
+  let spinVelocity = 0;
+  let dragging = false;
+  let lastX = 0;
+  shell.stage.addEventListener('pointerdown', (event) => {
+    if ((event.target as HTMLElement).closest('button, .rh__jar')) {
+      return;
+    }
+    dragging = true;
+    lastX = event.clientX;
+  });
+  window.addEventListener('pointerup', () => {
+    dragging = false;
+  });
+  window.addEventListener(
+    'pointermove',
+    (event) => {
+      if (!dragging || reducedMotion) {
+        return;
+      }
+      spinVelocity += (event.clientX - lastX) * 0.6;
+      lastX = event.clientX;
+    },
+    { passive: true },
+  );
+
   // --- Per frame: pointer drift into the camera, and the well's own life.
   let elapsedSeen = 0;
   shell.onFrame((dt, elapsed) => {
@@ -303,6 +330,12 @@ function mount(shell: DemoShell): void {
       camera.driftX = mix(camera.driftX, targetX, k);
       camera.driftY = mix(camera.driftY, targetY, k);
       well?.tick(dt, elapsed);
+      if (alice && (Math.abs(spinVelocity) > 0.01 || Math.abs(spin) > 0.01)) {
+        spin += spinVelocity * dt;
+        spinVelocity *= 1 - Math.min(1, dt * 1.5);
+        spin *= 1 - Math.min(1, dt * 0.8);
+        alice.style.setProperty('--tumble', spin.toFixed(2));
+      }
     }
   });
   if (well) {

@@ -39,6 +39,11 @@
     "demoAliceBlue": "Blue Alice",
     "demoAliceBlueNote": "The Alice everyone knows.",
     "demoAliceYellow": "Yellow Alice",
-    "demoAliceYellowNote": "For those who know: the first Alice, yellow dress and brown hair, close to memory."
+    "demoAliceYellowNote": "For those who know: the first Alice, yellow dress and brown hair, close to memory.",
+    "demoWayHatter": "Toward the Hatter",
+    "demoWayHare": "Toward the March Hare",
+    "demoCallCat": "Call the Cat",
+    "demoTryDoor": "Try this door",
+    "demoTeleportHint": "Tap the wood and the Cat appears there"
   }
 }

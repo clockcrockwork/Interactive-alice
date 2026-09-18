@@ -348,3 +348,77 @@ test('the cheshire cat: it goes tail first, and the grin stays a while', async (
   await scrollTo(page, 1);
   await expect.poll(async () => (await state()).grin, { timeout: 8000 }).toBeLessThan(0.05);
 });
+
+test('the cheshire cat: a tap in the wood sends the Cat to the nearest bough', async ({ page }) => {
+  const demo = demos.find((candidate) => candidate.demo === 'cheshire-cat');
+  test.skip(!demo, 'no cheshire-cat demo in this build');
+  await page.goto(demo?.url ?? '');
+  const bough = () =>
+    page.evaluate(
+      () =>
+        document.querySelector('.art[data-art="cheshire-cat/on-bough"]')?.parentElement?.dataset
+          .bough,
+    );
+  expect(await bough()).toBe('1');
+  await page.mouse.click(1100, 200);
+  await expect.poll(bough, { timeout: 5000 }).toBe('2');
+  // The button does it too, for a keyboard.
+  await page.locator('.cc__prop--call').click();
+  await expect.poll(bough, { timeout: 5000 }).not.toBe('2');
+});
+
+test("the rabbit's house: it opens inside the room, and the room shrinks as she drinks", async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'rabbit-house');
+  test.skip(!demo, 'no rabbit-house demo in this build');
+  await page.goto(demo?.url ?? '');
+  const grow = () =>
+    page.evaluate(() =>
+      Number(document.querySelector<HTMLElement>('.hs__box')?.style.getPropertyValue('--grow')),
+    );
+  await expect.poll(grow).toBeCloseTo(1, 1);
+  await expect(page.locator('.hs__room')).toHaveCSS('opacity', '1');
+  await scrollTo(page, 0.29);
+  await expect.poll(grow, { timeout: 8000 }).toBeLessThan(0.6);
+  await scrollTo(page, 0.4);
+  await expect(page.locator('.hs__room')).toHaveCSS('opacity', '0', { timeout: 8000 });
+});
+
+test('drink me: every door is a button, and trying one jiggles its knob', async ({ page }) => {
+  const demo = demos.find((candidate) => candidate.demo === 'drink-me');
+  test.skip(!demo, 'no drink-me demo in this build');
+  await page.goto(demo?.url ?? '');
+  const doors = page.locator('button.dk__door');
+  await expect(doors).toHaveCount(11);
+  await expect(doors.first()).toHaveAttribute('aria-label', /.+/);
+  await doors.nth(3).dispatchEvent('click');
+  await expect(doors.nth(3)).toHaveAttribute('data-tried', '');
+});
+
+test('the rabbit hole: a drag across the well tumbles her', async ({ page }) => {
+  const demo = demos.find((candidate) => candidate.demo === 'rabbit-hole');
+  test.skip(!demo, 'no rabbit-hole demo in this build');
+  await page.goto(demo?.url ?? '');
+  await scrollTo(page, 0.3);
+  await page.waitForTimeout(500);
+  await page.mouse.move(300, 400);
+  await page.mouse.down();
+  await page.mouse.move(700, 400, { steps: 10 });
+  await page.mouse.up();
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() =>
+          Math.abs(
+            Number(
+              document
+                .querySelector<HTMLElement>('.rh__alice')
+                ?.style.getPropertyValue('--tumble') ?? 0,
+            ),
+          ),
+        ),
+      { timeout: 4000 },
+    )
+    .toBeGreaterThan(5);
+});

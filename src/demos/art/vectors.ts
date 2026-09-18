@@ -241,8 +241,10 @@ export const CAT_SVG = `
     <path d="M270 72 q-6 10 4 14 M330 72 q6 10 -4 14" stroke="var(--cc-cat-stripe)" stroke-width="8" fill="none" stroke-linecap="round"/>
     <ellipse cx="284" cy="88" rx="9" ry="12" fill="oklch(90% 0.15 110)"/>
     <ellipse cx="316" cy="88" rx="9" ry="12" fill="oklch(90% 0.15 110)"/>
-    <ellipse cx="284" cy="88" rx="3" ry="10" fill="#222"/>
-    <ellipse cx="316" cy="88" rx="3" ry="10" fill="#222"/>
+    <g class="cc__pupils">
+      <ellipse cx="284" cy="88" rx="3" ry="10" fill="#222"/>
+      <ellipse cx="316" cy="88" rx="3" ry="10" fill="#222"/>
+    </g>
   </g>
   <!-- The grin: outside the mask, so it stays when the rest has gone -->
   <g class="cc__grin">

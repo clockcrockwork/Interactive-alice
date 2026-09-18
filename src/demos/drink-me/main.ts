@@ -64,13 +64,18 @@ const DOORS = [
   'oval',
 ] as const;
 
-function buildHall(hall: HTMLElement, bottleLabel: string, cakeLabel: string): void {
+function buildHall(
+  hall: HTMLElement,
+  bottleLabel: string,
+  cakeLabel: string,
+  tryLabel: string,
+): void {
   const panels = DOORS.map((shape, i) => {
     const door =
       shape === 'curtain'
         ? '<div class="dk__curtain"></div>' +
           '<div class="dk__little-door"><div class="dk__garden"></div><div class="dk__door-leaf"></div></div>'
-        : `<div class="dk__door dk__door--${shape}" style="--i: ${i}"></div>`;
+        : `<button type="button" class="dk__door dk__door--${shape}" style="--i: ${i}" aria-label="${tryLabel}"></button>`;
     return `<div class="dk__panel" style="--i: ${i}">${door}</div>`;
   }).join('');
   const lamps = Array.from(
@@ -126,7 +131,7 @@ function mount(shell: DemoShell): void {
   const hall = document.createElement('div');
   hall.className = 'dk__hall';
   hall.style.setProperty('--dk-eye', `${EYE}px`);
-  buildHall(hall, bottleLabel, cakeLabel);
+  buildHall(hall, bottleLabel, cakeLabel, shell.ui.demoTryDoor ?? '');
   world.append(hall);
   const irisTop = shell.layer('dk__iris dk__iris--top');
   const irisBottom = shell.layer('dk__iris dk__iris--bottom');
@@ -367,6 +372,23 @@ function mount(shell: DemoShell): void {
   );
   master.fromTo(flash, { opacity: 0 }, { opacity: 0.9, duration: 0.05 }, iGrow + 0.98);
   master.to(flash, { opacity: 0, duration: 0.4 }, iGrow + 1.03);
+
+  // --- Every door can be tried, and every one is locked: the knob jiggles and the
+  // whole hall gives a little thud.
+  for (const door of hall.querySelectorAll<HTMLElement>('.dk__door')) {
+    door.addEventListener('click', () => {
+      door.removeAttribute('data-tried');
+      void door.offsetWidth;
+      door.setAttribute('data-tried', '');
+      if (!reducedMotion) {
+        gsap.fromTo(
+          camera,
+          { lookY: -1.5 },
+          { lookY: 0, duration: 0.4, ease: 'elastic.out(1, 0.3)', onUpdate: apply },
+        );
+      }
+    });
+  }
 
   // --- Looking about: the pointer turns her head a little.
   shell.onFrame((dt) => {

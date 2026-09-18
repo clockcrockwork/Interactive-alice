@@ -1,8 +1,10 @@
 /**
  * The White Rabbit's house: the concept demo.
  *
- * A dollhouse cutaway in one SVG. The camera starts close in the tidy little room,
- * at the table in the window, and pulls out as Alice grows: standing, then kneeling
+ * It opens inside: the tidy little room is a CSS 3D box the reader looks round,
+ * the bottle comes to hand, and when she drinks the room shrinks round her feet
+ * until her head meets the ceiling. Then the room falls away and the house is a
+ * dollhouse cutaway in one SVG. The camera starts close and pulls out as Alice grows: standing, then kneeling
  * under the ceiling, then lying with an elbow at the door, an arm out of the window
  * and a foot up the chimney, the walls bulging and the roof lifting. Then it steps
  * outside for the Rabbit's visit, and the snatch that sends him into the cucumber
@@ -11,7 +13,7 @@
 
 import gsap from 'gsap';
 import { attachDemo, type DemoShell, seeded } from '../shell/shell.ts';
-import { HOUSE_SVG } from './figures.ts';
+import { BOTTLE_IN_HAND_SVG, HOUSE_SVG } from './figures.ts';
 import './house.css';
 
 function mount(shell: DemoShell): void {
@@ -27,9 +29,100 @@ function mount(shell: DemoShell): void {
   const iSnatch = cue('snatch');
   const iCrash = cue('crash');
 
+  const iRoom = cue('room');
   shell.layer('hs__garden');
   const stage = shell.layer('hs__stage');
   stage.innerHTML = HOUSE_SVG;
+  gsap.set(stage, { opacity: 0 });
+
+  // --- The room from inside: a CSS 3D box the reader looks round, until she has
+  // grown past it and the story steps outside to the dollhouse.
+  const room = shell.layer('hs__room');
+  room.innerHTML =
+    '<div class="hs__box">' +
+    '<div class="hs__face hs__face--back"><div class="hs__glass"></div></div>' +
+    '<div class="hs__face hs__face--left"><div class="hs__window-frame"></div><div class="hs__room-table"></div><div class="hs__room-bottle"></div></div>' +
+    '<div class="hs__face hs__face--right"><div class="hs__room-door"></div></div>' +
+    '<div class="hs__face hs__face--floor"></div>' +
+    '<div class="hs__face hs__face--ceiling"></div>' +
+    '</div>';
+  const box = room.querySelector<HTMLElement>('.hs__box');
+  const roomBottle = room.querySelector<HTMLElement>('.hs__room-bottle');
+  const ceilingShadow = shell.layer('hs__ceiling-shadow');
+  const hands = shell.layer('hs__hands');
+  hands.innerHTML = `<div class="hs__hand-bottle">${BOTTLE_IN_HAND_SVG}</div>`;
+  const handBottle = hands.querySelector<HTMLElement>('.hs__hand-bottle');
+  const flash = shell.layer('hs__flash');
+  const eye = { yaw: 20, pitch: -6, grow: 1, rise: 0, lookX: 0, lookY: 0 };
+  const applyEye = (): void => {
+    box?.style.setProperty('--yaw', (eye.yaw + eye.lookX).toFixed(2));
+    box?.style.setProperty('--pitch', (eye.pitch + eye.lookY).toFixed(2));
+    box?.style.setProperty('--grow', eye.grow.toFixed(4));
+    box?.style.setProperty('--rise', eye.rise.toFixed(1));
+  };
+  applyEye();
+  // Looking round the room, then to the bottle in the window.
+  master.to(
+    eye,
+    { yaw: -50, pitch: -4, duration: 0.9, ease: 'sine.inOut', onUpdate: applyEye },
+    iRoom,
+  );
+  master.to(
+    eye,
+    { yaw: -70, pitch: 12, duration: 0.5, ease: 'power2.inOut', onUpdate: applyEye },
+    iSip,
+  );
+  const drinkButton = shell.prop(shell.ui.demoDrink ?? '', 'hs__prop');
+  let drunk = false;
+  const drink = (): void => {
+    if (drunk || !handBottle) {
+      return;
+    }
+    drunk = true;
+    drinkButton.hide();
+    handBottle.setAttribute('data-held', '');
+    gsap.to(handBottle, {
+      rotation: -55,
+      y: -30,
+      duration: reducedMotion ? 0 : 0.5,
+      ease: 'power2.inOut',
+    });
+    gsap.to(handBottle, {
+      '--fill': 0,
+      duration: reducedMotion ? 0 : 1,
+      delay: reducedMotion ? 0 : 0.3,
+    });
+  };
+  handBottle?.addEventListener('click', drink);
+  drinkButton.addEventListener('click', drink);
+  master.to(roomBottle, { opacity: 0, duration: 0.1 }, iSip + 0.3);
+  master.fromTo(
+    handBottle,
+    { opacity: 0, y: 120 },
+    { opacity: 1, y: 0, duration: 0.3 },
+    iSip + 0.3,
+  );
+  master.call(
+    () => (master.time() >= iSip + 0.35 ? drinkButton.show() : drinkButton.hide()),
+    [],
+    iSip + 0.35,
+  );
+  master.call(() => (master.time() >= iSip + 0.8 ? drink() : undefined), [], iSip + 0.8);
+  master.to(handBottle, { opacity: 0, y: 80, duration: 0.3 }, iCeiling + 0.1);
+  // Growing: the room shrinks round her feet and her head meets the ceiling.
+  master.to(
+    eye,
+    { grow: 0.42, pitch: 26, yaw: -30, duration: 0.9, ease: 'power2.in', onUpdate: applyEye },
+    iCeiling + 0.05,
+  );
+  master.fromTo(flash, { opacity: 0 }, { opacity: 0.8, duration: 0.05 }, iCeiling + 0.9);
+  master.to(flash, { opacity: 0, duration: 0.3 }, iCeiling + 0.95);
+  master.to(ceilingShadow, { opacity: 1, duration: 0.3 }, iCeiling + 0.6);
+  // Out to the dollhouse: the room falls away and the cutaway takes over.
+  master.to(room, { opacity: 0, scale: 1.6, duration: 0.5, ease: 'power2.in' }, iKneel - 0.35);
+  master.to(ceilingShadow, { opacity: 0, duration: 0.3 }, iKneel - 0.35);
+  master.to(hands, { opacity: 0, duration: 0.2 }, iKneel - 0.35);
+  master.to(stage, { opacity: 1, duration: 0.4 }, iKneel - 0.3);
   const camera = stage.querySelector<SVGGElement>('.hs__camera');
   const wall = stage.querySelector<SVGGElement>('.hs__wall');
   const roof = stage.querySelector<SVGGElement>('.hs__roof');
@@ -158,14 +251,19 @@ function mount(shell: DemoShell): void {
   master.call(() => (master.time() >= iSnatch + 0.9 ? snatch() : undefined), [], iSnatch + 0.9);
   master.to(shards, { opacity: 0, duration: 0.5 }, iCrash + 0.7);
 
-  // --- Pointer: the house sits a little in front of the garden.
+  // --- Pointer: inside, it turns her head; outside, the house sits a little in
+  // front of the garden.
   shell.onFrame((dt) => {
     if (reducedMotion) {
       return;
     }
+    const k = Math.min(1, dt * 3);
     const target = shell.pointer.active ? shell.pointer.x * -12 : 0;
-    view.px += (target - view.px) * Math.min(1, dt * 3);
+    view.px += (target - view.px) * k;
     apply();
+    eye.lookX += ((shell.pointer.active ? shell.pointer.x * 14 : 0) - eye.lookX) * k;
+    eye.lookY += ((shell.pointer.active ? -shell.pointer.y * 8 : 0) - eye.lookY) * k;
+    applyEye();
   });
 }
 

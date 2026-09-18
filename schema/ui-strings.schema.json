@@ -58,7 +58,12 @@
         "demoAliceBlue",
         "demoAliceBlueNote",
         "demoAliceYellow",
-        "demoAliceYellowNote"
+        "demoAliceYellowNote",
+        "demoWayHatter",
+        "demoWayHare",
+        "demoCallCat",
+        "demoTryDoor",
+        "demoTeleportHint"
       ],
       "additionalProperties": false,
       "properties": {
@@ -251,6 +256,31 @@
           "type": "string",
           "minLength": 1,
           "description": "One line under the yellow Alice: the earlier look, for those who remember it."
+        },
+        "demoWayHatter": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Signpost button toward the Hatter's house."
+        },
+        "demoWayHare": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Signpost button toward the March Hare's house."
+        },
+        "demoCallCat": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that calls the Cat to another bough."
+        },
+        "demoTryDoor": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Accessible name of a door in the hall; pressing it tries the lock."
+        },
+        "demoTeleportHint": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Hint under the Cheshire Cat: tap the wood to move the Cat there."
         }
       }
     }

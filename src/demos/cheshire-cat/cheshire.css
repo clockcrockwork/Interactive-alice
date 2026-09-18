@@ -1,5 +1,5 @@
 /* The Cheshire Cat: a night wood in depth, and a Cat that vanishes through an
-   SVG mask, tail first and grin last. */
+   SVG mask, tail first and grin last. The wood is the reader's to play in. */
 
 @layer tokens, base, layout, scene, utilities;
 
@@ -16,6 +16,8 @@
     --cc-cat: oklch(72% 0.12 320);
     --cc-cat-stripe: oklch(52% 0.14 320);
     --cc-grin: oklch(97% 0.02 90);
+    --cc-firefly: oklch(92% 0.16 110);
+    --cc-sign: oklch(40% 0.06 60);
   }
 }
 
@@ -43,6 +45,8 @@
     background: linear-gradient(to bottom, var(--cc-night), var(--cc-night-low));
     transform: rotate(calc(var(--tilt) * 1deg)) scale(calc(1 + var(--tilt) * 0.02));
     filter: hue-rotate(calc(var(--mad) * 40deg)) saturate(calc(1 + var(--mad) * 0.6));
+    pointer-events: auto;
+    cursor: pointer;
   }
 
   .cc__moon {
@@ -55,6 +59,34 @@
     background: var(--cc-moon);
     box-shadow: 0 0 60px 20px oklch(94% 0.05 95 / 0.25);
     translate: calc(var(--px) * -1vmin) 0;
+    overflow: hidden;
+  }
+
+  /* The moon turns to a crescent when the grin arrives: a night-coloured disc
+     slides across it. */
+  .cc__moon::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--cc-night);
+    translate: calc(100% + var(--crescent, 0) * -58%) calc(var(--crescent, 0) * -18%);
+  }
+
+  .cc__moon-grin {
+    position: absolute;
+    inset-inline-start: 72%;
+    inset-block-start: 14%;
+    inline-size: 12vmin;
+    aspect-ratio: 1;
+    translate: calc(var(--px) * -1vmin) 0;
+    opacity: 0;
+  }
+
+  .cc__moon-grin svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
   }
 
   .cc__trees {
@@ -94,12 +126,12 @@
       transparent 60%
     );
     background-size: 90vmin 100%;
-    /* Offset so no near trunk stands in front of the bough. */
     background-position: 30vmin bottom;
   }
 
   .cc__trees,
-  .cc__bough-layer {
+  .cc__bough-layer,
+  .cc__tree-grins {
     translate: calc(var(--px) * var(--rate, 1) * -0.5vmin) 0;
   }
 
@@ -109,6 +141,7 @@
     inset-block-end: 0;
     block-size: 40%;
     background: linear-gradient(to top, var(--cc-mist), transparent);
+    pointer-events: none;
   }
 
   .cc__bough-layer {
@@ -117,17 +150,62 @@
     inset: 0;
   }
 
+  /* Three boughs the Cat can sit on; the reader sends it from one to another. */
   .cc__bough {
     position: absolute;
-    inset-inline-start: 50%;
-    inset-block-start: 26%;
+    inset-inline-start: var(--bx, 50%);
+    inset-block-start: var(--by, 26%);
     inline-size: clamp(16rem, 60vmin, 34rem);
     translate: -50% 0;
-    pointer-events: auto;
-    cursor: pointer;
+    scale: var(--bs, 1);
   }
 
   .cc__bough svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .cc__bough-bare {
+    position: absolute;
+    inset: 0;
+  }
+
+  .cc__bough .art {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .cc__pupils {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    transform: translate(calc(var(--look-x, 0) * 1px), calc(var(--look-y, 0) * 1px));
+  }
+
+  .cc__grin {
+    transform-box: fill-box;
+    transform-origin: 50% 40%;
+    transform: scale(calc(1 + var(--wide, 0) * 0.35), calc(1 + var(--wide, 0) * 0.6));
+  }
+
+  /* When all are mad, the trees grin too. */
+  .cc__tree-grins {
+    --rate: 5;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .cc__tree-grin {
+    position: absolute;
+    inset-inline-start: var(--x, 50%);
+    inset-block-start: var(--y, 40%);
+    inline-size: 9vmin;
+    translate: -50% 0;
+  }
+
+  .cc__tree-grin svg {
     display: block;
     inline-size: 100%;
     block-size: auto;
@@ -140,6 +218,7 @@
     inline-size: clamp(7rem, 24vmin, 14rem);
     color: var(--alice-shadow);
     filter: drop-shadow(0 0 20px oklch(0% 0 0 / 0.6));
+    pointer-events: none;
   }
 
   .cc__alice svg {
@@ -148,10 +227,106 @@
     block-size: auto;
   }
 
+  /* Fireflies follow the pointer through the wood and go out. */
+  .cc__fireflies {
+    pointer-events: none;
+  }
+
+  .cc__firefly {
+    position: absolute;
+    inline-size: 0.9vmin;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--cc-firefly);
+    box-shadow: 0 0 10px 3px oklch(92% 0.16 110 / 0.6);
+    animation: cc-firefly 3s ease-out forwards;
+  }
+
+  /* Signposts: in that direction lives a Hatter, in that a March Hare. */
+  .cc__signs {
+    pointer-events: none;
+  }
+
+  .cc__sign {
+    position: absolute;
+    inset-block-end: 22%;
+    inline-size: clamp(4rem, 12vmin, 7rem);
+    aspect-ratio: 1 / 1.3;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--cc-grin);
+    cursor: pointer;
+    pointer-events: auto;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--demo-calm) var(--demo-ease),
+      visibility 0s linear var(--demo-calm);
+  }
+
+  .cc__sign[data-shown] {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .cc__sign--left {
+    inset-inline-start: 8%;
+  }
+
+  .cc__sign--right {
+    inset-inline-end: 8%;
+  }
+
+  .cc__sign svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .cc__sign:focus-visible {
+    outline: 2px solid var(--cc-firefly);
+    outline-offset: 4px;
+  }
+
+  .cc__sign-arrow {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+  }
+
+  .cc__sign:hover .cc__sign-arrow,
+  .cc__sign:focus-visible .cc__sign-arrow {
+    animation: cc-point 0.8s ease-in-out infinite alternate;
+  }
+
   .cc__prop {
     inset-inline-start: 50%;
     inset-block-start: calc(var(--demo-bar-height) + 1rem);
     translate: -50% 0;
+  }
+
+  .cc__prop--call {
+    inset-block-start: calc(var(--demo-bar-height) + 3.4rem);
+  }
+
+  .cc__hint {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: calc(var(--demo-bar-height) + 5.8rem);
+    margin: 0;
+    text-align: center;
+    font-family: system-ui, sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--demo-ink-soft);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--demo-calm) var(--demo-ease);
+  }
+
+  .cc__hint[data-shown] {
+    opacity: 0.8;
   }
 
   .cc__tail {
@@ -161,6 +336,8 @@
   }
 
   .demo[data-paused] .cc__tail,
+  .demo[data-paused] .cc__firefly,
+  .demo[data-paused] .cc__sign-arrow,
   .demo[data-paused] .demo-beat[data-cue="mad"] .line {
     animation-play-state: paused;
   }
@@ -184,14 +361,48 @@
     }
   }
 
+  @keyframes cc-firefly {
+    0% {
+      transform: translate(0, 0) scale(0.4);
+      opacity: 0;
+    }
+    15% {
+      opacity: 1;
+    }
+    100% {
+      transform: translate(calc(var(--dx, 0) * 1px), calc(var(--dy, 0) * 1px)) scale(1);
+      opacity: 0;
+    }
+  }
+
+  @keyframes cc-point {
+    from {
+      transform: translateX(-4%);
+    }
+    to {
+      transform: translateX(6%);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .cc__tail,
+    .cc__firefly,
+    .cc__sign:hover .cc__sign-arrow,
     .demo--cheshire-cat .demo-beat[data-cue="mad"] .line {
       animation: none;
     }
 
+    .cc__firefly {
+      opacity: 0.8;
+    }
+
     .cc__wood {
       transform: none;
+    }
+
+    .cc__sign,
+    .cc__hint {
+      transition: none;
     }
   }
 }

@@ -143,7 +143,8 @@ Captions rise out of the depth, pass the reader and vanish overhead: each beat i
 CSS perspective origin and its lines tween in `z`.
 
 **Interaction.** The pointer leans the camera (a fine pointer only; on touch the
-camera sways by itself). The jar is optional play: tap or click it, or press the
+camera sways by itself). Drag across the well and Alice tumbles, spinning on and
+settling by herself. The jar is optional play: tap or click it, or press the
 *Take the jar* button, and it jumps into Alice's hand; on the next beat she tucks it
 into a cupboard, with a polite live-region note. Not taking it changes nothing.
 
@@ -178,9 +179,11 @@ roof arrives with a flash.
 The bottle's and the cake's labels are the capitalized words the sentences themselves
 quote, read from the text at mount, never written in code.
 
-**Interaction.** The bottle and the cake come to her hand. Press either, or the
-*Drink it* and *Eat it* buttons, and it drains or gets bitten; the story drinks and
-eats anyway before the beat is out. The pointer turns her head a little.
+**Interaction.** Every door is a real button: try one and its knob jiggles and the
+hall gives a little thud, since every one is locked. The bottle and the cake come to
+her hand. Press either, or the *Drink it* and *Eat it* buttons, and it drains or
+gets bitten; the story drinks and eats anyway before the beat is out. The pointer
+turns her head a little.
 
 **Reduced motion.** Every walk is a cut with a blink; the telescope fold becomes a
 flash; no wobble, no head-turn; tears and flavours hang still.
@@ -227,7 +230,11 @@ the air.
 
 ### Growing in the House: zoom is the parallax
 
-One SVG: a dollhouse cutaway with its front wall gone, the tidy little room inside,
+It opens inside the room: a CSS 3D box the reader looks round (the pointer turns
+her head), the bottle by the looking-glass, the window with the garden beyond, the
+door. The bottle comes to hand; when she drinks, the room shrinks round her feet
+until her head meets the ceiling with a flash, and the room falls away to reveal the
+dollhouse. From there, one SVG: a dollhouse cutaway with its front wall gone, the tidy little room inside,
 the table in the window with the bottle by the looking-glass, the door, the chimney,
 and the cucumber-frame in the garden below. The camera is a transform on one group:
 it starts close on the table, and pulls out as Alice grows from standing at the
@@ -237,7 +244,8 @@ feet. The walls bulge and the roof lifts as she fills the room; then the camera 
 outside for the Rabbit's visit: the door rattles against her elbow, he goes round to
 the window, and her hand sweeps down.
 
-**Interaction.** Press the window, or *Make a snatch*, and her hand comes out; the
+**Interaction.** *Drink it*, or press the bottle, drains it in the room. Outside,
+press the window, or *Make a snatch*, and her hand comes out; the
 Rabbit tumbles into the cucumber-frame in a shower of glass. The story makes the
 snatch before the beat is out if the reader does not. The pointer leans the house.
 
@@ -272,11 +280,18 @@ when the rest has gone, and fades on its own afterward. At *we're all mad here* 
 wood tilts and turns a madder colour (`hue-rotate` on the world) and the Cat's lines
 wobble.
 
-**Interaction.** Press the Cat, or *Vanish*, to make it go and come back at any
-point before the story's own vanishings begin.
+The moon keeps the smile: at the end the grin rises into it and the moon becomes a
+crescent. At *we're all mad here* every tree grins too.
+
+**Interaction.** The Cat's eyes follow the pointer and its grin widens as you come
+near. There are three boughs; tap anywhere in the wood and the Cat vanishes and
+appears on the bough nearest your finger, tap the Cat itself and it goes somewhere
+else, or press *Call the Cat*. Two signposts point the ways to the Hatter and the
+March Hare; press one and the wood walks that way for a moment. Fireflies follow the
+pointer. The story's own vanishings take the Cat back when they begin.
 
 **Reduced motion.** The Cat cross-fades rather than sweeps; the wood does not tilt;
-the tail is still; the lines hold still.
+the tail, the fireflies, the lines and the signposts hold still.
 
 ### A Mad Tea-Party: rotation and zoom are the parallax
 
@@ -306,7 +321,9 @@ At the end the whole cup spins down into the teapot's spout.
 
 **Interaction.** The Dormouse sits on the rim. Press it, or the *Pinch the Dormouse*
 button, and it shrieks awake: the blur clears and the text jolts. The story pinches it
-anyway at the right beat, so nobody is stuck. The pointer leans the cloth and the cup.
+anyway at the right beat, so nobody is stuck. The pointer leans the cloth and the cup;
+drag across the cup and the treacle turns with your finger and swings back to the
+sentence being told.
 
 **Reduced motion.** The camera cuts from sentence to sentence with a dip in the
 treacle rather than a glide; no drips, no orbit, no jolt; the letters hang in the air;

@@ -30,6 +30,205 @@
     backdrop-filter: blur(6px);
   }
 
+  /* The tidy little room, from inside: Alice is the camera until she has grown
+     too big for it, and the front wall is where the reader is. */
+  .hs__room {
+    perspective: 800px;
+    perspective-origin: 50% 50%;
+    overflow: hidden;
+    background: var(--hs-room);
+  }
+
+  .hs__box {
+    --yaw: 0;
+    --pitch: 0;
+    --grow: 1;
+    --rise: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    inline-size: 0;
+    block-size: 0;
+    transform-style: preserve-3d;
+    transform: rotateX(calc(var(--pitch) * 1deg)) rotateY(calc(var(--yaw) * 1deg))
+      translate3d(0, calc(var(--rise) * 1px), 800px) scale3d(var(--grow), var(--grow), var(--grow));
+    transform-origin: 0 260px 800px;
+  }
+
+  .hs__face {
+    position: absolute;
+    inline-size: 1200px;
+    block-size: 700px;
+    inset-inline-start: -600px;
+    inset-block-start: -440px;
+    background: var(--hs-room);
+    background-image: repeating-linear-gradient(
+      to right,
+      transparent 0 78px,
+      oklch(0% 0 0 / 0.05) 78px 80px
+    );
+  }
+
+  .hs__face--back {
+    transform: translateZ(-600px);
+  }
+
+  .hs__face--left {
+    transform-origin: 0 50%;
+    transform: rotateY(90deg);
+  }
+
+  .hs__face--right {
+    inset-inline-start: 600px;
+    transform-origin: 0 50%;
+    transform: rotateY(-90deg) translateX(-1200px);
+  }
+
+  .hs__face--floor {
+    block-size: 1200px;
+    inset-block-start: 260px;
+    transform-origin: 50% 0;
+    transform: rotateX(-90deg) translateY(-600px) translateY(600px);
+    background: repeating-linear-gradient(
+      to right,
+      var(--hs-floor) 0 90px,
+      oklch(52% 0.08 60) 90px 100px
+    );
+  }
+
+  .hs__face--ceiling {
+    block-size: 1200px;
+    inset-block-start: -440px;
+    transform-origin: 50% 0;
+    /* Like the floor, it runs away from its near edge, over the whole room. */
+    transform: rotateX(-90deg);
+    background: oklch(90% 0.02 85);
+  }
+
+  .hs__glass {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 30%;
+    inline-size: 220px;
+    block-size: 300px;
+    translate: -50% 0;
+    border: 12px solid var(--hs-timber);
+    border-radius: 110px 110px 12px 12px;
+    background: linear-gradient(135deg, oklch(88% 0.03 220), oklch(78% 0.04 220));
+  }
+
+  .hs__window-frame {
+    position: absolute;
+    inset-inline-start: 300px;
+    inset-block-start: 160px;
+    inline-size: 320px;
+    block-size: 300px;
+    border: 14px solid var(--hs-timber);
+    background:
+      linear-gradient(to right, transparent 48%, var(--hs-timber) 48% 52%, transparent 52%),
+      linear-gradient(to bottom, transparent 48%, var(--hs-timber) 48% 52%, transparent 52%),
+      linear-gradient(to bottom, var(--hs-sky), var(--hs-sky-low) 60%, var(--hs-grass) 61%);
+  }
+
+  .hs__room-table {
+    position: absolute;
+    inset-inline-start: 250px;
+    inset-block-start: 470px;
+    inline-size: 420px;
+    block-size: 14px;
+    background: var(--hs-timber);
+  }
+
+  .hs__room-table::before,
+  .hs__room-table::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 14px;
+    inline-size: 14px;
+    block-size: 160px;
+    background: var(--hs-timber);
+  }
+
+  .hs__room-table::before {
+    inset-inline-start: 20px;
+  }
+
+  .hs__room-table::after {
+    inset-inline-end: 20px;
+  }
+
+  .hs__room-bottle {
+    position: absolute;
+    inset-inline-start: 440px;
+    inset-block-start: 400px;
+    inline-size: 34px;
+    block-size: 70px;
+    border-radius: 6px 6px 4px 4px;
+    background: linear-gradient(to bottom, oklch(60% 0.05 60) 0 18%, oklch(70% 0.15 25) 18%);
+  }
+
+  .hs__room-door {
+    position: absolute;
+    inset-inline-start: 760px;
+    inset-block-start: 140px;
+    inline-size: 220px;
+    block-size: 560px;
+    border: 12px solid var(--hs-timber);
+    border-block-end: 0;
+    background: oklch(46% 0.08 50);
+    transform-origin: 0 50%;
+    transform: rotateY(calc(var(--rattle, 0) * -4deg));
+  }
+
+  .hs__room-door::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 170px;
+    inset-block-start: 280px;
+    inline-size: 16px;
+    block-size: 16px;
+    border-radius: 50%;
+    background: oklch(80% 0.16 85);
+  }
+
+  .hs__hand-bottle {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: -6%;
+    inline-size: clamp(8rem, 26vmin, 16rem);
+    translate: -50% 0;
+    transform-origin: 50% 100%;
+    opacity: 0;
+    pointer-events: auto;
+    cursor: pointer;
+    filter: drop-shadow(0 20px 30px oklch(0% 0 0 / 0.5));
+  }
+
+  .hs__hand-bottle svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .hs__hand-bottle[data-held] {
+    filter: drop-shadow(0 0 24px oklch(90% 0.12 85 / 0.7));
+  }
+
+  .hs__liquid {
+    transform-origin: 50% 100%;
+    transform: scaleY(var(--fill, 1));
+  }
+
+  .hs__ceiling-shadow {
+    background: radial-gradient(ellipse 80% 40% at 50% 0%, oklch(0% 0 0 / 0.7), transparent 70%);
+    opacity: 0;
+  }
+
+  .hs__flash {
+    background: oklch(95% 0.02 90);
+    opacity: 0;
+  }
+
   .hs__garden {
     background: linear-gradient(
       to bottom,

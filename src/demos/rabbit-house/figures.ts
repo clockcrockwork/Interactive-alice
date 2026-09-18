@@ -57,3 +57,11 @@ export const HOUSE_SVG = `
     <g class="hs__rabbit" transform="translate(900 560)" opacity="0">${svgFigure('white-rabbit/garden', -30, -80, 60, 80)}</g>
   </g>
 </svg>`;
+
+/** The unlabelled bottle by the looking-glass, raised to her lips. */
+export const BOTTLE_IN_HAND_SVG = `
+<svg viewBox="0 0 60 140" focusable="false">
+  <rect x="22" y="2" width="16" height="14" rx="3" fill="oklch(60% 0.05 60)"/>
+  <path d="M20 16 h20 v22 q14 8 14 30 v60 q0 10 -10 10 h-28 q-10 0 -10 -10 v-60 q0 -22 14 -30 z" fill="oklch(85% 0.03 200 / 0.4)" stroke="oklch(96% 0.02 200 / 0.8)" stroke-width="2"/>
+  <g class="hs__liquid"><path d="M9 62 h42 v66 q0 8 -8 8 h-26 q-8 0 -8 -8 z" fill="oklch(70% 0.15 25)"/></g>
+</svg>`;

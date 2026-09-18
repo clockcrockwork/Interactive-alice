@@ -123,6 +123,11 @@
     animation: rh-sway 3.2s ease-in-out infinite alternate;
   }
 
+  /* A drag spins her; the number is written by the script and settles to zero. */
+  .rh__alice .art {
+    rotate: calc(var(--tumble, 0) * 1deg);
+  }
+
   .rh__hair {
     transform-origin: 50% 20%;
     animation: rh-hair 2.1s ease-in-out infinite alternate;

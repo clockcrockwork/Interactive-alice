@@ -39,6 +39,11 @@
     "demoAliceBlue": "あおい アリス",
     "demoAliceBlueNote": "だれもが しっている すがた。",
     "demoAliceYellow": "きいろい アリス",
-    "demoAliceYellowNote": "しっている ひとは しっている、きおくに よりそった すがた。"
+    "demoAliceYellowNote": "しっている ひとは しっている、きおくに よりそった すがた。",
+    "demoWayHatter": "ぼうしやの ほう",
+    "demoWayHare": "さんがつウサギの ほう",
+    "demoCallCat": "ねこを よぶ",
+    "demoTryDoor": "この とびらを ためす",
+    "demoTeleportHint": "もりを タップすると そこに ねこが あらわれる"
   }
 }

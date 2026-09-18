@@ -394,6 +394,38 @@ function mount(shell: DemoShell): void {
   }
   master.to(mouse, { opacity: 0, duration: 0.3 }, iTeapot + 0.5);
 
+  // --- Drag across the cup to stir it round: the treacle turns with your finger
+  // and swings back to the sentence being told.
+  let stir = 0;
+  let stirVelocity = 0;
+  let stirring = false;
+  let stirLastX = 0;
+  stage.addEventListener('pointerdown', (event) => {
+    stirring = true;
+    stirLastX = event.clientX;
+  });
+  window.addEventListener('pointerup', () => {
+    stirring = false;
+  });
+  window.addEventListener(
+    'pointermove',
+    (event) => {
+      if (!stirring || reducedMotion) {
+        return;
+      }
+      stirVelocity += (event.clientX - stirLastX) * 0.25;
+      stirLastX = event.clientX;
+    },
+    { passive: true },
+  );
+  const baseApply = apply;
+  const applyWithStir = (): void => {
+    cameraGroup.setAttribute(
+      'transform',
+      `translate(${CENTRE + camera.nx} ${CENTRE - 30 + camera.ny}) scale(${camera.scale}) rotate(${-camera.angle + stir}) translate(${-camera.x} ${-camera.y})`,
+    );
+  };
+
   // --- Pointer: the cloth and the cup lean a little toward it.
   shell.onFrame((dt) => {
     if (reducedMotion) {
@@ -409,7 +441,14 @@ function mount(shell: DemoShell): void {
     if (master.time() < iTeapot + 0.35) {
       camera.nx = px * -10;
       camera.ny = py * -10;
-      apply();
+    }
+    if (Math.abs(stirVelocity) > 0.01 || Math.abs(stir) > 0.01) {
+      stir += stirVelocity * dt;
+      stirVelocity *= 1 - Math.min(1, dt * 2);
+      stir *= 1 - Math.min(1, dt * 1.2);
+      applyWithStir();
+    } else {
+      baseApply();
     }
   });
 }

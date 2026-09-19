@@ -14,6 +14,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import '../../styles/base.css';
 import '../art/art.css';
 import './shell.css';
+import { createSound, type DemoSound } from './sound.ts';
+import { installTransitions } from './transitions.ts';
+
+installTransitions();
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -33,6 +37,8 @@ export interface Pointer {
   active: boolean;
   /** Whether the current pointer is a fine one (a mouse), so hover-style cues make sense. */
   fine: boolean;
+  /** Whether the phone's tilt is steering the pointer instead. */
+  tilt: boolean;
 }
 
 export interface DemoShell {
@@ -54,6 +60,8 @@ export interface DemoShell {
   /** Runs every frame unless paused; `dt` in seconds. Returns a release function. */
   onFrame(fn: (dt: number, elapsed: number) => void): () => void;
   pointer: Pointer;
+  /** Browser-synthesised sound; off until the visitor turns it on. */
+  sound: DemoSound;
   /** A decorative layer inside the stage, under the captions. */
   layer(className: string): HTMLElement;
   /** A real button inside the stage; hidden until `show` is called. */
@@ -212,16 +220,78 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     y: 0,
     active: false,
     fine: matchMedia('(pointer: fine)').matches,
+    tilt: false,
   };
   window.addEventListener(
     'pointermove',
     (event) => {
+      if (pointer.tilt) {
+        return;
+      }
       pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
       pointer.y = (event.clientY / window.innerHeight) * 2 - 1;
       pointer.active = true;
     },
     { passive: true },
   );
+
+  // --- Tilt: on a phone, the view can be steered by tilting it. Offered as a
+  // button, since some browsers ask permission and all of them need a gesture.
+  const bar = root.querySelector<HTMLElement>('.demo__bar');
+  if (
+    bar &&
+    ui.demoTilt &&
+    matchMedia('(pointer: coarse)').matches &&
+    'DeviceOrientationEvent' in window &&
+    !reducedMotion
+  ) {
+    const tiltButton = document.createElement('button');
+    tiltButton.type = 'button';
+    tiltButton.className = 'demo__tilt';
+    tiltButton.textContent = ui.demoTilt;
+    bar.append(tiltButton);
+    tiltButton.addEventListener('click', async () => {
+      const Orientation = DeviceOrientationEvent as unknown as {
+        requestPermission?: () => Promise<'granted' | 'denied'>;
+      };
+      if (Orientation.requestPermission) {
+        try {
+          if ((await Orientation.requestPermission()) !== 'granted') {
+            return;
+          }
+        } catch {
+          return;
+        }
+      }
+      window.addEventListener('deviceorientation', (event) => {
+        const gamma = event.gamma ?? 0;
+        const beta = event.beta ?? 45;
+        // Held upright at about 45°, level is the middle; ±25° reaches the edges.
+        pointer.x = Math.max(-1, Math.min(1, gamma / 25));
+        pointer.y = Math.max(-1, Math.min(1, (beta - 45) / 25));
+        pointer.active = true;
+        pointer.tilt = true;
+      });
+      tiltButton.remove();
+      status(ui.demoTiltOn ?? '');
+    });
+  }
+
+  // --- Sound: synthesised, off by default, and held while motion is paused.
+  const sound = createSound();
+  if (bar && ui.demoSoundOn) {
+    const soundButton = document.createElement('button');
+    soundButton.type = 'button';
+    soundButton.className = 'demo__sound';
+    soundButton.setAttribute('aria-pressed', 'false');
+    soundButton.textContent = ui.demoSoundOn;
+    bar.append(soundButton);
+    soundButton.addEventListener('click', async () => {
+      const on = await sound.toggle();
+      soundButton.setAttribute('aria-pressed', String(on));
+      soundButton.textContent = on ? (ui.demoSoundOff ?? '') : (ui.demoSoundOn ?? '');
+    });
+  }
 
   const button = root.querySelector<HTMLButtonElement>('.demo__motion');
   if (button) {
@@ -231,6 +301,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
       button.setAttribute('aria-pressed', String(paused));
       button.textContent = paused ? (ui.demoResume ?? '') : (ui.demoPause ?? '');
       ambient.paused(paused);
+      sound.hold(paused);
       root.toggleAttribute('data-paused', paused);
     });
   }
@@ -276,6 +347,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
       return () => frameFns.delete(fn);
     },
     pointer,
+    sound,
     layer: (className) => {
       const el = document.createElement('div');
       el.className = `demo__layer ${className}`;

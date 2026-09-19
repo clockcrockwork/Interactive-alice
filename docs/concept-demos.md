@@ -119,6 +119,25 @@ Under `prefers-reduced-motion: reduce` the shell snaps the scrub to whole beats,
 shows a one-line note, and each demo substitutes a designed still version for each
 effect (§4). Nothing is merely switched off.
 
+**Sound** is synthesised in the browser (`shell/sound.ts`): filtered noise for
+wind and paper, a tremolo'd sawtooth for a purr, sine plinks for drips, a few
+partials for a chime and for breaking glass. No file is fetched. It is off until the
+visitor presses *Sound on* in the bar, which is also the gesture browsers require,
+and it is held silent while motion is paused, so the one pause covers both. Each
+demo levels a continuous cue from its frame loop (wind with the fall, drips over the
+treacle, the purr as you near the Cat) and plays one-shots at its moments.
+
+**Tilt.** On a coarse-pointer device with orientation events, the bar offers *Steer
+by tilting*; a press asks permission where the browser wants one, and from then on
+the phone's tilt drives the shell's pointer, so every demo that leans with the
+pointer leans with the phone. Not offered under reduced motion.
+
+**Transitions.** Leaving a page for another sets a view-transition type from the
+destination (`shell/transitions.ts`, on `pageswap` and `pagereveal`): a well, the
+hall or the chimney swallow the screen into a hole; the spiral, the pool and the wood
+whirl it; a court, a race or the index deal it like a card. A browser without the
+Navigation API simply navigates.
+
 `window.__aliceDemo` is the test seam: progress, active beat, paused, reduced, and a
 per-demo `mode` (the rabbit hole reports `webgl` or `flat`).
 
@@ -143,8 +162,11 @@ Captions rise out of the depth, pass the reader and vanish overhead: each beat i
 CSS perspective origin and its lines tween in `z`.
 
 **Interaction.** The pointer leans the camera (a fine pointer only; on touch the
-camera sways by itself). Drag across the well and Alice tumbles, spinning on and
-settling by herself. The jar is optional play: tap or click it, or press the
+camera sways by itself, or the phone's tilt steers it). Drag across the well and Alice
+tumbles, spinning on and settling by herself; scrolling fast is falling fast, the dust
+streaks and she tumbles. Tap a book, a jar or a map on a passing shelf (a ray to the
+wall, then the nearest thing to where it lands) and it jumps into her hand; she would
+not drop it, so *Put it back* tucks it into a cupboard. The jar is optional play: tap or click it, or press the
 *Take the jar* button, and it jumps into Alice's hand; on the next beat she tucks it
 into a cupboard, with a polite live-region note. Not taking it changes nothing.
 
@@ -180,7 +202,9 @@ The bottle's and the cake's labels are the capitalized words the sentences thems
 quote, read from the text at mount, never written in code.
 
 **Interaction.** Every door is a real button: try one and its knob jiggles and the
-hall gives a little thud, since every one is locked. The bottle and the cake come to
+hall gives a little thud, since every one is locked. *Take the key*, or press it on
+the table, and it hangs in her hand: try it in any door and the door will not have
+it; press the little door and it opens. The bottle and the cake come to
 her hand. Press either, or the *Drink it* and *Eat it* buttons, and it drains or
 gets bitten; the story drinks and eats anyway before the beat is out. The pointer
 turns her head a little.
@@ -203,8 +227,11 @@ middle of the screen and writes its height and slope into two custom properties,
 the beat translates and rotates with them.
 
 **Interaction.** Press or drag on the water to stir it; a fine pointer stirs it by
-moving quickly; the *Stir the water* button does it for a keyboard. The Mouse leaps at
-*Où est ma chatte?* and bristles at the mention of Dinah on its own.
+moving quickly; the *Stir the water* button does it for a keyboard. Hold a finger on
+the water and she swims toward it; while it is offended the Mouse keeps its distance
+and drifts back when given room. The Mouse leaps at *Où est ma chatte?* and bristles
+at the mention of Dinah on its own. At *drowned in my own tears* the water goes over
+the camera for a moment and the sentences ripple.
 
 **Reduced motion.** The swell is a quarter as fast and a third as high, rings spread
 slowly, tears fall at half speed, and the captions do not ride the water.
@@ -221,8 +248,10 @@ down as prizes, the thimble rises, turns, and is handed back, and Alice bows.
 
 **Interaction.** They began running when they liked, and left off when they liked:
 every runner is a real button, `aria-pressed` while running, and pressing one makes it
-rest or run. *Everybody run!* sets them all off. Each runner has its own pace, so the
-ring never looks the same twice.
+rest or run; during the race the others start and stop on their own. The first runner
+you press during the race becomes yours: it wears a mark and every tap gives it a
+spurt. *Everybody run!* sets them all off. When the prizes come down, drag a comfit
+onto a runner and it eats it.
 
 **Reduced motion.** The runners hold their places and lean into the run instead of
 bobbing; the camera cuts between its shots and does not circle; the comfits hang in
@@ -244,8 +273,12 @@ feet. The walls bulge and the roof lifts as she fills the room; then the camera 
 outside for the Rabbit's visit: the door rattles against her elbow, he goes round to
 the window, and her hand sweeps down.
 
+The room does not simply fade: the roof lifts and the camera rises out through the
+gap to find the cutaway below.
+
 **Interaction.** *Drink it*, or press the bottle, drains it in the room. Outside,
-press the window, or *Make a snatch*, and her hand comes out; the
+*Push the wall* (or tap the house) shakes it and slates slide off the roof. Press the
+window, or *Make a snatch*, and her hand comes out; the
 Rabbit tumbles into the cucumber-frame in a shower of glass. The story makes the
 snatch before the beat is out if the reader does not. The pointer leans the house.
 
@@ -323,7 +356,9 @@ At the end the whole cup spins down into the teapot's spout.
 button, and it shrieks awake: the blur clears and the text jolts. The story pinches it
 anyway at the right beat, so nobody is stuck. The pointer leans the cloth and the cup;
 drag across the cup and the treacle turns with your finger and swings back to the
-sentence being told.
+sentence being told. A still, held finger reads ahead down the spiral and lifts a
+dozing sentence out of the blur; let go and it swings back. Tap the three sisters and
+a letter floats up out of the well.
 
 **Reduced motion.** The camera cuts from sentence to sentence with a dip in the
 treacle rather than a glide; no drips, no orbit, no jolt; the letters hang in the air;
@@ -348,7 +383,11 @@ The stuck cards shy away from the pointer. When the bank arrives they turn into 
 leaves (a `clip-path: path()` morph between a card and a leaf with the same number of
 points) and drift down, and the sister is behind them.
 
-**Interaction.** Tap or click a stuck card to flick it off; press *Beat them off*
+The jury write it all down: every sentence lands as a scribble on each slate and each
+juror marks whether it thought it important; press a juror and it changes its mind.
+
+**Interaction.** While the Queen shouts, every tap makes the pack leap. Tap a stuck
+card to flick it off, or peel it off the glass and throw it; press *Beat them off*
 to clear them all. Both are optional: the leaves fall whether or not she beat them off.
 
 **Reduced motion.** The dolly cuts with a dip to black; the cards fade in at their

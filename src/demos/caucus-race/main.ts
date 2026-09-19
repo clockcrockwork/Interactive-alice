@@ -310,6 +310,7 @@ function mount(shell: DemoShell): void {
     });
     if (fed) {
       comfit.remove();
+      shell.sound.play('chime', 0.6);
       fed.el.removeAttribute('data-spurt');
       void fed.el.offsetWidth;
       fed.el.setAttribute('data-spurt', '');

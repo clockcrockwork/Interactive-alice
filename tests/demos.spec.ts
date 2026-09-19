@@ -223,10 +223,18 @@ test('the caucus-race: every runner is a button that rests or runs', async ({ pa
   await expect(runners.first()).toHaveAttribute('aria-pressed', 'true', { timeout: 8000 });
   // A running figure is never still and sits in a 3D ring where another may cover
   // it, so the press is delivered to the button itself rather than aimed at a pixel.
+  // The first press during the race makes that runner yours; it keeps running and
+  // every press is a spurt. Before the race, a press rests or runs any runner.
   await runners.first().dispatchEvent('click');
-  await expect(runners.first()).toHaveAttribute('aria-pressed', 'false');
-  await runners.first().dispatchEvent('click');
+  await expect(runners.first()).toHaveAttribute('data-mine', '');
   await expect(runners.first()).toHaveAttribute('aria-pressed', 'true');
+  await expect(runners.first()).toHaveAttribute('aria-label', /\(.+\)/);
+  await scrollTo(page, 0);
+  await page.waitForTimeout(600);
+  await runners.nth(2).dispatchEvent('click');
+  await expect(runners.nth(2)).toHaveAttribute('aria-pressed', 'true');
+  await runners.nth(2).dispatchEvent('click');
+  await expect(runners.nth(2)).toHaveAttribute('aria-pressed', 'false');
 });
 
 test('the pool of tears: the sentences ride the swell once she is in the water', async ({
@@ -421,4 +429,63 @@ test('the rabbit hole: a drag across the well tumbles her', async ({ page }) => 
       { timeout: 4000 },
     )
     .toBeGreaterThan(5);
+});
+
+test('every demo offers sound, off until asked, and the toggle turns it on', async ({ page }) => {
+  const demo = demos[0];
+  test.skip(!demo, 'no demos in this build');
+  await page.goto(demo?.url ?? '');
+  const sound = page.locator('.demo__sound');
+  await expect(sound).toHaveAttribute('aria-pressed', 'false');
+  await sound.click();
+  await expect(sound).toHaveAttribute('aria-pressed', 'true');
+  await sound.click();
+  await expect(sound).toHaveAttribute('aria-pressed', 'false');
+});
+
+test('the trial: every juror is a button, and pressing one changes its slate', async ({ page }) => {
+  const demo = demos.find((candidate) => candidate.demo === 'trial');
+  test.skip(!demo, 'no trial demo in this build');
+  await page.goto(demo?.url ?? '');
+  const jurors = page.locator('.tr__juror');
+  await expect(jurors).toHaveCount(12);
+  await scrollTo(page, 0.28);
+  await page.waitForTimeout(800);
+  const verdict = () =>
+    page.evaluate(() => document.querySelector<HTMLElement>('.tr__slate')?.dataset.verdict);
+  const before = await verdict();
+  expect(['yes', 'no']).toContain(before);
+  await jurors.first().dispatchEvent('click');
+  await expect.poll(verdict).not.toBe(before);
+});
+
+test('drink me: the key can be taken off the table into her hand', async ({ page }) => {
+  const demo = demos.find((candidate) => candidate.demo === 'drink-me');
+  test.skip(!demo, 'no drink-me demo in this build');
+  await page.goto(demo?.url ?? '');
+  await scrollTo(page, 0.24);
+  await expect(page.locator('.dk__prop--key')).toBeVisible({ timeout: 8000 });
+  await page.locator('.dk__prop--key').click();
+  await expect(page.locator('.dk__hand--key')).toHaveCSS('opacity', '1', { timeout: 4000 });
+});
+
+test('the rabbit hole: a tap on a passing shelf takes something into her hand', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'rabbit-hole');
+  test.skip(!demo, 'no rabbit-hole demo in this build');
+  await page.goto(demo?.url ?? '');
+  test.skip((await page.evaluate(() => window.__aliceDemo?.mode())) !== 'webgl', 'no WebGL here');
+  await scrollTo(page, 0.35);
+  await page.waitForTimeout(1200);
+  let held = 0;
+  for (let i = 0; i < 40 && !held; i += 1) {
+    await page.mouse.click(100 + ((i * 197) % 1080), 80 + ((i * 131) % 600));
+    await page.waitForTimeout(120);
+    held = await page.evaluate(() => document.querySelector('.rh__held')?.innerHTML.length ?? 0);
+  }
+  expect(held).toBeGreaterThan(0);
+  await expect(page.locator('.rh__prop-back')).toBeVisible();
+  await page.locator('.rh__prop-back').click();
+  await expect(page.locator('.demo__status')).not.toBeEmpty();
 });

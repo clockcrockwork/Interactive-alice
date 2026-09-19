@@ -196,6 +196,7 @@ function mount(shell: DemoShell): void {
     stage.removeAttribute('data-shake');
     void stage.offsetWidth;
     stage.setAttribute('data-shake', '');
+    shell.sound.play('thud', 0.7);
     if (slates && slateCount < 8) {
       slateCount += 1;
       const slate = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -286,6 +287,7 @@ function mount(shell: DemoShell): void {
       ease: 'power2.in',
     });
     gsap.to(shards, { opacity: 1, duration: 0.2, delay: 0.7 });
+    setTimeout(() => shell.sound.play('glass'), 700);
   };
   snatchButton.addEventListener('click', snatch);
   target.addEventListener('click', snatch);

@@ -247,6 +247,11 @@ function mount(shell: DemoShell): void {
 
   // --- Off with her head: the court turns red and shakes.
   master.fromTo(flash, { opacity: 0 }, { opacity: 0.8, duration: 0.1 }, iHead + 0.02);
+  master.call(
+    () => (master.time() >= iHead + 0.02 ? shell.sound.play('thud') : undefined),
+    [],
+    iHead + 0.02,
+  );
   master.to(flash, { opacity: 0.25, duration: 0.5 }, iHead + 0.12);
   master.to(flash, { opacity: 0, duration: 0.4 }, iGrow);
   master.call(
@@ -350,6 +355,7 @@ function mount(shell: DemoShell): void {
     const stageBox = shell.stage.getBoundingClientRect();
     glass.append(card.el);
     card.stuck = true;
+    shell.sound.play('paper', 0.6);
     const gx = 8 + ((order * 37) % 84) + (pick() - 0.5) * 6;
     const gy = 10 + ((order * 53) % 76) + (pick() - 0.5) * 6;
     card.el.style.setProperty('--gx', `${gx}%`);

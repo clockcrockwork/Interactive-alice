@@ -88,6 +88,7 @@ function mount(shell: DemoShell): void {
     }
     kicked = true;
     kickButton.hide();
+    shell.sound.play('whoosh');
     delete target.dataset.shown;
     const burst = gsap.timeline();
     burst.to(foot, { y: '-70vh', duration: reducedMotion ? 0 : 0.12, ease: 'power4.in' }, 0);

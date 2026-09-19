@@ -484,6 +484,8 @@ function mount(shell: DemoShell): void {
 
   // --- Pointer: the cloth and the cup lean a little toward it.
   shell.onFrame((dt) => {
+    const now = master.time();
+    shell.sound.level('drip', now >= iSpiral + 0.5 && now < iTeapot ? 0.6 : 0);
     if (reducedMotion) {
       return;
     }

@@ -8,6 +8,9 @@ import gsap from 'gsap';
 import '../../styles/base.css';
 import '../shell/shell.css';
 import './index.css';
+import { installTransitions } from '../shell/transitions.ts';
+
+installTransitions();
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const cards = [...document.querySelectorAll<HTMLElement>('.demos__card')];

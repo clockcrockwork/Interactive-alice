@@ -267,6 +267,7 @@ function mount(shell: DemoShell): void {
     iThump,
   );
   master.to(flash, { opacity: 0, duration: 0.3 }, iThump + 0.06);
+  master.call(() => (master.time() >= iThump ? shell.sound.play('thud') : undefined), [], iThump);
   if (!reducedMotion) {
     master.fromTo(camera, { shake: 0 }, { shake: 1, duration: 0.05 }, iThump);
     master.to(camera, { shake: 0, duration: 0.5, ease: 'power2.out' }, iThump + 0.05);
@@ -312,6 +313,7 @@ function mount(shell: DemoShell): void {
       return;
     }
     holding = true;
+    shell.sound.play('paper');
     held.innerHTML = heldSvg(picked.kind, picked.color);
     const handBox = hand.getBoundingClientRect();
     gsap.fromTo(
@@ -404,18 +406,15 @@ function mount(shell: DemoShell): void {
     const velocity = Math.abs(progress - lastProgress) / Math.max(dt, 0.001);
     lastProgress = progress;
     camera.rush = mix(camera.rush, Math.min(1, velocity * 6), Math.min(1, dt * 4));
+    const falling = master.time() > iDrop + 0.5 && master.time() < iThump;
+    shell.sound.level('wind', falling ? 0.25 + camera.rush * 0.75 : 0);
     if (!reducedMotion && camera.rush > 0.2) {
       spinVelocity += camera.rush * 8 * dt * (spinVelocity >= 0 ? 1 : -1);
     }
     if (!reducedMotion) {
-      const targetX =
-        shell.pointer.fine && shell.pointer.active
-          ? shell.pointer.x
-          : Math.sin(elapsed * 0.4) * 0.35;
-      const targetY =
-        shell.pointer.fine && shell.pointer.active
-          ? shell.pointer.y
-          : Math.cos(elapsed * 0.3) * 0.25;
+      const steer = (shell.pointer.fine || shell.pointer.tilt) && shell.pointer.active;
+      const targetX = steer ? shell.pointer.x : Math.sin(elapsed * 0.4) * 0.35;
+      const targetY = steer ? shell.pointer.y : Math.cos(elapsed * 0.3) * 0.25;
       const k = Math.min(1, dt * 2.5);
       camera.driftX = mix(camera.driftX, targetX, k);
       camera.driftY = mix(camera.driftY, targetY, k);

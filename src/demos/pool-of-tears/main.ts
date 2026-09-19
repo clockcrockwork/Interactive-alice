@@ -152,6 +152,9 @@ function mount(shell: DemoShell): void {
   const stirAt = (clientX: number, clientY: number, strength = 1): void => {
     const box = shell.stage.getBoundingClientRect();
     sea.stir(clientX - box.left, clientY - box.top, strength);
+    if (strength > 0.5) {
+      shell.sound.play('splash', strength * 0.5);
+    }
   };
   let dragging = false;
   canvas.addEventListener('pointerdown', (event) => {

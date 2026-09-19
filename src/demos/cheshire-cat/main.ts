@@ -338,6 +338,7 @@ function mount(shell: DemoShell): void {
       pupils.style.setProperty('--look-y', ((dy / distance) * reach).toFixed(2));
       const near = Math.max(0, 1 - distance / 260);
       wide = mix(wide, near, Math.min(1, dt * 4));
+      shell.sound.level('purr', presence.body > 0.5 ? wide * 0.8 : 0);
       if (master.time() < iVanish1) {
         grin?.style.setProperty('--wide', wide.toFixed(3));
       }

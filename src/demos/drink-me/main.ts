@@ -408,6 +408,7 @@ function mount(shell: DemoShell): void {
   master.call(() => (master.time() >= iKey + 0.8 ? takeKey() : keyButton.hide()), [], iKey + 0.8);
   master.to(keyInHand, { opacity: 0, y: 80, duration: 0.3 }, iBottle);
   const keyOpens = (): void => {
+    shell.sound.play('chime');
     gsap.fromTo(
       keyInHand,
       { rotation: -12 },
@@ -427,6 +428,7 @@ function mount(shell: DemoShell): void {
   // whole hall gives a little thud. With the key in hand, it is tried in the lock.
   for (const door of hall.querySelectorAll<HTMLElement>('.dk__door')) {
     door.addEventListener('click', () => {
+      shell.sound.play('thud', 0.5);
       if (hasKey) {
         gsap.fromTo(
           keyInHand,

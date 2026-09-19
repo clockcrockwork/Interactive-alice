@@ -100,6 +100,8 @@
 
   .demo__back,
   .demo__motion,
+  .demo__sound,
+  .demo__tilt,
   .demo__next,
   .demo__prop {
     color: inherit;
@@ -112,6 +114,7 @@
     cursor: pointer;
   }
 
+  .demo__sound[aria-pressed="true"],
   .demo__motion[aria-pressed="true"] {
     background: var(--demo-ink);
     color: var(--demo-ground);
@@ -285,9 +288,9 @@
     white-space: nowrap;
   }
 
-  /* The screen itself turns: leaving a demo, the old page drops away like a card
-     and the next is revealed through a widening iris. Cross-document, so it is a
-     progressive enhancement and falls back to a plain navigation. */
+  /* The screen itself turns. Which way depends on where it is going (see
+     transitions.ts): a well swallows it into a hole, a pool whirls it, a court
+     deals it like a card. Cross-document, so a progressive enhancement. */
   @media (prefers-reduced-motion: no-preference) {
     @view-transition {
       navigation: auto;
@@ -300,6 +303,29 @@
 
     ::view-transition-new(root) {
       animation: demo-page-iris 640ms var(--demo-ease) both;
+    }
+
+    :active-view-transition-type(hole) {
+      &::view-transition-old(root) {
+        animation: demo-page-hole 560ms cubic-bezier(0.6, 0, 0.9, 0.5) both;
+        transform-origin: 50% 50%;
+      }
+
+      &::view-transition-new(root) {
+        animation: demo-page-rise 640ms var(--demo-ease) both;
+      }
+    }
+
+    :active-view-transition-type(whirl) {
+      &::view-transition-old(root) {
+        animation: demo-page-whirl 640ms cubic-bezier(0.6, 0, 0.8, 0.4) both;
+        transform-origin: 50% 50%;
+      }
+
+      &::view-transition-new(root) {
+        animation: demo-page-unwhirl 700ms var(--demo-ease) both;
+        transform-origin: 50% 50%;
+      }
     }
   }
 
@@ -316,6 +342,35 @@
     }
     to {
       clip-path: circle(80% at 50% 50%);
+    }
+  }
+
+  @keyframes demo-page-hole {
+    to {
+      transform: scale(0.1);
+      clip-path: circle(0% at 50% 50%);
+      opacity: 0.4;
+    }
+  }
+
+  @keyframes demo-page-rise {
+    from {
+      transform: scale(1.25);
+      opacity: 0;
+    }
+  }
+
+  @keyframes demo-page-whirl {
+    to {
+      transform: rotate(180deg) scale(0);
+      opacity: 0;
+    }
+  }
+
+  @keyframes demo-page-unwhirl {
+    from {
+      transform: rotate(-90deg) scale(1.4);
+      opacity: 0;
     }
   }
 

@@ -63,7 +63,17 @@
         "demoWayHare",
         "demoCallCat",
         "demoTryDoor",
-        "demoTeleportHint"
+        "demoTeleportHint",
+        "demoPutBack",
+        "demoJurorToggle",
+        "demoSoundOn",
+        "demoSoundOff",
+        "demoTilt",
+        "demoTiltOn",
+        "demoTakeKey",
+        "demoMyRunner",
+        "demoFeed",
+        "demoShakeHouse"
       ],
       "additionalProperties": false,
       "properties": {
@@ -281,6 +291,56 @@
           "type": "string",
           "minLength": 1,
           "description": "Hint under the Cheshire Cat: tap the wood to move the Cat there."
+        },
+        "demoPutBack": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that puts a thing taken from a shelf back into a cupboard."
+        },
+        "demoJurorToggle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Accessible name of a juror; pressing one flips what it writes on its slate."
+        },
+        "demoSoundOn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Label of the sound toggle while sound is off."
+        },
+        "demoSoundOff": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Label of the sound toggle while sound is on."
+        },
+        "demoTilt": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that asks to steer the view with the phone's tilt."
+        },
+        "demoTiltOn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status once tilt steering is on."
+        },
+        "demoTakeKey": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that picks up the little golden key."
+        },
+        "demoMyRunner": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Accessible-name suffix for the runner the reader chose."
+        },
+        "demoFeed": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Hint that a comfit can be dragged to a runner."
+        },
+        "demoShakeHouse": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that shakes the house."
         }
       }
     }

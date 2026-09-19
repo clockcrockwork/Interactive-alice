@@ -53,6 +53,7 @@ export const HOUSE_SVG = `
       <rect x="640" y="90" width="50" height="110" fill="var(--hs-timber)"/>
       <rect x="632" y="80" width="66" height="16" fill="var(--hs-roof-deep)"/>
     </g>
+    <g class="hs__slates"></g>
     <!-- The White Rabbit, on his way round -->
     <g class="hs__rabbit" transform="translate(900 560)" opacity="0">${svgFigure('white-rabbit/garden', -30, -80, 60, 80)}</g>
   </g>

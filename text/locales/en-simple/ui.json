@@ -44,6 +44,16 @@
     "demoWayHare": "Toward the March Hare",
     "demoCallCat": "Call the Cat",
     "demoTryDoor": "Try this door",
-    "demoTeleportHint": "Tap the wood and the Cat appears there"
+    "demoTeleportHint": "Tap the wood and the Cat appears there",
+    "demoPutBack": "Put it back",
+    "demoJurorToggle": "Juror: change what it writes",
+    "demoSoundOn": "Sound on",
+    "demoSoundOff": "Sound off",
+    "demoTilt": "Steer by tilting",
+    "demoTiltOn": "Tilt steering is on",
+    "demoTakeKey": "Take the key",
+    "demoMyRunner": "your runner",
+    "demoFeed": "Drag a comfit to a runner to feed it",
+    "demoShakeHouse": "Push the wall"
   }
 }

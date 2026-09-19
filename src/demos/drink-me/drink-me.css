@@ -551,6 +551,28 @@
     filter: drop-shadow(0 0 24px oklch(90% 0.12 85 / 0.7));
   }
 
+  .dk__hand--key {
+    inline-size: clamp(5rem, 16vmin, 9rem);
+    inset-inline-start: 72%;
+    inset-block-end: 4%;
+    color: var(--dk-gold);
+    filter: drop-shadow(0 6px 10px oklch(0% 0 0 / 0.5));
+  }
+
+  .dk__prop--key {
+    inset-block-start: calc(var(--demo-bar-height) + 3.4rem);
+  }
+
+  .dk__key {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .dk__little-door {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
   .dk__prop {
     inset-inline-start: 50%;
     inset-block-start: calc(var(--demo-bar-height) + 1rem);

@@ -296,10 +296,32 @@
     animation-delay: var(--delay, 0s);
   }
 
+  .hs__stage[data-shake] {
+    animation: hs-shake 0.45s linear 1;
+  }
+
+  /* The Rabbit's line, from under the window, as a bubble. */
+  .demo--rabbit-house .line[data-speaker="white-rabbit"] {
+    justify-self: center;
+    padding: 0.3em 0.9em;
+    border-radius: 1.2em;
+    background: oklch(100% 0 0 / 0.85);
+    color: var(--demo-paper-ink);
+    text-shadow: none;
+    font-style: italic;
+  }
+
   .hs__prop {
     inset-inline-start: 50%;
     inset-block-start: calc(var(--demo-bar-height) + 1rem);
     translate: -50% 0;
+  }
+
+  .hs__prop--shake {
+    inset-inline-start: auto;
+    inset-inline-end: var(--space-2);
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: 0 0;
   }
 
   .hs__window-target {
@@ -322,6 +344,22 @@
     animation-play-state: paused;
   }
 
+  @keyframes hs-shake {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    25% {
+      transform: translate(-1%, 0.4%);
+    }
+    50% {
+      transform: translate(0.8%, -0.4%);
+    }
+    75% {
+      transform: translate(-0.5%, 0.2%);
+    }
+  }
+
   @keyframes hs-shard {
     from {
       transform: translateY(0) rotate(0deg);
@@ -334,6 +372,10 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .hs__stage[data-shake] {
+      animation: none;
+    }
+
     .hs__shard {
       animation: none;
       transform: translateY(calc(var(--ly, 0) * 14vh));

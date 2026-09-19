@@ -373,10 +373,67 @@ function mount(shell: DemoShell): void {
   master.fromTo(flash, { opacity: 0 }, { opacity: 0.9, duration: 0.05 }, iGrow + 0.98);
   master.to(flash, { opacity: 0, duration: 0.4 }, iGrow + 1.03);
 
+  // --- The key. Take it off the table and it hangs in her hand; try it in any
+  // door and the door will not have it, until the little one, which opens.
+  const keyOnTable = hall.querySelector<HTMLElement>('.dk__key');
+  const keyInHand = document.createElement('div');
+  keyInHand.className = 'dk__hand dk__hand--key';
+  keyInHand.innerHTML = KEY_SVG;
+  hands.append(keyInHand);
+  const keyButton = shell.prop(shell.ui.demoTakeKey ?? '', 'dk__prop dk__prop--key');
+  let hasKey = false;
+  const takeKey = (): void => {
+    if (hasKey) {
+      return;
+    }
+    hasKey = true;
+    keyButton.hide();
+    gsap.to(keyOnTable, { opacity: 0, duration: 0.2 });
+    gsap.fromTo(
+      keyInHand,
+      { opacity: 0, y: 120, rotation: -30 },
+      { opacity: 1, y: 0, rotation: -12, duration: reducedMotion ? 0 : 0.5, ease: 'power3.out' },
+    );
+  };
+  keyButton.addEventListener('click', takeKey);
+  keyOnTable?.addEventListener('click', takeKey);
+  master.call(
+    () =>
+      master.time() >= iKey && master.time() < iKey + 0.8 && !hasKey
+        ? keyButton.show()
+        : keyButton.hide(),
+    [],
+    iKey,
+  );
+  master.call(() => (master.time() >= iKey + 0.8 ? takeKey() : keyButton.hide()), [], iKey + 0.8);
+  master.to(keyInHand, { opacity: 0, y: 80, duration: 0.3 }, iBottle);
+  const keyOpens = (): void => {
+    gsap.fromTo(
+      keyInHand,
+      { rotation: -12 },
+      { rotation: 60, duration: reducedMotion ? 0 : 0.35, yoyo: true, repeat: 1 },
+    );
+    gsap.to(doorLeaf, { '--open': 1, duration: reducedMotion ? 0 : 0.5, delay: 0.3 });
+    gsap.to(garden, { opacity: 1, duration: reducedMotion ? 0 : 0.5, delay: 0.3 });
+  };
+  const littleDoor = hall.querySelector<HTMLElement>('.dk__little-door');
+  littleDoor?.addEventListener('click', () => {
+    if (hasKey) {
+      keyOpens();
+    }
+  });
+
   // --- Every door can be tried, and every one is locked: the knob jiggles and the
-  // whole hall gives a little thud.
+  // whole hall gives a little thud. With the key in hand, it is tried in the lock.
   for (const door of hall.querySelectorAll<HTMLElement>('.dk__door')) {
     door.addEventListener('click', () => {
+      if (hasKey) {
+        gsap.fromTo(
+          keyInHand,
+          { rotation: -12 },
+          { rotation: 20, duration: reducedMotion ? 0 : 0.15, yoyo: true, repeat: 3 },
+        );
+      }
       door.removeAttribute('data-tried');
       void door.offsetWidth;
       door.setAttribute('data-tried', '');

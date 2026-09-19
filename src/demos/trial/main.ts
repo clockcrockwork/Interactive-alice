@@ -169,6 +169,69 @@ function mount(shell: DemoShell): void {
     }
   }
 
+  // --- The jury write it all down. Every sentence lands as a scribble on each
+  // slate, and each juror decides for itself whether it was important; press a
+  // juror and it changes its mind.
+  const juryPiece = court.querySelector<HTMLElement>('.tr__jury');
+  const slates = [...court.querySelectorAll<SVGGElement>('.tr__slate')];
+  const juryRandom = seeded(23);
+  const marks = juryRandom;
+  const jurorButtons = slates.map((slate, i) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'tr__juror';
+    button.style.setProperty('--i', String(i));
+    button.setAttribute('aria-label', shell.ui.demoJurorToggle ?? '');
+    button.setAttribute('aria-pressed', 'false');
+    button.addEventListener('click', () => {
+      const next = slate.dataset.verdict === 'yes' ? 'no' : 'yes';
+      slate.dataset.verdict = next;
+      button.setAttribute('aria-pressed', String(next === 'yes'));
+    });
+    juryPiece?.append(button);
+    return button;
+  });
+  const write = (): void => {
+    for (const [i, slate] of slates.entries()) {
+      gsap.fromTo(
+        slate,
+        { '--written': 0 },
+        { '--written': 1, duration: reducedMotion ? 0 : 0.5, delay: reducedMotion ? 0 : i * 0.04 },
+      );
+      const yes = marks() < 0.5;
+      slate.dataset.verdict = yes ? 'yes' : 'no';
+      jurorButtons[i]?.setAttribute('aria-pressed', String(yes));
+    }
+  };
+  for (const beat of shell.beats) {
+    if (beat.index >= iRise) {
+      continue;
+    }
+    master.call(
+      () => (master.time() >= beat.index + 0.05 ? write() : undefined),
+      [],
+      beat.index + 0.05,
+    );
+  }
+  master.call(
+    () =>
+      juryPiece?.toggleAttribute(
+        'data-listening',
+        master.time() >= cue('jury') && master.time() < iRise,
+      ),
+    [],
+    cue('jury'),
+  );
+  master.call(
+    () =>
+      juryPiece?.toggleAttribute(
+        'data-listening',
+        master.time() >= cue('jury') && master.time() < iRise,
+      ),
+    [],
+    iRise,
+  );
+
   // --- The herald's scroll unrolls to show the accusation.
   const heraldLines = shell.beats
     .slice(iHerald, iHerald + 3)
@@ -201,6 +264,24 @@ function mount(shell: DemoShell): void {
   if (queenMouth) {
     master.to(queenMouth, { attr: { d: 'M62 84 q18 22 36 0' }, duration: 0.3 }, iHead);
   }
+
+  // --- While the Queen shouts, every tap makes the pack leap.
+  const leap = (): void => {
+    if (master.time() < iHead || master.time() >= iRise) {
+      return;
+    }
+    const some = cards.filter(() => pick() < 0.35);
+    for (const card of some) {
+      card.el.removeAttribute('data-leap');
+      void card.el.offsetWidth;
+      card.el.setAttribute('data-leap', '');
+    }
+  };
+  shell.stage.addEventListener('pointerdown', (event) => {
+    if (!(event.target as HTMLElement).closest('button')) {
+      leap();
+    }
+  });
 
   // --- Alice grows to her full size, in front of everything.
   if (alice) {
@@ -374,10 +455,57 @@ function mount(shell: DemoShell): void {
     iAttack + 0.05,
   );
 
-  glass.addEventListener('click', (event) => {
+  // Peel a stuck card off the glass: drag it and let go, and it flies where you
+  // threw it; a plain tap flicks it away.
+  let drag: { card: Card; x: number; y: number; vx: number; vy: number; t: number } | undefined;
+  glass.addEventListener('pointerdown', (event) => {
     const target = (event.target as HTMLElement).closest<HTMLElement>('.tr__card');
     const card = cards.find((candidate) => candidate.el === target);
-    if (card) {
+    if (!card?.stuck) {
+      return;
+    }
+    drag = { card, x: event.clientX, y: event.clientY, vx: 0, vy: 0, t: performance.now() };
+    card.el.setAttribute('data-dragging', '');
+    gsap.killTweensOf(card.el);
+  });
+  window.addEventListener(
+    'pointermove',
+    (event) => {
+      if (!drag) {
+        return;
+      }
+      const now = performance.now();
+      const dt = Math.max(1, now - drag.t);
+      drag.vx = ((event.clientX - drag.x) / dt) * 16;
+      drag.vy = ((event.clientY - drag.y) / dt) * 16;
+      gsap.set(drag.card.el, {
+        x: `+=${event.clientX - drag.x}`,
+        y: `+=${event.clientY - drag.y}`,
+      });
+      drag.x = event.clientX;
+      drag.y = event.clientY;
+      drag.t = now;
+    },
+    { passive: true },
+  );
+  window.addEventListener('pointerup', () => {
+    if (!drag) {
+      return;
+    }
+    const { card, vx, vy } = drag;
+    card.el.removeAttribute('data-dragging');
+    drag = undefined;
+    if (Math.hypot(vx, vy) > 6) {
+      card.stuck = false;
+      gsap.to(card.el, {
+        x: `+=${vx * 60}`,
+        y: `+=${vy * 60 + 400}`,
+        rotationZ: `+=${vx * 20}`,
+        duration: reducedMotion ? 0 : 0.7,
+        ease: 'power2.in',
+        onComplete: () => card.el.remove(),
+      });
+    } else {
       flick(card);
     }
   });

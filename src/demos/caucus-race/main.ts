@@ -74,8 +74,31 @@ function mount(shell: DemoShell): void {
     runner.running = running;
     runner.el.setAttribute('aria-pressed', String(running));
   };
+  // Pick a runner as your own: it wears a mark, runs a little faster, and every
+  // tap on it gives it a spurt. Any other runner still rests or runs on a tap.
+  let mine: Runner | undefined;
   for (const runner of runners) {
-    runner.el.addEventListener('click', () => setRunning(runner, !runner.running));
+    runner.el.addEventListener('click', () => {
+      if (racing && mine === runner) {
+        runner.pace += 14;
+        setRunning(runner, true);
+        runner.el.removeAttribute('data-spurt');
+        void runner.el.offsetWidth;
+        runner.el.setAttribute('data-spurt', '');
+        return;
+      }
+      if (racing && !mine) {
+        mine = runner;
+        runner.el.setAttribute('data-mine', '');
+        runner.el.setAttribute(
+          'aria-label',
+          `${shell.ui.demoRunToggle ?? ''} (${shell.ui.demoMyRunner ?? ''})`,
+        );
+        setRunning(runner, true);
+        return;
+      }
+      setRunning(runner, !runner.running);
+    });
   }
   const runButton = shell.prop(shell.ui.demoRaceStart ?? '', 'cr__prop');
   runButton.addEventListener('click', () => {
@@ -225,6 +248,76 @@ function mount(shell: DemoShell): void {
   ).join('');
   master.to(comfits, { opacity: 1, duration: 0.3 }, iComfits + 0.2);
   master.to(comfits, { opacity: 0, duration: 0.4 }, iThimble + 0.3);
+  // Prizes are handed round: drag a comfit onto a runner and it eats it.
+  const feedHint = document.createElement('p');
+  feedHint.className = 'cr__hint';
+  feedHint.textContent = shell.ui.demoFeed ?? '';
+  shell.stage.append(feedHint);
+  master.call(
+    () =>
+      feedHint.toggleAttribute(
+        'data-shown',
+        master.time() >= iComfits + 0.2 && master.time() < iThimble + 0.3,
+      ),
+    [],
+    iComfits + 0.2,
+  );
+  master.call(
+    () =>
+      feedHint.toggleAttribute(
+        'data-shown',
+        master.time() >= iComfits + 0.2 && master.time() < iThimble + 0.3,
+      ),
+    [],
+    iThimble + 0.3,
+  );
+  let carried: HTMLElement | undefined;
+  comfits.addEventListener('pointerdown', (event) => {
+    const comfit = (event.target as HTMLElement).closest<HTMLElement>('.cr__comfit');
+    if (!comfit) {
+      return;
+    }
+    carried = comfit;
+    comfit.setAttribute('data-carried', '');
+    const box = shell.stage.getBoundingClientRect();
+    gsap.set(comfit, { x: event.clientX - box.left, y: event.clientY - box.top });
+  });
+  window.addEventListener(
+    'pointermove',
+    (event) => {
+      if (!carried) {
+        return;
+      }
+      const box = shell.stage.getBoundingClientRect();
+      gsap.set(carried, { x: event.clientX - box.left, y: event.clientY - box.top });
+    },
+    { passive: true },
+  );
+  window.addEventListener('pointerup', (event) => {
+    if (!carried) {
+      return;
+    }
+    const comfit = carried;
+    carried = undefined;
+    const fed = runners.find((runner) => {
+      const r = runner.el.getBoundingClientRect();
+      return (
+        event.clientX >= r.left &&
+        event.clientX <= r.right &&
+        event.clientY >= r.top &&
+        event.clientY <= r.bottom
+      );
+    });
+    if (fed) {
+      comfit.remove();
+      fed.el.removeAttribute('data-spurt');
+      void fed.el.offsetWidth;
+      fed.el.setAttribute('data-spurt', '');
+    } else {
+      comfit.removeAttribute('data-carried');
+      gsap.set(comfit, { clearProps: 'transform' });
+    }
+  });
   const thimbleLayer = shell.layer('cr__thimble-layer');
   thimbleLayer.innerHTML = `<div class="cr__thimble">${THIMBLE_SVG}</div>`;
   const thimble = thimbleLayer.querySelector<HTMLElement>('.cr__thimble');
@@ -252,7 +345,14 @@ function mount(shell: DemoShell): void {
     for (const runner of runners) {
       if (racing && runner.running) {
         runner.angle = (runner.angle + runner.pace * dt) % 360;
+        // A spurt wears off; the others start and stop as they like.
+        if (runner === mine && runner.pace > 60) {
+          runner.pace -= dt * 20;
+        }
         moved = true;
+      }
+      if (racing && runner !== mine && random() < dt * 0.08) {
+        setRunning(runner, !runner.running);
       }
     }
     if (moved) {

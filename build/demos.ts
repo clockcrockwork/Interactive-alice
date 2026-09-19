@@ -146,6 +146,16 @@ export function loadDemoProject(root: string, locale?: string): DemoProject {
 }
 
 const UI_FOR_SCRIPT = [
+  'demoPutBack',
+  'demoJurorToggle',
+  'demoSoundOn',
+  'demoSoundOff',
+  'demoTilt',
+  'demoTiltOn',
+  'demoTakeKey',
+  'demoMyRunner',
+  'demoFeed',
+  'demoShakeHouse',
   'demoWayHatter',
   'demoWayHare',
   'demoCallCat',

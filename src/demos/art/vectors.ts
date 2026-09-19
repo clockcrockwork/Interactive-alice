@@ -161,7 +161,7 @@ export const JURY_SVG = `
         : i % 3 === 1
           ? `<path d="M${x - 14} ${y - 8} l-10 -16 M${x + 14} ${y - 8} l10 -16" stroke="oklch(50% 0.08 ${hue})" stroke-width="4" stroke-linecap="round"/>`
           : `<path d="M${x} ${y - 16} l-6 -18 l12 0 z" fill="oklch(70% 0.14 ${hue})"/>`;
-    return `${ears}<circle cx="${x}" cy="${y}" r="16" fill="oklch(62% 0.08 ${hue})"/><circle cx="${x - 5}" cy="${y - 2}" r="2" fill="oklch(20% 0 0)"/><circle cx="${x + 5}" cy="${y - 2}" r="2" fill="oklch(20% 0 0)"/><rect x="${x - 10}" y="${y + 20}" width="20" height="26" rx="3" fill="oklch(90% 0.02 80)"/>`;
+    return `${ears}<circle cx="${x}" cy="${y}" r="16" fill="oklch(62% 0.08 ${hue})"/><circle cx="${x - 5}" cy="${y - 2}" r="2" fill="oklch(20% 0 0)"/><circle cx="${x + 5}" cy="${y - 2}" r="2" fill="oklch(20% 0 0)"/><g class="tr__slate" data-juror="${i}"><rect x="${x - 10}" y="${y + 20}" width="20" height="26" rx="3" fill="oklch(90% 0.02 80)"/><path class="tr__scribble" d="M${x - 6} ${y + 27} h12 M${x - 6} ${y + 33} h9 M${x - 6} ${y + 39} h11" stroke="oklch(30% 0.02 60)" stroke-width="1.6" stroke-linecap="round" pathLength="1"/><path class="tr__mark tr__mark--yes" d="M${x - 5} ${y + 34} l4 4 l7 -9" stroke="oklch(45% 0.15 145)" stroke-width="2.2" fill="none" stroke-linecap="round" pathLength="1"/><path class="tr__mark tr__mark--no" d="M${x - 5} ${y + 27} l10 12 M${x + 5} ${y + 27} l-10 12" stroke="oklch(50% 0.2 25)" stroke-width="2.2" stroke-linecap="round" pathLength="1"/></g>`;
   }).join('')}
 </svg>`;
 

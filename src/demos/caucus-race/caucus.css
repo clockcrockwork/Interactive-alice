@@ -120,6 +120,66 @@
     animation-delay: calc(var(--i, 0) * -90ms);
   }
 
+  .cr__runner[data-mine]::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: -1.2rem;
+    inline-size: 0.9rem;
+    block-size: 0.9rem;
+    translate: -50% 0;
+    background: var(--cr-comfit);
+    clip-path: polygon(
+      50% 0,
+      62% 38%,
+      100% 38%,
+      69% 60%,
+      81% 100%,
+      50% 75%,
+      19% 100%,
+      31% 60%,
+      0 38%,
+      38% 38%
+    );
+  }
+
+  .cr__runner[data-spurt] .cr__figure {
+    animation: cr-spurt 0.5s ease-out 1;
+  }
+
+  .cr__comfit {
+    pointer-events: auto;
+    cursor: grab;
+  }
+
+  .cr__comfit[data-carried] {
+    animation: none;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: 3.2vmin;
+    cursor: grabbing;
+    z-index: 2;
+  }
+
+  .cr__hint {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    margin: 0;
+    text-align: center;
+    font-family: system-ui, sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: oklch(28% 0.03 60);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--demo-calm) var(--demo-ease);
+  }
+
+  .cr__hint[data-shown] {
+    opacity: 0.85;
+  }
+
   .cr__runner[data-drip] .cr__figure {
     animation: cr-shiver 0.3s ease-in-out infinite alternate;
   }
@@ -186,6 +246,18 @@
     animation-play-state: paused;
   }
 
+  @keyframes cr-spurt {
+    0% {
+      transform: scale(1);
+    }
+    35% {
+      transform: scale(1.25) translateY(-12%);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
   @keyframes cr-run {
     from {
       transform: translateY(0) rotate(-4deg) scaleY(1);
@@ -236,6 +308,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .cr__runner[aria-pressed="true"] .cr__figure,
+    .cr__runner[data-spurt] .cr__figure,
     .cr__runner[data-drip] .cr__figure,
     .cr__drips circle,
     .cr__comfit {
@@ -254,6 +327,10 @@
 
     .cr__comfit {
       transform: translateY(calc(var(--ly, 0) * 100vh));
+    }
+
+    .cr__hint {
+      transition: none;
     }
   }
 }

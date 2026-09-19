@@ -216,6 +216,60 @@
     --z: -120;
   }
 
+  /* The jury write it all down: a line scribbles across each slate when a
+     sentence lands, and a mark says whether this juror thought it important. */
+  .tr__scribble {
+    stroke-dasharray: 1;
+    stroke-dashoffset: calc(1 - var(--written, 0));
+  }
+
+  .tr__mark {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 400ms var(--demo-ease);
+  }
+
+  .tr__slate[data-verdict="yes"] .tr__mark--yes,
+  .tr__slate[data-verdict="no"] .tr__mark--no {
+    stroke-dashoffset: 0;
+  }
+
+  .tr__juror {
+    position: absolute;
+    inline-size: 8.3%;
+    block-size: 60%;
+    inset-block-start: 20%;
+    inset-inline-start: calc(var(--i) * 8.15% + 0.6%);
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .tr__juror:focus-visible {
+    outline: 2px solid var(--tr-gold);
+  }
+
+  .tr__jury {
+    pointer-events: none;
+  }
+
+  .tr__jury[data-listening] {
+    pointer-events: auto;
+  }
+
+  /* The pack leaps at a tap while the Queen shouts. */
+  .tr__card[data-leap] {
+    animation: tr-leap 0.5s ease-out 1;
+  }
+
+  .tr__glass .tr__card[data-dragging] {
+    transition: none;
+    cursor: grabbing;
+    z-index: 2;
+  }
+
   .tr__pack {
     position: absolute;
     inset: 0;
@@ -350,6 +404,18 @@
     }
   }
 
+  @keyframes tr-leap {
+    0% {
+      translate: 0 0;
+    }
+    40% {
+      translate: 0 -14vh;
+    }
+    100% {
+      translate: 0 0;
+    }
+  }
+
   @keyframes tr-shake {
     0%,
     100% {
@@ -375,8 +441,13 @@
     }
 
     .demo--trial[data-shake] .tr__world,
-    .tr__pack[data-rising] .tr__card {
+    .tr__pack[data-rising] .tr__card,
+    .tr__card[data-leap] {
       animation: none;
+    }
+
+    .tr__mark {
+      transition: none;
     }
   }
 }

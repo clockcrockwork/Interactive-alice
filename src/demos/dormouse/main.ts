@@ -109,6 +109,9 @@ function mount(shell: DemoShell): void {
     sisters.append(sister);
   }
   cameraGroup.append(sisters);
+  sisters.setAttribute('class', 'dm__sisters');
+  sisters.style.setProperty('pointer-events', 'auto');
+  sisters.style.setProperty('cursor', 'pointer');
 
   const wobbleGroup = el('g', { filter: 'url(#dm-wobble)' });
   const sleepGroup = el('g', { filter: 'url(#dm-sleep)' });
@@ -351,6 +354,35 @@ function mount(shell: DemoShell): void {
     ).join('');
     master.to(letters, { opacity: 1, duration: 0.3 }, iMuchness);
     master.to(letters, { opacity: 0, duration: 0.3 }, iTeapot);
+    // The three little sisters drew everything that begins with it: tap them and
+    // a letter floats up out of the well, whatever the beat.
+    sisters.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const span = document.createElement('span');
+      span.className = 'dm__letter';
+      span.textContent = letter;
+      const box = shell.stage.getBoundingClientRect();
+      span.style.setProperty(
+        '--lx',
+        `${(((event.clientX - box.left) / box.width) * 100).toFixed(1)}%`,
+      );
+      span.style.setProperty('--delay', '0s');
+      span.style.setProperty('--ly', random().toFixed(2));
+      letters.append(span);
+      gsap.fromTo(
+        letters,
+        { opacity: 1 },
+        {
+          opacity: master.time() >= iMuchness && master.time() < iTeapot ? 1 : 0,
+          duration: 3,
+          ease: 'power2.in',
+        },
+      );
+      span.addEventListener('animationend', () => span.remove());
+      if (reducedMotion) {
+        setTimeout(() => span.remove(), 2500);
+      }
+    });
   }
 
   // --- Into the teapot: the whole cup spins down into the spout.
@@ -394,6 +426,25 @@ function mount(shell: DemoShell): void {
   }
   master.to(mouse, { opacity: 0, duration: 0.3 }, iTeapot + 0.5);
 
+  // --- Reading ahead: with a finger held on the cup, the camera slides on down
+  // the spiral so the next sentences can be read early; let go and it swings back.
+  // While the Dormouse dozes, holding a finger on the treacle lifts the sentence
+  // under it out of the blur, as if scooped up.
+  let holding = false;
+  let ahead = 0;
+  const readAhead = { x: 0, y: 0, angle: 0, scale: 1, amount: 0 };
+  const nextTarget = (): (typeof targets)[number] | undefined => {
+    const t = master.time();
+    return targets.find((target) => target.at > t + 0.05);
+  };
+  stage.addEventListener('pointerdown', () => {
+    holding = true;
+    gsap.to(blur, { amount: 0, duration: reducedMotion ? 0 : 0.25, onUpdate: applyEffects });
+  });
+  window.addEventListener('pointerup', () => {
+    holding = false;
+  });
+
   // --- Drag across the cup to stir it round: the treacle turns with your finger
   // and swings back to the sentence being told.
   let stir = 0;
@@ -420,9 +471,14 @@ function mount(shell: DemoShell): void {
   );
   const baseApply = apply;
   const applyWithStir = (): void => {
+    const a = readAhead.amount;
+    const x = mix(camera.x, readAhead.x, a);
+    const y = mix(camera.y, readAhead.y, a);
+    const angle = mix(camera.angle, readAhead.angle, a);
+    const scale = mix(camera.scale, readAhead.scale, a);
     cameraGroup.setAttribute(
       'transform',
-      `translate(${CENTRE + camera.nx} ${CENTRE - 30 + camera.ny}) scale(${camera.scale}) rotate(${-camera.angle + stir}) translate(${-camera.x} ${-camera.y})`,
+      `translate(${CENTRE + camera.nx} ${CENTRE - 30 + camera.ny}) scale(${scale}) rotate(${-angle + stir}) translate(${-x} ${-y})`,
     );
   };
 
@@ -442,7 +498,20 @@ function mount(shell: DemoShell): void {
       camera.nx = px * -10;
       camera.ny = py * -10;
     }
-    if (Math.abs(stirVelocity) > 0.01 || Math.abs(stir) > 0.01) {
+    // Reading ahead: a still, held finger (no stirring) eases the camera to the
+    // next sentence; it swings back when the finger lifts.
+    const wantAhead =
+      holding && !reducedMotion && Math.abs(stirVelocity) < 0.5 && master.time() < iTeapot;
+    const next = wantAhead ? nextTarget() : undefined;
+    if (next) {
+      readAhead.x = next.x;
+      readAhead.y = next.y;
+      readAhead.angle = next.angle;
+      readAhead.scale = next.scale;
+    }
+    ahead = mix(ahead, next ? 1 : 0, Math.min(1, dt * (next ? 1.5 : 3)));
+    readAhead.amount = ahead;
+    if (Math.abs(stirVelocity) > 0.01 || Math.abs(stir) > 0.01 || ahead > 0.001) {
       stir += stirVelocity * dt;
       stirVelocity *= 1 - Math.min(1, dt * 2);
       stir *= 1 - Math.min(1, dt * 1.2);

@@ -118,11 +118,17 @@ function mount(shell: DemoShell): void {
   master.fromTo(flash, { opacity: 0 }, { opacity: 0.8, duration: 0.05 }, iCeiling + 0.9);
   master.to(flash, { opacity: 0, duration: 0.3 }, iCeiling + 0.95);
   master.to(ceilingShadow, { opacity: 1, duration: 0.3 }, iCeiling + 0.6);
-  // Out to the dollhouse: the room falls away and the cutaway takes over.
-  master.to(room, { opacity: 0, scale: 1.6, duration: 0.5, ease: 'power2.in' }, iKneel - 0.35);
-  master.to(ceilingShadow, { opacity: 0, duration: 0.3 }, iKneel - 0.35);
-  master.to(hands, { opacity: 0, duration: 0.2 }, iKneel - 0.35);
-  master.to(stage, { opacity: 1, duration: 0.4 }, iKneel - 0.3);
+  // Out to the dollhouse: the roof lifts off the room, the camera rises out
+  // through the gap, and the cutaway is there below.
+  master.to(
+    eye,
+    { rise: -900, pitch: 60, grow: 0.42, duration: 0.6, ease: 'power2.in', onUpdate: applyEye },
+    iKneel - 0.55,
+  );
+  master.to(room, { opacity: 0, duration: 0.3 }, iKneel - 0.3);
+  master.to(ceilingShadow, { opacity: 0, duration: 0.3 }, iKneel - 0.55);
+  master.to(hands, { opacity: 0, duration: 0.2 }, iKneel - 0.55);
+  master.to(stage, { opacity: 1, duration: 0.3 }, iKneel - 0.35);
   const camera = stage.querySelector<SVGGElement>('.hs__camera');
   const wall = stage.querySelector<SVGGElement>('.hs__wall');
   const roof = stage.querySelector<SVGGElement>('.hs__roof');
@@ -177,7 +183,56 @@ function mount(shell: DemoShell): void {
   pose(iKneel, kneeling, [standing]);
   look(iKneel, { x: 460, y: 380, scale: 1.05 }, 0.7);
   master.fromTo(wall, { '--bulge': 0 }, { '--bulge': 0.5, duration: 0.6 }, iKneel + 0.2);
-  master.to(roof, { '--bulge': 0.5, duration: 0.6 }, iKneel + 0.2);
+  master.fromTo(roof, { '--bulge': 1.6 }, { '--bulge': 0.5, duration: 0.6 }, iKneel - 0.35);
+
+  // --- Push the wall: the house shakes and a slate slides off the roof.
+  const shakeButton = shell.prop(shell.ui.demoShakeHouse ?? '', 'hs__prop hs__prop--shake');
+  const slates = stage.querySelector<SVGGElement>('.hs__slates');
+  let slateCount = 0;
+  const shake = (): void => {
+    if (master.time() < iKneel || master.time() >= iDoor) {
+      return;
+    }
+    stage.removeAttribute('data-shake');
+    void stage.offsetWidth;
+    stage.setAttribute('data-shake', '');
+    if (slates && slateCount < 8) {
+      slateCount += 1;
+      const slate = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      slate.setAttribute('x', String(400 + random() * 200));
+      slate.setAttribute('y', '150');
+      slate.setAttribute('width', '34');
+      slate.setAttribute('height', '20');
+      slate.setAttribute('fill', 'var(--hs-roof-deep)');
+      slates.append(slate);
+      gsap.to(slate, {
+        y: 460,
+        x: `+=${(random() - 0.5) * 120}`,
+        rotation: (random() - 0.5) * 200,
+        transformOrigin: '50% 50%',
+        duration: reducedMotion ? 0 : 0.9,
+        ease: 'power2.in',
+      });
+    }
+  };
+  shakeButton.addEventListener('click', shake);
+  stage.addEventListener('pointerdown', (event) => {
+    if (!(event.target as HTMLElement).closest('button')) {
+      shake();
+    }
+  });
+  master.call(
+    () =>
+      master.time() >= iKneel && master.time() < iDoor ? shakeButton.show() : shakeButton.hide(),
+    [],
+    iKneel,
+  );
+  master.call(
+    () =>
+      master.time() >= iKneel && master.time() < iDoor ? shakeButton.show() : shakeButton.hide(),
+    [],
+    iDoor,
+  );
   pose(iLie, filling, [kneeling]);
   master.fromTo(
     filling,

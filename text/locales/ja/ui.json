@@ -44,6 +44,16 @@
     "demoWayHare": "さんがつウサギの ほう",
     "demoCallCat": "ねこを よぶ",
     "demoTryDoor": "この とびらを ためす",
-    "demoTeleportHint": "もりを タップすると そこに ねこが あらわれる"
+    "demoTeleportHint": "もりを タップすると そこに ねこが あらわれる",
+    "demoPutBack": "もどす",
+    "demoJurorToggle": "ばいしんいん：かくことを かえる",
+    "demoSoundOn": "おとを だす",
+    "demoSoundOff": "おとを けす",
+    "demoTilt": "かたむけて うごかす",
+    "demoTiltOn": "かたむけで うごきます",
+    "demoTakeKey": "かぎを とる",
+    "demoMyRunner": "あなたの はしりて",
+    "demoFeed": "おかしを はしりてへ ドラッグして たべさせる",
+    "demoShakeHouse": "かべを おす"
   }
 }

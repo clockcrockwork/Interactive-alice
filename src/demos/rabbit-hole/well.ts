@@ -25,6 +25,16 @@ export interface WellCamera {
   mood: number;
   /** 0 hides the floor, 1 is the floor fully lit and in place. */
   floor: number;
+  /** How fast the reader is scrolling, 0..1: the dust streaks past faster. */
+  rush: number;
+}
+
+export type ShelfThing = 'book' | 'jar' | 'map';
+
+export interface Picked {
+  kind: ShelfThing;
+  /** The book's colour, so the thing in her hand matches the one on the shelf. */
+  color?: string;
 }
 
 export interface Well {
@@ -35,6 +45,8 @@ export interface Well {
   /** Advances the self-running parts: dust and lamp flicker. */
   tick(dt: number, elapsed: number): void;
   render(): void;
+  /** What sits under a screen point (normalised -1..1), taken off its shelf. */
+  pick(ndcX: number, ndcY: number): Picked | undefined;
   dispose(): void;
 }
 
@@ -132,6 +144,7 @@ export function createWell(
     shake: 0,
     mood: 0,
     floor: 0,
+    rush: 0,
   };
 
   // The shaft. Its top sits a little above the mouth so the camera never sees an end.
@@ -174,6 +187,15 @@ export function createWell(
 
   const dummy = new THREE.Object3D();
   const color = new THREE.Color();
+  /** Every thing on a shelf, by where it stands, so a tap can find the nearest. */
+  const things: {
+    mesh: THREE.InstancedMesh;
+    index: number;
+    kind: ShelfThing;
+    x: number;
+    y: number;
+    z: number;
+  }[] = [];
   const palette = ['#a33b3b', '#2f5d8a', '#3f7a4a', '#c9a24a', '#6b4a8a', '#d8d2c4'];
   let book = 0;
   let jar = 0;
@@ -195,6 +217,7 @@ export function createWell(
         dummy.position.copy(local);
         dummy.updateMatrix();
         jars.setMatrixAt(jar, dummy.matrix);
+        things.push({ mesh: jars, index: jar, kind: 'jar', x: local.x, y: local.y, z: local.z });
         jar += 1;
       } else if (book < bookCount) {
         dummy.position.copy(local);
@@ -231,6 +254,7 @@ export function createWell(
     dummy.rotation.set(0, -angle - Math.PI / 2, (random() - 0.5) * 0.2);
     dummy.updateMatrix();
     maps.setMatrixAt(i, dummy.matrix);
+    things.push({ mesh: maps, index: i, kind: 'map', x: dummy.position.x, y, z: dummy.position.z });
   }
   scene.add(shelves, books, jars, maps);
 
@@ -295,6 +319,8 @@ export function createWell(
   scene.add(floor);
 
   const shakeRandom = seeded(3);
+  const raycaster = new THREE.Raycaster();
+  const pointer = new THREE.Vector2();
   const fogColor = new THREE.Color();
   const lampColor = new THREE.Color();
   const lampWell = new THREE.Color('#ffc27a');
@@ -340,7 +366,7 @@ export function createWell(
         const array = positions.array as Float32Array;
         const centre = -state.depth;
         for (let i = 0; i < dustCount; i += 1) {
-          let y = (array[i * 3 + 1] ?? 0) + dt * 1.6;
+          let y = (array[i * 3 + 1] ?? 0) + dt * (1.6 + state.rush * 22);
           if (y > centre + 15) {
             y -= 30;
           } else if (y < centre - 15) {
@@ -367,6 +393,52 @@ export function createWell(
     render() {
       applyCamera();
       renderer.render(scene, camera);
+    },
+    pick(ndcX, ndcY) {
+      // The things are small and the wall is far: a ray to the wall, then the
+      // nearest thing to where it lands, is a fairer tap than a ray through a book.
+      raycaster.setFromCamera(pointer.set(ndcX, ndcY), camera);
+      const o = raycaster.ray.origin;
+      const d = raycaster.ray.direction;
+      const a = d.x * d.x + d.z * d.z;
+      const b = 2 * (o.x * d.x + o.z * d.z);
+      const c = o.x * o.x + o.z * o.z - RADIUS * RADIUS;
+      const disc = b * b - 4 * a * c;
+      if (a < 1e-6 || disc < 0) {
+        return undefined;
+      }
+      const t = (-b + Math.sqrt(disc)) / (2 * a);
+      if (t <= 0) {
+        return undefined;
+      }
+      const hx = o.x + d.x * t;
+      const hy = o.y + d.y * t;
+      const hz = o.z + d.z * t;
+      let best: (typeof things)[number] | undefined;
+      let bestDistance = 2.2;
+      for (const thing of things) {
+        const distance = Math.hypot(thing.x - hx, thing.y - hy, thing.z - hz);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          best = thing;
+        }
+      }
+      if (!best) {
+        return undefined;
+      }
+      let picked: string | undefined;
+      if (best.kind === 'book' && best.mesh.instanceColor) {
+        best.mesh.getColorAt(best.index, color);
+        picked = `#${color.getHexString()}`;
+      }
+      // Taken: the instance is parked far below the floor, where nothing looks.
+      dummy.position.set(0, -depthTotal - 300, 0);
+      dummy.rotation.set(0, 0, 0);
+      dummy.updateMatrix();
+      best.mesh.setMatrixAt(best.index, dummy.matrix);
+      best.mesh.instanceMatrix.needsUpdate = true;
+      things.splice(things.indexOf(best), 1);
+      return { kind: best.kind, color: picked };
     },
     dispose() {
       renderer.dispose();

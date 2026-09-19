@@ -41,6 +41,7 @@ function mount(shell: DemoShell): void {
   if (!sea) {
     return;
   }
+  const under = shell.layer('pt__under');
   const props = shell.layer('pt__props');
   props.innerHTML =
     `<div class="pt__rabbit">${figure('white-rabbit/running')}</div>` +
@@ -100,6 +101,13 @@ function mount(shell: DemoShell): void {
   );
   master.to(state, { swell: reducedMotion ? 2 : 7, duration: 0.6 }, iSplash + 0.4);
   master.to(alice, { show: 1, duration: 0.3 }, iSplash + 0.3);
+  // Drowned in her own tears, for a moment: the water goes over the camera.
+  master.to(state, { level: 1.35, duration: 0.3, ease: 'power2.in' }, iSwim + 0.45);
+  master.to(under, { opacity: 1, duration: 0.25 }, iSwim + 0.5);
+  master.to(shell.captions, { '--under': 1, duration: 0.25 }, iSwim + 0.5);
+  master.to(state, { level: 0.56, duration: 0.35, ease: 'power2.out' }, iSwim + 0.85);
+  master.to(under, { opacity: 0, duration: 0.3 }, iSwim + 0.85);
+  master.to(shell.captions, { '--under': 0, duration: 0.3 }, iSwim + 0.85);
 
   // --- The Mouse.
   master.to(mouse, { show: 1, x: 0.72, duration: 0.8, ease: 'power1.out' }, iMouse);
@@ -134,6 +142,12 @@ function mount(shell: DemoShell): void {
     master.to(swimmer, { x: '+=0.3', dir: 1, duration: 0.9, ease: 'power1.inOut' }, iShore + 0.1);
   }
 
+  // --- Swimming: hold a finger on the water and she swims toward it. The Mouse
+  // keeps its distance while it is offended, and comes back when you give it room.
+  let swimTarget: number | undefined;
+  alice.offset = 0;
+  mouse.offset = 0;
+
   // --- Stirring the water.
   const stirAt = (clientX: number, clientY: number, strength = 1): void => {
     const box = shell.stage.getBoundingClientRect();
@@ -143,15 +157,22 @@ function mount(shell: DemoShell): void {
   canvas.addEventListener('pointerdown', (event) => {
     dragging = true;
     stirAt(event.clientX, event.clientY, 1.4);
+    swimTarget =
+      (event.clientX - shell.stage.getBoundingClientRect().left) / shell.stage.clientWidth;
   });
   window.addEventListener('pointerup', () => {
     dragging = false;
+    swimTarget = undefined;
   });
   canvas.addEventListener(
     'pointermove',
     (event) => {
       if (dragging || (shell.pointer.fine && Math.hypot(event.movementX, event.movementY) > 12)) {
         stirAt(event.clientX, event.clientY, dragging ? 0.8 : 0.25);
+        if (dragging) {
+          swimTarget =
+            (event.clientX - shell.stage.getBoundingClientRect().left) / shell.stage.clientWidth;
+        }
       }
     },
     { passive: true },
@@ -174,6 +195,29 @@ function mount(shell: DemoShell): void {
   let tilt = 0;
   shell.onFrame((dt, elapsed) => {
     sea.tick(dt, elapsed);
+    if (alice.show > 0.5 && !reducedMotion) {
+      const want = swimTarget === undefined ? 0 : swimTarget - alice.x;
+      const before = alice.offset ?? 0;
+      alice.offset = mix(before, Math.max(-0.45, Math.min(0.45, want)), Math.min(1, dt * 1.2));
+      alice.dir =
+        alice.offset - before > 0.0005 ? 1 : alice.offset - before < -0.0005 ? -1 : alice.dir;
+      if (Math.abs(alice.offset - before) > 0.0008 && Math.random() < dt * 6) {
+        sea.stir(
+          (alice.x + alice.offset) * shell.stage.clientWidth,
+          shell.stage.clientHeight * (1 - state.level),
+          0.3,
+        );
+      }
+      // The Mouse: offended, it swims off from her; calm, it drifts back.
+      const gap = mouse.x + (mouse.offset ?? 0) - (alice.x + alice.offset);
+      const t = master.time();
+      const offended = t >= iFrench + 0.3 && t < iBack;
+      const wantMouse =
+        offended && Math.abs(gap) < 0.22
+          ? (mouse.offset ?? 0) + Math.sign(gap || 1) * 0.3 * dt
+          : mix(mouse.offset ?? 0, 0, Math.min(1, dt * 0.5));
+      mouse.offset = Math.max(-0.5, Math.min(0.5, wantMouse));
+    }
     if (!reducedMotion && state.level > 0.2) {
       const centre = shell.stage.clientWidth / 2;
       const surface = sea.surfaceAt(centre);

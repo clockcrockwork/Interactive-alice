@@ -16,6 +16,8 @@ export interface Swimmer {
   jump: number;
   /** 0 calm, 1 bristling. */
   bristle: number;
+  /** A live nudge across the water on top of `x`, for swimming and fleeing. */
+  offset?: number;
   kind: 'mouse' | 'alice' | 'duck' | 'dodo' | 'lory' | 'eaglet';
 }
 
@@ -122,7 +124,7 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
     if (swimmer.show <= 0.001) {
       return;
     }
-    const x = swimmer.x * width - state.pan;
+    const x = (swimmer.x + (swimmer.offset ?? 0)) * width - state.pan;
     const surface = surfaceAt(x);
     const y = surface.y - swimmer.jump * 90 + (1 - swimmer.show) * 40;
     ctx.save();

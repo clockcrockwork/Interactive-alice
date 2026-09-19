@@ -11,7 +11,7 @@
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { attachDemo, type Beat, type DemoShell, mix } from '../shell/shell.ts';
-import { JAR_SVG } from './figures.ts';
+import { heldSvg, JAR_SVG } from './figures.ts';
 import './rabbit-hole.css';
 import { createWell, type Well } from './well.ts';
 
@@ -125,6 +125,7 @@ function mount(shell: DemoShell): void {
     shake: 0,
     mood: 0,
     floor: 0,
+    rush: 0,
   };
   master.to(camera, { depth: 12, duration: 1, ease: 'power2.in' }, iDrop);
   master.to(camera, { depth: floorDepth - 8, duration: iThump - steadyStart }, steadyStart);
@@ -286,6 +287,77 @@ function mount(shell: DemoShell): void {
     master.to(rabbit, { x: '-40vw', duration: 0.9, ease: 'power1.in' }, iEnd + 0.1);
   }
 
+  // --- The shelves are full of things to take. Tap a book, a jar or a map as it
+  // passes and it jumps into her hand; she would not drop it, so put it back into
+  // a cupboard. A quick tap picks; a drag still tumbles her.
+  const held = document.createElement('div');
+  held.className = 'rh__held';
+  const shelfCupboard = document.createElement('div');
+  shelfCupboard.className = 'rh__shelf-cupboard';
+  props.append(shelfCupboard, held);
+  const backButton = shell.prop(shell.ui.demoPutBack ?? '', 'rh__prop-back');
+  let holding = false;
+  let downAt: { x: number; y: number; t: number } | undefined;
+  canvas.setAttribute('data-pickable', '');
+  const pickAt = (clientX: number, clientY: number): void => {
+    if (!well || holding || !hand || master.time() < iDrop + 0.9 || master.time() > iThump - 0.3) {
+      return;
+    }
+    const box = shell.stage.getBoundingClientRect();
+    const picked = well.pick(
+      ((clientX - box.left) / box.width) * 2 - 1,
+      -(((clientY - box.top) / box.height) * 2 - 1),
+    );
+    if (!picked) {
+      return;
+    }
+    holding = true;
+    held.innerHTML = heldSvg(picked.kind, picked.color);
+    const handBox = hand.getBoundingClientRect();
+    gsap.fromTo(
+      held,
+      { x: clientX - box.left, y: clientY - box.top, scale: 0.5, opacity: 1, rotation: -30 },
+      {
+        x: handBox.left - box.left,
+        y: handBox.top - box.top,
+        scale: 1,
+        rotation: -12,
+        duration: reducedMotion ? 0 : 0.5,
+        ease: 'power3.out',
+      },
+    );
+    gsap.to(shelfCupboard, { opacity: 1, scale: 1, duration: reducedMotion ? 0 : 0.4, delay: 0.2 });
+    backButton.show();
+  };
+  const putBack = (): void => {
+    if (!holding) {
+      return;
+    }
+    holding = false;
+    backButton.hide();
+    const box = shell.stage.getBoundingClientRect();
+    const target = shelfCupboard.getBoundingClientRect();
+    gsap.to(shelfCupboard, { '--door': 1, duration: reducedMotion ? 0 : 0.3 });
+    gsap.to(held, {
+      x: target.left - box.left + target.width / 2,
+      y: target.top - box.top + target.height / 2,
+      scale: 0.6,
+      rotation: 0,
+      duration: reducedMotion ? 0 : 0.5,
+      delay: 0.1,
+      ease: 'power2.inOut',
+      onComplete: () => {
+        gsap.to(held, { opacity: 0, duration: 0.15 });
+        gsap.to(shelfCupboard, { '--door': 0, duration: reducedMotion ? 0 : 0.3 });
+        gsap.to(shelfCupboard, { opacity: 0, scale: 0.8, duration: 0.3, delay: 0.5 });
+      },
+    });
+    if (shell.ui.demoJarTucked) {
+      shell.status(shell.ui.demoJarTucked);
+    }
+  };
+  backButton.addEventListener('click', putBack);
+
   // --- Drag anywhere to tumble her: the spin keeps going and settles by itself.
   let spin = 0;
   let spinVelocity = 0;
@@ -297,9 +369,18 @@ function mount(shell: DemoShell): void {
     }
     dragging = true;
     lastX = event.clientX;
+    downAt = { x: event.clientX, y: event.clientY, t: performance.now() };
   });
-  window.addEventListener('pointerup', () => {
+  window.addEventListener('pointerup', (event) => {
     dragging = false;
+    if (
+      downAt &&
+      performance.now() - downAt.t < 300 &&
+      Math.hypot(event.clientX - downAt.x, event.clientY - downAt.y) < 8
+    ) {
+      pickAt(event.clientX, event.clientY);
+    }
+    downAt = undefined;
   });
   window.addEventListener(
     'pointermove',
@@ -315,8 +396,17 @@ function mount(shell: DemoShell): void {
 
   // --- Per frame: pointer drift into the camera, and the well's own life.
   let elapsedSeen = 0;
+  let lastProgress = shell.progress();
   shell.onFrame((dt, elapsed) => {
     elapsedSeen = elapsed;
+    // Scrolling fast is falling fast: the dust streaks and she tumbles a little.
+    const progress = shell.progress();
+    const velocity = Math.abs(progress - lastProgress) / Math.max(dt, 0.001);
+    lastProgress = progress;
+    camera.rush = mix(camera.rush, Math.min(1, velocity * 6), Math.min(1, dt * 4));
+    if (!reducedMotion && camera.rush > 0.2) {
+      spinVelocity += camera.rush * 8 * dt * (spinVelocity >= 0 ? 1 : -1);
+    }
     if (!reducedMotion) {
       const targetX =
         shell.pointer.fine && shell.pointer.active

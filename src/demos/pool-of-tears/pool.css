@@ -32,6 +32,29 @@
     font-style: italic;
   }
 
+  /* Under the water for a moment: blue, and the sentences ripple. */
+  .pt__under {
+    background: linear-gradient(to bottom, oklch(45% 0.12 240 / 0.7), oklch(30% 0.12 245 / 0.85));
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .pt__under::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0 6vh,
+      oklch(80% 0.08 220 / 0.12) 6vh 6.4vh
+    );
+    animation: pt-caustic 2.2s linear infinite;
+  }
+
+  .demo--pool-of-tears .demo-beat {
+    filter: blur(calc(var(--under, 0) * 1.5px));
+  }
+
   .pt__canvas {
     display: block;
     inline-size: 100%;
@@ -97,8 +120,18 @@
     inset-block-end: calc(var(--space-4) + 1rem);
   }
 
-  .demo[data-paused] .pt__fan[data-waving] {
+  .demo[data-paused] .pt__fan[data-waving],
+  .demo[data-paused] .pt__under::after {
     animation-play-state: paused;
+  }
+
+  @keyframes pt-caustic {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(6.4vh);
+    }
   }
 
   @keyframes pt-fan {
@@ -116,9 +149,14 @@
       rotate: 0deg;
     }
 
-    .pt__fan[data-waving] {
+    .pt__fan[data-waving],
+    .pt__under::after {
       animation: none;
       transform: rotate(8deg);
+    }
+
+    .pt__under::after {
+      transform: none;
     }
   }
 }

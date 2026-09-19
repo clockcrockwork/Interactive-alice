@@ -609,5 +609,45 @@ export interface LocaleUIStrings {
      * Hint under the Cheshire Cat: tap the wood to move the Cat there.
      */
     demoTeleportHint: string;
+    /**
+     * Button that puts a thing taken from a shelf back into a cupboard.
+     */
+    demoPutBack: string;
+    /**
+     * Accessible name of a juror; pressing one flips what it writes on its slate.
+     */
+    demoJurorToggle: string;
+    /**
+     * Label of the sound toggle while sound is off.
+     */
+    demoSoundOn: string;
+    /**
+     * Label of the sound toggle while sound is on.
+     */
+    demoSoundOff: string;
+    /**
+     * Button that asks to steer the view with the phone's tilt.
+     */
+    demoTilt: string;
+    /**
+     * Status once tilt steering is on.
+     */
+    demoTiltOn: string;
+    /**
+     * Button that picks up the little golden key.
+     */
+    demoTakeKey: string;
+    /**
+     * Accessible-name suffix for the runner the reader chose.
+     */
+    demoMyRunner: string;
+    /**
+     * Hint that a comfit can be dragged to a runner.
+     */
+    demoFeed: string;
+    /**
+     * Button that shakes the house.
+     */
+    demoShakeHouse: string;
   };
 }

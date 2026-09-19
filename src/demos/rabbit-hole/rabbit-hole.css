@@ -214,6 +214,65 @@
     translate: -50% 0;
   }
 
+  /* Something taken off a passing shelf, and the cupboard it goes back into. */
+  .rh__held {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: 3.6rem;
+    translate: -50% -50%;
+    filter: drop-shadow(0 4px 8px oklch(0% 0 0 / 0.6));
+    pointer-events: none;
+  }
+
+  .rh__held svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .rh__shelf-cupboard {
+    position: absolute;
+    inset-inline-end: 10%;
+    inset-block-start: 40%;
+    inline-size: 6rem;
+    aspect-ratio: 1 / 1.1;
+    border: 3px solid oklch(38% 0.06 60);
+    border-radius: 0.3rem;
+    background: linear-gradient(
+      to bottom,
+      oklch(22% 0.04 60) 0 48%,
+      oklch(34% 0.06 60) 48% 52%,
+      oklch(22% 0.04 60) 52%
+    );
+    box-shadow: inset 0 0 20px oklch(0% 0 0 / 0.7);
+    opacity: 0;
+    scale: 0.8;
+  }
+
+  .rh__shelf-cupboard::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to right,
+      oklch(46% 0.08 60) 0 0.8rem,
+      oklch(42% 0.08 60) 0.8rem 1rem
+    );
+    border-radius: inherit;
+    transform-origin: 0 50%;
+    transform: rotateY(calc(var(--door, 0) * -110deg));
+  }
+
+  .rh__prop-back {
+    inset-inline-end: 10%;
+    inset-block-start: calc(40% - 2.6rem);
+  }
+
+  .rh__canvas[data-pickable] {
+    cursor: grab;
+  }
+
   .rh__bats {
     opacity: 0;
   }

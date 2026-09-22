@@ -41,7 +41,8 @@
   }
 
   .dk__world {
-    perspective: 900px;
+    --persp: 900;
+    perspective: calc(var(--persp) * 1px);
     perspective-origin: 50% 50%;
     overflow: hidden;
     background: var(--dk-wall-deep);
@@ -70,7 +71,7 @@
       scale3d(var(--room), var(--room), var(--room));
     /* The eye is where CSS puts it: the perspective distance in front of the plane.
        Turning and scaling pivot there, so the room turns round the camera. */
-    transform-origin: 0 var(--dk-eye, 240px) 900px;
+    transform-origin: 0 var(--dk-eye, 240px) calc(var(--persp, 900) * 1px);
   }
 
   .dk__plane {
@@ -635,6 +636,28 @@
   .dk__flash {
     background: oklch(95% 0.02 90);
     opacity: 0;
+  }
+
+  /* Looking down at herself once she has grown: skirt and shoes fill the bottom
+     of the frame and the room is a toy beyond them. */
+  .dk__self-layer {
+    overflow: hidden;
+  }
+
+  .dk__self {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: -4%;
+    inline-size: clamp(24rem, 120vmin, 70rem);
+    translate: -50% 0;
+    opacity: 0;
+    filter: drop-shadow(0 -16px 30px oklch(0% 0 0 / 0.55));
+  }
+
+  .dk__self svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
   }
 
   .demo[data-paused] .dk__tear,

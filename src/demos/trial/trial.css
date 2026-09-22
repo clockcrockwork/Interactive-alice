@@ -367,6 +367,31 @@
     animation-play-state: paused;
   }
 
+  .tr__leaf-fall {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .tr__leaf {
+    position: absolute;
+    inset-inline-start: var(--x, 50%);
+    inset-block-start: -8vh;
+    inline-size: clamp(1.2rem, 3.2vmin, 2.2rem);
+    aspect-ratio: 1 / 1.4;
+    background: oklch(60% 0.14 calc(var(--hue, 40) * 1deg));
+    clip-path: path("M12 0 C12 0 23 7 23 19 C23 19 19 32 12 34 C12 34 5 32 1 19 C1 19 1 7 12 0 Z");
+    opacity: 0;
+  }
+
+  .tr__leaf-fall[data-falling] .tr__leaf {
+    animation: tr-leaf var(--dur, 7s) linear infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  .demo[data-paused] .tr__leaf {
+    animation-play-state: paused;
+  }
+
   .tr__alice {
     position: absolute;
     inset-inline-start: 50%;
@@ -401,6 +426,23 @@
     }
     to {
       translate: 0.3vmin -1.1vmin;
+    }
+  }
+
+  @keyframes tr-leaf {
+    0% {
+      transform: translate(0, 0) rotate(0deg);
+      opacity: 0;
+    }
+    8% {
+      opacity: 1;
+    }
+    50% {
+      transform: translate(var(--sway, 0), 55vh) rotate(180deg);
+    }
+    100% {
+      transform: translate(calc(var(--sway, 0) * -0.6), 118vh) rotate(420deg);
+      opacity: 0.9;
     }
   }
 
@@ -442,8 +484,14 @@
 
     .demo--trial[data-shake] .tr__world,
     .tr__pack[data-rising] .tr__card,
-    .tr__card[data-leap] {
+    .tr__card[data-leap],
+    .tr__leaf-fall[data-falling] .tr__leaf {
       animation: none;
+    }
+
+    .tr__leaf-fall[data-falling] .tr__leaf {
+      transform: translateY(calc(var(--ly, 0) * 100vh));
+      opacity: 0.9;
     }
 
     .tr__mark {

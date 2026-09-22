@@ -11,6 +11,7 @@
  */
 
 import {
+  ALICE_LOOKING_DOWN_SVG,
   ALICE_SILHOUETTE_SVG,
   ALICE_SVG,
   BAT_SVG,
@@ -62,6 +63,7 @@ export const ART: Record<string, ArtEntry> = {
   'alice/falling': vector(ALICE_SVG, [120, 200]),
   'alice/silhouette': vector(ALICE_SILHOUETTE_SVG, [120, 220]),
   'alice/foot': vector(FOOT_SVG, [200, 260]),
+  'alice/looking-down': vector(ALICE_LOOKING_DOWN_SVG, [400, 220]),
   'alice/standing': vector('', [80, 110], feetAtOrigin(HOUSE_STANDING, 80, 110)),
   'alice/kneeling': vector('', [230, 230], feetAtOrigin(HOUSE_KNEELING, 230, 230)),
   'alice/filling': vector('', [720, 330], feetAtOrigin(HOUSE_FILLING, 720, 330)),

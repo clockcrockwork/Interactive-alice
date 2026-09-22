@@ -196,7 +196,11 @@ match), so the table becomes a building and the little door a real one; the view
 in from the top and bottom like a telescope closing and lets go again a little
 smaller. Later she looks up at the key through the glass with the table legs towering,
 tears run down the lens, and when she finishes the cake the hall scales down until the
-roof arrives with a flash.
+roof arrives with a flash, and keeps coming: the lens widens (the `perspective`
+distance is a camera number too), her eye ends just under the ceiling looking down at
+a toy table and dolls' doors, her own skirt and shoes rise into the bottom of the
+frame (`alice/looking-down` in the art layer), and the roof folds in at the top with
+a thud.
 
 The bottle's and the cake's labels are the capitalized words the sentences themselves
 quote, read from the text at mount, never written in code.
@@ -210,7 +214,8 @@ gets bitten; the story drinks and eats anyway before the beat is out. The pointe
 turns her head a little.
 
 **Reduced motion.** Every walk is a cut with a blink; the telescope fold becomes a
-flash; no wobble, no head-turn; tears and flavours hang still.
+flash; the growth is a cut too, with the skirt already in place; no wobble, no
+head-turn; tears and flavours hang still.
 
 ### The Pool of Tears: the swell is the parallax
 
@@ -243,19 +248,22 @@ that always faces the camera (its own angle, then the ring's spin, undone in the
 runner's transform). The camera walks round the party as they drip, comes to the Dodo
 for its proposal, looks down as the chalk course draws itself, and then circles the
 course a full turn while the race is run: the near runner sweeps past, the far one
-crawls. When the Dodo calls it over they crowd round it, then round Alice; comfits come
-down as prizes, the thimble rises, turns, and is handed back, and Alice bows.
+crawls, and every running foot kicks up a puff of dust. Once you have a runner of your
+own the camera follows it round instead, so the course turns under it. When the Dodo
+calls it over they all stand panting, then crowd round it, then round Alice; comfits
+come down as prizes, the thimble rises, turns, and is handed back, and Alice bows.
 
 **Interaction.** They began running when they liked, and left off when they liked:
 every runner is a real button, `aria-pressed` while running, and pressing one makes it
 rest or run; during the race the others start and stop on their own. The first runner
 you press during the race becomes yours: it wears a mark and every tap gives it a
 spurt. *Everybody run!* sets them all off. When the prizes come down, drag a comfit
-onto a runner and it eats it.
+onto a runner and it eats it, or tap the sky and a burst of comfits comes down where
+you tapped.
 
 **Reduced motion.** The runners hold their places and lean into the run instead of
-bobbing; the camera cuts between its shots and does not circle; the comfits hang in
-the air.
+bobbing; the camera cuts between its shots and does not circle or follow; no dust, no
+panting; the comfits hang in the air.
 
 ### Growing in the House: zoom is the parallax
 
@@ -314,17 +322,21 @@ wood tilts and turns a madder colour (`hue-rotate` on the world) and the Cat's l
 wobble.
 
 The moon keeps the smile: at the end the grin rises into it and the moon becomes a
-crescent. At *we're all mad here* every tree grins too.
+crescent, and the stars, which twinkle all night, gather under it into a grin of their
+own. At *we're all mad here* every tree grins too. Alice's silhouette turns to face
+whichever bough the Cat is on.
 
 **Interaction.** The Cat's eyes follow the pointer and its grin widens as you come
 near. There are three boughs; tap anywhere in the wood and the Cat vanishes and
 appears on the bough nearest your finger, tap the Cat itself and it goes somewhere
 else, or press *Call the Cat*. Two signposts point the ways to the Hatter and the
 March Hare; press one and the wood walks that way for a moment. Fireflies follow the
-pointer. The story's own vanishings take the Cat back when they begin.
+pointer, and if you draw a way on the ground with your finger it stays as a chalk
+line and the fireflies run along it. The story's own vanishings take the Cat back when
+they begin.
 
 **Reduced motion.** The Cat cross-fades rather than sweeps; the wood does not tilt;
-the tail, the fireflies, the lines and the signposts hold still.
+the tail, the fireflies, the stars, the lines and the signposts hold still.
 
 ### A Mad Tea-Party: rotation and zoom are the parallax
 
@@ -374,14 +386,15 @@ judge's wig, the jury box), pushes in on the herald's scroll as the accusation u
 and the court turns red and shakes at *Off with her head!*, then pulls back as Alice
 grows to her full size in the foreground.
 
-Then the pack. Fifty-two cards stand in the crowd; at *the whole pack rose up* they
-leave it and hang trembling in the air (a CSS `translate` animation, which composes
-with the transform GSAP owns). At *came flying down upon her* a burst in time, not on
-the scrub, sends every card at the reader with spin: about a third reach the glass and
-stay there, re-parented into a screen-space layer with a slap, the rest streak past.
-The stuck cards shy away from the pointer. When the bank arrives they turn into dead
-leaves (a `clip-path: path()` morph between a card and a leaf with the same number of
-points) and drift down, and the sister is behind them.
+Then the pack. Two packs' worth of cards stand in the crowd (half that on a phone);
+at *the whole pack rose up* they leave it and hang trembling in the air (a CSS
+`translate` animation, which composes with the transform GSAP owns). At *came flying
+down upon her* a burst in time, not on the scrub, sends every card at the reader with
+spin: about half reach the glass and stay there, re-parented into a screen-space layer
+with a slap, the rest streak past. The stuck cards shy away from the pointer. When the
+bank arrives they turn into dead leaves (a `clip-path: path()` morph between a card
+and a leaf with the same number of points) and drift down, a whole shower of other
+leaves comes down with them, and the sister is behind them.
 
 The jury write it all down: every sentence lands as a scribble on each slate and each
 juror marks whether it thought it important; press a juror and it changes its mind.

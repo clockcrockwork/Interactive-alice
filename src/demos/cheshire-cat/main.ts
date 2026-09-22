@@ -41,8 +41,14 @@ function mount(shell: DemoShell): void {
 
   const wood = shell.layer('cc__wood');
   const random = seeded(29);
+  const starCount = 36;
   wood.innerHTML =
     '<div class="cc__moon"></div>' +
+    `<div class="cc__stars">${Array.from(
+      { length: starCount },
+      (_, i) =>
+        `<div class="cc__star" style="--i: ${i}; --sx: ${(random() * 100).toFixed(1)}%; --sy: ${(3 + random() * 40).toFixed(1)}%"></div>`,
+    ).join('')}</div>` +
     '<div class="cc__trees cc__trees--far"></div>' +
     '<div class="cc__trees cc__trees--mid"></div>' +
     `<div class="cc__tree-grins">${Array.from(
@@ -69,6 +75,11 @@ function mount(shell: DemoShell): void {
   const moonGrin = wood.querySelector<HTMLElement>('.cc__moon-grin');
   const treeGrins = wood.querySelector<HTMLElement>('.cc__tree-grins');
   const fireflies = shell.layer('cc__fireflies');
+  const chalk = shell.layer('cc__chalk');
+  chalk.innerHTML = '<svg aria-hidden="true"><path d=""/></svg>';
+  const chalkPath = chalk.querySelector<SVGPathElement>('path');
+  const aliceBox = wood.querySelector<HTMLElement>('.cc__alice');
+  const stars = [...wood.querySelectorAll<HTMLElement>('.cc__star')];
   const signs = shell.layer('cc__signs');
   signs.innerHTML =
     `<button type="button" class="cc__sign cc__sign--left" aria-label="${shell.ui.demoWayHatter ?? ''}">${signSvg('left')}</button>` +
@@ -138,6 +149,22 @@ function mount(shell: DemoShell): void {
     iGrin + 0.25,
   );
   master.to(moon, { '--crescent': 1, duration: 0.5, ease: 'power2.inOut' }, iGrin + 0.5);
+  // The stars gather into a grin under the moon as the Cat's own goes out.
+  stars.forEach((star, i) => {
+    const t = i / (starCount - 1);
+    const sx = 62 + t * 24;
+    const sy = 30 + Math.sin(t * Math.PI) * 9;
+    master.to(
+      star,
+      {
+        '--sx': `${sx.toFixed(1)}%`,
+        '--sy': `${sy.toFixed(1)}%`,
+        duration: reducedMotion ? 0.01 : 0.8,
+        ease: 'power2.inOut',
+      },
+      iGrin + 0.3 + (reducedMotion ? 0 : (i % 6) * 0.03),
+    );
+  });
 
   // --- The reader's Cat: it looks at you, grins wider as you come near, and goes
   // wherever you tap.
@@ -279,6 +306,57 @@ function mount(shell: DemoShell): void {
     iVanish1,
   );
 
+  // --- A way in the mist: draw with a finger across the lower wood and a chalk
+  // line glows there, and the fireflies take that way for a while.
+  let drawing: { x: number; y: number }[] | undefined;
+  const stagePoint = (event: PointerEvent): { x: number; y: number } => {
+    const box = shell.stage.getBoundingClientRect();
+    return { x: event.clientX - box.left, y: event.clientY - box.top };
+  };
+  const chalkD = (points: { x: number; y: number }[]): string =>
+    points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+  let followPath: { x: number; y: number }[] = [];
+  let followClock = 0;
+  shell.stage.addEventListener('pointerdown', (event) => {
+    if ((event.target as HTMLElement).closest('button, .art') || reducedMotion) {
+      return;
+    }
+    const p = stagePoint(event);
+    if (p.y < shell.stage.clientHeight * 0.55) {
+      return;
+    }
+    drawing = [p];
+    gsap.killTweensOf(chalk);
+    gsap.set(chalk, { opacity: 1 });
+    chalkPath?.setAttribute('d', chalkD(drawing));
+  });
+  window.addEventListener(
+    'pointermove',
+    (event) => {
+      if (!drawing) {
+        return;
+      }
+      const p = stagePoint(event);
+      const last = drawing[drawing.length - 1];
+      if (last && Math.hypot(p.x - last.x, p.y - last.y) > 6) {
+        drawing.push(p);
+        chalkPath?.setAttribute('d', chalkD(drawing));
+      }
+    },
+    { passive: true },
+  );
+  window.addEventListener('pointerup', () => {
+    if (!drawing) {
+      return;
+    }
+    if (drawing.length > 4) {
+      followPath = drawing;
+      followClock = 6;
+    }
+    drawing = undefined;
+    gsap.to(chalk, { opacity: 0, duration: 5, ease: 'power2.in' });
+  });
+
   // --- Fireflies, wherever the pointer goes.
   let flies = 0;
   function spawnFirefly(x: number, y: number): void {
@@ -315,9 +393,29 @@ function mount(shell: DemoShell): void {
   // --- Per frame: the eyes and the grin answer the pointer; the wood has depth.
   let px = 0;
   let wide = 0;
+  let flyClock = 0;
   shell.onFrame((dt) => {
     if (reducedMotion) {
       return;
+    }
+    // Alice looks toward whichever bough the Cat is on.
+    const on = currentBough();
+    if (on && aliceBox) {
+      const bx = on.getBoundingClientRect().left + on.getBoundingClientRect().width / 2;
+      const ax = aliceBox.getBoundingClientRect().left + aliceBox.getBoundingClientRect().width / 2;
+      aliceBox.style.setProperty('--face', bx >= ax ? '1' : '-1');
+    }
+    // Fireflies take the drawn way while it lasts.
+    if (followClock > 0 && followPath.length > 1) {
+      followClock -= dt;
+      flyClock += dt;
+      if (flyClock > 0.09) {
+        flyClock = 0;
+        const point = followPath[Math.floor(random() * followPath.length)];
+        if (point) {
+          spawnFirefly(point.x + (random() - 0.5) * 12, point.y + (random() - 0.5) * 12);
+        }
+      }
     }
     const target = shell.pointer.active ? shell.pointer.x * 2 : 0;
     px = mix(px, target, Math.min(1, dt * 2.5));

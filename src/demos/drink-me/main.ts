@@ -36,6 +36,8 @@ interface Camera {
   yaw: number;
   lookX: number;
   lookY: number;
+  /** The lens: the perspective distance in px. Shorter is wider. */
+  persp: number;
 }
 
 /** Words on a label: the capitals a sentence quotes, taken from the text itself. */
@@ -137,6 +139,9 @@ function mount(shell: DemoShell): void {
   const irisBottom = shell.layer('dk__iris dk__iris--bottom');
   const tears = shell.layer('dk__tears');
   const flavours = shell.layer('dk__flavours');
+  const selfLayer = shell.layer('dk__self-layer');
+  selfLayer.innerHTML = `<div class="dk__self">${figure('alice/looking-down')}</div>`;
+  const self = selfLayer.querySelector<HTMLElement>('.dk__self');
   const hands = shell.layer('dk__hands');
   hands.innerHTML =
     `<div class="dk__hand dk__hand--bottle">${bottleSvg(bottleLabel)}</div>` +
@@ -178,11 +183,18 @@ function mount(shell: DemoShell): void {
     yaw: 0,
     lookX: 0,
     lookY: 0,
+    persp: 900,
   };
   const apply = (): void => {
+    world.style.setProperty('--persp', camera.persp.toFixed(1));
     hall.style.setProperty('--room', camera.room.toFixed(4));
-    // The eye sits the perspective distance (900px) in front of the hall's plane.
-    hall.style.setProperty('--cam-z', (900 - camera.z * camera.room - camera.distance).toFixed(1));
+    // The eye sits the perspective distance in front of the hall's plane, and the
+    // hall scales about that eye, so the point she stands at lands on it when the
+    // hall is moved by (persp - z) scaled, less how far before it she is.
+    hall.style.setProperty(
+      '--cam-z',
+      ((camera.persp - camera.z) * camera.room - camera.distance).toFixed(1),
+    );
     hall.style.setProperty('--cam-y', camera.y.toFixed(1));
     hall.style.setProperty('--cam-pitch', camera.pitch.toFixed(2));
     hall.style.setProperty('--yaw', camera.yaw.toFixed(2));
@@ -372,6 +384,51 @@ function mount(shell: DemoShell): void {
   );
   master.fromTo(flash, { opacity: 0 }, { opacity: 0.9, duration: 0.05 }, iGrow + 0.98);
   master.to(flash, { opacity: 0, duration: 0.4 }, iGrow + 1.03);
+  // And keeps coming. Her eye ends just under the ceiling, looking down at a toy
+  // table and dolls' doors through a lens that widens as she goes up; her own
+  // skirt and shoes rise into the bottom of the frame, and her head meets the
+  // roof with a thud.
+  master.to(
+    camera,
+    {
+      room: 0.3,
+      distance: 60,
+      y: 10,
+      pitch: -28,
+      persp: 420,
+      duration: reducedMotion ? 0.01 : 0.55,
+      ease: reducedMotion ? 'none' : 'power2.in',
+      onUpdate: apply,
+    },
+    iGrow + 1.05,
+  );
+  master.fromTo(
+    self,
+    { yPercent: 110, opacity: 0 },
+    { yPercent: 0, opacity: 1, duration: reducedMotion ? 0.01 : 0.5, ease: 'power2.out' },
+    iGrow + 1.2,
+  );
+  master.to(
+    irisTop,
+    { '--fold': 0.55, duration: reducedMotion ? 0.01 : 0.35, ease: 'power3.in' },
+    iGrow + 1.3,
+  );
+  master.call(
+    () => {
+      if (master.time() >= iGrow + 1.6) {
+        shell.sound.play('thud');
+        if (!reducedMotion) {
+          gsap.fromTo(
+            camera,
+            { lookY: -3 },
+            { lookY: 0, duration: 0.6, ease: 'elastic.out(1, 0.3)', onUpdate: apply },
+          );
+        }
+      }
+    },
+    [],
+    iGrow + 1.6,
+  );
 
   // --- The key. Take it off the table and it hangs in her hand; try it in any
   // door and the door will not have it, until the little one, which opens.

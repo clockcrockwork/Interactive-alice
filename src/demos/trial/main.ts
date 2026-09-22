@@ -85,8 +85,8 @@ function buildPack(pack: HTMLElement, count: number): Card[] {
       pack.append(el);
       // Two crowds, left and right of the throne, in loose rows.
       const side = index % 2 === 0 ? -1 : 1;
-      const row = Math.floor(index / 2) % 5;
-      const column = Math.floor(index / 10);
+      const row = Math.floor(index / 2) % 6;
+      const column = Math.floor(index / 12);
       const home = {
         x: side * (14 + column * 7 + random() * 4) + (side < 0 ? -6 : 6),
         y: 8 + row * 3.2 + random() * 2,
@@ -138,7 +138,7 @@ function mount(shell: DemoShell): void {
 
   const pack = court.querySelector<HTMLElement>('.tr__pack');
   const lite = window.innerWidth < 720;
-  const cards = pack ? buildPack(pack, lite ? 32 : 52) : [];
+  const cards = pack ? buildPack(pack, lite ? 56 : 104) : [];
 
   // --- The camera, cue by cue. Each shot holds until the next cue.
   const camera = { x: 0, z: 0, ry: 0, y: 0 };
@@ -314,7 +314,7 @@ function mount(shell: DemoShell): void {
 
   // --- The attack: a burst in time, not on the scrub. About a third of the pack
   // reaches the glass and stays there; the rest streaks past.
-  const stuckCount = Math.round(cards.length * 0.36);
+  const stuckCount = Math.round(cards.length * 0.5);
   const stuckIndices = new Set<number>();
   const pick = seeded(11);
   while (stuckIndices.size < stuckCount) {
@@ -356,8 +356,8 @@ function mount(shell: DemoShell): void {
     glass.append(card.el);
     card.stuck = true;
     shell.sound.play('paper', 0.6);
-    const gx = 8 + ((order * 37) % 84) + (pick() - 0.5) * 6;
-    const gy = 10 + ((order * 53) % 76) + (pick() - 0.5) * 6;
+    const gx = 4 + ((order * 37) % 92) + (pick() - 0.5) * 8;
+    const gy = 6 + ((order * 53) % 84) + (pick() - 0.5) * 8;
     card.el.style.setProperty('--gx', `${gx}%`);
     card.el.style.setProperty('--gy', `${gy}%`);
     gsap.set(card.el, { clearProps: 'transform' });
@@ -576,6 +576,19 @@ function mount(shell: DemoShell): void {
     },
     [],
     iLeaves + 0.1,
+  );
+  // And more leaves than there were cards: the trees let go of their own.
+  const leafFall = shell.layer('tr__leaf-fall');
+  leafFall.innerHTML = Array.from(
+    { length: lite ? 40 : 90 },
+    (_, i) =>
+      `<div class="tr__leaf" style="--x: ${(pick() * 100).toFixed(1)}%; --delay: ${(pick() * 6).toFixed(2)}s; --dur: ${(5 + pick() * 5).toFixed(2)}s; --sway: ${((pick() - 0.5) * 30).toFixed(1)}vw; --hue: ${(30 + (i % 5) * 12).toFixed(0)}; --ly: ${pick().toFixed(2)}"></div>`,
+  ).join('');
+  master.to(leafFall, { opacity: 1, duration: 0.4 }, iLeaves + 0.3);
+  master.call(
+    () => leafFall.toggleAttribute('data-falling', master.time() >= iLeaves + 0.3),
+    [],
+    iLeaves + 0.3,
   );
   master.to(bank, { '--warm': 1, duration: 1 }, iWake);
 }

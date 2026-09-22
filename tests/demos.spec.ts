@@ -199,6 +199,30 @@ test('drink me: the hall grows around her when she drinks, and shrinks back when
   await expect.poll(room, { timeout: 8000 }).toBeGreaterThan(4);
   await at('grow');
   await expect.poll(room, { timeout: 8000 }).toBeLessThan(0.6);
+  // And once she has grown, the lens widens, she looks down at her own skirt and
+  // shoes, and the roof folds in at the top of the frame.
+  await at('grow', 1);
+  const world = (property: string) =>
+    page.evaluate(
+      (name) =>
+        Number(
+          getComputedStyle(document.querySelector('.dk__world') as Element).getPropertyValue(name),
+        ),
+      property,
+    );
+  await expect.poll(() => world('--persp'), { timeout: 8000 }).toBeLessThan(600);
+  await expect(page.locator('.dk__self')).toHaveCSS('opacity', '1');
+  await expect
+    .poll(() =>
+      page.evaluate(() =>
+        Number(
+          getComputedStyle(document.querySelector('.dk__iris--top') as Element).getPropertyValue(
+            '--fold',
+          ),
+        ),
+      ),
+    )
+    .toBeGreaterThan(0.4);
 });
 
 test('the caucus-race: every runner is a button that rests or runs', async ({ page }) => {

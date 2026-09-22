@@ -180,6 +180,31 @@
     opacity: 0.85;
   }
 
+  .cr__runner[data-panting] .cr__figure {
+    animation: cr-pant 0.6s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -70ms);
+  }
+
+  .cr__dust {
+    pointer-events: none;
+  }
+
+  .cr__puff {
+    position: absolute;
+    inline-size: 1.6vmin;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: oklch(80% 0.04 90 / 0.7);
+    animation: cr-puff 0.7s ease-out forwards;
+  }
+
+  .cr__comfit--burst {
+    animation: none;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    pointer-events: none;
+  }
+
   .cr__runner[data-drip] .cr__figure {
     animation: cr-shiver 0.3s ease-in-out infinite alternate;
   }
@@ -241,9 +266,30 @@
   }
 
   .demo[data-paused] .cr__figure,
+  .demo[data-paused] .cr__puff,
   .demo[data-paused] .cr__comfit,
   .demo[data-paused] .cr__drips circle {
     animation-play-state: paused;
+  }
+
+  @keyframes cr-pant {
+    from {
+      transform: scale(1, 0.96);
+    }
+    to {
+      transform: scale(1.03, 1.02);
+    }
+  }
+
+  @keyframes cr-puff {
+    from {
+      transform: translate(-50%, 0) scale(0.4);
+      opacity: 0.9;
+    }
+    to {
+      transform: translate(-50%, -3vmin) scale(1.8);
+      opacity: 0;
+    }
   }
 
   @keyframes cr-spurt {
@@ -309,6 +355,8 @@
   @media (prefers-reduced-motion: reduce) {
     .cr__runner[aria-pressed="true"] .cr__figure,
     .cr__runner[data-spurt] .cr__figure,
+    .cr__runner[data-panting] .cr__figure,
+    .cr__puff,
     .cr__runner[data-drip] .cr__figure,
     .cr__drips circle,
     .cr__comfit {

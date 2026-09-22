@@ -211,6 +211,44 @@
     block-size: auto;
   }
 
+  /* A way drawn in the mist with a finger, which the fireflies then take. */
+  .cc__chalk {
+    pointer-events: none;
+  }
+
+  .cc__chalk svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .cc__chalk path {
+    fill: none;
+    stroke: var(--cc-firefly);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 6px var(--cc-firefly));
+    opacity: 0.8;
+  }
+
+  /* Stars: they twinkle, and at the end they gather into a grin by the moon. */
+  .cc__stars {
+    pointer-events: none;
+  }
+
+  .cc__star {
+    position: absolute;
+    inset-inline-start: var(--sx, 50%);
+    inset-block-start: var(--sy, 20%);
+    inline-size: 0.5vmin;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--cc-moon);
+    animation: cc-twinkle 2.4s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -0.31s);
+  }
+
   .cc__alice {
     position: absolute;
     inset-inline-start: 22%;
@@ -219,6 +257,11 @@
     color: var(--alice-shadow);
     filter: drop-shadow(0 0 20px oklch(0% 0 0 / 0.6));
     pointer-events: none;
+  }
+
+  .cc__alice .art {
+    transform: scaleX(calc(var(--face, 1)));
+    transition: transform var(--demo-calm) var(--demo-ease);
   }
 
   .cc__alice svg {
@@ -336,10 +379,22 @@
   }
 
   .demo[data-paused] .cc__tail,
+  .demo[data-paused] .cc__star,
   .demo[data-paused] .cc__firefly,
   .demo[data-paused] .cc__sign-arrow,
   .demo[data-paused] .demo-beat[data-cue="mad"] .line {
     animation-play-state: paused;
+  }
+
+  @keyframes cc-twinkle {
+    from {
+      opacity: 0.25;
+      transform: scale(0.7);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1.3);
+    }
   }
 
   @keyframes cc-tail {
@@ -386,6 +441,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .cc__tail,
+    .cc__star,
     .cc__firefly,
     .cc__sign:hover .cc__sign-arrow,
     .demo--cheshire-cat .demo-beat[data-cue="mad"] .line {

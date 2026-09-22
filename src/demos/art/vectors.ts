@@ -191,6 +191,16 @@ export const FOOT_SVG = `
   <ellipse cx="100" cy="128" rx="44" ry="10" fill="#1a1a1a"/>
 </svg>`;
 
+export const ALICE_LOOKING_DOWN_SVG = `
+<svg viewBox="0 0 400 220" focusable="false">
+  <ellipse cx="148" cy="60" rx="36" ry="17" fill="#1a1a1a"/>
+  <ellipse cx="252" cy="60" rx="36" ry="17" fill="#1a1a1a"/>
+  <path d="M0 220 L0 132 Q0 62 200 62 Q400 62 400 132 L400 220 Z" fill="var(--alice-dress)"/>
+  <path d="M0 132 Q0 62 200 62 Q400 62 400 132" stroke="var(--alice-shadow)" stroke-width="7" fill="none" opacity="0.45"/>
+  <path d="M68 220 L68 152 Q92 98 200 98 Q308 98 332 152 L332 220 Z" fill="var(--alice-apron)"/>
+  <path d="M90 200 Q200 176 310 200" stroke="var(--alice-shadow)" stroke-width="5" fill="none" opacity="0.25"/>
+</svg>`;
+
 export const BILL_SVG = `
 <svg viewBox="0 0 120 100" focusable="false">
   <path d="M10 70 Q40 30 80 50 Q110 66 100 84 Q60 96 20 84 Z" fill="var(--bl-lizard)"/>

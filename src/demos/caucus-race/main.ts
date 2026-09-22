@@ -123,8 +123,11 @@ function mount(shell: DemoShell): void {
 
   // --- The camera, cue by cue: a walk round the party, then round the course.
   const camera = { spin: 0, tilt: -8, dolly: -260, lift: 0 };
+  // While your runner runs, the camera runs with it: this offset turns the ring
+  // so your runner stays in front, and eases away again after the race.
+  let follow = 0;
   const applyCamera = (): void => {
-    ring.style.setProperty('--spin', camera.spin.toFixed(2));
+    ring.style.setProperty('--spin', (camera.spin + follow).toFixed(2));
     ring.style.setProperty('--tilt', camera.tilt.toFixed(2));
     ring.style.setProperty('--dolly', camera.dolly.toFixed(1));
     ring.style.setProperty('--lift', camera.lift.toFixed(1));
@@ -271,6 +274,32 @@ function mount(shell: DemoShell): void {
     [],
     iThimble + 0.3,
   );
+  // Tap the sky while the prizes fall and a handful bursts from your finger.
+  shell.stage.addEventListener('pointerdown', (event) => {
+    if ((event.target as HTMLElement).closest('button, .cr__comfit')) {
+      return;
+    }
+    if (master.time() < iComfits + 0.2 || master.time() >= iThimble + 0.3) {
+      return;
+    }
+    const box = shell.stage.getBoundingClientRect();
+    for (let i = 0; i < 10; i += 1) {
+      const el = document.createElement('div');
+      el.className = 'cr__comfit cr__comfit--burst';
+      el.style.setProperty('--c', colours[i % 4] ?? '');
+      gsap.set(el, { x: event.clientX - box.left, y: event.clientY - box.top });
+      comfits.append(el);
+      gsap.to(el, {
+        x: `+=${(random() - 0.5) * 240}`,
+        y: `+=${140 + random() * 260}`,
+        rotation: (random() - 0.5) * 300,
+        duration: reducedMotion ? 0 : 1.2 + random() * 0.6,
+        ease: 'power1.in',
+        onComplete: () => el.remove(),
+      });
+    }
+    shell.sound.play('chime', 0.4);
+  });
   let carried: HTMLElement | undefined;
   comfits.addEventListener('pointerdown', (event) => {
     const comfit = (event.target as HTMLElement).closest<HTMLElement>('.cr__comfit');
@@ -337,15 +366,61 @@ function mount(shell: DemoShell): void {
   );
   master.to(thimble, { y: '20vh', scale: 0.5, duration: 0.6, ease: 'power2.in' }, iBow + 0.1);
 
+  // --- Dust under running feet, and panting after.
+  const dust = shell.layer('cr__dust');
+  let dustClock = 0;
+  const puff = (runner: Runner): void => {
+    const r = runner.el.getBoundingClientRect();
+    const box = shell.stage.getBoundingClientRect();
+    const el = document.createElement('div');
+    el.className = 'cr__puff';
+    gsap.set(el, {
+      x: r.left - box.left + r.width / 2 + (random() - 0.5) * r.width * 0.4,
+      y: r.bottom - box.top - 4,
+    });
+    dust.append(el);
+    el.addEventListener('animationend', () => el.remove());
+  };
+  master.call(
+    () => {
+      const panting = master.time() >= iOver && master.time() < cue('she');
+      for (const runner of runners) {
+        runner.el.toggleAttribute('data-panting', panting);
+      }
+    },
+    [],
+    iOver,
+  );
+  master.call(
+    () => {
+      const panting = master.time() >= iOver && master.time() < cue('she');
+      for (const runner of runners) {
+        runner.el.toggleAttribute('data-panting', panting);
+      }
+    },
+    [],
+    cue('she'),
+  );
+
   // --- Per frame: whoever is running, runs.
   shell.onFrame((dt) => {
     if (reducedMotion) {
       return;
     }
+    // The camera keeps your runner in front while it runs.
+    const wantFollow = racing && mine ? -mine.angle - camera.spin : 0;
+    let delta = ((wantFollow - follow) % 360) + 360;
+    delta = ((delta + 180) % 360) - 180;
+    follow += delta * Math.min(1, dt * (racing && mine ? 3 : 1.2));
+    applyCamera();
+    dustClock += dt;
     let moved = false;
     for (const runner of runners) {
       if (racing && runner.running) {
         runner.angle = (runner.angle + runner.pace * dt) % 360;
+        if (dustClock > 0.12 && random() < 0.5) {
+          puff(runner);
+        }
         // A spurt wears off; the others start and stop as they like.
         if (runner === mine && runner.pace > 60) {
           runner.pace -= dt * 20;
@@ -355,6 +430,9 @@ function mount(shell: DemoShell): void {
       if (racing && runner !== mine && random() < dt * 0.08) {
         setRunning(runner, !runner.running);
       }
+    }
+    if (dustClock > 0.12) {
+      dustClock = 0;
     }
     if (moved) {
       apply();

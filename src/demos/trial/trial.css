@@ -701,8 +701,8 @@
     }
 
     .tr__ghost,
-    .tr__ghost-dream,
-    .tr__ghost-real {
+    .demo .tr__ghost .tr__ghost-dream,
+    .demo .tr__ghost .tr__ghost-real {
       transition: none;
     }
   }

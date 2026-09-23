@@ -5,44 +5,267 @@
     {
       "id": "looking-round-the-court",
       "beats": [
-        { "id": "throne", "cue": "throne", "segments": ["ch11.s0010", "ch11.s0020", "ch11.s0030"] },
-        { "id": "knave", "cue": "knave", "segments": ["ch11.s0040", "ch11.s0050"] },
-        { "id": "tarts", "cue": "tarts", "segments": ["ch11.s0060", "ch11.s0070"] },
-        { "id": "judge", "cue": "judge", "segments": ["ch11.s0080", "ch11.s0090"] },
-        { "id": "jurors", "cue": "jury", "segments": ["ch11.s0100", "ch11.s0110"] }
+        {
+          "id": "throne",
+          "cue": "throne",
+          "segments": [
+            "ch11.s0010",
+            "ch11.s0020",
+            "ch11.s0030"
+          ]
+        },
+        {
+          "id": "knave",
+          "cue": "knave",
+          "segments": [
+            "ch11.s0040",
+            "ch11.s0050"
+          ]
+        },
+        {
+          "id": "tarts",
+          "cue": "tarts",
+          "segments": [
+            "ch11.s0060",
+            "ch11.s0070"
+          ]
+        },
+        {
+          "id": "judge",
+          "cue": "judge",
+          "segments": [
+            "ch11.s0080",
+            "ch11.s0090"
+          ]
+        },
+        {
+          "id": "jurors",
+          "cue": "jury",
+          "segments": [
+            "ch11.s0100",
+            "ch11.s0110"
+          ]
+        }
       ]
     },
     {
       "id": "the-accusation-read",
       "beats": [
-        { "id": "herald", "cue": "herald", "segments": ["ch11.s0120", "ch11.s0130"] },
-        { "id": "verses", "segments": ["ch11.s0140", "ch11.s0150"] },
-        { "id": "not-yet", "segments": ["ch11.s0160", "ch11.s0170", "ch11.s0180"] }
+        {
+          "id": "herald",
+          "cue": "herald",
+          "segments": [
+            "ch11.s0120",
+            "ch11.s0130"
+          ]
+        },
+        {
+          "id": "verses",
+          "segments": [
+            "ch11.s0140",
+            "ch11.s0150"
+          ]
+        },
+        {
+          "id": "not-yet",
+          "segments": [
+            "ch11.s0160",
+            "ch11.s0170",
+            "ch11.s0180"
+          ]
+        }
       ]
     },
     {
       "id": "sentence-before-verdict",
       "beats": [
-        { "id": "twentieth-time", "cue": "verdict", "segments": ["ch12.s0600", "ch12.s0610"] },
-        { "id": "sentence-first", "segments": ["ch12.s0620", "ch12.s0630", "ch12.s0640", "ch12.s0650"] },
-        { "id": "hold-your-tongue", "cue": "queen", "segments": ["ch12.s0660", "ch12.s0670"] },
-        { "id": "off-with-her-head", "cue": "head", "segments": ["ch12.s0680", "ch12.s0690", "ch12.s0700"] },
-        { "id": "who-cares", "cue": "grow", "segments": ["ch12.s0710", "ch12.s0720"] }
+        {
+          "id": "twentieth-time",
+          "cue": "verdict",
+          "segments": [
+            "ch12.s0600",
+            "ch12.s0610"
+          ]
+        },
+        {
+          "id": "sentence-first",
+          "segments": [
+            "ch12.s0620",
+            "ch12.s0630",
+            "ch12.s0640",
+            "ch12.s0650"
+          ]
+        },
+        {
+          "id": "hold-your-tongue",
+          "cue": "queen",
+          "segments": [
+            "ch12.s0660",
+            "ch12.s0670"
+          ]
+        },
+        {
+          "id": "off-with-her-head",
+          "cue": "head",
+          "segments": [
+            "ch12.s0680",
+            "ch12.s0690",
+            "ch12.s0700"
+          ]
+        },
+        {
+          "id": "who-cares",
+          "cue": "grow",
+          "segments": [
+            "ch12.s0710",
+            "ch12.s0720"
+          ]
+        }
       ]
     },
     {
       "id": "the-pack-rises",
       "beats": [
-        { "id": "rose-up", "cue": "rise", "segments": ["ch12.s0730"] },
-        { "id": "flying-down", "cue": "attack", "segments": ["ch12.s0740", "ch12.s0750"] },
-        { "id": "beat-them-off", "cue": "beat", "segments": ["ch12.s0760"] }
+        {
+          "id": "rose-up",
+          "cue": "rise",
+          "segments": [
+            "ch12.s0730"
+          ]
+        },
+        {
+          "id": "flying-down",
+          "cue": "attack",
+          "segments": [
+            "ch12.s0740",
+            "ch12.s0750"
+          ]
+        },
+        {
+          "id": "beat-them-off",
+          "cue": "beat",
+          "segments": [
+            "ch12.s0760"
+          ]
+        }
       ]
     },
     {
       "id": "the-bank",
       "beats": [
-        { "id": "leaves", "cue": "leaves", "segments": ["ch12.s0770", "ch12.s0780"] },
-        { "id": "wake-up", "cue": "wake", "segments": ["ch12.s0790", "ch12.s0800", "ch12.s0810"] }
+        {
+          "id": "leaves",
+          "cue": "leaves",
+          "segments": [
+            "ch12.s0770",
+            "ch12.s0780"
+          ]
+        },
+        {
+          "id": "wake-up",
+          "cue": "wake",
+          "segments": [
+            "ch12.s0790",
+            "ch12.s0800",
+            "ch12.s0810"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "her-sisters-dream",
+      "beats": [
+        {
+          "id": "run-in-to-tea",
+          "cue": "tea",
+          "segments": [
+            "ch12.s0820",
+            "ch12.s0830",
+            "ch12.s0840",
+            "ch12.s0850"
+          ]
+        },
+        {
+          "id": "alive-with-creatures",
+          "cue": "alive",
+          "segments": [
+            "ch12.s0860"
+          ]
+        },
+        {
+          "id": "rabbit-and-mouse",
+          "cue": "sounds-one",
+          "segments": [
+            "ch12.s0870",
+            "ch12.s0880"
+          ]
+        },
+        {
+          "id": "teacups-and-queen",
+          "cue": "sounds-two",
+          "segments": [
+            "ch12.s0890",
+            "ch12.s0900"
+          ]
+        },
+        {
+          "id": "pig-gryphon-turtle",
+          "cue": "sounds-three",
+          "segments": [
+            "ch12.s0910",
+            "ch12.s0920",
+            "ch12.s0930"
+          ]
+        },
+        {
+          "id": "closed-eyes",
+          "cue": "closed",
+          "segments": [
+            "ch12.s0940",
+            "ch12.s0950"
+          ]
+        },
+        {
+          "id": "grass-and-pool",
+          "cue": "real-one",
+          "segments": [
+            "ch12.s0960",
+            "ch12.s0970"
+          ]
+        },
+        {
+          "id": "sheep-bells",
+          "cue": "real-two",
+          "segments": [
+            "ch12.s0980",
+            "ch12.s0990"
+          ]
+        },
+        {
+          "id": "farm-yard",
+          "cue": "real-three",
+          "segments": [
+            "ch12.s1000",
+            "ch12.s1010"
+          ]
+        },
+        {
+          "id": "the-after-time",
+          "cue": "after",
+          "segments": [
+            "ch12.s1020",
+            "ch12.s1030",
+            "ch12.s1040"
+          ]
+        },
+        {
+          "id": "summer-days",
+          "cue": "summer",
+          "segments": [
+            "ch12.s1050",
+            "ch12.s1060"
+          ]
+        }
       ]
     }
   ]

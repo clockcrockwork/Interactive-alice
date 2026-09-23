@@ -649,5 +649,73 @@ export interface LocaleUIStrings {
      * Button that shakes the house.
      */
     demoShakeHouse: string;
+    /**
+     * Index card: what the Caterpillar demo shows.
+     */
+    demoTechCaterpillar: string;
+    /**
+     * Index card: what the croquet demo shows.
+     */
+    demoTechCroquet: string;
+    /**
+     * Index card: what the Lobster Quadrille demo shows.
+     */
+    demoTechQuadrille: string;
+    /**
+     * Button that makes the Caterpillar blow a smoke ring.
+     */
+    demoPuff: string;
+    /**
+     * Button on the left bit of mushroom: nibbling it makes her taller.
+     */
+    demoNibbleLeft: string;
+    /**
+     * Button on the right bit of mushroom: nibbling it makes her shorter.
+     */
+    demoNibbleRight: string;
+    /**
+     * Hint that the pointer bends her neck.
+     */
+    demoBendNeck: string;
+    /**
+     * Button on the Pigeon: shoo it away for a moment.
+     */
+    demoShoo: string;
+    /**
+     * Hint that a drag over a white rose paints it red.
+     */
+    demoPaintRose: string;
+    /**
+     * Button that swings the flamingo at the hedgehog.
+     */
+    demoStrike: string;
+    /**
+     * Button that brings the flamingo back.
+     */
+    demoCatchFlamingo: string;
+    /**
+     * Button that puts the gardeners into the flower-pot.
+     */
+    demoHideGardeners: string;
+    /**
+     * Button that throws the lobster out to sea.
+     */
+    demoThrowLobster: string;
+    /**
+     * Button that puts the reader into the line of dancers.
+     */
+    demoJoinDance: string;
+    /**
+     * Button that turns a somersault in the sea.
+     */
+    demoSomersault: string;
+    /**
+     * Button that wakes the sister from her dream.
+     */
+    demoOpenEyes: string;
+    /**
+     * Button on the snail in the song: it draws into its shell.
+     */
+    demoSnail: string;
   };
 }

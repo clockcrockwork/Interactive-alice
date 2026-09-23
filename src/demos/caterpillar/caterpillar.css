@@ -1,0 +1,448 @@
+/* Advice from a Caterpillar: a meadow that scales about her feet, and above the
+   trees a sea of leaves with her own neck running down into them. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    --ct-sky: oklch(84% 0.07 230);
+    --ct-sky-low: oklch(92% 0.05 100);
+    --ct-sky-high: oklch(72% 0.12 240);
+    --ct-cat: oklch(66% 0.14 230);
+    --ct-cat-stripe: oklch(78% 0.12 120);
+    --ct-mushroom: oklch(62% 0.16 40);
+    --ct-mushroom-spot: oklch(94% 0.02 90);
+    --ct-pigeon: oklch(72% 0.03 260);
+    --ct-pigeon-wing: oklch(60% 0.04 260);
+    --ct-smoke: oklch(96% 0.01 240 / 0.75);
+  }
+}
+
+@layer scene {
+  .demo--caterpillar .demo-beat {
+    inset-block-end: 10vh;
+    color: oklch(20% 0.03 240);
+    text-shadow: 0 1px 0 oklch(100% 0 0 / 0.6);
+  }
+
+  .demo--caterpillar .line[data-speaker="caterpillar"] {
+    --blur: 0;
+    font-style: italic;
+    color: oklch(28% 0.06 240);
+    filter: blur(calc(var(--blur) * 1px));
+  }
+
+  .demo--caterpillar .line[data-speaker="pigeon"] {
+    font-weight: 700;
+    color: oklch(30% 0.08 20);
+  }
+
+  /* The sky, and a higher, bluer sky that shows the more she rises. */
+  .ct__sky {
+    --high: 0;
+    --horizon: 82;
+    background: linear-gradient(to bottom, var(--ct-sky), var(--ct-sky-low));
+  }
+
+  /* The ground: its edge is the horizon, at eye level however tall she is. */
+  .ct__ground {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: calc(var(--horizon) * 1%);
+    inset-block-end: -10%;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        oklch(0% 0 0 / 0) 0 2.2vh,
+        oklch(0% 0 0 / 0.05) 2.2vh 2.5vh
+      ),
+      linear-gradient(to bottom, oklch(64% 0.13 130), oklch(50% 0.12 135) 40%);
+  }
+
+  .ct__sky::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, var(--ct-sky-high), var(--ct-sky) 70%);
+    opacity: var(--high);
+  }
+
+  /* The meadow scales about the ground under her feet; a pitch tilts it. */
+  .ct__meadow {
+    --s: 1;
+    --pitch: 0;
+    --fade: 1;
+    --lean: 0;
+    --base: 82;
+    opacity: var(--fade);
+    transform-origin: 50% calc(var(--base) * 1%);
+    transform: translateY(calc(var(--pitch) * 0.5vh)) rotate(calc(var(--lean) * 1deg))
+      scale(var(--s));
+    overflow: visible;
+  }
+
+  .ct__grass {
+    position: absolute;
+    inset-inline: -20vw;
+    inset-block-start: calc(var(--base) * 1%);
+    block-size: 0;
+  }
+
+  .ct__blade {
+    position: absolute;
+    inset-inline-start: var(--x);
+    inset-block-end: 0;
+    inline-size: 2vmin;
+    block-size: calc(var(--h) * 0.36vmin);
+    transform-origin: 50% 100%;
+    transform: rotate(calc((var(--lean, 0) + var(--lean-own, 0)) * 1deg));
+    background: linear-gradient(to top, oklch(46% 0.12 var(--hue)), oklch(70% 0.14 var(--hue)));
+    clip-path: polygon(0 100%, 50% 0, 100% 100%);
+  }
+
+  .ct__blade--far {
+    --lean-own: var(--lean);
+    opacity: 0.8;
+  }
+
+  .ct__blade--near {
+    --lean-own: var(--lean);
+    inline-size: 3.4vmin;
+    block-size: calc(var(--h) * 0.62vmin);
+    inset-block-end: -6vmin;
+    filter: blur(1px);
+  }
+
+  .ct__mushroom {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--base) * 1%);
+    inline-size: clamp(13rem, 44vmin, 30rem);
+    translate: -50% -100%;
+  }
+
+  .ct__mushroom > .art,
+  .ct__caterpillar .art,
+  .ct__foot .art,
+  .ct__pigeon .art {
+    inline-size: 100%;
+  }
+
+  .ct__caterpillar {
+    position: absolute;
+    inset-inline-start: 24%;
+    inset-block-start: -18%;
+    inline-size: 46%;
+    transform-origin: 50% 100%;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .ct__body {
+    animation: ct-breathe 3.2s ease-in-out infinite alternate;
+    transform-origin: 50% 100%;
+  }
+
+  /* Smoke rings from the hookah, drifting up toward the reader. */
+  .ct__ring {
+    --rx: 700;
+    --ry: 250;
+    position: absolute;
+    inset-inline-start: calc(var(--rx) * 1px);
+    inset-block-start: calc(var(--ry) * 1px);
+    inline-size: calc(var(--size) * 1vmin);
+    aspect-ratio: 1;
+    margin: calc(var(--size) * -0.5vmin);
+    border: 0.7vmin solid var(--ct-smoke);
+    border-radius: 50%;
+    filter: blur(0.6px);
+    animation: ct-ring 4s ease-out forwards;
+  }
+
+  .ct__ring[data-still] {
+    animation: none;
+    opacity: 0.6;
+    transform: translate(calc(var(--drift) * 1vmin), -20vh) scale(2.2);
+  }
+
+  /* Above the trees: sky, a sea of leaves, and the neck. */
+  .ct__treetops {
+    --fade: 0;
+    --sway: 0;
+    opacity: var(--fade);
+    background: linear-gradient(
+      to bottom,
+      var(--ct-sky-high),
+      var(--ct-sky) 45%,
+      oklch(80% 0.08 200)
+    );
+    pointer-events: none;
+  }
+
+  .ct__canopy {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    transform: rotate(calc(var(--sway) * 1deg));
+  }
+
+  .ct__leaf {
+    fill: oklch(var(--l) 0.13 var(--hue));
+  }
+
+  .ct__leaf[data-band="2"] {
+    filter: blur(1px);
+  }
+
+  .ct__nest {
+    fill: oklch(48% 0.08 70);
+  }
+
+  .ct__neck {
+    fill: var(--alice-skin);
+  }
+
+  .ct__neck--shade {
+    fill: var(--alice-shadow);
+    opacity: 0.6;
+  }
+
+  .ct__flash {
+    background: oklch(96% 0.02 90);
+    opacity: 0;
+  }
+
+  /* Overlays never take the pointer; the buttons inside them do. */
+  .ct__smoke,
+  .ct__flash,
+  .ct__iris,
+  .ct__foot-layer,
+  .ct__hands,
+  .ct__bird-layer {
+    pointer-events: none;
+  }
+
+  /* Her chin on her foot: the foot rises into the frame and the frame folds. */
+  .ct__iris {
+    --fold: 0;
+    background: oklch(4% 0 0);
+    clip-path: inset(calc(100% - var(--fold) * 50%) 0 0 0);
+  }
+
+  .ct__foot {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: -30%;
+    inline-size: clamp(20rem, 70vmin, 40rem);
+    translate: -50% 70vh;
+    filter: drop-shadow(0 -10px 20px oklch(0% 0 0 / 0.5));
+  }
+
+  /* The two bits of mushroom, one in each hand: real buttons. */
+  .ct__hands {
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--demo-quick) var(--demo-ease),
+      visibility 0s linear var(--demo-quick);
+  }
+
+  .ct__hands[data-shown] {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .ct__bit {
+    --bite: 0;
+    position: absolute;
+    inset-block-end: -3%;
+    inline-size: clamp(6rem, 22vmin, 12rem);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    pointer-events: auto;
+    transform-origin: 50% 100%;
+    transform: scale(calc(1 - var(--bite) * 0.12)) rotate(calc(var(--bite) * -4deg));
+    transition: transform var(--demo-quick) var(--demo-ease);
+    filter: drop-shadow(0 12px 18px oklch(0% 0 0 / 0.45));
+  }
+
+  .ct__bit svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .ct__bit--left {
+    inset-inline-start: 6%;
+  }
+
+  .ct__bit--right {
+    inset-inline-end: 6%;
+    transform: scale(calc(1 - var(--bite) * 0.12)) rotate(calc(var(--bite) * 4deg));
+  }
+
+  .ct__bit:focus-visible {
+    outline: 3px solid oklch(40% 0.15 250);
+    outline-offset: 4px;
+  }
+
+  .ct__bit[data-bitten] {
+    animation: ct-bite 0.35s ease-out 1;
+  }
+
+  /* The Pigeon at her face. */
+  .ct__pigeon {
+    --bx: 0;
+    --by: 0;
+    --bs: 1;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 45%;
+    inline-size: clamp(12rem, 46vmin, 30rem);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) translate(calc(var(--bx) * 1vw), calc(var(--by) * 1vh))
+      scale(var(--bs));
+    filter: drop-shadow(0 16px 24px oklch(0% 0 0 / 0.4));
+  }
+
+  .ct__pigeon:focus-visible {
+    outline: 3px solid oklch(40% 0.15 250);
+    outline-offset: 4px;
+  }
+
+  .ct__wing {
+    transform-origin: 110px 120px;
+  }
+
+  .ct__wing--right {
+    transform-origin: 150px 120px;
+  }
+
+  .ct__pigeon[data-beating] .ct__wing--left {
+    animation: ct-flap-left 0.16s ease-in-out infinite alternate;
+  }
+
+  .ct__pigeon[data-beating] .ct__wing--right {
+    animation: ct-flap-right 0.16s ease-in-out infinite alternate;
+  }
+
+  .ct__hint {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    margin: 0;
+    text-align: center;
+    font-family: system-ui, sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: oklch(28% 0.03 240);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--demo-calm) var(--demo-ease);
+  }
+
+  .ct__hint[data-shown] {
+    opacity: 0.85;
+  }
+
+  .ct__prop--puff {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: -50% 0;
+  }
+
+  .demo[data-paused] .ct__ring,
+  .demo[data-paused] .ct__body,
+  .demo[data-paused] .ct__wing {
+    animation-play-state: paused;
+  }
+
+  @keyframes ct-ring {
+    from {
+      opacity: 0.9;
+      transform: translate(0, 0) scale(0.4);
+    }
+
+    to {
+      opacity: 0;
+      transform: translate(calc(var(--drift) * 1vmin), -46vh) scale(3.2);
+    }
+  }
+
+  @keyframes ct-breathe {
+    from {
+      transform: scaleY(1);
+    }
+
+    to {
+      transform: scaleY(1.04);
+    }
+  }
+
+  @keyframes ct-bite {
+    0% {
+      transform: scale(1.06) rotate(-6deg);
+    }
+
+    100% {
+      transform: scale(calc(1 - var(--bite) * 0.12)) rotate(calc(var(--bite) * -4deg));
+    }
+  }
+
+  @keyframes ct-flap-left {
+    from {
+      transform: rotate(-30deg);
+    }
+
+    to {
+      transform: rotate(35deg);
+    }
+  }
+
+  @keyframes ct-flap-right {
+    from {
+      transform: rotate(30deg);
+    }
+
+    to {
+      transform: rotate(-35deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ct__body,
+    .ct__pigeon[data-beating] .ct__wing,
+    .ct__bit[data-bitten] {
+      animation: none;
+    }
+
+    .ct__pigeon .ct__wing--left {
+      transform: rotate(-16deg);
+    }
+
+    .ct__pigeon .ct__wing--right {
+      transform: rotate(16deg);
+    }
+
+    .ct__ring {
+      animation: none;
+      opacity: 0.6;
+      transform: translate(calc(var(--drift) * 1vmin), -20vh) scale(2.2);
+    }
+
+    .ct__bit,
+    .ct__hands {
+      transition: none;
+    }
+  }
+}

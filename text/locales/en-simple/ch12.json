@@ -6,7 +6,8 @@
   "sections": {
     "sentence-first": "Sentence First",
     "pack-of-cards": "A Pack of Cards",
-    "on-the-bank": "On the Bank"
+    "on-the-bank": "On the Bank",
+    "the-sisters-dream": "Her Sister's Dream"
   },
   "segments": {
     "ch12.s0600": "Let the jury consider their verdict.",
@@ -30,6 +31,31 @@
     "ch12.s0780": "Her sister was gently brushing some dead leaves from her face.",
     "ch12.s0790": "Wake up, Alice dear!",
     "ch12.s0800": "Why, what a long sleep you have had!",
-    "ch12.s0810": "Oh, I have had such a curious dream!"
+    "ch12.s0810": "Oh, I have had such a curious dream!",
+    "ch12.s0820": "So Alice got up and ran off, thinking what a wonderful dream it had been.",
+    "ch12.s0830": "But her sister sat still just as she left her, watching the setting sun.",
+    "ch12.s0840": "She was thinking of little Alice and all her wonderful Adventures.",
+    "ch12.s0850": "Till she too began dreaming after a fashion.",
+    "ch12.s0860": "The whole place around her became alive with the strange creatures of the dream.",
+    "ch12.s0870": "The long grass rustled at her feet as the White Rabbit hurried by.",
+    "ch12.s0880": "The frightened Mouse splashed his way through the neighbouring pool.",
+    "ch12.s0890": "She could hear the rattle of the teacups at the March Hare's never-ending meal.",
+    "ch12.s0900": "And the shrill voice of the Queen ordering off her unfortunate guests to execution.",
+    "ch12.s0910": "Once more the pig-baby was sneezing on the Duchess's knee.",
+    "ch12.s0920": "Once more the shriek of the Gryphon, and the squeaking of the Lizard's slate-pencil.",
+    "ch12.s0930": "All mixed up with the distant sobs of the miserable Mock Turtle.",
+    "ch12.s0940": "So she sat on, with closed eyes, and half believed herself in Wonderland.",
+    "ch12.s0950": "But she knew she had but to open them again, and all would change to dull reality.",
+    "ch12.s0960": "The grass would be only rustling in the wind.",
+    "ch12.s0970": "The pool rippling to the waving of the reeds.",
+    "ch12.s0980": "The rattling teacups would change to tinkling sheep-bells.",
+    "ch12.s0990": "And the Queen's shrill cries to the voice of the shepherd boy.",
+    "ch12.s1000": "The baby's sneeze and the Gryphon's shriek would change to the noise of the farm-yard.",
+    "ch12.s1010": "And the lowing of the cattle far off would take the place of the Mock Turtle's sobs.",
+    "ch12.s1020": "Lastly, she pictured how this same little sister of hers would one day be a grown woman.",
+    "ch12.s1030": "And how she would keep, through all her riper years, the loving heart of her childhood.",
+    "ch12.s1040": "And how she would gather about her other little children, with many a strange tale.",
+    "ch12.s1050": "Perhaps even with the dream of Wonderland of long ago.",
+    "ch12.s1060": "Remembering her own child-life, and the happy summer days."
   }
 }

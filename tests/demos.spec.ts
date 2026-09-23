@@ -513,3 +513,184 @@ test('the rabbit hole: a tap on a passing shelf takes something into her hand', 
   await page.locator('.rh__prop-back').click();
   await expect(page.locator('.demo__status')).not.toBeEmpty();
 });
+
+/** Scrolls a demo page to a fraction of the way through the beat carrying a cue. */
+const atCue = (page: Page, cue: string, within = 0.5) =>
+  page.evaluate(
+    ([name, fraction]) => {
+      const beats = [...document.querySelectorAll<HTMLElement>('.demo__stage .demo-beat')];
+      const index = beats.findIndex((beat) => beat.dataset.cue === name);
+      window.scrollTo(
+        0,
+        (document.documentElement.scrollHeight - window.innerHeight) *
+          ((index + Number(fraction)) / beats.length),
+      );
+    },
+    [cue, within] as const,
+  );
+
+const customProperty = (page: Page, selector: string, property: string) =>
+  page.evaluate(
+    ([sel, prop]) =>
+      Number(getComputedStyle(document.querySelector(sel) as Element).getPropertyValue(prop)),
+    [selector, property] as const,
+  );
+
+test('the caterpillar: the meadow scales with her height, and the tree tops take over above it', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'caterpillar');
+  test.skip(!demo, 'no caterpillar demo in this build');
+  await page.goto(demo?.url ?? '');
+  await expect.poll(() => customProperty(page, '.ct__meadow', '--s')).toBeCloseTo(1, 1);
+  await atCue(page, 'shrink', 0.95);
+  await expect
+    .poll(() => customProperty(page, '.ct__meadow', '--s'), { timeout: 8000 })
+    .toBeGreaterThan(2);
+  await atCue(page, 'neck', 0.6);
+  await expect
+    .poll(() => customProperty(page, '.ct__treetops', '--fade'), { timeout: 8000 })
+    .toBeGreaterThan(0.9);
+  await expect(page.locator('.ct__neck').first()).toHaveAttribute('d', /M.+L.+Z/);
+  await scrollTo(page, 1);
+  await expect
+    .poll(() => customProperty(page, '.ct__meadow', '--s'), { timeout: 8000 })
+    .toBeLessThan(0.2);
+});
+
+test('the caterpillar: each bit of mushroom is a button, and nibbling changes her height', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'caterpillar');
+  test.skip(!demo, 'no caterpillar demo in this build');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'sides', 0.9);
+  const height = () => customProperty(page, '.demo', '--ct-height');
+  await expect.poll(height, { timeout: 8000 }).toBeCloseTo(3, 0);
+  await expect(page.locator('.ct__bit--left')).toHaveAttribute('aria-label', /.+/);
+  await page.locator('.ct__bit--left').click();
+  await expect.poll(height, { timeout: 5000 }).toBeGreaterThan(4);
+  await page.locator('.ct__bit--right').click();
+  await page.locator('.ct__bit--right').click();
+  await expect.poll(height, { timeout: 5000 }).toBeLessThan(3);
+  // The Pigeon is a button too: shooing it is announced.
+  await atCue(page, 'pigeon', 0.95);
+  await expect(page.locator('.ct__pigeon')).toHaveAttribute('aria-label', /.+/);
+  await page.waitForTimeout(1200);
+  await page.locator('.ct__pigeon').click();
+  await expect(page.locator('.demo__status')).not.toBeEmpty();
+});
+
+test('the croquet-ground: every rose is a button that paints red, and the gardeners can be hidden', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'croquet');
+  test.skip(!demo, 'no croquet demo in this build');
+  await page.goto(demo?.url ?? '');
+  const rose = page.locator('.cq__rose').last();
+  await expect(rose).toHaveAttribute('aria-pressed', 'false');
+  await rose.click();
+  await expect(rose).toHaveAttribute('aria-pressed', 'true');
+  await atCue(page, 'gardeners', 0.4);
+  await expect(page.locator('.cq__prop--hide')).toBeVisible();
+  await page.locator('.cq__prop--hide').click();
+  await expect
+    .poll(() => customProperty(page, '.cq__gardener', '--sink'), { timeout: 5000 })
+    .toBeCloseTo(1, 1);
+});
+
+test('the croquet-ground: the flamingo is the mallet, and a strike sends the hedgehog off', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'croquet');
+  test.skip(!demo, 'no croquet demo in this build');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'flamingo', 0.8);
+  await expect(page.locator('.cq__prop--strike')).toBeVisible();
+  const hedgehogX = () => customProperty(page, '.cq__hedgehog', '--x');
+  const before = await hedgehogX();
+  // It only strikes while the flamingo is not looking up; try until it lands.
+  await expect
+    .poll(
+      async () => {
+        await page.locator('.cq__prop--strike').click();
+        await page.waitForTimeout(400);
+        return Math.abs((await hedgehogX()) - before);
+      },
+      { timeout: 12000 },
+    )
+    .toBeGreaterThan(20);
+  // Then the head in the air: the grin comes first and goes last.
+  await atCue(page, 'eyes', 0.95);
+  await expect(page.locator('.cq__cat')).toHaveAttribute('aria-label', /.+/);
+  const grin = () =>
+    page.evaluate(() =>
+      Number(getComputedStyle(document.querySelector('.cq__cat-grin') as Element).opacity),
+    );
+  await expect.poll(grin, { timeout: 8000 }).toBeGreaterThan(0.9);
+  await scrollTo(page, 1);
+  await expect.poll(grin, { timeout: 8000 }).toBeLessThan(0.05);
+});
+
+test('the lobster quadrille: the lobster can be thrown, the sea somersaulted in, and the dance joined', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'lobster-quadrille');
+  test.skip(!demo, 'no lobster-quadrille demo in this build');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'throw', 0.3);
+  await expect(page.locator('.lq__prop--throw')).toBeVisible();
+  await page.locator('.lq__prop--throw').click();
+  await expect(page.locator('.lq__ring')).toHaveAttribute('data-thrown', '');
+  await atCue(page, 'swim', 0.7);
+  await expect
+    .poll(() => customProperty(page, '.lq__water', '--depth'), { timeout: 8000 })
+    .toBeGreaterThan(0.9);
+  await expect(page.locator('.lq__prop--somersault')).toBeVisible();
+  await page.locator('.lq__prop--somersault').click();
+  await expect
+    .poll(() => customProperty(page, '.demo__stage', '--roll'), { timeout: 5000 })
+    .toBeGreaterThan(30);
+  await atCue(page, 'try', 0.5);
+  await expect(page.locator('.lq__prop--join')).toBeVisible();
+  await page.locator('.lq__prop--join').click();
+  await expect
+    .poll(() => customProperty(page, '.lq__ring', '--inside'), { timeout: 5000 })
+    .toBeCloseTo(1, 1);
+  // The dance turns on its own once she is in it, and the pause button stops it.
+  await atCue(page, 'round', 0.9);
+  await expect(page.locator('.lq__ring')).toHaveAttribute('data-dancing', '');
+});
+
+test("the trial: her sister's dream fills the bank, and opening her eyes turns it into the farm", async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'trial');
+  test.skip(!demo, 'no trial demo in this build');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'sounds-three', 0.95);
+  await expect(page.locator('.tr__ghost[data-shown]')).toHaveCount(7, { timeout: 8000 });
+  const realOpacity = () =>
+    page.evaluate(() =>
+      Number(
+        getComputedStyle(
+          document.querySelector('.tr__ghost[data-kind="teacups"] .tr__ghost-real') as Element,
+        ).opacity,
+      ),
+    );
+  expect(await realOpacity()).toBeLessThan(0.1);
+  // The button opens her eyes: every dream thing becomes its real one, and back.
+  const eyes = page.locator('.tr__prop-eyes');
+  await expect(eyes).toBeVisible();
+  await expect(eyes).toHaveAttribute('aria-pressed', 'false');
+  await eyes.click();
+  await expect(eyes).toHaveAttribute('aria-pressed', 'true');
+  await expect.poll(realOpacity, { timeout: 5000 }).toBeGreaterThan(0.9);
+  await eyes.click();
+  await expect.poll(realOpacity, { timeout: 5000 }).toBeLessThan(0.1);
+  // The story does it too, one creature at a time.
+  await atCue(page, 'real-two', 0.9);
+  await expect.poll(realOpacity, { timeout: 8000 }).toBeGreaterThan(0.9);
+  await scrollTo(page, 1);
+  await expect(page.locator('.demo__stage .demo-beat').last()).toHaveAttribute('data-active', '');
+});

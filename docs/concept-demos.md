@@ -1,16 +1,16 @@
 # Concept demos
 
-> Canonical document for the nine standalone concept demos under `/demos/`: what they are for, how they relate to the story runtime, what each one stages, and how they are checked. Product intent is in [`product-principles.md`](product-principles.md); the story runtime is in [`scene-shot-model.md`](scene-shot-model.md) and [`frontend-architecture.md`](frontend-architecture.md).
+> Canonical document for the twelve standalone concept demos under `/demos/`: what they are for, how they relate to the story runtime, what each one stages, and how they are checked. Product intent is in [`product-principles.md`](product-principles.md); the story runtime is in [`scene-shot-model.md`](scene-shot-model.md) and [`frontend-architecture.md`](frontend-architecture.md).
 
 ## 1. What they are
 
-Nine ambitious, self-contained stagings of one moment of the book each, built to
+Twelve ambitious, self-contained stagings of one moment of the book each, built to
 show how far an interactive telling can go before the story runtime is asked to carry
 it. They are demonstrations, not the product: each one chooses the technique that
 makes its moment strongest and spends its budget on that.
 
 ```text
-/demos/                  the index: nine cards on a table, and the choice of Alice
+/demos/                  the index: twelve cards on a table, and the choice of Alice
 /demos/rabbit-hole/      Down the Rabbit-Hole: a WebGL well the camera falls down
 /demos/drink-me/         Drink Me: a first-person hall in CSS 3D that scales around her
 /demos/pool-of-tears/    The Pool of Tears: a Canvas sea the reader can stir
@@ -19,6 +19,9 @@ makes its moment strongest and spends its budget on that.
 /demos/bill-the-lizard/  There Goes Bill: the reader is Bill, down the chimney and up
 /demos/dormouse/         A Mad Tea-Party: the Dormouse's tale on a treacle spiral, SVG
 /demos/cheshire-cat/     The Cheshire Cat: a night wood in depth, a Cat masked away
+/demos/caterpillar/      Advice from a Caterpillar: a meadow that scales with her height
+/demos/croquet/          The Queen's Croquet-Ground: a garden in CSS 3D with live mallets
+/demos/lobster-quadrille/ The Lobster Quadrille: a dance on the shore the reader joins
 /demos/trial/            Who Stole the Tarts?: a paper courtroom in CSS 3D, and the pack
 ```
 
@@ -44,9 +47,11 @@ by segment id at build time, the same way a story page resolves its text.
 `text/locales/<locale>/chNN.json`, ordered by the structure file. The demos added the
 adapted text they needed: the giant Alice, the pool and the Mouse in chapter 2, the
 race and the prizes in chapter 3, the little bottle, the window and Bill in chapter
-4, the Cheshire Cat in chapter 6, the Dormouse's tale in chapter 7, the opening of the
-court in chapter 11, and the sentence-first climax and waking in chapter 12. Drink Me
-uses chapter 1's existing text. The added chapter files are partial on purpose: they
+4, the Caterpillar, the mushroom and the Pigeon in chapter 5, the Cheshire Cat in
+chapter 6, the Dormouse's tale in chapter 7, the rose-tree, the procession, the game
+and the Cat's head in chapter 8, the quadrille and its songs in chapter 10, the opening
+of the court in chapter 11, and the sentence-first climax, the waking and her sister's
+dream in chapter 12. Drink Me uses chapter 1's existing text. The added chapter files are partial on purpose: they
 hold the sections the demos stage, with segment ids numbered to leave room before and
 after, so the rest of each chapter can be adapted later without renumbering.
 `npm run check:text` treats them like any other chapter.
@@ -141,7 +146,7 @@ Navigation API simply navigates.
 `window.__aliceDemo` is the test seam: progress, active beat, paused, reduced, and a
 per-demo `mode` (the rabbit hole reports `webgl` or `flat`).
 
-## 4. The nine demos
+## 4. The twelve demos
 
 ### Down the Rabbit-Hole: the fall is the parallax
 
@@ -376,6 +381,75 @@ a letter floats up out of the well.
 treacle rather than a glide; no drips, no orbit, no jolt; the letters hang in the air;
 the blur is lighter; the teapot ending shrinks without spinning.
 
+### Advice from a Caterpillar: her height is the parallax
+
+Alice is three inches high, so the meadow is a forest of grass and the mushroom a
+hill with the Caterpillar on top. Her height in inches is the one number the demo
+hangs off: the meadow scales about the ground under her feet (one to one at three
+inches; the grass towers when she is one; the mushroom is a toy at her feet when she
+is thirty-six), the horizon climbs the frame as she does, and past the tree line the
+meadow gives way to a sky, a sea of leaves far below, and her own neck running down
+into them as a tapered ribbon along a curve, with her shoulders and dress at its foot
+(`alice/from-above`). The Caterpillar's lines arrive as smoke: blurred, rising,
+clearing, with a ring from the hookah for each. The right-hand bit strikes her chin
+on her foot: the foot rises into the frame, the frame folds up from below, a thud.
+
+**Interaction.** Press the Caterpillar, or *Blow a smoke ring*, and it blows one
+toward you. The two bits of mushroom are in her hands, real buttons: nibble the left
+and she grows, nibble the right and she shrinks, and the story keeps its own course at
+the next beat so play never strands her. Above the trees the pointer bends her neck
+about like a serpent and the leaves shake under her hands. The Pigeon is a button:
+shoo it and it goes off for a moment and comes back worse.
+
+**Reduced motion.** Size changes are cuts with a blink; the smoke hangs still; the
+neck holds straight; the Pigeon's wings are spread and do not beat.
+
+### The Queen's Croquet-Ground: a walk across a garden in CSS 3D
+
+A ground of ridges and furrows the camera slides along, in one `perspective`, with
+flat card people standing on it at (x, z) and always facing the camera. The rose-tree
+first, its white roses being painted red; then the procession comes in from the right
+over several beats, soldiers, courtiers, children, the White Rabbit, the Knave with
+the crown, and the King and Queen, and halts with the Queen before Alice; then the
+game, where the mallet is a flamingo under the reader's arm, big in the frame, that
+twists round every few seconds to look up in their face; then a grin in the air over
+the ground, then eyes, then the whole head, argued over until it fades from the ears
+down, grin last.
+
+**Interaction.** Every rose is a button: tap or drag across the white ones and they
+turn red with a drip; the gardeners paint the rest. *Hide the gardeners*, or press the
+flower-pot, and they jump in. *Strike the hedgehog* (or tap the ground) swings the
+flamingo: while it is looking up at you there is no blow, only a wobble and a laugh;
+otherwise the hedgehog rolls off toward an arch, and the arch gets up and walks away.
+Left alone, the hedgehog unrolls and crawls off; tap it and it rolls up again. When
+the flamingo goes across the garden, *Catch the flamingo* brings it back. While the
+Queen shouts, every tap sets her off: red, a shake, a thud. The Cat's pupils follow
+the pointer, and a tap on the head makes it wink.
+
+**Reduced motion.** The camera cuts; nobody steps, skips, runs or waddles; the
+flamingo does not look up, so every strike lands; the red flash without the shake.
+
+### The Lobster Quadrille: a dance the reader joins
+
+A shore in layers: sky, a sea in three swells that breathes on the ambient timeline,
+shingle. The dancers stand in a ring in CSS 3D; the Gryphon and the Mock Turtle in
+front explain the figure, the dancers form two lines and advance twice, set to
+partners, change lobsters. The reader has a lobster of their own in their hands.
+Then the reader is in the ring: the camera steps into its centre and the dancers go
+round and round, treading on her toes every so often, while the Mock Turtle sings;
+sung lines rise with the swell, a word at a time. At the cry from the distance the
+Gryphon takes her hand and runs: the shingle streams past, the dancers fall behind,
+the sky goes to dusk, and the last words come faint on the breeze.
+
+**Interaction.** *Throw the lobster*, or tap the sea, and it arcs out and splashes;
+everyone else throws theirs. Under the water, *Turn a somersault* (or tap the water)
+rolls the whole frame. *Join the dance* steps into the ring before the story does. The
+creatures of the song come by in the sea, and the snail is a button that draws into
+its shell.
+
+**Reduced motion.** The sea holds; no advancing, no dancing, no streaming shore; the
+somersault is a blink; the lobster's arc is a short lift and a splash.
+
 ### Who Stole the Tarts?: a dolly through a paper theatre, then the pack
 
 The court is a toy theatre: flat SVG cutouts standing at different `translateZ`
@@ -399,13 +473,23 @@ leaves comes down with them, and the sister is behind them.
 The jury write it all down: every sentence lands as a scribble on each slate and each
 juror marks whether it thought it important; press a juror and it changes its mind.
 
+Then her sister's dream. Alice runs off to her tea, the sun goes down over the bank,
+and the creatures of the dream come one by one as the sounds the text names: the
+Rabbit, the Mouse, the teacups, the Queen, the pig-baby, the Gryphon, the Mock
+Turtle, each a sepia ghost drifting on the bank with its own synthesised sound. From
+"dull reality" on, the story turns each into what it really is, a tuft of grass, the
+reeds, a sheep with a bell, the shepherd boy, the farm-yard, the cattle; then the
+other little children gather about her and the summer evening holds.
+
 **Interaction.** While the Queen shouts, every tap makes the pack leap. Tap a stuck
 card to flick it off, or peel it off the glass and throw it; press *Beat them off*
 to clear them all. Both are optional: the leaves fall whether or not she beat them off.
+In the dream, *Open her eyes* is a toggle: every creature becomes its real one at
+once, and pressing again brings the dream back; a tap on a creature makes its sound.
 
 **Reduced motion.** The dolly cuts with a dip to black; the cards fade in at their
 places on the glass instead of flying; no tremble, no shake; the leaves change and
-fall without drifting.
+fall without drifting; the dream's creatures stand still and swap without a fade.
 
 ## 5. Checks
 
@@ -424,7 +508,12 @@ Caucus-race runner is a button that toggles between resting and running; the poo
 captions ride the swell once she is in the water; the house's camera pulls out past
 the filling pose; Bill's camera sinks below the roof and rises after the kick; the
 Cat's mask slides past its head while the grin is still there, and the grin goes
-last; and the index's picker chooses an Alice the next page still wears.
+last; the Caterpillar's meadow scales with her height and each bit of mushroom is a
+button that changes it; the croquet roses are buttons that paint red, the gardeners
+can be hidden, a strike sends the hedgehog off and the Cat's grin comes first and goes
+last; the quadrille's lobster can be thrown, the sea somersaulted in and the dance
+joined; the sister's dream fills the bank and opening her eyes turns it into the farm;
+and the index's picker chooses an Alice the next page still wears.
 
 `npm run check:frontend` covers the demo code with the same rules as the scenes:
 no prose in code, no absolute paths, no inline style writes other than custom

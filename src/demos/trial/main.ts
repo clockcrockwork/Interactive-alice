@@ -12,7 +12,8 @@
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, seeded } from '../shell/shell.ts';
-import { TARTS_SVG } from './figures.ts';
+import type { OneShotCue } from '../shell/sound.ts';
+import { PIG_BABY_SVG, REAL_SVG, TARTS_SVG, TEACUPS_SVG } from './figures.ts';
 import './trial.css';
 
 const SUITS = [
@@ -591,6 +592,182 @@ function mount(shell: DemoShell): void {
     iLeaves + 0.3,
   );
   master.to(bank, { '--warm': 1, duration: 1 }, iWake);
+
+  // --- Her sister's dream. Alice runs in to her tea; the sun goes down; and the
+  // bank fills with the creatures of the dream, each a sound, until her sister
+  // knows she has only to open her eyes for every one to turn into the farm.
+  const iTea = cue('tea');
+  const iAlive = cue('alive');
+  const iSoundsOne = cue('sounds-one');
+  const iSoundsTwo = cue('sounds-two');
+  const iSoundsThree = cue('sounds-three');
+  const iClosed = cue('closed');
+  const iRealOne = cue('real-one');
+  const iRealTwo = cue('real-two');
+  const iRealThree = cue('real-three');
+  const iAfter = cue('after');
+  const iSummer = cue('summer');
+  const dusk = shell.layer('tr__dusk');
+  dusk.innerHTML = '<div class="tr__sun"></div>';
+  const runner = shell.layer('tr__runner');
+  runner.innerHTML = `<div class="tr__alice-off">${figure('alice/silhouette')}</div>`;
+  const aliceOff = runner.querySelector<HTMLElement>('.tr__alice-off') ?? runner;
+  master.fromTo(
+    aliceOff,
+    { opacity: 1, x: 0 },
+    { x: '60vw', y: '-6vh', duration: 0.6, ease: 'power1.in', immediateRender: false },
+    iTea + 0.05,
+  );
+  master.to(aliceOff, { opacity: 0, duration: 0.2 }, iTea + 0.55);
+  master.to(dusk, { '--dusk': 1, duration: iClosed - iTea, ease: 'none' }, iTea + 0.2);
+  master.to(dusk, { '--dusk': 1.5, duration: 1 }, iSummer);
+
+  interface Ghost {
+    el: HTMLElement;
+    sound: OneShotCue;
+    real: boolean;
+  }
+  const dream = shell.layer('tr__dream');
+  const dreamThings: [string, string, string, OneShotCue][] = [
+    ['rabbit', figure('white-rabbit/running'), REAL_SVG.grass ?? '', 'paper'],
+    ['mouse', figure('mouse/swimming'), REAL_SVG.reeds ?? '', 'splash'],
+    ['teacups', TEACUPS_SVG, REAL_SVG.sheep ?? '', 'glass'],
+    ['queen', figure('queen-of-hearts'), REAL_SVG.shepherd ?? '', 'thud'],
+    ['pig', PIG_BABY_SVG, REAL_SVG.hen ?? '', 'whoosh'],
+    ['gryphon', figure('gryphon'), REAL_SVG.hen ?? '', 'whoosh'],
+    ['turtle', figure('mock-turtle'), REAL_SVG.cow ?? '', 'thud'],
+  ];
+  const ghosts: Ghost[] = dreamThings.map(([kind, dreamMarkup, realMarkup, sound], index) => {
+    const el = document.createElement('div');
+    el.className = 'tr__ghost';
+    el.dataset.kind = kind;
+    el.style.setProperty('--gx', `${8 + index * 13}%`);
+    el.style.setProperty('--i', String(index));
+    el.innerHTML = `<div class="tr__ghost-dream">${dreamMarkup}</div><div class="tr__ghost-real">${realMarkup}</div>`;
+    dream.append(el);
+    return { el, sound, real: false };
+  });
+  const showGhosts = (at: number, kinds: string[]): void => {
+    const chosen = ghosts.filter((ghost) => kinds.includes(ghost.el.dataset.kind ?? ''));
+    master.call(
+      () => {
+        const shown = master.time() >= at;
+        for (const ghost of chosen) {
+          ghost.el.toggleAttribute('data-shown', shown);
+        }
+        if (shown && Math.abs(master.time() - at) < 0.3) {
+          for (const ghost of chosen) {
+            shell.sound.play(ghost.sound, 0.5);
+          }
+        }
+      },
+      [],
+      at,
+    );
+  };
+  showGhosts(iSoundsOne + 0.1, ['rabbit']);
+  showGhosts(iSoundsOne + 0.5, ['mouse']);
+  showGhosts(iSoundsTwo + 0.1, ['teacups']);
+  showGhosts(iSoundsTwo + 0.5, ['queen']);
+  showGhosts(iSoundsThree + 0.1, ['pig']);
+  showGhosts(iSoundsThree + 0.4, ['gryphon']);
+  showGhosts(iSoundsThree + 0.7, ['turtle']);
+  master.call(
+    () => dream.toggleAttribute('data-alive', master.time() >= iAlive + 0.2),
+    [],
+    iAlive + 0.2,
+  );
+  master.call(() => leafFall.toggleAttribute('data-dream', master.time() >= iAlive), [], iAlive);
+
+  // Opening her eyes: every creature becomes what it really is. The story does it
+  // one by one from "dull reality" on; the button does it all at once, and back.
+  let eyesOpen = false;
+  const eyesButton = shell.prop(shell.ui.demoOpenEyes ?? '', 'tr__prop-eyes');
+  eyesButton.setAttribute('aria-pressed', 'false');
+  const applyEyes = (): void => {
+    eyesButton.setAttribute('aria-pressed', String(eyesOpen));
+    dream.toggleAttribute('data-real', eyesOpen);
+    dusk.toggleAttribute('data-real', eyesOpen);
+    shell.sound.level('wind', eyesOpen ? 0.25 : 0);
+  };
+  eyesButton.addEventListener('click', () => {
+    eyesOpen = !eyesOpen;
+    applyEyes();
+    shell.sound.play(eyesOpen ? 'chime' : 'glass', 0.5);
+    shell.status(shell.ui.demoOpenEyes ?? '');
+  });
+  const turnReal = (at: number, kinds: string[]): void => {
+    master.call(
+      () => {
+        const real = master.time() >= at;
+        for (const ghost of ghosts) {
+          if (kinds.includes(ghost.el.dataset.kind ?? '')) {
+            ghost.real = real;
+            ghost.el.toggleAttribute('data-real', real);
+          }
+        }
+        if (real && Math.abs(master.time() - at) < 0.3) {
+          shell.sound.play('chime', 0.3);
+        }
+      },
+      [],
+      at,
+    );
+  };
+  turnReal(iRealOne + 0.1, ['rabbit']);
+  turnReal(iRealOne + 0.5, ['mouse']);
+  turnReal(iRealTwo + 0.1, ['teacups']);
+  turnReal(iRealTwo + 0.5, ['queen']);
+  turnReal(iRealThree + 0.1, ['pig', 'gryphon']);
+  turnReal(iRealThree + 0.6, ['turtle']);
+  master.call(
+    () => {
+      const inside = master.time() >= iAlive + 0.3 && master.time() < iAfter;
+      if (inside) {
+        eyesButton.show();
+      } else {
+        eyesButton.hide();
+        eyesOpen = false;
+        applyEyes();
+      }
+    },
+    [],
+    iAlive + 0.3,
+  );
+  master.call(
+    () => {
+      if (master.time() >= iAfter) {
+        eyesButton.hide();
+        eyesOpen = false;
+        applyEyes();
+      }
+    },
+    [],
+    iAfter,
+  );
+  // Tapping a creature of the dream makes its sound again.
+  for (const ghost of ghosts) {
+    ghost.el.addEventListener('click', () => {
+      shell.sound.play(ghost.real || eyesOpen ? 'chime' : ghost.sound, 0.6);
+      ghost.el.removeAttribute('data-nudged');
+      void ghost.el.offsetWidth;
+      ghost.el.setAttribute('data-nudged', '');
+    });
+  }
+
+  // The after-time: other little children gather about her, and the summer days.
+  const children = shell.layer('tr__children');
+  children.innerHTML = [0, 1, 2]
+    .map((i) => `<div class="tr__child" style="--i: ${i}">${figure('alice/silhouette')}</div>`)
+    .join('');
+  master.to(dream, { opacity: 0, duration: 0.6 }, iAfter);
+  master.fromTo(
+    children,
+    { opacity: 0, y: 30 },
+    { opacity: 1, y: 0, duration: reducedMotion ? 0.01 : 0.7, immediateRender: false },
+    iAfter + 0.3,
+  );
+  master.call(() => leafFall.toggleAttribute('data-slow', master.time() >= iSummer), [], iSummer);
 }
 
 const shell = attachDemo();

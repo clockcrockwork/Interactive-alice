@@ -48,6 +48,34 @@
     {
       "id": "bill",
       "devLabel": "Bill the Lizard"
+    },
+    {
+      "id": "caterpillar",
+      "devLabel": "the Caterpillar"
+    },
+    {
+      "id": "pigeon",
+      "devLabel": "the Pigeon"
+    },
+    {
+      "id": "two",
+      "devLabel": "Two, a gardener"
+    },
+    {
+      "id": "five",
+      "devLabel": "Five, a gardener"
+    },
+    {
+      "id": "executioner",
+      "devLabel": "the executioner"
+    },
+    {
+      "id": "gryphon",
+      "devLabel": "the Gryphon"
+    },
+    {
+      "id": "mock-turtle",
+      "devLabel": "the Mock Turtle"
     }
   ]
 }

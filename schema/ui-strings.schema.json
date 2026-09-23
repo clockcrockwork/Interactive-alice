@@ -73,7 +73,24 @@
         "demoTakeKey",
         "demoMyRunner",
         "demoFeed",
-        "demoShakeHouse"
+        "demoShakeHouse",
+        "demoTechCaterpillar",
+        "demoTechCroquet",
+        "demoTechQuadrille",
+        "demoPuff",
+        "demoNibbleLeft",
+        "demoNibbleRight",
+        "demoBendNeck",
+        "demoShoo",
+        "demoPaintRose",
+        "demoStrike",
+        "demoCatchFlamingo",
+        "demoHideGardeners",
+        "demoThrowLobster",
+        "demoJoinDance",
+        "demoSomersault",
+        "demoOpenEyes",
+        "demoSnail"
       ],
       "additionalProperties": false,
       "properties": {
@@ -341,6 +358,91 @@
           "type": "string",
           "minLength": 1,
           "description": "Button that shakes the house."
+        },
+        "demoTechCaterpillar": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index card: what the Caterpillar demo shows."
+        },
+        "demoTechCroquet": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index card: what the croquet demo shows."
+        },
+        "demoTechQuadrille": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index card: what the Lobster Quadrille demo shows."
+        },
+        "demoPuff": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that makes the Caterpillar blow a smoke ring."
+        },
+        "demoNibbleLeft": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button on the left bit of mushroom: nibbling it makes her taller."
+        },
+        "demoNibbleRight": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button on the right bit of mushroom: nibbling it makes her shorter."
+        },
+        "demoBendNeck": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Hint that the pointer bends her neck."
+        },
+        "demoShoo": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button on the Pigeon: shoo it away for a moment."
+        },
+        "demoPaintRose": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Hint that a drag over a white rose paints it red."
+        },
+        "demoStrike": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that swings the flamingo at the hedgehog."
+        },
+        "demoCatchFlamingo": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that brings the flamingo back."
+        },
+        "demoHideGardeners": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that puts the gardeners into the flower-pot."
+        },
+        "demoThrowLobster": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that throws the lobster out to sea."
+        },
+        "demoJoinDance": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that puts the reader into the line of dancers."
+        },
+        "demoSomersault": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that turns a somersault in the sea."
+        },
+        "demoOpenEyes": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that wakes the sister from her dream."
+        },
+        "demoSnail": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button on the snail in the song: it draws into its shell."
         }
       }
     }

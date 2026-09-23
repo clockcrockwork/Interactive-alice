@@ -1,0 +1,357 @@
+{
+  "$schema": "../../schema/chapter-structure.schema.json",
+  "chapter": 10,
+  "sourceFile": "text/raw/ch10-the-lobster-quadrille.txt",
+  "sections": [
+    {
+      "id": "the-first-figure"
+    },
+    {
+      "id": "the-song"
+    },
+    {
+      "id": "the-trial-begins"
+    }
+  ],
+  "segments": [
+    {
+      "id": "ch10.s0010",
+      "section": "the-first-figure",
+      "kind": "narration"
+    },
+    {
+      "id": "ch10.s0020",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0030",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch10.s0040",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0050",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch10.s0060",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch10.s0070",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    },
+    {
+      "id": "ch10.s0080",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0090",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0100",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0110",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    },
+    {
+      "id": "ch10.s0120",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0130",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    },
+    {
+      "id": "ch10.s0140",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0150",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0160",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    },
+    {
+      "id": "ch10.s0170",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0180",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    },
+    {
+      "id": "ch10.s0190",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0200",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch10.s0210",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0220",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch10.s0230",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0240",
+      "section": "the-first-figure",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0250",
+      "section": "the-song",
+      "kind": "narration"
+    },
+    {
+      "id": "ch10.s0260",
+      "section": "the-song",
+      "kind": "narration"
+    },
+    {
+      "id": "ch10.s0270",
+      "section": "the-song",
+      "kind": "narration"
+    },
+    {
+      "id": "ch10.s0280",
+      "section": "the-song",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0290",
+      "section": "the-song",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0300",
+      "section": "the-song",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0310",
+      "section": "the-song",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0320",
+      "section": "the-song",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0330",
+      "section": "the-song",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0340",
+      "section": "the-song",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0350",
+      "section": "the-song",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0360",
+      "section": "the-song",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0370",
+      "section": "the-song",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0380",
+      "section": "the-song",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0390",
+      "section": "the-song",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0400",
+      "section": "the-song",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0410",
+      "section": "the-song",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0420",
+      "section": "the-song",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch10.s0430",
+      "section": "the-song",
+      "kind": "narration"
+    },
+    {
+      "id": "ch10.s0440",
+      "section": "the-song",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch10.s0450",
+      "section": "the-trial-begins",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    },
+    {
+      "id": "ch10.s0460",
+      "section": "the-trial-begins",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    },
+    {
+      "id": "ch10.s0470",
+      "section": "the-trial-begins",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch10.s0480",
+      "section": "the-trial-begins",
+      "kind": "narration"
+    },
+    {
+      "id": "ch10.s0490",
+      "section": "the-trial-begins",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0500",
+      "section": "the-trial-begins",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch10.s0510",
+      "section": "the-trial-begins",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    },
+    {
+      "id": "ch10.s0520",
+      "section": "the-trial-begins",
+      "kind": "narration"
+    },
+    {
+      "id": "ch10.s0530",
+      "section": "the-trial-begins",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch10.s0540",
+      "section": "the-trial-begins",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    },
+    {
+      "id": "ch10.s0550",
+      "section": "the-trial-begins",
+      "kind": "narration"
+    },
+    {
+      "id": "ch10.s0560",
+      "section": "the-trial-begins",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch10.s0570",
+      "section": "the-trial-begins",
+      "kind": "narration"
+    },
+    {
+      "id": "ch10.s0580",
+      "section": "the-trial-begins",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    }
+  ]
+}

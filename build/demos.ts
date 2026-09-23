@@ -42,6 +42,9 @@ export const DEMO_ORDER = [
   'bill-the-lizard',
   'dormouse',
   'cheshire-cat',
+  'caterpillar',
+  'croquet',
+  'lobster-quadrille',
   'trial',
 ] as const;
 
@@ -177,6 +180,20 @@ const UI_FOR_SCRIPT = [
   'demoBeatOff',
   'demoFlatWell',
   'demoReducedMotion',
+  'demoPuff',
+  'demoNibbleLeft',
+  'demoNibbleRight',
+  'demoBendNeck',
+  'demoShoo',
+  'demoPaintRose',
+  'demoStrike',
+  'demoCatchFlamingo',
+  'demoHideGardeners',
+  'demoThrowLobster',
+  'demoJoinDance',
+  'demoSomersault',
+  'demoOpenEyes',
+  'demoSnail',
 ] as const;
 
 export function titleOf(project: DemoProject, demo: ExperienceConceptDemoFile): string {
@@ -265,6 +282,9 @@ const TECH_KEY = {
   'bill-the-lizard': 'demoTechBill',
   'cheshire-cat': 'demoTechCheshire',
   dormouse: 'demoTechDormouse',
+  caterpillar: 'demoTechCaterpillar',
+  croquet: 'demoTechCroquet',
+  'lobster-quadrille': 'demoTechQuadrille',
   trial: 'demoTechTrial',
 } as const;
 

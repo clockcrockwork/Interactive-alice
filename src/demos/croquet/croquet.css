@@ -1,0 +1,509 @@
+/* The Queen's Croquet-Ground: a garden in CSS 3D, ridges and furrows the camera
+   walks across, and flat card people standing on it. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    --cq-sky: oklch(86% 0.06 220);
+    --cq-sky-low: oklch(93% 0.04 100);
+    --cq-turf: oklch(60% 0.14 135);
+    --cq-turf-deep: oklch(50% 0.13 138);
+    --cq-red: oklch(55% 0.22 25);
+    --cq-white: oklch(97% 0.01 90);
+    --cq-flamingo: oklch(76% 0.16 10);
+    --cq-pot: oklch(60% 0.12 45);
+  }
+}
+
+@layer scene {
+  .demo--croquet .demo-beat {
+    inset-block-end: 9vh;
+    color: oklch(20% 0.03 60);
+    text-shadow: 0 1px 0 oklch(100% 0 0 / 0.55);
+  }
+
+  .demo--croquet .line[data-speaker="queen-of-hearts"] {
+    font-weight: 700;
+    color: oklch(38% 0.2 25);
+  }
+
+  .demo--croquet .line[data-speaker="cheshire-cat"] {
+    font-style: italic;
+    color: oklch(34% 0.1 300);
+  }
+
+  .cq__sky {
+    background: linear-gradient(
+      to bottom,
+      var(--cq-sky),
+      var(--cq-sky-low) 60%,
+      var(--cq-turf) 60.5%
+    );
+  }
+
+  /* The world: a perspective, and inside it the ground plane the camera slides along. */
+  .cq__world {
+    --cam-x: 0;
+    --cam-z: 0;
+    --tilt: 12;
+    --height: 0;
+    --zoom: 1;
+    perspective: 1000px;
+    perspective-origin: 50% 40%;
+    overflow: hidden;
+  }
+
+  .cq__ground {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 60%;
+    inline-size: 0;
+    block-size: 0;
+    transform-style: preserve-3d;
+    transform: scale(var(--zoom)) rotateX(calc(var(--tilt) * -1deg))
+      translate3d(calc(var(--cam-x) * -1px), calc(var(--height) * 1px), calc(var(--cam-z) * -1px));
+  }
+
+  .cq__turf {
+    position: absolute;
+    inset-inline-start: -3000px;
+    inset-block-start: -1400px;
+    inline-size: 6000px;
+    block-size: 2400px;
+    transform: rotateX(90deg);
+    transform-origin: 50% 58%;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        oklch(0% 0 0 / 0) 0 70px,
+        oklch(0% 0 0 / 0.12) 70px 110px,
+        oklch(100% 0 0 / 0.08) 110px 140px
+      ),
+      linear-gradient(to bottom, var(--cq-turf-deep), var(--cq-turf) 30%, var(--cq-turf-deep));
+  }
+
+  /* A piece stands at (x, z) on the ground, feet down, and faces the camera. */
+  .cq__piece {
+    --x: 0;
+    --z: 0;
+    --flat: 0;
+    --sink: 0;
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: var(--w, 12rem);
+    margin-inline-start: calc(var(--w, 12rem) / -2);
+    transform-style: preserve-3d;
+    transform: translate3d(calc(var(--x) * 1px), 0, calc(var(--z) * 1px))
+      rotateX(calc(var(--tilt) * 1deg)) translateY(calc(-100% + var(--sink) * 70%))
+      rotateX(calc(var(--flat) * -84deg));
+    transform-origin: 50% 100%;
+    filter: drop-shadow(0 14px 14px oklch(0% 0 0 / 0.35));
+    pointer-events: none;
+  }
+
+  .cq__piece .art,
+  .cq__piece svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .cq__courtier .art {
+    filter: hue-rotate(200deg) saturate(1.4);
+  }
+
+  .cq__child .art {
+    filter: hue-rotate(-20deg) saturate(1.6);
+  }
+
+  .cq__flamingo .art,
+  .cq__flamingo svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .cq__cat .art,
+  .cq__cat svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .cq__queen[data-shouting] .art {
+    animation: cq-shout 0.35s ease-out 1;
+  }
+
+  .cq__rose-tree {
+    filter: drop-shadow(0 20px 20px oklch(0% 0 0 / 0.3));
+  }
+
+  .cq__roses {
+    position: absolute;
+    inset: 0 0 20% 0;
+  }
+
+  /* Every rose is a button: white until painted, then red with a drip. */
+  .cq__rose {
+    --drip: 0;
+    position: absolute;
+    inset-inline-start: var(--rx);
+    inset-block-start: var(--ry);
+    inline-size: 9%;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, var(--cq-white), oklch(86% 0.02 90) 70%);
+    box-shadow: inset 0 -0.3em 0.4em oklch(0% 0 0 / 0.15);
+    cursor: pointer;
+    pointer-events: auto;
+    transition:
+      background-color var(--demo-quick) var(--demo-ease),
+      transform var(--demo-quick) var(--demo-ease);
+  }
+
+  .cq__rose::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 45%;
+    inset-block-start: 70%;
+    inline-size: 12%;
+    block-size: calc(var(--drip) * 90%);
+    border-radius: 0 0 50% 50%;
+    background: var(--cq-red);
+    opacity: 0;
+    transition: opacity var(--demo-calm) var(--demo-ease);
+  }
+
+  .cq__rose[aria-pressed="true"] {
+    background: radial-gradient(circle at 40% 35%, oklch(68% 0.22 25), var(--cq-red) 70%);
+    transform: scale(1.12);
+  }
+
+  .cq__rose[aria-pressed="true"]::after {
+    opacity: 1;
+  }
+
+  .cq__rose:focus-visible {
+    outline: 3px solid oklch(40% 0.15 250);
+    outline-offset: 3px;
+  }
+
+  .cq__brush {
+    transform-origin: 96px 100px;
+  }
+
+  .cq__gardener .cq__brush {
+    animation: cq-dab 0.9s ease-in-out infinite alternate;
+  }
+
+  .cq__pot-shape {
+    inline-size: 100%;
+    aspect-ratio: 1 / 0.9;
+    background: linear-gradient(
+      to right,
+      oklch(52% 0.12 45),
+      var(--cq-pot) 40%,
+      oklch(48% 0.12 45)
+    );
+    clip-path: polygon(0 0, 100% 0, 100% 14%, 92% 14%, 84% 100%, 16% 100%, 8% 14%, 0 14%);
+  }
+
+  .cq__pot {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  /* The splash of paint on the glass. */
+  .cq__splash {
+    pointer-events: none;
+  }
+
+  .cq__dab {
+    position: absolute;
+    inset-inline-start: calc(var(--dx) * 1%);
+    inset-block-start: calc(var(--dy) * 1%);
+    inline-size: 9vmin;
+    aspect-ratio: 1;
+    background: var(--cq-red);
+    border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%;
+    opacity: 0.85;
+    animation: cq-splat 2.8s ease-out forwards;
+  }
+
+  /* Marchers step as they come; children skip. */
+  .cq__ground[data-marching] .cq__marcher .art {
+    animation: cq-step 0.5s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -80ms);
+  }
+
+  .cq__ground[data-marching] .cq__child .art {
+    animation: cq-skip 0.4s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -70ms);
+  }
+
+  .cq__fury {
+    background: oklch(45% 0.2 25);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* The game: arches, hedgehogs and players are hidden until places are taken. */
+  .cq__arch,
+  .cq__hedgehog,
+  .cq__player {
+    opacity: 0;
+  }
+
+  .cq__ground[data-running] .cq__player .art,
+  .cq__ground[data-quarrel] .cq__player .art {
+    animation: cq-run 0.32s ease-in-out infinite alternate;
+    animation-delay: calc(var(--x, 0) * -1ms);
+  }
+
+  .cq__ground[data-running] .cq__arch .art {
+    animation: cq-step 0.6s ease-in-out infinite alternate;
+  }
+
+  .cq__hedgehog {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .cq__hedgehog-walk {
+    opacity: 0;
+  }
+
+  .cq__hedgehog[data-walking] .cq__hedgehog-ball {
+    opacity: 0;
+  }
+
+  .cq__hedgehog[data-walking] .cq__hedgehog-walk {
+    opacity: 1;
+    animation: cq-waddle 0.5s ease-in-out infinite alternate;
+    transform-origin: 50% 100%;
+  }
+
+  /* The flamingo under her arm, big in the frame; its head turns to look up at you. */
+  .cq__hands {
+    pointer-events: none;
+  }
+
+  .cq__flamingo {
+    position: absolute;
+    inset-inline-start: 56%;
+    inset-block-end: -4%;
+    inline-size: clamp(16rem, 56vmin, 34rem);
+    transform-origin: 50% 100%;
+    filter: drop-shadow(0 16px 24px oklch(0% 0 0 / 0.45));
+  }
+
+  .cq__flamingo-head {
+    --look-x: 0;
+    transform-origin: 160px 130px;
+    transition: transform var(--demo-calm) var(--demo-ease);
+  }
+
+  .cq__flamingo[data-looking] .cq__flamingo-head {
+    transform: rotate(calc(150deg + var(--look-x) * 1deg)) translate(-20px, -10px);
+  }
+
+  .cq__flamingo-body {
+    transform-origin: 170px 300px;
+    animation: cq-breathe 2.6s ease-in-out infinite alternate;
+  }
+
+  .cq__ground-tap {
+    position: absolute;
+    inset: 22% 0 28% 0;
+    border: 0;
+    padding: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .cq__ground-tap[data-mode="strike"],
+  .cq__ground-tap[data-mode="shout"] {
+    pointer-events: auto;
+  }
+
+  .cq__prop--hide,
+  .cq__prop--strike,
+  .cq__prop--catch {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: -50% 0;
+  }
+
+  /* A head in the air, over the ground; its parts come and go on their own. */
+  .cq__air {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .cq__cat {
+    --wobble: 0;
+    --blink: 0;
+    position: absolute;
+    inset-inline-start: 62%;
+    inset-block-start: 14%;
+    inline-size: clamp(9rem, 30vmin, 18rem);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    pointer-events: auto;
+    transform: rotate(calc(var(--wobble) * 8deg)) scale(calc(1 - var(--blink) * 0.15));
+    filter: drop-shadow(0 10px 18px oklch(0% 0 0 / 0.3));
+  }
+
+  .cq__cat:focus-visible {
+    outline: 3px solid oklch(40% 0.15 250);
+    outline-offset: 4px;
+  }
+
+  .cq__cat-pupils {
+    --px: 0;
+    --py: 0;
+    transform: translate(calc(var(--px) * 1px), calc(var(--py) * 1px));
+  }
+
+  .cq__cat-grin {
+    transform-origin: 120px 150px;
+    transform: scale(calc(1 + var(--blink) * 0.2));
+  }
+
+  .demo[data-paused] .cq__brush,
+  .demo[data-paused] .cq__marcher .art,
+  .demo[data-paused] .cq__child .art,
+  .demo[data-paused] .cq__player .art,
+  .demo[data-paused] .cq__arch .art,
+  .demo[data-paused] .cq__hedgehog-walk,
+  .demo[data-paused] .cq__flamingo-body,
+  .demo[data-paused] .cq__dab {
+    animation-play-state: paused;
+  }
+
+  @keyframes cq-dab {
+    from {
+      transform: rotate(-16deg);
+    }
+
+    to {
+      transform: rotate(18deg);
+    }
+  }
+
+  @keyframes cq-splat {
+    0% {
+      opacity: 0.9;
+      transform: scale(0.3);
+    }
+
+    20% {
+      opacity: 0.85;
+      transform: scale(1);
+    }
+
+    100% {
+      opacity: 0;
+      transform: scale(1.05) translateY(20px);
+    }
+  }
+
+  @keyframes cq-step {
+    from {
+      transform: translateY(0) rotate(-3deg);
+    }
+
+    to {
+      transform: translateY(-8%) rotate(3deg);
+    }
+  }
+
+  @keyframes cq-skip {
+    from {
+      transform: translateY(0);
+    }
+
+    to {
+      transform: translateY(-22%);
+    }
+  }
+
+  @keyframes cq-run {
+    from {
+      transform: translateX(-10%) rotate(-6deg);
+    }
+
+    to {
+      transform: translateX(10%) rotate(6deg);
+    }
+  }
+
+  @keyframes cq-shout {
+    0% {
+      transform: scale(1);
+    }
+
+    40% {
+      transform: scale(1.18) rotate(-4deg);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes cq-waddle {
+    from {
+      transform: rotate(-4deg);
+    }
+
+    to {
+      transform: rotate(4deg);
+    }
+  }
+
+  @keyframes cq-breathe {
+    from {
+      transform: scaleY(1);
+    }
+
+    to {
+      transform: scaleY(1.04);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cq__brush,
+    .cq__flamingo-body,
+    .cq__queen[data-shouting] .art,
+    .cq__hedgehog[data-walking] .cq__hedgehog-walk,
+    .cq__ground[data-marching] .cq__marcher .art,
+    .cq__ground[data-marching] .cq__child .art,
+    .cq__ground[data-running] .cq__player .art,
+    .cq__ground[data-quarrel] .cq__player .art,
+    .cq__ground[data-running] .cq__arch .art {
+      animation: none;
+    }
+
+    .cq__dab {
+      animation: none;
+      opacity: 0.7;
+    }
+
+    .cq__rose,
+    .cq__rose::after,
+    .cq__flamingo-head {
+      transition: none;
+    }
+  }
+}

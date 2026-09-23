@@ -11,6 +11,9 @@
     },
     {
       "id": "on-the-bank"
+    },
+    {
+      "id": "the-sisters-dream"
     }
   ],
   "segments": [
@@ -136,6 +139,131 @@
       "section": "on-the-bank",
       "kind": "dialogue",
       "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0820",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0830",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0840",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0850",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0860",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0870",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0880",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0890",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0900",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0910",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0920",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0930",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0940",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0950",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0960",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0970",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0980",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0990",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s1000",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s1010",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s1020",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s1030",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s1040",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s1050",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s1060",
+      "section": "the-sisters-dream",
+      "kind": "narration"
     }
   ]
 }

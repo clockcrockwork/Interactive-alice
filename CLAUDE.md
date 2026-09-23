@@ -55,9 +55,9 @@ npm run scene -- rabbit-hole --locale ja
 npm run scene -- rabbit-hole --plan    # derived progress ranges
 ```
 
-The nine concept demos under `/demos/` (rabbit hole, Drink Me, pool of tears,
-Caucus-race, the Rabbit's house, Bill the Lizard, Dormouse, Cheshire Cat, trial) are
-built with the site; see `docs/concept-demos.md`. They share the text layer and the hard rules
+The twelve concept demos under `/demos/` (rabbit hole, Drink Me, pool of tears,
+Caucus-race, the Rabbit's house, Bill the Lizard, Dormouse, Cheshire Cat, Caterpillar,
+croquet, Lobster Quadrille, trial) are built with the site; see `docs/concept-demos.md`. They share the text layer and the hard rules
 with the story, not its runtime or its budgets.
 
 ```

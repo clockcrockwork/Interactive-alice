@@ -368,13 +368,19 @@ legible, the one being told is bright, the rest wait faint in the treacle.
 Everyone else talks in bubbles around the rim: Alice on the left, the Hatter and the
 March Hare on the right, narration in the middle. The Dormouse's own lines stay in the
 document as visually hidden paragraphs, so the accessibility tree still carries the
-tale once, in order. Treacle drips down the screen through an SVG goo filter, three
-little sisters drift round the well, and at *everything that begins with an M* the
-letter itself, taken from the sentence, floats up through the cup.
+tale once, in order. Treacle drips down the screen, three little sisters drift round
+the well, and at *everything that begins with an M* the letter itself, taken from the
+sentence, floats up through the cup.
 
-As the Dormouse dozes the treacle blurs (`feGaussianBlur`), and the pinch that wakes
-it is a displacement-map jolt (`feTurbulence` + `feDisplacementMap`) that clears it.
-At the end the whole cup spins down into the teapot's spout.
+The cup is drawn once. The SVG sits in a fixed 1000 by 1000 box and the camera is a
+CSS transform on that box, so the compositor moves and turns a rasterised cup rather
+than the SVG re-laying its spiral of text on every frame; the sisters turn in an SVG
+of their own for the same reason. As the Dormouse dozes the treacle blurs with a CSS
+filter on the text, attached only while it lasts, and the pinch that wakes it is a
+skew and a turn on the text that the compositor does too; no SVG filter touches the
+text, because one would re-render the whole spiral on every frame it changed. The
+drips are shapes, not a goo filter. At the end the whole cup spins down into the
+teapot's spout.
 
 **Interaction.** The Dormouse sits on the rim. Press it, or the *Pinch the Dormouse*
 button, and it shrieks awake: the blur clears and the text jolts. The story pinches it

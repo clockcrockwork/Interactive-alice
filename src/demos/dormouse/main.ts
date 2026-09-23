@@ -69,21 +69,22 @@ function mount(shell: DemoShell): void {
   // --- Layers.
   const cloth = shell.layer('dm__cloth');
   const stage = shell.layer('dm__stage');
+  // The cup is a fixed 1000 by 1000 box the SVG draws into once; the camera is a
+  // CSS transform on the box, so the compositor moves a rasterised cup instead of
+  // the SVG re-rendering its spiral of text every frame.
+  const cup = document.createElement('div');
+  cup.className = 'dm__cup';
+  stage.append(cup);
   const svg = el('svg', {
     class: 'dm__svg',
     viewBox: '0 0 1000 1000',
-    preserveAspectRatio: 'xMidYMid slice',
+    width: '1000',
+    height: '1000',
   });
-  stage.append(svg);
+  cup.append(svg);
 
   const defs = el('defs');
   defs.innerHTML =
-    '<filter id="dm-goo"><feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/>' +
-    '<feColorMatrix in="b" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8"/></filter>' +
-    '<filter id="dm-sleep" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="0"/></filter>' +
-    '<filter id="dm-wobble" x="-10%" y="-10%" width="120%" height="120%">' +
-    '<feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" seed="4" result="n"/>' +
-    '<feDisplacementMap in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter>' +
     '<radialGradient id="dm-treacle"><stop offset="0" stop-color="var(--dm-treacle-shine)"/>' +
     '<stop offset="0.55" stop-color="var(--dm-treacle)"/><stop offset="1" stop-color="var(--dm-treacle-deep)"/></radialGradient>';
   svg.append(defs);
@@ -98,7 +99,14 @@ function mount(shell: DemoShell): void {
     el('circle', { cx: '500', cy: '500', r: '455', fill: 'var(--dm-china)' }),
     el('circle', { cx: '500', cy: '500', r: '425', fill: 'url(#dm-treacle)' }),
   );
-  // Three little sisters at the bottom of the well.
+  // Three little sisters at the bottom of the well, in an SVG of their own so
+  // their slow turning never repaints the text.
+  const sistersSvg = el('svg', {
+    class: 'dm__svg dm__svg--sisters',
+    viewBox: '0 0 1000 1000',
+    width: '1000',
+    height: '1000',
+  });
   const sisters = el('g', { class: 'dm__sisters' });
   for (let i = 0; i < 3; i += 1) {
     const sister = el('g', { transform: `rotate(${i * 120} 500 500)` });
@@ -108,13 +116,14 @@ function mount(shell: DemoShell): void {
     );
     sisters.append(sister);
   }
-  cameraGroup.append(sisters);
-  sisters.setAttribute('class', 'dm__sisters');
+  sistersSvg.append(sisters);
+  cup.append(sistersSvg);
   sisters.style.setProperty('pointer-events', 'auto');
   sisters.style.setProperty('cursor', 'pointer');
 
-  const wobbleGroup = el('g', { filter: 'url(#dm-wobble)' });
-  const sleepGroup = el('g', { filter: 'url(#dm-sleep)' });
+  const wobbleGroup = el('g');
+  const sleepGroup = el('g');
+  svg.classList.add('dm__svg--text');
   const text = el('text', { class: 'dm__text' });
   const textPath = el('textPath', { href: '#dm-spiral' });
   text.append(textPath);
@@ -157,13 +166,26 @@ function mount(shell: DemoShell): void {
   // --- The camera. Where a sentence sits and which way it runs come from the
   // rendered text itself, so the layout and the camera cannot disagree.
   const camera: Camera = { x: CENTRE, y: CENTRE, angle: 0, scale: 0.95, nx: 0, ny: 0 };
-  const apply = (): void => {
-    const { x, y, angle, scale, nx, ny } = camera;
-    cameraGroup.setAttribute(
-      'transform',
-      `translate(${CENTRE + nx} ${CENTRE - 30 + ny}) scale(${scale}) rotate(${-angle}) translate(${-x} ${-y})`,
-    );
+  // The stage in px: the cup's 1000 units cover the longer side, as a sliced
+  // viewBox would, and its centre sits on the stage's centre.
+  const view = { w: 1, h: 1, k: 1 };
+  const measure = (): void => {
+    view.w = stage.clientWidth || 1;
+    view.h = stage.clientHeight || 1;
+    view.k = Math.max(view.w, view.h) / 1000;
   };
+  measure();
+  window.addEventListener('resize', measure);
+  let lastTransform = '';
+  const setCup = (x: number, y: number, angle: number, scale: number): void => {
+    const { nx, ny } = camera;
+    const next = `translate3d(${(view.w / 2 + nx * view.k).toFixed(2)}px, ${(view.h / 2 + (ny - 30) * view.k).toFixed(2)}px, 0) scale(${(scale * view.k).toFixed(5)}) rotate(${(-angle).toFixed(3)}deg) translate(${(-x).toFixed(2)}px, ${(-y).toFixed(2)}px)`;
+    if (next !== lastTransform) {
+      lastTransform = next;
+      cup.style.setProperty('--cup-transform', next);
+    }
+  };
+  const apply = (): void => setCup(camera.x, camera.y, camera.angle, camera.scale);
   apply();
 
   let charIndex = 0;
@@ -257,12 +279,14 @@ function mount(shell: DemoShell): void {
   master.eventCallback('onUpdate', apply);
 
   // --- Dozing: the treacle blurs, the telling slows; a shriek clears it.
-  const sleepBlur = defs.querySelector('#dm-sleep feGaussianBlur');
-  const wobble = defs.querySelector('#dm-wobble feDisplacementMap');
   const blur = { amount: 0, wobble: 0 };
+  // The doze is a CSS blur on the whole text SVG and the shriek's wobble a CSS
+  // skew on it, both done by the compositor; an SVG filter on the text would
+  // re-render the whole spiral on every frame it changed.
   const applyEffects = (): void => {
-    sleepBlur?.setAttribute('stdDeviation', blur.amount.toFixed(2));
-    wobble?.setAttribute('scale', blur.wobble.toFixed(1));
+    svg.style.setProperty('--sleep', blur.amount.toFixed(2));
+    svg.style.setProperty('--wobble', blur.wobble.toFixed(2));
+    svg.toggleAttribute('data-dozing', blur.amount > 0.02);
   };
   master.to(
     blur,
@@ -334,8 +358,8 @@ function mount(shell: DemoShell): void {
   master.to(dripBox, { '--drips': 0, duration: 0.5 }, iTeapot);
   if (!reducedMotion) {
     ambient.to(
-      sisters,
-      { rotation: 360, svgOrigin: '500 500', duration: 40, ease: 'none', repeat: -1 },
+      sistersSvg,
+      { rotation: 360, transformOrigin: '50% 50%', duration: 40, ease: 'none', repeat: -1 },
       0,
     );
   }
@@ -401,15 +425,13 @@ function mount(shell: DemoShell): void {
   // Where the spout is, in the cup's own units, read when the dive starts.
   const spout = (axis: 'x' | 'y'): number => {
     const box = teapot?.getBoundingClientRect();
-    const ctm = svg.getScreenCTM();
-    if (!box || !ctm) {
+    const stageBox = stage.getBoundingClientRect();
+    if (!box) {
       return 0;
     }
-    const point = new DOMPoint(
-      box.left + box.width * 0.78,
-      box.top + box.height * 0.55,
-    ).matrixTransform(ctm.inverse());
-    return axis === 'x' ? point.x - CENTRE : point.y - (CENTRE - 30);
+    const sx = box.left + box.width * 0.78 - stageBox.left;
+    const sy = box.top + box.height * 0.55 - stageBox.top;
+    return axis === 'x' ? (sx - view.w / 2) / view.k : (sy - view.h / 2) / view.k + 30;
   };
   master.to(
     camera,
@@ -472,13 +494,11 @@ function mount(shell: DemoShell): void {
   const baseApply = apply;
   const applyWithStir = (): void => {
     const a = readAhead.amount;
-    const x = mix(camera.x, readAhead.x, a);
-    const y = mix(camera.y, readAhead.y, a);
-    const angle = mix(camera.angle, readAhead.angle, a);
-    const scale = mix(camera.scale, readAhead.scale, a);
-    cameraGroup.setAttribute(
-      'transform',
-      `translate(${CENTRE + camera.nx} ${CENTRE - 30 + camera.ny}) scale(${scale}) rotate(${-angle + stir}) translate(${-x} ${-y})`,
+    setCup(
+      mix(camera.x, readAhead.x, a),
+      mix(camera.y, readAhead.y, a),
+      mix(camera.angle, readAhead.angle, a) - stir,
+      mix(camera.scale, readAhead.scale, a),
     );
   };
 

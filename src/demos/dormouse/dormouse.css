@@ -37,10 +37,48 @@
     scale: 1.06;
   }
 
+  .dm__stage {
+    overflow: hidden;
+  }
+
+  /* The cup: a fixed box the SVG is drawn into once; the camera is its transform,
+     so the compositor moves the rasterised cup rather than the SVG redrawing. */
+  .dm__cup {
+    --cup-transform: none;
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: 1000px;
+    block-size: 1000px;
+    transform-origin: 0 0;
+    transform: var(--cup-transform);
+    will-change: transform;
+  }
+
   .dm__svg {
+    position: absolute;
+    inset: 0;
     display: block;
-    inline-size: 100%;
-    block-size: 100%;
+    inline-size: 1000px;
+    block-size: 1000px;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .dm__svg--sisters {
+    will-change: transform;
+  }
+
+  .dm__svg--text {
+    --sleep: 0;
+    --wobble: 0;
+    transform-origin: 50% 50%;
+    transform: rotate(calc(var(--wobble) * 0.12deg)) skewX(calc(var(--wobble) * 0.25deg));
+    will-change: transform;
+  }
+
+  .dm__svg--text[data-dozing] {
+    filter: blur(calc(var(--sleep) * 1px));
   }
 
   .dm__text {
@@ -169,7 +207,7 @@
   .dm__drips {
     position: absolute;
     inset: 0;
-    filter: url("#dm-goo");
+    pointer-events: none;
   }
 
   .dm__drip {
@@ -178,8 +216,9 @@
     inline-size: 3vmin;
     block-size: 8vh;
     border-radius: 50% 50% 55% 55% / 30% 30% 70% 70%;
-    background: var(--dm-treacle);
+    background: radial-gradient(circle at 35% 30%, var(--dm-treacle-shine), var(--dm-treacle) 45%);
     animation: dm-drip 6s ease-in infinite;
+    will-change: transform;
     animation-delay: var(--delay, 0s);
     opacity: var(--drips, 0);
   }
@@ -196,6 +235,7 @@
     inset-inline-start: var(--lx, 50%);
     inset-block-start: 100%;
     text-shadow: 0 2px 10px oklch(0% 0 0 / 0.4);
+    will-change: transform;
     animation: dm-float 7s linear infinite;
     animation-delay: var(--delay, 0s);
   }

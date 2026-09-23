@@ -714,3 +714,28 @@ test('the rabbit hole: the fall ends through a door in the floor, and a door bey
   await expect(page.locator('.rh__door').last()).toHaveAttribute('data-open', '');
   await expect(page.locator('.rh__hall-floor')).toBeVisible();
 });
+
+test('the dormouse: the camera is a transform on the cup, and the doze is a filter only while it lasts', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'dormouse');
+  test.skip(!demo, 'no dormouse demo in this build');
+  await page.goto(demo?.url ?? '');
+  const cupTransform = () =>
+    page.evaluate(() => getComputedStyle(document.querySelector('.dm__cup') as Element).transform);
+  const before = await cupTransform();
+  expect(before).not.toBe('none');
+  // The SVG itself carries no camera: the compositor moves the whole cup.
+  await expect(page.locator('.dm__camera')).not.toHaveAttribute('transform', /.+/);
+  await atCue(page, 'spiral', 0.95);
+  await expect.poll(cupTransform, { timeout: 8000 }).not.toBe(before);
+  await expect(page.locator('.dm__svg--text')).not.toHaveAttribute('data-dozing', '');
+  await atCue(page, 'doze', 0.9);
+  await expect(page.locator('.dm__svg--text')).toHaveAttribute('data-dozing', '', {
+    timeout: 8000,
+  });
+  await atCue(page, 'shriek', 0.6);
+  await expect(page.locator('.dm__svg--text')).not.toHaveAttribute('data-dozing', '', {
+    timeout: 8000,
+  });
+});

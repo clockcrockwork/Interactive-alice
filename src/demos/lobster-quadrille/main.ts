@@ -135,14 +135,19 @@ function mount(shell: DemoShell): void {
   ];
 
   const floor = { spin: 0, lines: 0, radius: 1, step: 0, inside: 0, tilt: -6, run: 0 };
+  // Joining the dance is the reader's own tween, on its own object, so nothing
+  // the scroll drives on the floor can undo it.
+  const joining = { amount: 0 };
   const applyFloor = (): void => {
+    const inside = Math.max(floor.inside, joining.amount);
+    const lines = floor.lines * (1 - joining.amount);
     for (const dancer of [...dancers, ...hosts]) {
-      const angle = mix(dancer.angle, dancer.lineAngle, floor.lines) + floor.spin;
+      const angle = mix(dancer.angle, dancer.lineAngle, lines) + floor.spin;
       const radius = dancer.radius * floor.radius * (1 - floor.step * 0.18);
       dancer.el.style.setProperty('--a', angle.toFixed(2));
       dancer.el.style.setProperty('--r', radius.toFixed(3));
     }
-    ring.style.setProperty('--inside', floor.inside.toFixed(3));
+    ring.style.setProperty('--inside', inside.toFixed(3));
     ring.style.setProperty('--tilt', floor.tilt.toFixed(2));
     ring.style.setProperty('--run', floor.run.toFixed(3));
     shore.style.setProperty('--run', floor.run.toFixed(3));
@@ -406,13 +411,12 @@ function mount(shell: DemoShell): void {
     joinButton.hide();
     shell.sound.play('chime', 0.6);
     shell.status(shell.ui.demoJoinDance ?? '');
-    gsap.to(floor, {
-      inside: 1,
-      lines: 0,
+    gsap.to(joining, {
+      amount: 1,
       duration: reducedMotion ? 0.01 : 0.9,
       ease: 'power2.inOut',
       onUpdate: applyFloor,
-      overwrite: 'auto',
+      overwrite: true,
     });
   };
   joinButton.addEventListener('click', join);
@@ -424,14 +428,16 @@ function mount(shell: DemoShell): void {
       } else {
         joinButton.hide();
       }
-      if (master.time() < iTry + 0.2 && joined) {
+      // Scrolling back before the offer puts her outside the ring again; the
+      // check sits a little before the callback's own position so a playhead
+      // landing exactly on it never undoes a join that just happened.
+      if (master.time() < iTry && joined) {
         joined = false;
-        gsap.to(floor, {
-          inside: 0,
-          lines: 1,
+        gsap.to(joining, {
+          amount: 0,
           duration: reducedMotion ? 0.01 : 0.5,
           onUpdate: applyFloor,
-          overwrite: 'auto',
+          overwrite: true,
         });
       }
     },
@@ -529,6 +535,11 @@ function mount(shell: DemoShell): void {
   master.fromTo(soup, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.4 }, iSoup + 0.1);
   master.to(turtle, { '--sob': 1, duration: 0.25, yoyo: true, repeat: 5 }, iSoup + 0.1);
   move(iSong, { inside: 0, lines: 0, radius: 1 }, 0.9);
+  master.to(
+    joining,
+    { amount: 0, duration: reducedMotion ? 0.01 : 0.9, onUpdate: applyFloor },
+    iSong,
+  );
   master.to(soup, { opacity: 0, duration: 0.3 }, iCry);
 
   // --- A cry in the distance, and the run along the shore: the shore streams

@@ -327,6 +327,94 @@
     opacity: 0;
   }
 
+  /* The doors: the strange door in the floor, and beyond it another, and another.
+     A perspective the doors come up through as she falls; each is the hall's own
+     trapdoor seen from above, so the next page opens on the same door from below. */
+  .rh__doors {
+    --fall: 0;
+    opacity: 0;
+    perspective: 700px;
+    perspective-origin: 50% 56%;
+    background: radial-gradient(circle at 50% 56%, oklch(20% 0.04 60), oklch(6% 0.01 270) 70%);
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .rh__door {
+    --i: 0;
+    --turn: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 56%;
+    inline-size: clamp(12rem, 40vmin, 24rem);
+    aspect-ratio: 1;
+    margin: calc(clamp(12rem, 40vmin, 24rem) / -2) 0 0 calc(clamp(12rem, 40vmin, 24rem) / -2);
+    border: 0.6rem solid var(--dk-door-frame, oklch(30% 0.06 50));
+    border-radius: 50% 50% 10% 10%;
+    background: oklch(10% 0.02 60);
+    transform-style: preserve-3d;
+    transform: translateZ(calc((var(--fall) - var(--i) * 700) * 1px))
+      rotate(calc(var(--turn) * 1deg));
+    box-shadow: 0 0 60px oklch(0% 0 0 / 0.6);
+    transition: opacity var(--demo-quick) var(--demo-ease);
+  }
+
+  .rh__door[data-passed] {
+    opacity: 0;
+  }
+
+  .rh__door-light {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      circle at 50% 60%,
+      oklch(86% 0.1 80),
+      oklch(60% 0.12 60) 55%,
+      oklch(22% 0.05 50)
+    );
+    opacity: 0;
+    transition: opacity var(--demo-calm) var(--demo-ease);
+  }
+
+  .rh__door[data-open] .rh__door-light {
+    opacity: 1;
+  }
+
+  /* Through the last door: the hall's own checkered floor, far below. */
+  .rh__hall-floor {
+    position: absolute;
+    inset: 18%;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, transparent 60%, oklch(30% 0.06 50) 62%),
+      repeating-conic-gradient(
+        from 0deg,
+        oklch(20% 0.02 60) 0 15deg,
+        oklch(88% 0.02 90) 15deg 30deg
+      );
+    opacity: 0.9;
+    filter: blur(0.5px);
+  }
+
+  .rh__door-leaf {
+    position: absolute;
+    inset: -0.6rem;
+    border-radius: inherit;
+    border: 0.6rem solid var(--dk-door-frame, oklch(30% 0.06 50));
+    background:
+      radial-gradient(circle at 50% 70%, oklch(80% 0.16 85) 5%, transparent 6%),
+      repeating-linear-gradient(to right, oklch(46% 0.09 50) 0 12%, oklch(34% 0.07 50) 12% 13.5%);
+    transform-origin: 50% 0;
+    transform: rotateX(0deg);
+    transition: transform var(--demo-calm) var(--demo-ease);
+    backface-visibility: visible;
+  }
+
+  .rh__door[data-open] .rh__door-leaf {
+    transform: rotateX(-105deg);
+  }
+
   .rh__rabbit {
     position: absolute;
     inset-block-end: 14%;
@@ -385,6 +473,12 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .rh__door,
+    .rh__door-light,
+    .rh__door-leaf {
+      transition: none;
+    }
+
     .demo--rabbit-hole .demo-beat {
       transform-style: flat;
     }

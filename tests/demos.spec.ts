@@ -694,3 +694,23 @@ test("the trial: her sister's dream fills the bank, and opening her eyes turns i
   await scrollTo(page, 1);
   await expect(page.locator('.demo__stage .demo-beat').last()).toHaveAttribute('data-active', '');
 });
+
+test('the rabbit hole: the fall ends through a door in the floor, and a door beyond it', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'rabbit-hole');
+  test.skip(!demo, 'no rabbit-hole demo in this build');
+  await page.goto(demo?.url ?? '');
+  await expect(page.locator('.rh__door')).toHaveCount(6);
+  await atCue(page, 'end', 0.35);
+  await expect(page.locator('.rh__doors')).toHaveAttribute('data-shown', '', { timeout: 8000 });
+  await expect(page.locator('.rh__door').first()).toHaveAttribute('data-open', '');
+  await scrollTo(page, 1);
+  await expect
+    .poll(() => customProperty(page, '.rh__doors', '--fall'), { timeout: 8000 })
+    .toBeGreaterThan(3000);
+  // She is through every door but the last, which opens on the hall far below.
+  await expect(page.locator('.rh__door[data-passed]')).toHaveCount(5);
+  await expect(page.locator('.rh__door').last()).toHaveAttribute('data-open', '');
+  await expect(page.locator('.rh__hall-floor')).toBeVisible();
+});

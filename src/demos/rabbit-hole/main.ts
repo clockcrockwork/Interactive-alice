@@ -273,10 +273,13 @@ function mount(shell: DemoShell): void {
     master.to(camera, { shake: 0, duration: 0.5, ease: 'power2.out' }, iThump + 0.05);
   }
 
-  // --- The passage: the well goes dark and the rabbit hurries off.
+  // --- The passage: the well goes dark, the rabbit hurries off ahead, and where it
+  // went a door opens in the floor: the strange door in the ceiling of the hall of
+  // doors, seen from above. She is drawn down through it, and beyond it is another
+  // door, and another, until the last one opens on the hall itself, far below.
   master.to(dark, { opacity: 0.7, duration: 0.8 }, iEnd);
   if (rabbit) {
-    // Above ground he runs for the hole and drops in; below, he hurries off ahead.
+    // Above ground he runs for the hole and drops in; below, he runs for the door.
     master.fromTo(
       rabbit,
       { x: '-30vw', y: '-6vh', scale: 1.1 },
@@ -285,8 +288,74 @@ function mount(shell: DemoShell): void {
     );
     master.to(rabbit, { opacity: 0, duration: 0.05 }, iDrop * 0.9);
     master.set(rabbit, { opacity: 1, x: '110vw', y: '0vh', scale: 1 }, iEnd);
-    master.to(rabbit, { x: '-40vw', duration: 0.9, ease: 'power1.in' }, iEnd + 0.1);
+    master.to(rabbit, { x: '47vw', y: '-24vh', duration: 0.35, ease: 'power1.in' }, iEnd + 0.05);
+    master.to(
+      rabbit,
+      {
+        y: '-16vh',
+        scale: 0.15,
+        opacity: 0,
+        duration: reducedMotion ? 0.01 : 0.15,
+        ease: 'power2.in',
+      },
+      iEnd + 0.4,
+    );
   }
+  const DOORS = 6;
+  const DOOR_GAP = 700;
+  const doors = shell.layer('rh__doors');
+  doors.innerHTML = Array.from(
+    { length: DOORS },
+    (_, i) =>
+      `<div class="rh__door" style="--i: ${i}; --turn: ${((i % 2 ? 1 : -1) * (4 + i * 3)).toFixed(0)}"><div class="rh__door-light"></div>${i === DOORS - 1 ? '<div class="rh__hall-floor"></div>' : ''}<div class="rh__door-leaf"></div></div>`,
+  ).join('');
+  const doorEls = [...doors.querySelectorAll<HTMLElement>('.rh__door')];
+  const tunnel = { fall: 0 };
+  const applyTunnel = (): void => {
+    doors.style.setProperty('--fall', tunnel.fall.toFixed(0));
+    doorEls.forEach((door, i) => {
+      // A door opens as she nears it, and is behind her once she is through.
+      door.toggleAttribute('data-open', tunnel.fall > i * DOOR_GAP - 1100);
+      door.toggleAttribute('data-passed', tunnel.fall > i * DOOR_GAP + 120);
+    });
+  };
+  applyTunnel();
+  master.call(
+    () => doors.toggleAttribute('data-shown', master.time() >= iEnd + 0.3),
+    [],
+    iEnd + 0.3,
+  );
+  master.to(doors, { opacity: 1, duration: 0.15 }, iEnd + 0.3);
+  master.to(well ? canvas : flat, { opacity: 0, duration: 0.3 }, iEnd + 0.5);
+  master.fromTo(
+    tunnel,
+    { fall: 0 },
+    {
+      fall: (DOORS - 1) * DOOR_GAP,
+      duration: reducedMotion ? 0.01 : 0.5,
+      ease: 'power2.in',
+      onUpdate: applyTunnel,
+      immediateRender: false,
+    },
+    iEnd + 0.45,
+  );
+  for (let i = 1; i < DOORS; i += 1) {
+    const at = iEnd + 0.45 + 0.5 * Math.sqrt(i / (DOORS - 1));
+    master.call(
+      () => {
+        if (Math.abs(master.time() - at) < 0.08) {
+          shell.sound.play('whoosh', 0.4 + i * 0.1);
+        }
+      },
+      [],
+      at,
+    );
+  }
+  master.call(
+    () => shell.sound.level('wind', master.time() >= iEnd + 0.45 ? 0.6 : 0),
+    [],
+    iEnd + 0.45,
+  );
 
   // --- The shelves are full of things to take. Tap a book, a jar or a map as it
   // passes and it jumps into her hand; she would not drop it, so put it back into

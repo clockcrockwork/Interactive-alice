@@ -175,9 +175,16 @@ not drop it, so *Put it back* tucks it into a cupboard. The jar is optional play
 *Take the jar* button, and it jumps into Alice's hand; on the next beat she tucks it
 into a cupboard, with a polite live-region note. Not taking it changes nothing.
 
+At the end, where the Rabbit hurries off, a door opens in the floor: the strange door
+in the ceiling of the hall of doors, seen from above, drawn to the same design. She is
+drawn down through it, and beyond it is another door, and another, six in all, each
+opening as she nears it and left behind once she is through, until the last opens on
+the hall's own checkered floor far below. Drink Me then begins on that floor, looking
+up at the same door as it opens, so the two demos are one fall.
+
 **Reduced motion.** No roll, no shake, no pointer lean, no tumbling; the dust hangs
 still and the lamps do not flicker; captions fade in place. The fall itself remains,
-stepped beat by beat by the shell.
+stepped beat by beat by the shell; the doors are a cut to the open tunnel.
 
 **Degraded mode.** If a WebGL context cannot be created, the well is drawn flat with
 CSS rings that scale with the fall, the page says so, and the seam reports `flat`.

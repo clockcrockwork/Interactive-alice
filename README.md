@@ -70,9 +70,9 @@ implementation milestone is the Rabbit Hole PoC, issue #1.
 Twelve standalone concept demos live under `/demos/` — the fall down the rabbit hole
 in WebGL, the hall that grows around Alice as she drinks, the pool of tears on a
 Canvas sea, the Caucus-race as a ring the camera orbits, the Rabbit's house as a
-dollhouse the camera leaves, Bill's trip up the chimney, the Dormouse's tale on a
-treacle spiral in SVG, the Cheshire Cat masked away grin last, the Caterpillar's
-meadow that scales with her height, the Queen's croquet-ground with its live mallets,
+dollhouse the camera leaves, Bill's trip up the chimney, the Caterpillar's meadow
+that scales with her height, the Cheshire Cat masked away grin last, the Dormouse's
+tale on a treacle spiral in SVG, the Queen's croquet-ground with its live mallets,
 the Lobster Quadrille the reader joins, and the trial's pack of cards in CSS 3D with
 her sister's dream after it. The index lets the visitor choose the blue Alice everyone knows
 or the earlier yellow one. They show how far the

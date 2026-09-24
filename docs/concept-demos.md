@@ -17,9 +17,9 @@ makes its moment strongest and spends its budget on that.
 /demos/caucus-race/      A Caucus-Race: a ring of runners the camera orbits, CSS 3D
 /demos/rabbit-house/     Growing in the House: a dollhouse cutaway in SVG the camera leaves
 /demos/bill-the-lizard/  There Goes Bill: the reader is Bill, down the chimney and up
-/demos/dormouse/         A Mad Tea-Party: the Dormouse's tale on a treacle spiral, SVG
-/demos/cheshire-cat/     The Cheshire Cat: a night wood in depth, a Cat masked away
 /demos/caterpillar/      Advice from a Caterpillar: a meadow that scales with her height
+/demos/cheshire-cat/     The Cheshire Cat: a night wood in depth, a Cat masked away
+/demos/dormouse/         A Mad Tea-Party: the Dormouse's tale on a treacle spiral, SVG
 /demos/croquet/          The Queen's Croquet-Ground: a garden in CSS 3D with live mallets
 /demos/lobster-quadrille/ The Lobster Quadrille: a dance on the shore the reader joins
 /demos/trial/            Who Stole the Tarts?: a paper courtroom in CSS 3D, and the pack
@@ -321,6 +321,29 @@ back above the kick resets it for another go.
 
 **Reduced motion.** No spin, no daze; the launch is a cut; soot hangs still.
 
+### Advice from a Caterpillar: her height is the parallax
+
+Alice is three inches high, so the meadow is a forest of grass and the mushroom a
+hill with the Caterpillar on top. Her height in inches is the one number the demo
+hangs off: the meadow scales about the ground under her feet (one to one at three
+inches; the grass towers when she is one; the mushroom is a toy at her feet when she
+is thirty-six), the horizon climbs the frame as she does, and past the tree line the
+meadow gives way to a sky, a sea of leaves far below, and her own neck running down
+into them as a tapered ribbon along a curve, with her shoulders and dress at its foot
+(`alice/from-above`). The Caterpillar's lines arrive as smoke: blurred, rising,
+clearing, with a ring from the hookah for each. The right-hand bit strikes her chin
+on her foot: the foot rises into the frame, the frame folds up from below, a thud.
+
+**Interaction.** Press the Caterpillar, or *Blow a smoke ring*, and it blows one
+toward you. The two bits of mushroom are in her hands, real buttons: nibble the left
+and she grows, nibble the right and she shrinks, and the story keeps its own course at
+the next beat so play never strands her. Above the trees the pointer bends her neck
+about like a serpent and the leaves shake under her hands. The Pigeon is a button:
+shoo it and it goes off for a moment and comes back worse.
+
+**Reduced motion.** Size changes are cuts with a blink; the smoke hangs still; the
+neck holds straight; the Pigeon's wings are spread and do not beat.
+
 ### The Cheshire Cat: depth and a mask
 
 A night wood in layers: far trunks, mid trunks with the bough, mist, near trunks, a
@@ -393,29 +416,6 @@ a letter floats up out of the well.
 **Reduced motion.** The camera cuts from sentence to sentence with a dip in the
 treacle rather than a glide; no drips, no orbit, no jolt; the letters hang in the air;
 the blur is lighter; the teapot ending shrinks without spinning.
-
-### Advice from a Caterpillar: her height is the parallax
-
-Alice is three inches high, so the meadow is a forest of grass and the mushroom a
-hill with the Caterpillar on top. Her height in inches is the one number the demo
-hangs off: the meadow scales about the ground under her feet (one to one at three
-inches; the grass towers when she is one; the mushroom is a toy at her feet when she
-is thirty-six), the horizon climbs the frame as she does, and past the tree line the
-meadow gives way to a sky, a sea of leaves far below, and her own neck running down
-into them as a tapered ribbon along a curve, with her shoulders and dress at its foot
-(`alice/from-above`). The Caterpillar's lines arrive as smoke: blurred, rising,
-clearing, with a ring from the hookah for each. The right-hand bit strikes her chin
-on her foot: the foot rises into the frame, the frame folds up from below, a thud.
-
-**Interaction.** Press the Caterpillar, or *Blow a smoke ring*, and it blows one
-toward you. The two bits of mushroom are in her hands, real buttons: nibble the left
-and she grows, nibble the right and she shrinks, and the story keeps its own course at
-the next beat so play never strands her. Above the trees the pointer bends her neck
-about like a serpent and the leaves shake under her hands. The Pigeon is a button:
-shoo it and it goes off for a moment and comes back worse.
-
-**Reduced motion.** Size changes are cuts with a blink; the smoke hangs still; the
-neck holds straight; the Pigeon's wings are spread and do not beat.
 
 ### The Queen's Croquet-Ground: a walk across a garden in CSS 3D
 

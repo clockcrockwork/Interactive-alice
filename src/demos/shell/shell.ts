@@ -191,6 +191,8 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
       }
     }
     root.style.setProperty('--demo-hint-opacity', index > 0 ? '0' : '1');
+    // On the last beat the captions make room for the link to the next demo.
+    root.toggleAttribute('data-ending', index === beats.length - 1);
   };
 
   const trigger = ScrollTrigger.create({

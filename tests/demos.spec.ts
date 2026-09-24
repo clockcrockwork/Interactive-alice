@@ -77,6 +77,15 @@ for (const demo of demos) {
       '',
     );
     await expect(page.locator('.demo__next')).toBeVisible();
+    // The link to the next demo and the last caption do not overlap.
+    await expect(page.locator('.demo')).toHaveAttribute('data-ending', '');
+    const next = await page.locator('.demo__next').boundingBox();
+    const caption = await page.locator('.demo__stage .demo-beat').last().boundingBox();
+    expect(
+      next &&
+        caption &&
+        (caption.y + caption.height <= next.y || caption.y >= next.y + next.height),
+    ).toBe(true);
     expect(errors).toEqual([]);
   });
 

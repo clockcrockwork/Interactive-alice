@@ -23,6 +23,11 @@
 }
 
 @layer scene {
+  /* Captions sit high here, clear of the link to the next demo already. */
+  .demo--pool-of-tears {
+    --demo-end-lift: 0px;
+  }
+
   .demo--pool-of-tears .demo-beat {
     inset-block-end: auto;
     inset-block-start: 54vh;

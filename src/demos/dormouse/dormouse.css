@@ -113,6 +113,11 @@
   }
 
   /* Bubbles: the others talk around the rim while the tale turns below. */
+  /* Captions sit high here, clear of the link to the next demo already. */
+  .demo--dormouse {
+    --demo-end-lift: 0px;
+  }
+
   .demo--dormouse .demo-beat {
     inset-block-end: auto;
     inset-block-start: calc(var(--demo-bar-height) + 3vh);

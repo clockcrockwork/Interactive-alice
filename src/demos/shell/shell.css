@@ -193,6 +193,16 @@
     visibility: visible;
   }
 
+  /* On the last beat the captions lift clear of the link to the next demo, which
+     is pinned to the bottom of the stage. */
+  .demo[data-attached] .demo__captions {
+    transition: translate 0.45s ease-out;
+  }
+
+  .demo[data-attached][data-ending] .demo__captions {
+    translate: 0 calc(-1 * var(--demo-end-lift, 4.25rem));
+  }
+
   .line {
     margin: 0;
     opacity: var(--line-opacity, 1);
@@ -376,7 +386,8 @@
 
   @media (prefers-reduced-motion: reduce) {
     .demo__hint,
-    .demo__prop {
+    .demo__prop,
+    .demo[data-attached] .demo__captions {
       transition: none;
     }
   }

@@ -113,7 +113,10 @@ where the landing happens, whatever number of beats precede it. Nothing may be p
 past the last beat: a tween that runs beyond it stretches the timeline, and then the
 scroll no longer lands each beat on its own unit of time. The shell reports such an
 overrun as a console error once the demo has composed, so the browser tests catch it,
-and the seam exposes it as `overrun()`.
+and the seam exposes it as `overrun()`. The link to the next demo is pinned to the bottom of the
+stage's last frame; on the last beat the shell marks the page `data-ending` and the
+captions lift clear of it (`--demo-end-lift`, which a demo whose captions sit high
+sets to zero).
 
 Captions have a default behaviour (fade in over a beat's first third, out over its
 last sixth, the last beat holds) and a demo may take a beat over: the rabbit hole

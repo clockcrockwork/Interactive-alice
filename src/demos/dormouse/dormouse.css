@@ -17,6 +17,18 @@
     --dm-bubble-alice: oklch(85% 0.08 240);
     --dm-bubble-hatter: oklch(84% 0.1 300);
     --dm-bubble-hare: oklch(84% 0.1 60);
+    /* The wood she walks into, and the hall of doors seen through the tree: the
+       hall's colours are Drink Me's (its --dk-* tokens), repeated here by value. */
+    --dm-wood: oklch(24% 0.05 150);
+    --dm-wood-deep: oklch(12% 0.03 160);
+    --dm-bark: oklch(34% 0.05 60);
+    --dm-bark-deep: oklch(22% 0.04 55);
+    --dm-hall-wall: oklch(52% 0.06 60);
+    --dm-hall-wall-deep: oklch(36% 0.05 55);
+    --dm-hall-door: oklch(38% 0.08 50);
+    --dm-hall-door-frame: oklch(26% 0.05 50);
+    --dm-hall-gold: oklch(82% 0.15 85);
+    --dm-hall-garden: oklch(85% 0.12 130);
   }
 }
 
@@ -27,6 +39,15 @@
 
   .demo-body:has(.demo--dormouse) {
     background: var(--dm-cloth);
+  }
+
+  /* Walking off: the table pulls back and away as the wood comes up. */
+  .dm__cloth,
+  .dm__stage,
+  .dm__teapot-layer {
+    --leave: 0;
+    transform-origin: 50% 35%;
+    transform: translateY(calc(var(--leave) * -30%)) scale(calc(1 - var(--leave) * 0.6));
   }
 
   .dm__cloth {
@@ -258,6 +279,151 @@
   .dm__lid {
     transform-origin: 20% 100%;
     transform: rotate(calc(var(--lid, 0) * -35deg));
+  }
+
+  /* The door in the tree. Drawn at the size it ends at, the doorway most of the
+     screen, and scaled down to start; the camera in is one transform on the tree. */
+  .dm__wood {
+    background: radial-gradient(ellipse at 50% 60%, var(--dm-wood), var(--dm-wood-deep) 75%);
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .dm__tree {
+    --zoom: 0;
+    --door-w: clamp(60vmin, 70vw, 70vmin);
+    position: absolute;
+    inset: 0;
+    transform-origin: 50% 52%;
+    transform: scale(calc(0.34 + var(--zoom) * 0.66));
+    /* No will-change here: the compositor would keep the small-scale raster
+       through the zoom, and the floor's tiles would come up jagged. */
+  }
+
+  .dm__trunk {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: -60vmin;
+    inline-size: calc(var(--door-w) * 1.85);
+    block-size: max(240vmin, 200vh);
+    translate: -50% 0;
+    border-radius: 30% 30% 10% 10% / 8% 8% 3% 3%;
+    background:
+      radial-gradient(ellipse at 50% 14%, oklch(0% 0 0 / 0.35), transparent 40%),
+      repeating-linear-gradient(
+        to right,
+        var(--dm-bark) 0 6vmin,
+        var(--dm-bark-deep) 6vmin 7vmin,
+        oklch(30% 0.05 58) 7vmin 12vmin
+      );
+  }
+
+  .dm__tree-door {
+    --open: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 52%;
+    inline-size: var(--door-w);
+    block-size: calc(var(--door-w) * 1.5);
+    translate: -50% -50%;
+    border: 1.4vmin solid var(--dm-hall-door-frame);
+    border-radius: 50% 50% 4% 4% / 32% 32% 3% 3%;
+    background: var(--dm-hall-wall-deep);
+    overflow: hidden;
+    perspective: 90vmin;
+  }
+
+  /* Through the door: the warm hall, its floor, and the little door at the centre. */
+  .dm__hall {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse at 50% 55%,
+      oklch(64% 0.07 65),
+      var(--dm-hall-wall) 45%,
+      var(--dm-hall-wall-deep)
+    );
+  }
+
+  /* The tiles are a small SVG tile rather than a conic gradient, so their
+     diagonals stay smooth when the tree is scaled up; squashed for foreshortening. */
+  .dm__hall-floor {
+    position: absolute;
+    inset: 66% 0 0 0;
+    background:
+      linear-gradient(to bottom, oklch(0% 0 0 / 0) 40%, oklch(0% 0 0 / 0.45)),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' preserveAspectRatio='none'%3E%3Crect width='40' height='40' fill='%23e5e1d5'/%3E%3Cpath d='M20 0L40 20L20 40L0 20Z' fill='%231b1d27'/%3E%3C/svg%3E")
+      50% 0 / 6vmin 3.6vmin;
+  }
+
+  .dm__little-door {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 66%;
+    inline-size: calc(var(--door-w) * 0.3);
+    block-size: calc(var(--door-w) * 0.45);
+    translate: -50% -100%;
+    border: 0.9vmin solid var(--dm-hall-door-frame);
+    border-block-end: 0;
+    border-radius: calc(var(--door-w) * 0.16) calc(var(--door-w) * 0.16) 0 0;
+    background: var(--dm-hall-door);
+    overflow: hidden;
+  }
+
+  .dm__garden {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 50% 30%, oklch(92% 0.06 220) 14%, transparent 15%),
+      linear-gradient(
+        to bottom,
+        oklch(88% 0.07 220),
+        var(--dm-hall-garden) 60%,
+        oklch(62% 0.13 135)
+      );
+  }
+
+  .dm__rose-tree {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 12%;
+    inline-size: 60%;
+    aspect-ratio: 1;
+    translate: -50% 0;
+    border-radius: 50% 50% 40% 40%;
+    background:
+      radial-gradient(circle at 30% 35%, oklch(97% 0.01 90) 9%, transparent 10%),
+      radial-gradient(circle at 62% 28%, oklch(55% 0.22 25) 9%, transparent 10%),
+      radial-gradient(circle at 48% 58%, oklch(55% 0.22 25) 9%, transparent 10%),
+      radial-gradient(circle at 74% 62%, oklch(97% 0.01 90) 8%, transparent 9%),
+      radial-gradient(circle at 26% 70%, oklch(55% 0.22 25) 8%, transparent 9%),
+      radial-gradient(circle at 45% 45%, oklch(58% 0.14 140), oklch(42% 0.12 145) 75%);
+  }
+
+  .dm__tree-leaf {
+    position: absolute;
+    inset: -1.4vmin;
+    border: 1.4vmin solid var(--dm-hall-door-frame);
+    border-radius: inherit;
+    background:
+      radial-gradient(circle at 84% 52%, var(--dm-hall-gold) 1.6vmin, transparent 1.9vmin),
+      repeating-linear-gradient(
+        to right,
+        var(--dm-hall-door) 0 10vmin,
+        oklch(32% 0.07 50) 10vmin 11.4vmin
+      );
+    box-shadow: inset 0 0 6vmin oklch(0% 0 0 / 0.5);
+    transform-origin: 0 50%;
+    transform: rotateY(calc(var(--open) * -112deg));
+    will-change: transform;
+  }
+
+  /* Reduced motion: the cuts blink. */
+  .dm__blink {
+    background: oklch(4% 0 0);
+    opacity: 0;
+    pointer-events: none;
   }
 
   .demo[data-paused] .dm__zzz,

@@ -65,6 +65,7 @@ function mount(shell: DemoShell): void {
   const iShriek = shell.cue('shriek');
   const iMuchness = shell.cue('muchness');
   const iTeapot = shell.cue('teapot');
+  const iDoor = shell.cue('door');
 
   // --- Layers.
   const cloth = shell.layer('dm__cloth');
@@ -447,6 +448,46 @@ function mount(shell: DemoShell): void {
     );
   }
   master.to(mouse, { opacity: 0, duration: 0.3 }, iTeapot + 0.5);
+
+  // --- The door in the tree. She walks off: the table pulls back and away, and a
+  // tree with a door in its trunk opens. Through it, small and far, the warm hall
+  // of doors, and at its centre the little door with the garden behind it; the
+  // camera goes in toward the doorway, and the next chapter opens through it.
+  const doorLayer = shell.layer('dm__wood');
+  doorLayer.innerHTML =
+    '<div class="dm__tree"><div class="dm__trunk"></div>' +
+    '<div class="dm__tree-door"><div class="dm__hall"><div class="dm__hall-floor"></div>' +
+    '<div class="dm__little-door"><div class="dm__garden"><div class="dm__rose-tree"></div></div></div></div>' +
+    '<div class="dm__tree-leaf"></div></div></div>';
+  const tree = doorLayer.querySelector<HTMLElement>('.dm__tree');
+  const treeDoor = doorLayer.querySelector<HTMLElement>('.dm__tree-door');
+  const leaving = [cloth, stage, potLayer];
+  if (reducedMotion) {
+    // The shell holds whole beats: at the door's beat the table has gone and
+    // the tree stands with its door shut; at the end the door is open and near.
+    // Each cut blinks, and no blink sits on a held beat.
+    const blink = shell.layer('dm__blink');
+    const cutTo = (at: number, tween: () => void): void => {
+      master.fromTo(blink, { opacity: 1 }, { opacity: 0, duration: 0.08 }, at - 0.1);
+      tween();
+    };
+    cutTo(iDoor, () => {
+      master.to(leaving, { '--leave': 1, duration: 0.01 }, iDoor - 0.06);
+      master.to(doorLayer, { opacity: 1, duration: 0.01 }, iDoor - 0.06);
+    });
+    cutTo(iDoor + 0.4, () => master.to(treeDoor, { '--open': 1, duration: 0.01 }, iDoor + 0.34));
+    cutTo(iDoor + 0.75, () => master.to(tree, { '--zoom': 1, duration: 0.01 }, iDoor + 0.69));
+  } else {
+    master.to(leaving, { '--leave': 1, duration: 0.45, ease: 'power2.in' }, iDoor);
+    master.to(doorLayer, { opacity: 1, duration: 0.3 }, iDoor + 0.15);
+    master.to(treeDoor, { '--open': 1, duration: 0.3, ease: 'power2.inOut' }, iDoor + 0.45);
+    master.to(tree, { '--zoom': 1, duration: 0.4, ease: 'power2.in' }, iDoor + 0.6);
+  }
+  master.call(
+    () => (master.time() >= iDoor + 0.45 ? shell.sound.play('whoosh', 0.4) : undefined),
+    [],
+    iDoor + 0.45,
+  );
 
   // --- Reading ahead: with a finger held on the cup, the camera slides on down
   // the spiral so the next sentences can be read early; let go and it swings back.

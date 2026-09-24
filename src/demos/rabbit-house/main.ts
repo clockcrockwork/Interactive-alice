@@ -28,11 +28,13 @@ function mount(shell: DemoShell): void {
   const iDoor = cue('door');
   const iSnatch = cue('snatch');
   const iCrash = cue('crash');
+  const iChimney = cue('chimney');
 
   const iRoom = cue('room');
   shell.layer('hs__garden');
   const stage = shell.layer('hs__stage');
   stage.innerHTML = HOUSE_SVG;
+  const frame = stage.querySelector<SVGGElement>('.hs__frame');
   gsap.set(stage, { opacity: 0 });
 
   // --- The room from inside: a CSS 3D box the reader looks round, until she has
@@ -286,8 +288,11 @@ function mount(shell: DemoShell): void {
       delay: 0.2,
       ease: 'power2.in',
     });
-    gsap.to(shards, { opacity: 1, duration: 0.2, delay: 0.7 });
-    setTimeout(() => shell.sound.play('glass'), 700);
+    // Reached by a jump past the crash, the glass has already settled.
+    if (master.time() < iCrash + 0.7) {
+      gsap.to(shards, { opacity: 1, duration: 0.2, delay: 0.7 });
+      setTimeout(() => shell.sound.play('glass'), 700);
+    }
   };
   snatchButton.addEventListener('click', snatch);
   target.addEventListener('click', snatch);
@@ -306,7 +311,68 @@ function mount(shell: DemoShell): void {
     iSnatch,
   );
   master.call(() => (master.time() >= iSnatch + 0.9 ? snatch() : undefined), [], iSnatch + 0.9);
-  master.to(shards, { opacity: 0, duration: 0.5 }, iCrash + 0.7);
+  // The glass settles; the shards are only ever tweened ad hoc, from here and
+  // from the snatch, so the two never fight over one value.
+  master.call(
+    () => {
+      gsap.killTweensOf(shards);
+      gsap.to(shards, {
+        opacity: master.time() >= iCrash + 0.7 || !snatched ? 0 : 1,
+        duration: reducedMotion ? 0 : 0.4,
+      });
+    },
+    [],
+    iCrash + 0.7,
+  );
+
+  // --- To the chimney: the camera pulls back and up from the cutaway until the
+  // house is seen from above, the Rabbit and Pat looking up from the garden;
+  // Bill climbs the ladder and the roof to the chimney, and the camera comes
+  // down to its rim, where Bill the Lizard picks the story up.
+  const above = stage.querySelector<SVGGElement>('.hs__above');
+  const bill = stage.querySelector<SVGGElement>('.hs__bill');
+  const cutaway = [frame, wall, roof, slates, rabbit];
+  // Reduced motion lands on whole beats, so its cuts sit just before the beat
+  // starts and just before it ends: the beat opens on the house from above,
+  // with a blink, and closes on the chimney's rim, with another.
+  const cutAt = reducedMotion ? iChimney - 0.1 : iChimney + 0.3;
+  const blink = (at: number): void => {
+    master.fromTo(
+      flash,
+      { opacity: 0.8 },
+      { opacity: 0, duration: 0.1, immediateRender: false },
+      at,
+    );
+  };
+  look(reducedMotion ? cutAt : iChimney, { x: 500, y: 250, scale: 0.5 }, 0.55);
+  if (reducedMotion) {
+    master.set(cutaway, { opacity: 0 }, cutAt);
+    master.set(above, { opacity: 1 }, cutAt);
+    blink(cutAt);
+    blink(iChimney + 0.55);
+  } else {
+    master.to(cutaway, { opacity: 0, duration: 0.25 }, cutAt);
+    master.to(above, { opacity: 1, duration: 0.25 }, cutAt);
+  }
+  // Up the ladder, over the slates, onto the rim.
+  master.set(bill, { x: 599, y: 470, rotation: -80, transformOrigin: '50% 100%' }, 0);
+  master.to(bill, { y: 330, duration: reducedMotion ? 0.01 : 0.25, ease: 'none' }, iChimney + 0.15);
+  master.to(
+    bill,
+    { x: 640, y: 150, rotation: -50, duration: reducedMotion ? 0.01 : 0.25, ease: 'none' },
+    iChimney + 0.4,
+  );
+  master.to(
+    bill,
+    { x: 646, y: 122, rotation: 0, duration: reducedMotion ? 0.01 : 0.15, ease: 'power1.out' },
+    iChimney + 0.65,
+  );
+  look(iChimney + 0.55, { x: 665, y: 126, scale: 3.6 }, 0.45);
+  master.call(
+    () => stage.toggleAttribute('data-at-chimney', master.time() >= iChimney + 0.8),
+    [],
+    iChimney + 0.8,
+  );
 
   // --- Pointer: inside, it turns her head; outside, the house sits a little in
   // front of the garden.

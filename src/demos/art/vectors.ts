@@ -440,13 +440,16 @@ export function dancerSvg(kind: DancerKind): string {
   return `<svg viewBox="0 0 140 140" focusable="false">${inner}</svg>`;
 }
 
+/** Bill in a 0..120 by 0..100 box, drawn once, for HTML and for other SVGs. */
+export const BILL_FRAGMENT = `  <path d="M10 70 Q40 30 80 50 Q110 66 100 84 Q60 96 20 84 Z" fill="var(--bl-lizard, oklch(66% 0.12 130))"/>
+  <circle cx="92" cy="46" r="16" fill="var(--bl-lizard, oklch(66% 0.12 130))"/>
+  <circle cx="98" cy="42" r="4" fill="#fff"/><circle cx="99" cy="42" r="2" fill="#222"/>
+  <path d="M10 70 Q-10 60 4 40" stroke="var(--bl-lizard, oklch(66% 0.12 130))" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M30 84 l-6 12 M60 90 l0 10 M84 84 l6 12" stroke="var(--bl-lizard, oklch(66% 0.12 130))" stroke-width="6" stroke-linecap="round"/>`;
+
 export const BILL_SVG = `
 <svg viewBox="0 0 120 100" focusable="false">
-  <path d="M10 70 Q40 30 80 50 Q110 66 100 84 Q60 96 20 84 Z" fill="var(--bl-lizard)"/>
-  <circle cx="92" cy="46" r="16" fill="var(--bl-lizard)"/>
-  <circle cx="98" cy="42" r="4" fill="#fff"/><circle cx="99" cy="42" r="2" fill="#222"/>
-  <path d="M10 70 Q-10 60 4 40" stroke="var(--bl-lizard)" stroke-width="8" fill="none" stroke-linecap="round"/>
-  <path d="M30 84 l-6 12 M60 90 l0 10 M84 84 l6 12" stroke="var(--bl-lizard)" stroke-width="6" stroke-linecap="round"/>
+  ${BILL_FRAGMENT}
 </svg>`;
 
 export const CROWD_SVG = `
@@ -622,8 +625,16 @@ export const HOUSE_FILLING =
   '<circle cx="330" cy="-300" r="24" fill="#1a1a1a"/>';
 
 /** The Rabbit as seen from the garden, a fragment in house units (52 wide, 80 tall, feet at 0,0). */
-export const HOUSE_RABBIT = `<ellipse cx="0" cy="-22" rx="24" ry="16" fill="var(--hs-rabbit)"/>
-      <circle cx="22" cy="-40" r="12" fill="var(--hs-rabbit)"/>
-      <path d="M18 -50 L14 -78 L24 -52 M28 -50 L34 -78 L30 -52" fill="var(--hs-rabbit)"/>
+export const HOUSE_RABBIT = `<ellipse cx="0" cy="-22" rx="24" ry="16" fill="var(--hs-rabbit, oklch(96% 0.01 90))"/>
+      <circle cx="22" cy="-40" r="12" fill="var(--hs-rabbit, oklch(96% 0.01 90))"/>
+      <path d="M18 -50 L14 -78 L24 -52 M28 -50 L34 -78 L30 -52" fill="var(--hs-rabbit, oklch(96% 0.01 90))"/>
       <rect x="-10" y="-34" width="16" height="14" rx="3" fill="oklch(52% 0.18 25)"/>
       <circle cx="26" cy="-42" r="2.4" fill="oklch(70% 0.2 20)"/>`;
+
+/** Pat, the Rabbit's gardener, with his spade: feet at the origin, a 60 by 70 box. */
+export const HOUSE_PAT = `<ellipse cx="0" cy="-20" rx="20" ry="18" fill="oklch(58% 0.08 60)"/>
+      <circle cx="-2" cy="-44" r="12" fill="oklch(74% 0.08 60)"/>
+      <path d="M-14 -50 h24 l-4 -8 h-16 z" fill="oklch(44% 0.06 60)"/>
+      <circle cx="3" cy="-46" r="2" fill="#222"/>
+      <path d="M22 -2 L26 -48" stroke="var(--hs-timber, oklch(40% 0.06 50))" stroke-width="4" stroke-linecap="round"/>
+      <path d="M18 -58 h16 v12 h-16 z" fill="oklch(50% 0.02 240)"/>`;

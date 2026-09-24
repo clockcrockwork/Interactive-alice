@@ -23,6 +23,11 @@
     --dk-garden: oklch(85% 0.12 130);
     --dk-curtain: oklch(48% 0.14 20);
     --dk-tear: oklch(90% 0.04 230 / 0.7);
+    /* The pool of tears' hall and its tears (pool.css --pt-hall, --pt-hall-deep,
+       --pt-foam): the end of this demo dims toward them. */
+    --dk-pool-hall: oklch(44% 0.05 60);
+    --dk-pool-hall-deep: oklch(30% 0.04 55);
+    --dk-pool-foam: oklch(94% 0.03 220);
     --dk-hall-height: 900px;
     --dk-radius: 1100px;
     --dk-panel: 600px;
@@ -599,6 +604,14 @@
 
   .dk__tears {
     opacity: 0;
+    pointer-events: none;
+  }
+
+  /* The dim at the end: the hall's colours become the pool's. */
+  .dk__dim {
+    background: linear-gradient(to bottom, var(--dk-pool-hall-deep), var(--dk-pool-hall) 60%);
+    opacity: 0;
+    pointer-events: none;
   }
 
   .dk__tear {
@@ -613,8 +626,17 @@
     animation-delay: var(--delay, 0s);
   }
 
+  /* Her first tears once grown: fewer, rounder, the size the pool draws them. */
+  .dk__tears--giant .dk__tear {
+    inline-size: 1vmin;
+    block-size: 3.2vh;
+    border-radius: 50%;
+    background: var(--dk-pool-foam);
+    animation-duration: 2.4s;
+  }
+
   .dk__flavours {
-    opacity: 0;
+    opacity: calc(var(--show, 0) * var(--fade, 1));
   }
 
   .dk__flavour {

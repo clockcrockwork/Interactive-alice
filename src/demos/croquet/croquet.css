@@ -13,6 +13,10 @@
     --cq-white: oklch(97% 0.01 90);
     --cq-flamingo: oklch(76% 0.16 10);
     --cq-pot: oklch(60% 0.12 45);
+    /* The little door she came in by: Drink Me's door tokens, repeated by value. */
+    --cq-door: oklch(38% 0.08 50);
+    --cq-door-frame: oklch(26% 0.05 50);
+    --cq-hall-wall-deep: oklch(36% 0.05 55);
   }
 }
 
@@ -378,6 +382,50 @@
   .cq__cat-grin {
     transform-origin: 120px 150px;
     transform: scale(calc(1 + var(--blink) * 0.2));
+  }
+
+  /* The doorway the garden is first seen through; the camera goes out through it. */
+  .cq__doorway {
+    pointer-events: none;
+    overflow: hidden;
+    perspective: 120vmin;
+    perspective-origin: 50% 40%;
+  }
+
+  .cq__door-frame {
+    --through: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    --frame-w: min(78vw, 70vmin);
+    inline-size: var(--frame-w);
+    block-size: calc(var(--frame-w) * 1.5);
+    translate: -50% -50%;
+    border: 3vmin solid var(--cq-door-frame);
+    border-block-end: 0;
+    border-radius: calc(var(--frame-w) / 2) calc(var(--frame-w) / 2) 0 0;
+    /* The hall's wall all round the opening: a shadow as wide as the screen. */
+    box-shadow: 0 0 0 200vmax var(--cq-hall-wall-deep);
+    transform-origin: 50% 50%;
+    transform: translateY(calc(var(--through) * 20vmin)) scale(calc(1 + var(--through) * 6));
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  .cq__door-leaf {
+    position: absolute;
+    inset: -3vmin -3vmin 0 -3vmin;
+    border: 3vmin solid var(--cq-door-frame);
+    border-block-end: 0;
+    border-radius: inherit;
+    background: repeating-linear-gradient(
+      to right,
+      var(--cq-door) 0 9vmin,
+      oklch(32% 0.07 50) 9vmin 10.2vmin
+    );
+    box-shadow: inset 0 0 6vmin oklch(0% 0 0 / 0.5);
+    transform-origin: 0 50%;
+    transform: rotateY(-100deg);
   }
 
   .demo[data-paused] .cq__brush,

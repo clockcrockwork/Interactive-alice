@@ -88,6 +88,8 @@ declare global {
       paused(): boolean;
       reduced(): boolean;
       mode(): string;
+      /** The master timeline's length against the beat count: they must agree. */
+      overrun(): number;
     };
   }
 }
@@ -383,7 +385,16 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     paused: () => paused,
     reduced: () => reducedMotion,
     mode: () => root.dataset.mode ?? '',
+    overrun: () => master.duration() - beats.length,
   };
+  // A tween placed past the last beat stretches the timeline, and then the scroll
+  // no longer lands each beat on its own unit of time. Say so once the demo has
+  // composed, where the browser tests will see it.
+  requestAnimationFrame(() => {
+    if (master.duration() > beats.length + 1e-6) {
+      console.error(`master timeline overruns the beats: ${master.duration()} > ${beats.length}`);
+    }
+  });
 
   return shell;
 }

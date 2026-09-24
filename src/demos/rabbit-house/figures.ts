@@ -56,6 +56,37 @@ export const HOUSE_SVG = `
     <g class="hs__slates"></g>
     <!-- The White Rabbit, on his way round -->
     <g class="hs__rabbit" transform="translate(900 560)" opacity="0">${svgFigure('white-rabbit/garden', -30, -80, 60, 80)}</g>
+    <!-- The house from above and a little in front, once the camera has pulled
+         back and up: the roof, its chimney, the ladder, and the little figures
+         below looking up. Bill climbs to the chimney's rim. -->
+    <g class="hs__above">
+      <rect x="-1200" y="-900" width="3400" height="2800" fill="var(--hs-grass)"/>
+      <ellipse cx="500" cy="420" rx="900" ry="380" fill="var(--hs-grass-deep)" opacity="0.2"/>
+      <g class="hs__frame-above">
+        <rect x="60" y="540" width="150" height="60" fill="var(--hs-glass)" stroke="var(--hs-timber)" stroke-width="4"/>
+        <path d="M85 540 v60 M135 540 v60 M185 540 v60 M60 570 h150" stroke="var(--hs-timber)" stroke-width="3"/>
+      </g>
+      <polygon points="250,60 750,60 760,150 240,150" fill="var(--hs-roof-deep)"/>
+      <polygon points="240,150 760,150 780,330 220,330" fill="var(--hs-roof)"/>
+      <path d="M236 190 h528 M232 230 h536 M228 270 h544 M224 310 h552" stroke="var(--hs-roof-deep)" stroke-width="3" opacity="0.5"/>
+      <rect x="220" y="330" width="560" height="70" fill="var(--hs-wall)"/>
+      <rect x="220" y="330" width="560" height="10" fill="var(--hs-wall-shade)"/>
+      <rect x="256" y="346" width="70" height="44" fill="var(--hs-glass)" stroke="var(--hs-timber)" stroke-width="6"/>
+      <rect x="664" y="352" width="46" height="48" rx="2" fill="var(--hs-timber)"/>
+      <!-- The ladder, from the garden to the eave -->
+      <path d="M586 470 V326 M612 470 V326 M586 350 h26 M586 374 h26 M586 398 h26 M586 422 h26 M586 446 h26" stroke="var(--hs-timber)" stroke-width="5" stroke-linecap="round"/>
+      <!-- The chimney: its cap from above, the dark of the shaft, its front face -->
+      <rect x="632" y="96" width="66" height="44" fill="var(--hs-timber)"/>
+      <path d="M632 96 h66 M632 140 h66 M632 96 v44 M698 96 v44" stroke="var(--hs-roof-deep)" stroke-width="3"/>
+      <rect x="644" y="104" width="42" height="28" fill="var(--hs-soot)"/>
+      <rect x="632" y="136" width="66" height="10" fill="var(--hs-timber-deep)"/>
+      <rect x="640" y="146" width="50" height="40" fill="var(--hs-timber)"/>
+      <path d="M640 156 h50 M640 166 h50 M640 176 h50" stroke="var(--hs-roof-deep)" stroke-width="2" opacity="0.6"/>
+      <!-- The little figures below, looking up -->
+      <g transform="translate(240 528) rotate(-14)">${svgFigure('white-rabbit/garden', -30, -80, 60, 80)}</g>
+      <g transform="translate(430 470) rotate(-12)">${svgFigure('pat', -30, -70, 60, 70)}</g>
+      <g class="hs__bill">${svgFigure('bill', -22, -36, 44, 36)}</g>
+    </g>
   </g>
 </svg>`;
 

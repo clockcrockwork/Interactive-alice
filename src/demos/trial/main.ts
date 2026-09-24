@@ -2,8 +2,9 @@
  * The trial: the concept demo.
  *
  * The court is a paper theatre: flat cutouts standing at different depths inside a
- * CSS perspective, so a sideways dolly separates them into layers. The camera
- * pans from the throne to the jury as Alice looks round, pushes into the Queen as
+ * CSS perspective, so a sideways dolly separates them into layers. It opens
+ * inside the court's doors, the pair the Lobster Quadrille's run arrived at, as
+ * they swing away to show the throne. The camera pans from the throne to the jury as Alice looks round, pushes into the Queen as
  * her temper rises, and pulls back as Alice grows. Then the pack rises, comes for
  * the reader, and some of the cards hit the glass and stay there, until they turn
  * to dead leaves and the riverbank is behind them.
@@ -136,13 +137,19 @@ function mount(shell: DemoShell): void {
   const alice = aliceLayer.querySelector<HTMLElement>('.tr__alice');
   const flash = shell.layer('tr__flash');
   const glass = shell.layer('tr__glass');
+  // The doors the run along the shore ended at, seen from inside as they open.
+  const doors = shell.layer('tr__doors');
+  doors.innerHTML =
+    '<div class="tr__door-leaf tr__door-leaf--left"></div>' +
+    '<div class="tr__door-leaf tr__door-leaf--right"></div>';
 
   const pack = court.querySelector<HTMLElement>('.tr__pack');
   const lite = window.innerWidth < 720;
   const cards = pack ? buildPack(pack, lite ? 56 : 104) : [];
 
   // --- The camera, cue by cue. Each shot holds until the next cue.
-  const camera = { x: 0, z: 0, ry: 0, y: 0 };
+  // It starts a step behind the doorway, so the throne shot is a walk in.
+  const camera = { x: 0, z: -160, ry: 0, y: 0 };
   const applyCamera = (): void => {
     court.style.setProperty('--cam-x', camera.x.toFixed(2));
     court.style.setProperty('--cam-z', camera.z.toFixed(1));
@@ -169,6 +176,16 @@ function mount(shell: DemoShell): void {
       );
     }
   }
+
+  // The leaves swing away from the slit the run ended on, and the frame is gone
+  // by the next beat; under reduced motion they cross-fade instead of swinging.
+  master.fromTo(
+    doors,
+    { '--open': 0.3 },
+    { '--open': 1, duration: reducedMotion ? 0.3 : 0.7, ease: 'power2.in' },
+    0,
+  );
+  master.to(doors, { opacity: 0, duration: 0.3 }, reducedMotion ? 0.3 : 0.55);
 
   // --- The jury write it all down. Every sentence lands as a scribble on each
   // slate, and each juror decides for itself whether it was important; press a

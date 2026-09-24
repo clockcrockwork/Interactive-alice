@@ -18,6 +18,9 @@
     --hs-floor: oklch(58% 0.08 60);
     --hs-glass: oklch(85% 0.04 220 / 0.55);
     --hs-rabbit: oklch(96% 0.01 90);
+    --hs-soot: oklch(12% 0.01 30);
+    --hs-timber-deep: oklch(28% 0.05 50);
+    --bl-lizard: oklch(66% 0.12 130);
   }
 }
 
@@ -276,6 +279,15 @@
   }
 
   .hs__rabbit {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+  }
+
+  .hs__above {
+    opacity: 0;
+  }
+
+  .hs__bill {
     transform-box: fill-box;
     transform-origin: 50% 100%;
   }

@@ -12,6 +12,13 @@
     --pt-foam: oklch(94% 0.03 220);
     --pt-mouse: oklch(58% 0.05 60);
     --pt-shore: oklch(52% 0.08 70);
+    /* The hall's furniture, in Drink Me's colours (drink-me.css --dk-door, --dk-glass,
+       --dk-gold), since the first frame is the room that demo ends in. */
+    --pt-door: oklch(38% 0.08 50);
+    --pt-door-frame: oklch(26% 0.05 50);
+    --pt-glass: oklch(88% 0.03 220 / 0.35);
+    --pt-glass-edge: oklch(96% 0.02 220 / 0.7);
+    --pt-gold: oklch(82% 0.15 85);
   }
 }
 
@@ -53,6 +60,30 @@
 
   .demo--pool-of-tears .demo-beat {
     filter: blur(calc(var(--under, 0) * 1.5px));
+  }
+
+  /* Her own skirt and shoes at the bottom of the frame, placed as Drink Me
+     places them, until the pool takes her. */
+  .pt__self-layer {
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .pt__self {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: -4%;
+    inline-size: clamp(24rem, 120vmin, 70rem);
+    translate: -50% 0;
+    filter: drop-shadow(0 -16px 30px oklch(0% 0 0 / 0.55));
+  }
+
+  /* The roof, folded in at the top of the frame where her head met it. */
+  .pt__roof {
+    --fold: 0.55;
+    background: oklch(4% 0 0);
+    clip-path: inset(0 0 calc(100% - var(--fold) * 50%) 0);
+    pointer-events: none;
   }
 
   .pt__canvas {

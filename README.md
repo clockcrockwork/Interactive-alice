@@ -74,8 +74,9 @@ dollhouse the camera leaves, Bill's trip up the chimney, the Caterpillar's meado
 that scales with her height, the Cheshire Cat masked away grin last, the Dormouse's
 tale on a treacle spiral in SVG, the Queen's croquet-ground with its live mallets,
 the Lobster Quadrille the reader joins, and the trial's pack of cards in CSS 3D with
-her sister's dream after it. The index lets the visitor choose the blue Alice everyone knows
-or the earlier yellow one. They show how far the
+her sister's dream after it. Where two adjacent demos are one moment of the book,
+the end of one is staged to lead into the opening of the next. The index lets the
+visitor choose the blue Alice everyone knows or the earlier yellow one. They show how far the
 interactive telling can go; they are not the product.
 See [`docs/concept-demos.md`](docs/concept-demos.md).
 

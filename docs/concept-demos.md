@@ -109,7 +109,11 @@ sentences in reading order inside the track. Attaching moves each beat into a st
 that stays pinned to the viewport, hides the track, and turns the document's height
 into a GSAP timeline with **one unit of timeline time per beat**. A demo composes
 against that timeline: `master.to(thing, {...}, shell.cue('thump'))` puts a tween
-where the landing happens, whatever number of beats precede it.
+where the landing happens, whatever number of beats precede it. Nothing may be placed
+past the last beat: a tween that runs beyond it stretches the timeline, and then the
+scroll no longer lands each beat on its own unit of time. The shell reports such an
+overrun as a console error once the demo has composed, so the browser tests catch it,
+and the seam exposes it as `overrun()`.
 
 Captions have a default behaviour (fade in over a beat's first third, out over its
 last sixth, the last beat holds) and a demo may take a beat over: the rabbit hole
@@ -145,6 +149,19 @@ Navigation API simply navigates.
 
 `window.__aliceDemo` is the test seam: progress, active beat, paused, reduced, and a
 per-demo `mode` (the rabbit hole reports `webgl` or `flat`).
+
+**Joins.** The demos are viewed in the book's order, and where two adjacent demos are
+one moment of the book they join: the end of the first is staged so that it leads
+straight into the opening of the second, and the opening picks the picture up where
+the first left it. Six pairs join today: the rabbit hole and Drink Me through the door
+in the floor; Drink Me and the pool at the roof, in tears; the pool and the race at the
+bank; the house and Bill at the chimney; the tea-party and the croquet-ground through
+the door in the tree and the little door; the quadrille and the trial at the court's
+doors. Each demo remains complete on its own, each join has a reduced-motion version
+of cuts and cross-fades, and each is described under its two demos below. The pairs
+with another scene of the book between them (Bill and the Caterpillar, the Caterpillar
+and the Cat, the Cat and the tea-party, the race and the house, the croquet-ground and
+the quadrille) change scene through the page transition and nothing more.
 
 ## 4. The twelve demos
 
@@ -225,9 +242,16 @@ her hand. Press either, or the *Drink it* and *Eat it* buttons, and it drains or
 gets bitten; the story drinks and eats anyway before the beat is out. The pointer
 turns her head a little.
 
+Nothing happens for a beat after the first bite, as the text says; then she finishes
+the cake and the hall comes down. The demo ends with her head against the roof, and
+from there it joins the Pool of Tears: her first tears, big ones, fall past her own
+skirt and the hall dims into the pool's colours, so the next page's first frame is
+the same room.
+
 **Reduced motion.** Every walk is a cut with a blink; the telescope fold becomes a
 flash; the growth is a cut too, with the skirt already in place; no wobble, no
-head-turn; tears and flavours hang still.
+head-turn; tears and flavours hang still, and the dim at the end is the one motion
+left in the join.
 
 ### The Pool of Tears: the swell is the parallax
 
@@ -250,8 +274,17 @@ and drifts back when given room. The Mouse leaps at *Où est ma chatte?* and bri
 at the mention of Dinah on its own. At *drowned in my own tears* the water goes over
 the camera for a moment and the sentences ripple.
 
+The pool opens on the view Drink Me left: the roof folded in at the top of the frame,
+her skirt and shoes at the bottom, dolls' doors and the toy glass table far below on
+the checkered floor, a few tears already falling. Her head strikes the roof with a
+thud, the fold lets go as the tears come in earnest, and the furniture and the skirt
+go under the rising pool. At the other end it joins the Caucus-race: the bank comes in
+to meet the party, they swim up to it in a loose group on the right and climb out one
+after another onto the bank, seen from the water.
+
 **Reduced motion.** The swell is a quarter as fast and a third as high, rings spread
-slowly, tears fall at half speed, and the captions do not ride the water.
+slowly, tears fall at half speed, and the captions do not ride the water; the roof's
+fold and the skirt are cuts, and the climb onto the bank is a cut too.
 
 ### A Caucus-Race: rotation is the parallax
 
@@ -273,7 +306,12 @@ spurt. *Everybody run!* sets them all off. When the prizes come down, drag a com
 onto a runner and it eats it, or tap the sky and a burst of comfits comes down where
 you tapped.
 
-**Reduced motion.** The runners hold their places and lean into the run instead of
+The race opens low, from the water the pool left: the pool's water lies across the
+foreground and the party stands dripping at its edge with their feet still in it. In
+the first beat the water drops out of the frame as the camera rises to its walking
+height and the party un-gathers into the ring.
+
+**Reduced motion.** The water dissolves and the ring is already formed; the runners hold their places and lean into the run instead of
 bobbing; the camera cuts between its shots and does not circle or follow; no dust, no
 panting; the comfits hang in the air.
 
@@ -302,7 +340,15 @@ window, or *Make a snatch*, and her hand comes out; the
 Rabbit tumbles into the cucumber-frame in a shower of glass. The story makes the
 snatch before the beat is out if the reader does not. The pointer leans the house.
 
-**Reduced motion.** Cuts between poses and camera positions; no rattle, no bulge
+The house and Bill the Lizard are one minute of the book, and they join. The house's
+last beat, after the crash into the cucumber-frame, pulls the camera back and up until
+the cutaway gives way to the house seen from above: the roof and its chimney, a ladder
+against the wall, the Rabbit and Pat in the garden looking up, and Bill climbing the
+ladder and the slates to the chimney's rim, where the camera comes down to rest on the
+cap.
+
+**Reduced motion.** Cuts between poses and camera positions, and two blinks for the
+pull-back and the chimney; no rattle, no bulge
 easing, no tumble spin; the glass hangs in the air.
 
 ### There Goes Bill: vertical parallax, and the screen takes the kick
@@ -319,7 +365,13 @@ ground among the others with the brandy, where the view stays a little dazed (a
 *Kick!*: press either and the kick lands then; otherwise the story kicks. Scrolling
 back above the kick resets it for another go.
 
-**Reduced motion.** No spin, no daze; the launch is a cut; soot hangs still.
+It opens on exactly the picture the house ended on, from Bill's own eyes: the rim
+under his feet on the timber, the slates around, the garden and the little figures far
+below. The descent begins by dropping through that opening as the shaft fades in
+around the camera.
+
+**Reduced motion.** No spin, no daze; the drop through the rim and the launch are
+cuts with a blink; soot hangs still.
 
 ### Advice from a Caterpillar: her height is the parallax
 
@@ -413,7 +465,15 @@ sentence being told. A still, held finger reads ahead down the spiral and lifts 
 dozing sentence out of the blur; let go and it swings back. Tap the three sisters and
 a letter floats up out of the well.
 
-**Reduced motion.** The camera cuts from sentence to sentence with a dip in the
+The tea-party and the croquet-ground join. When Alice walks off, the tea-table pulls
+back and away and a tree stands in a dark wood with a door in its trunk; the door
+swings open on the hall of doors, small and far, drawn in Drink Me's colours, with the
+little door at its centre and the bright garden and its rose-tree behind it, and the
+camera goes in until the doorway is most of the screen. The wood is a layer over the
+composited cup and adds no filter and no per-frame write.
+
+**Reduced motion.** The tree's three cuts (table to tree, shut to open, far to near)
+blink; the camera cuts from sentence to sentence with a dip in the
 treacle rather than a glide; no drips, no orbit, no jolt; the letters hang in the air;
 the blur is lighter; the teapot ending shrinks without spinning.
 
@@ -439,7 +499,12 @@ the flamingo goes across the garden, *Catch the flamingo* brings it back. While 
 Queen shouts, every tap sets her off: red, a shake, a thud. The Cat's pupils follow
 the pointer, and a tap on the head makes it wink.
 
-**Reduced motion.** The camera cuts; nobody steps, skips, runs or waddles; the
+The garden opens through the little door the tea-party ended on: its arched frame and
+the hall's wall surround the garden, the leaf stands open, and as the roses come up the
+camera passes through the frame and it leaves the screen. The frame takes no pointer
+events, so the roses are buttons all the while.
+
+**Reduced motion.** The door frame fades instead of sliding; the camera cuts; nobody steps, skips, runs or waddles; the
 flamingo does not look up, so every strike lands; the red flash without the shake.
 
 ### The Lobster Quadrille: a dance the reader joins
@@ -460,7 +525,13 @@ rolls the whole frame. *Join the dance* steps into the ring before the story doe
 creatures of the song come by in the sea, and the snail is a button that draws into
 its shell.
 
-**Reduced motion.** The sea holds; no advancing, no dancing, no streaming shore; the
+The run along the shore arrives somewhere: as the Gryphon runs with her the shingle
+gives way to a path in the court's own floor colours, and a pair of tall paper-theatre
+doors, drawn in the trial's palette, grows from a speck on the horizon to fill the
+frame. At the last, faint words they are up close and just beginning to open on a slit
+of the court's light, and the two run into it.
+
+**Reduced motion.** The doors appear with a blink and open with a cross-fade; the sea holds; no advancing, no dancing, no streaming shore; the
 somersault is a blink; the lobster's arc is a short lift and a splash.
 
 ### Who Stole the Tarts?: a dolly through a paper theatre, then the pack
@@ -500,7 +571,11 @@ to clear them all. Both are optional: the leaves fall whether or not she beat th
 In the dream, *Open her eyes* is a toggle: every creature becomes its real one at
 once, and pressing again brings the dream back; a tap on a creature makes its sound.
 
-**Reduced motion.** The dolly cuts with a dip to black; the cards fade in at their
+The court opens inside the doors the run arrived at: the first frame is the throne
+seen through the opening leaves, which swing away as the camera walks in and are gone
+by the Knave, so the two demos are one arrival. The doors take no pointer events.
+
+**Reduced motion.** The doors cross-fade open; the dolly cuts with a dip to black; the cards fade in at their
 places on the glass instead of flying; no tremble, no shake; the leaves change and
 fall without drifting; the dream's creatures stand still and swap without a fade.
 
@@ -526,7 +601,13 @@ button that changes it; the croquet roses are buttons that paint red, the garden
 can be hidden, a strike sends the hedgehog off and the Cat's grin comes first and goes
 last; the quadrille's lobster can be thrown, the sea somersaulted in and the dance
 joined; the sister's dream fills the bank and opening her eyes turns it into the farm;
-and the index's picker chooses an Alice the next page still wears.
+each join holds at both ends (Drink Me cries at the roof and the pool opens on that
+view; the pool's party comes ashore and the race opens from the water; the house ends
+at the chimney's rim and Bill opens on it; the tea-party ends at the open door in the
+tree and the croquet-ground opens through the little door; the run reaches the court's
+doors and the trial opens inside them), and scrolling back undoes it; no demo's
+timeline overruns its beats; and the index's picker chooses an Alice the next page
+still wears.
 
 `npm run check:frontend` covers the demo code with the same rules as the scenes:
 no prose in code, no absolute paths, no inline style writes other than custom

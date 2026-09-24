@@ -159,10 +159,10 @@ function mount(shell: DemoShell): void {
       {
         '--sx': `${sx.toFixed(1)}%`,
         '--sy': `${sy.toFixed(1)}%`,
-        duration: reducedMotion ? 0.01 : 0.8,
+        duration: reducedMotion ? 0.01 : 0.6,
         ease: 'power2.inOut',
       },
-      iGrin + 0.3 + (reducedMotion ? 0 : (i % 6) * 0.03),
+      iGrin + 0.3 + (reducedMotion ? 0 : (i % 6) * 0.015),
     );
   });
 

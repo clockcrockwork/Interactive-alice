@@ -28,6 +28,7 @@ interface Runner {
 function mount(shell: DemoShell): void {
   const { master, reducedMotion } = shell;
   const cue = shell.cue;
+  const iBank = cue('bank');
   const iProposal = cue('proposal');
   const iCourse = cue('course');
   const iRunning = cue('running');
@@ -46,6 +47,9 @@ function mount(shell: DemoShell): void {
     '<svg class="cr__course" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" pathLength="1"/></svg>';
   world.append(ring);
   const course = ring.querySelector<SVGCircleElement>('.cr__course circle');
+  // The pool's water in the foreground: the party has just swum to this bank and
+  // we see them from the water, until the camera rises onto the bank with them.
+  const water = shell.layer('cr__water');
 
   // --- The runners, evenly round the ring. Each is a real button.
   const random = seeded(3);
@@ -109,20 +113,42 @@ function mount(shell: DemoShell): void {
 
   // --- The gathering: 0 is the ring, 1 is a huddle round `centre`.
   const gather = { amount: 0, centre: 0, spread: 60 };
+  // --- The arrival: 1 is the party as the pool left it, a loose two-row group
+  // along the water's edge on the near side of the ring, feet still in the
+  // water; 0 is the ring. Each place is a point on the bank turned into the
+  // ring's own angle and radius, so the same transform draws both.
+  const arrive = { amount: 1 };
+  const landed = runners.map((_, index) => {
+    const across = (index / (runners.length - 1)) * 2 - 1;
+    const x = across * 0.95;
+    const z = 0.1 + (index % 2) * 0.3;
+    return {
+      angle: (Math.atan2(x, z) * 180) / Math.PI,
+      radius: Math.hypot(x, z),
+      sink: 92 - (index % 2) * 22,
+    };
+  });
   let racing = false;
   const apply = (): void => {
     runners.forEach((runner, index) => {
       const offset = ((index / runners.length) * 2 - 1) * gather.spread;
-      const angle = mix(runner.angle, gather.centre + offset, gather.amount);
-      const radius = mix(1, 0.5, gather.amount);
+      let angle = mix(runner.angle, gather.centre + offset, gather.amount);
+      let radius = mix(1, 0.5, gather.amount);
+      const place = landed[index];
+      if (place && arrive.amount > 0.0001) {
+        angle = mix(angle, place.angle, arrive.amount);
+        radius = mix(radius, place.radius, arrive.amount);
+      }
       runner.el.style.setProperty('--a', angle.toFixed(2));
       runner.el.style.setProperty('--r', radius.toFixed(3));
+      runner.el.style.setProperty('--y', ((place?.sink ?? 0) * arrive.amount).toFixed(1));
     });
   };
   apply();
 
   // --- The camera, cue by cue: a walk round the party, then round the course.
-  const camera = { spin: 0, tilt: -8, dolly: -260, lift: 0 };
+  // It starts low, at the water, and rises onto the bank during the first beat.
+  const camera = { spin: 0, tilt: 1, dolly: -200, lift: -36 };
   // While your runner runs, the camera runs with it: this offset turns the ring
   // so your runner stays in front, and eases away again after the race.
   let follow = 0;
@@ -145,7 +171,23 @@ function mount(shell: DemoShell): void {
       at,
     );
   };
-  look(0, { spin: 40, dolly: -200 }, 1.5, 'none');
+  // Out of the water and into the ring: the party un-gathers from the bank's edge
+  // as the camera comes up to its walking height and the water drops out of the
+  // frame. Under reduced motion the water dissolves and the ring is a cut.
+  master.to(
+    arrive,
+    { amount: 0, duration: reducedMotion ? 0.01 : 0.8, ease: 'power2.inOut', onUpdate: apply },
+    iBank + (reducedMotion ? 0.5 : 0.15),
+  );
+  look(iBank + 0.15, { tilt: -8, lift: 0 }, 0.8);
+  master.to(
+    water,
+    reducedMotion
+      ? { opacity: 0, duration: 0.3 }
+      : { yPercent: 100, opacity: 0, duration: 0.8, ease: 'power2.in' },
+    iBank + (reducedMotion ? 0.4 : 0.15),
+  );
+  look(0, { spin: 40 }, 1.5, 'none');
   look(iProposal, { spin: 0, dolly: 140, tilt: -6 });
   look(iCourse, { tilt: -34, dolly: -420, lift: -40 });
   master.to(course, { '--drawn': 1, duration: 0.6, ease: 'power1.inOut' }, iCourse + 0.1);

@@ -174,12 +174,18 @@
           ]
         },
         {
-          "id": "whole-cake",
+          "id": "nothing-happened",
           "cue": "grow",
           "segments": [
             "ch01.s1330",
             "ch01.s1340",
-            "ch01.s1350",
+            "ch01.s1350"
+          ]
+        },
+        {
+          "id": "whole-cake",
+          "cue": "roof",
+          "segments": [
             "ch01.s1360",
             "ch01.s1370"
           ]

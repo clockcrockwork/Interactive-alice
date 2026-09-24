@@ -8,14 +8,15 @@
  * the reader joins the dance: the ring of dancers turns round the camera, the
  * Mock Turtle sings, the creatures of the song come by in the sea, and at the
  * cry from the distance the Gryphon takes her hand and runs, the song fading
- * behind on the breeze.
+ * behind on the breeze, until the shore gives way to a path and the court's own
+ * doors, which are just opening as the demo ends; the trial opens inside them.
  */
 
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { DANCERS } from '../art/vectors.ts';
 import { attachDemo, type Beat, type DemoShell, mix, seeded } from '../shell/shell.ts';
-import { HANDS_WITH_LOBSTER, TUREEN_SVG } from './figures.ts';
+import { COURT_DOORS, HANDS_WITH_LOBSTER, TUREEN_SVG } from './figures.ts';
 import './quadrille.css';
 
 interface Dancer {
@@ -96,6 +97,11 @@ function mount(shell: DemoShell): void {
       index * 0.4,
     );
   });
+
+  // --- The court's doors, behind the dancers: a speck on the horizon until the
+  // run, when the shore gives way to a path and they grow to meet the runners.
+  const doors = shell.layer('lq__doors');
+  doors.innerHTML = COURT_DOORS;
 
   // --- The dance floor: a ring of dancers in CSS 3D. The camera stands outside
   // it to begin with and steps into its centre when she joins the dance.
@@ -567,6 +573,22 @@ function mount(shell: DemoShell): void {
     iRun + 0.1,
   );
   master.to(shore, { '--dusk': 1, duration: 1 }, iFaint);
+  // The run arrives: the doors grow along it, and at the last words they are up
+  // close and just beginning to open on the court's light. Under reduced motion
+  // they appear with a blink and open with a cross-fade instead.
+  if (reducedMotion) {
+    master.set(doors, { '--near': 1 }, iRun + 0.3);
+    master.fromTo(doors, { opacity: 0 }, { opacity: 1, duration: 0.05 }, iRun + 0.3);
+    master.set(doors, { '--open': 1 }, iFaint + 0.5);
+  } else {
+    master.to(doors, { '--near': 1, duration: 1.6, ease: 'power1.in' }, iRun);
+    master.to(doors, { '--open': 0.4, duration: 0.5, ease: 'power2.out' }, iFaint + 0.5);
+  }
+  master.call(
+    () => (master.time() >= iFaint + 0.5 ? shell.sound.play('paper', 0.5) : undefined),
+    [],
+    iFaint + 0.5,
+  );
 }
 
 const shell = attachDemo({

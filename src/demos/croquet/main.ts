@@ -678,6 +678,19 @@ function mount(shell: DemoShell): void {
     catParts.pupils?.style.setProperty('--px', mix(current, px, k).toFixed(2));
     catParts.pupils?.style.setProperty('--py', mix(currentY, py, k).toFixed(2));
   });
+
+  // --- Out of the hall: the garden is first seen through the little door she
+  // came in by (the one in Drink Me's hall, that the tea-party ended looking
+  // toward), and the camera goes through the doorway as the roses come up.
+  const doorway = shell.layer('cq__doorway');
+  doorway.innerHTML = '<div class="cq__door-frame"><div class="cq__door-leaf"></div></div>';
+  const frame = doorway.querySelector<HTMLElement>('.cq__door-frame');
+  if (reducedMotion) {
+    master.to(doorway, { opacity: 0, duration: 0.3 }, 0.25);
+  } else {
+    master.to(frame, { '--through': 1, duration: 0.7, ease: 'power2.in' }, 0.05);
+    master.to(doorway, { opacity: 0, duration: 0.25 }, 0.5);
+  }
 }
 
 const shell = attachDemo();

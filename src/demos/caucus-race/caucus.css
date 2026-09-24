@@ -13,6 +13,10 @@
     --cr-comfit: oklch(80% 0.15 340);
     --cr-thimble: oklch(80% 0.05 80);
     --cr-radius: clamp(180px, 34vmin, 320px);
+    /* The pool of tears' water (pool.css --pt-water, --pt-water-deep, --pt-foam):
+       the party has just swum out of it. */
+    --cr-water: oklch(62% 0.1 230);
+    --cr-water-deep: oklch(38% 0.1 240);
   }
 }
 
@@ -59,6 +63,18 @@
       rotateX(calc(var(--tilt) * 1deg)) rotateY(calc(var(--spin) * 1deg));
   }
 
+  /* The water in the foreground at the start, the pool's own colours, with the
+     swell's bands; it drops out of the frame as the camera climbs the bank. */
+  .cr__water {
+    inset-block-start: auto;
+    block-size: 46%;
+    background:
+      repeating-linear-gradient(to bottom, transparent 0 5vh, oklch(94% 0.03 220 / 0.1) 5vh 5.3vh),
+      linear-gradient(to bottom, var(--cr-water), var(--cr-water-deep));
+    border-block-start: 2px solid oklch(94% 0.03 220 / 0.6);
+    pointer-events: none;
+  }
+
   .cr__course {
     position: absolute;
     inset-inline-start: calc(var(--cr-radius) * -1.15);
@@ -96,7 +112,8 @@
     pointer-events: auto;
     transform-style: preserve-3d;
     transform: rotateY(calc(var(--a) * 1deg)) translateZ(calc(var(--cr-radius) * var(--r)))
-      rotateY(calc((var(--a) + var(--spin)) * -1deg)) rotateX(calc(var(--tilt) * -1deg));
+      translateY(calc(var(--y, 0) * 1px)) rotateY(calc((var(--a) + var(--spin)) * -1deg))
+      rotateX(calc(var(--tilt) * -1deg));
     filter: drop-shadow(0 10px 8px oklch(0% 0 0 / 0.3));
   }
 

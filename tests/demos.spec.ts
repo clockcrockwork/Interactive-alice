@@ -198,10 +198,12 @@ test('drink me: the hall grows around her when she drinks, and shrinks back when
   await at('small');
   await expect.poll(room, { timeout: 8000 }).toBeGreaterThan(4);
   await at('grow');
+  await expect.poll(room, { timeout: 8000 }).toBeGreaterThan(4);
+  await at('roof');
   await expect.poll(room, { timeout: 8000 }).toBeLessThan(0.6);
   // And once she has grown, the lens widens, she looks down at her own skirt and
   // shoes, and the roof folds in at the top of the frame.
-  await at('grow', 1);
+  await at('roof', 1);
   const world = (property: string) =>
     page.evaluate(
       (name) =>
@@ -738,4 +740,231 @@ test('the dormouse: the camera is a transform on the cup, and the doze is a filt
   await expect(page.locator('.dm__svg--text')).not.toHaveAttribute('data-dozing', '', {
     timeout: 8000,
   });
+});
+
+test('the lobster quadrille: the run along the shore arrives at the court doors, just opening', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'lobster-quadrille');
+  test.skip(!demo, 'no lobster-quadrille demo in this build');
+  await page.goto(demo?.url ?? '');
+  // Nothing of the court shows before the run.
+  await atCue(page, 'cry', 0.5);
+  await expect
+    .poll(() => customProperty(page, '.lq__doors', '--near'), { timeout: 8000 })
+    .toBeLessThan(0.05);
+  // The doors grow along the run, and at the last words they are up close and
+  // beginning to open; the layer never takes the pointer.
+  await atCue(page, 'faint', 0.95);
+  await expect
+    .poll(() => customProperty(page, '.lq__doors', '--near'), { timeout: 8000 })
+    .toBeGreaterThanOrEqual(0.9);
+  await expect
+    .poll(() => customProperty(page, '.lq__doors', '--open'), { timeout: 8000 })
+    .toBeGreaterThan(0);
+  await expect(page.locator('.lq__doors')).toHaveCSS('pointer-events', 'none');
+  // Scrolling back closes them and takes them away again.
+  await atCue(page, 'cry', 0.5);
+  await expect
+    .poll(() => customProperty(page, '.lq__doors', '--near'), { timeout: 8000 })
+    .toBeLessThan(0.05);
+});
+
+test('the trial: it opens inside the court doors the run arrived at, and they are gone by the Knave', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'trial');
+  test.skip(!demo, 'no trial demo in this build');
+  await page.goto(demo?.url ?? '');
+  const doorsOpacity = () =>
+    page.evaluate(() =>
+      Number(getComputedStyle(document.querySelector('.tr__doors') as Element).opacity),
+    );
+  // The first frame is the court through a slit between the leaves.
+  await expect(page.locator('.tr__door-leaf')).toHaveCount(2);
+  await expect.poll(doorsOpacity, { timeout: 8000 }).toBeGreaterThan(0.9);
+  await expect
+    .poll(() => customProperty(page, '.tr__doors', '--open'), { timeout: 8000 })
+    .toBeLessThan(0.5);
+  await expect(page.locator('.tr__doors')).toHaveCSS('pointer-events', 'none');
+  await atCue(page, 'knave', 0.5);
+  await expect.poll(doorsOpacity, { timeout: 8000 }).toBeLessThan(0.05);
+  // And they are shut again on the way back.
+  await scrollTo(page, 0);
+  await expect.poll(doorsOpacity, { timeout: 8000 }).toBeGreaterThan(0.9);
+});
+
+test('the dormouse ends at the door in the tree, open on the hall and the garden', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'dormouse');
+  test.skip(!demo, 'no dormouse demo in this build');
+  await page.goto(demo?.url ?? '');
+  const woodOpacity = () =>
+    page.evaluate(() =>
+      Number(getComputedStyle(document.querySelector('.dm__wood') as Element).opacity),
+    );
+  // Before the door beat the wood is not there and the door is shut.
+  await atCue(page, 'teapot', 0.2);
+  await expect.poll(woodOpacity, { timeout: 8000 }).toBeLessThan(0.05);
+  await expect.poll(() => customProperty(page, '.dm__tree-door', '--open')).toBeLessThan(0.1);
+  // At the end the tree stands, its door is open, and the garden shows through the
+  // little door at the centre.
+  await scrollTo(page, 1);
+  await expect.poll(woodOpacity, { timeout: 8000 }).toBeGreaterThan(0.95);
+  await expect
+    .poll(() => customProperty(page, '.dm__tree-door', '--open'), { timeout: 8000 })
+    .toBeGreaterThan(0.9);
+  await expect
+    .poll(() => customProperty(page, '.dm__tree', '--zoom'), { timeout: 8000 })
+    .toBeGreaterThan(0.9);
+  await expect(page.locator('.dm__garden')).toBeVisible();
+  // Scrolling back shuts it again.
+  await atCue(page, 'teapot', 0.2);
+  await expect.poll(woodOpacity, { timeout: 8000 }).toBeLessThan(0.05);
+});
+
+test('the croquet-ground opens through the little door, which is gone by the splash', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'croquet');
+  test.skip(!demo, 'no croquet demo in this build');
+  await page.goto(demo?.url ?? '');
+  const doorwayOpacity = () =>
+    page.evaluate(() =>
+      Number(getComputedStyle(document.querySelector('.cq__doorway') as Element).opacity),
+    );
+  await expect.poll(doorwayOpacity).toBeGreaterThan(0.95);
+  // The frame never takes the roses' clicks.
+  await expect(page.locator('.cq__doorway')).toHaveCSS('pointer-events', 'none');
+  const rose = page.locator('.cq__rose').first();
+  await rose.click();
+  await expect(rose).toHaveAttribute('aria-pressed', 'true');
+  await atCue(page, 'splash', 0.5);
+  await expect.poll(doorwayOpacity, { timeout: 8000 }).toBeLessThan(0.05);
+});
+
+test("the rabbit's house: it ends above the roof, Bill at the chimney's rim", async ({ page }) => {
+  const demo = demos.find((candidate) => candidate.demo === 'rabbit-house');
+  test.skip(!demo, 'no rabbit-house demo in this build');
+  await page.goto(demo?.url ?? '');
+  const scale = () =>
+    page.evaluate(() => {
+      const transform = document.querySelector('.hs__camera')?.getAttribute('transform') ?? '';
+      return Number(/scale\(([^)]+)\)/.exec(transform)?.[1] ?? 0);
+    });
+  // The crash is still the cutaway: the house from above is not yet shown.
+  await atCue(page, 'crash', 0.5);
+  await expect(page.locator('.hs__above')).toHaveCSS('opacity', '0', { timeout: 8000 });
+  await expect(page.locator('.hs__stage')).not.toHaveAttribute('data-at-chimney', '');
+  // The last beat pulls back to the house from above, Bill on the way up.
+  await atCue(page, 'chimney', 0.6);
+  await expect(page.locator('.hs__above')).toHaveCSS('opacity', '1', { timeout: 8000 });
+  await expect(page.locator('.hs__wall')).toHaveCSS('opacity', '0');
+  await expect(page.locator('.hs__bill .art[data-art="bill"]')).toHaveCount(1);
+  // Then closes in on the chimney top, where the next demo picks up.
+  await scrollTo(page, 1);
+  await expect(page.locator('.hs__stage')).toHaveAttribute('data-at-chimney', '', {
+    timeout: 8000,
+  });
+  await expect.poll(scale, { timeout: 8000 }).toBeGreaterThan(3);
+  // Back to the crash, and the cutaway is there again.
+  await atCue(page, 'crash', 0.5);
+  await expect(page.locator('.hs__above')).toHaveCSS('opacity', '0', { timeout: 8000 });
+  await expect(page.locator('.hs__wall')).toHaveCSS('opacity', '1');
+});
+
+test('bill the lizard: it opens on the rooftop the house left, which drops away into the chimney', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'bill-the-lizard');
+  test.skip(!demo, 'no bill-the-lizard demo in this build');
+  await page.goto(demo?.url ?? '');
+  const rooftop = page.locator('.bl__rooftop');
+  await expect(rooftop).toHaveCSS('opacity', '1');
+  await expect(rooftop.locator('.art[data-art="white-rabbit/garden"]')).toHaveCount(1);
+  await expect(rooftop.locator('.art[data-art="pat"]')).toHaveCount(1);
+  await expect.poll(() => customProperty(page, '.bl__rooftop', '--dive')).toBe(0);
+  await atCue(page, 'foot', 0.5);
+  await expect(rooftop).toHaveCSS('opacity', '0', { timeout: 8000 });
+  await expect.poll(() => customProperty(page, '.bl__rooftop', '--dive')).toBe(1);
+  await expect(page.locator('.bl__chimney')).toHaveCSS('opacity', '1');
+  await atCue(page, 'roof', 0.2);
+  await expect(rooftop).toHaveCSS('opacity', '1', { timeout: 8000 });
+});
+
+test('drink me → the pool of tears: she cries at the roof, and the pool opens on that view', async ({
+  page,
+}) => {
+  const drinkMe = demos.find((candidate) => candidate.demo === 'drink-me');
+  const pool = demos.find((candidate) => candidate.demo === 'pool-of-tears');
+  test.skip(!drinkMe || !pool, 'both demos are needed for the join');
+  await page.goto(drinkMe?.url ?? '');
+  const opacity = (selector: string) =>
+    page.evaluate(
+      (sel) => Number(getComputedStyle(document.querySelector(sel) as Element).opacity),
+      selector,
+    );
+  // Before the cake, the room is its own colour and the giant tears are not falling.
+  await expect.poll(() => opacity('.dk__dim')).toBeLessThan(0.05);
+  await expect.poll(() => opacity('.dk__tears--giant')).toBeLessThan(0.05);
+  // At the very end, head against the roof: the hall dims toward the pool's hall,
+  // her first tears fall past her skirt, and the skirt is in the frame.
+  await scrollTo(page, 1);
+  await expect.poll(() => opacity('.dk__dim'), { timeout: 8000 }).toBeGreaterThan(0.9);
+  await expect.poll(() => opacity('.dk__tears--giant'), { timeout: 8000 }).toBeGreaterThan(0.9);
+  await expect(page.locator('.dk__self')).toHaveCSS('opacity', '1');
+  await expect(page.locator('.dk__tears--giant .dk__tear').first()).toBeAttached();
+
+  // The pool opens on the same view: her skirt at the bottom, the roof folded in at
+  // the top, and lets both go as the tears come and the pool rises.
+  await page.goto(pool?.url ?? '');
+  await expect(page.locator('.pt__self .art')).toBeAttached();
+  await expect.poll(() => opacity('.pt__self')).toBeGreaterThan(0.9);
+  await expect.poll(() => customProperty(page, '.pt__roof', '--fold')).toBeGreaterThan(0.4);
+  await atCue(page, 'rabbit', 0.5);
+  await expect.poll(() => opacity('.pt__self'), { timeout: 8000 }).toBeLessThan(0.1);
+  await expect
+    .poll(() => customProperty(page, '.pt__roof', '--fold'), { timeout: 8000 })
+    .toBeLessThan(0.05);
+  // And back again: the join is a function of the scroll.
+  await scrollTo(page, 0);
+  await expect.poll(() => opacity('.pt__self'), { timeout: 8000 }).toBeGreaterThan(0.9);
+});
+
+test('the pool of tears → the caucus-race: the party climbs the bank, and the race opens from the water', async ({
+  page,
+}) => {
+  const pool = demos.find((candidate) => candidate.demo === 'pool-of-tears');
+  const race = demos.find((candidate) => candidate.demo === 'caucus-race');
+  test.skip(!pool || !race, 'both demos are needed for the join');
+  await page.goto(pool?.url ?? '');
+  await atCue(page, 'crowd', 0.9);
+  await page.waitForTimeout(400);
+  await expect(page.locator('.demo')).not.toHaveAttribute('data-ashore', '');
+  // At the shore the swimmers climb out onto the bank; the last frame is ashore.
+  await scrollTo(page, 1);
+  await expect(page.locator('.demo')).toHaveAttribute('data-ashore', '', { timeout: 8000 });
+  await atCue(page, 'crowd', 0.9);
+  await expect(page.locator('.demo')).not.toHaveAttribute('data-ashore', '', { timeout: 8000 });
+
+  // The race opens low, from the water: the pool's water fills the foreground and
+  // the runners stand gathered at its edge with their feet still in it, dripping.
+  await page.goto(race?.url ?? '');
+  const water = () =>
+    page.evaluate(() =>
+      Number(getComputedStyle(document.querySelector('.cr__water') as Element).opacity),
+    );
+  await expect.poll(water).toBeGreaterThan(0.9);
+  await expect(page.locator('.cr__runner').first()).toHaveAttribute('data-drip', '');
+  await expect.poll(() => customProperty(page, '.cr__runner', '--y')).toBeGreaterThan(20);
+  await expect.poll(() => customProperty(page, '.cr__ring', '--lift')).toBeLessThan(-10);
+  // By the end of the first beat the water has gone and the party is a ring on the bank.
+  await atCue(page, 'bank', 0.98);
+  await expect.poll(water, { timeout: 8000 }).toBeLessThan(0.05);
+  await expect
+    .poll(() => customProperty(page, '.cr__runner', '--y'), { timeout: 8000 })
+    .toBeLessThan(0.5);
+  await expect.poll(() => customProperty(page, '.cr__runner', '--r')).toBeCloseTo(1, 1);
+  await expect.poll(() => customProperty(page, '.cr__ring', '--lift')).toBeCloseTo(0, 0);
 });

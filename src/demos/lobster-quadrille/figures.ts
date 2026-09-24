@@ -1,4 +1,4 @@
-/** The Lobster Quadrille's props: her own hands with a lobster, and the tureen. */
+/** The Lobster Quadrille's props: her own hands with a lobster, the tureen, and the court doors. */
 
 import { figure } from '../art/art.ts';
 
@@ -18,3 +18,13 @@ export const TUREEN_SVG = `
     <path d="M70 46 q-10 -16 0 -30 M100 42 q-10 -18 0 -34 M130 46 q-10 -16 0 -30" stroke="oklch(96% 0.01 90 / 0.8)" stroke-width="5" fill="none" stroke-linecap="round"/>
   </g>
 </svg>`;
+
+/** The court's doors at the end of the shore: a path, a frame with the court's
+    light in it, and two leaves. The trial opens on the same pair from inside. */
+export const COURT_DOORS = `
+<div class="lq__court-path"></div>
+<div class="lq__court-doors">
+  <div class="lq__court-light"></div>
+  <div class="lq__court-leaf lq__court-leaf--left"></div>
+  <div class="lq__court-leaf lq__court-leaf--right"></div>
+</div>`;

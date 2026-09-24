@@ -18,6 +18,8 @@ export interface Swimmer {
   bristle: number;
   /** A live nudge across the water on top of `x`, for swimming and fleeing. */
   offset?: number;
+  /** 0 afloat, 1 stood on the shore's top at `x`. */
+  climb?: number;
   kind: 'mouse' | 'alice' | 'duck' | 'dodo' | 'lory' | 'eaglet';
 }
 
@@ -33,6 +35,8 @@ export interface SeaState {
   shore: number;
   /** Camera x pan in px, positive moves the view right. */
   pan: number;
+  /** The hall's furniture, seen from a giant's height: the doors and the table. */
+  hallDetail: number;
   swimmers: Swimmer[];
 }
 
@@ -83,6 +87,11 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
     foam: css('--pt-foam') || '#e8f0f6',
     mouse: css('--pt-mouse') || '#8a7a66',
     shore: css('--pt-shore') || '#8a6a44',
+    door: css('--pt-door') || '#5a4030',
+    doorFrame: css('--pt-door-frame') || '#3a2a1e',
+    glass: css('--pt-glass') || 'rgba(220, 230, 240, 0.35)',
+    glassEdge: css('--pt-glass-edge') || 'rgba(240, 245, 250, 0.7)',
+    gold: css('--pt-gold') || '#e0c060',
     hair: css('--alice-hair') || '#f0cb64',
     skin: css('--alice-skin') || '#f6d9c1',
     dress: css('--alice-dress') || '#3d6be8',
@@ -95,7 +104,19 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
     horizon: 0.72,
     shore: 0,
     pan: 0,
+    hallDetail: 1,
     swimmers: [],
+  };
+
+  /** Where the shore begins, in px from the left; off the right edge until it slides in. */
+  const shoreEdge = (): number => width * (1.05 - state.shore * 0.8) - state.pan;
+  /** The top of the shore at a screen x: at the water's edge, then a low bank. */
+  const shoreTopAt = (x: number): number => {
+    const x0 = shoreEdge();
+    const levelY = height * (1 - state.level);
+    const t = clamp01((x - x0) / (width + 40 - x0));
+    const rise = t * t * (3 - 2 * t);
+    return levelY + 8 - rise * 84 + Math.sin(x * 0.02) * 3;
   };
 
   const surfaceAt = (x: number): { y: number; slope: number } => {
@@ -120,17 +141,20 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
     return { y, slope: (y2 - y) / 6 };
   };
 
-  const drawSwimmer = (swimmer: Swimmer): void => {
-    if (swimmer.show <= 0.001) {
+  const drawSwimmer = (swimmer: Swimmer, alpha = 1): void => {
+    if (swimmer.show <= 0.001 || alpha <= 0.001) {
       return;
     }
+    const climb = swimmer.climb ?? 0;
     const x = (swimmer.x + (swimmer.offset ?? 0)) * width - state.pan;
     const surface = surfaceAt(x);
-    const y = surface.y - swimmer.jump * 90 + (1 - swimmer.show) * 40;
+    // Climbing out lifts it from the surface onto the bank, and stands it straight.
+    const y =
+      mix(surface.y, shoreTopAt(x) + 6, climb) - swimmer.jump * 90 + (1 - swimmer.show) * 40;
     ctx.save();
-    ctx.globalAlpha = swimmer.show;
+    ctx.globalAlpha = swimmer.show * alpha;
     ctx.translate(x, y);
-    ctx.rotate(Math.atan(surface.slope) * 0.6);
+    ctx.rotate(Math.atan(surface.slope) * 0.6 * (1 - climb));
     ctx.scale(swimmer.dir, 1);
     const s = Math.min(width, height) / 900;
     ctx.scale(s, s);
@@ -297,12 +321,89 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
           ctx.fill();
         }
       }
-      // Tears in the air.
+      // The hall's furniture from a giant's height: dolls' doors along the far
+      // wall and the glass table on the floor below, the view Drink Me ends on.
+      if (state.hallDetail > 0.001) {
+        const unit = Math.min(width, height);
+        const cx = width / 2 - state.pan * 0.3;
+        ctx.globalAlpha = state.hallDetail;
+        const doorW = unit * 0.05;
+        const doorH = unit * 0.09;
+        for (let i = -3; i <= 3; i += 1) {
+          const dx = cx + i * width * 0.14;
+          ctx.fillStyle = colours.doorFrame;
+          ctx.beginPath();
+          ctx.moveTo(dx - doorW / 2, horizonY);
+          ctx.lineTo(dx - doorW / 2, horizonY - doorH + doorW / 2);
+          ctx.arc(dx, horizonY - doorH + doorW / 2, doorW / 2, Math.PI, 0);
+          ctx.lineTo(dx + doorW / 2, horizonY);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = colours.door;
+          const inset = doorW * 0.12;
+          ctx.beginPath();
+          ctx.moveTo(dx - doorW / 2 + inset, horizonY);
+          ctx.lineTo(dx - doorW / 2 + inset, horizonY - doorH + doorW / 2);
+          ctx.arc(dx, horizonY - doorH + doorW / 2, doorW / 2 - inset, Math.PI, 0);
+          ctx.lineTo(dx + doorW / 2 - inset, horizonY);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = colours.gold;
+          ctx.beginPath();
+          ctx.arc(dx + doorW * 0.2, horizonY - doorH * 0.45, doorW * 0.05, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        // The table: a glass top in perspective on four legs, the key on it, off
+        // to one side of the floor where her skirt does not hide it.
+        const ty = horizonY + (height - horizonY) * 0.26;
+        const tx = cx + width * 0.38;
+        const tw = unit * 0.11;
+        const td = unit * 0.05;
+        const legH = unit * 0.06;
+        ctx.strokeStyle = colours.glassEdge;
+        ctx.lineWidth = 2;
+        for (const [lx, lz] of [
+          [-0.46, 0],
+          [0.46, 0],
+          [-0.38, 1],
+          [0.38, 1],
+        ] as const) {
+          const px = tx + lx * tw;
+          ctx.beginPath();
+          ctx.moveTo(px, ty - legH * (1 - lz * 0.2) + td * lz);
+          ctx.lineTo(px, ty + td * lz);
+          ctx.stroke();
+        }
+        ctx.fillStyle = colours.glass;
+        ctx.beginPath();
+        ctx.moveTo(tx - tw * 0.5, ty - legH);
+        ctx.lineTo(tx + tw * 0.5, ty - legH);
+        ctx.lineTo(tx + tw * 0.42, ty - legH * 0.8 + td);
+        ctx.lineTo(tx - tw * 0.42, ty - legH * 0.8 + td);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = colours.gold;
+        ctx.beginPath();
+        ctx.ellipse(
+          tx + tw * 0.08,
+          ty - legH * 0.9 + td * 0.5,
+          unit * 0.012,
+          unit * 0.005,
+          0.3,
+          0,
+          Math.PI * 2,
+        );
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+      // Tears in the air: bigger while she is tall, since they fall close to the eye.
+      const tearScale = 1 + clamp01((state.horizon - 0.5) / 0.3) * 0.9;
       ctx.fillStyle = colours.foam;
       for (const tear of tears) {
         ctx.globalAlpha = 0.8;
         ctx.beginPath();
-        ctx.ellipse(tear.x, tear.y, 3, 9, 0, 0, Math.PI * 2);
+        ctx.ellipse(tear.x, tear.y, 3 * tearScale, 9 * tearScale, 0, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.globalAlpha = 1;
@@ -345,27 +446,39 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
         ctx.stroke();
         ctx.globalAlpha = 1;
       }
-      // The shore, sliding in from the right.
-      if (state.shore > 0.001) {
-        const x0 = width * (1.05 - state.shore * 0.75) - state.pan;
-        ctx.fillStyle = colours.shore;
-        ctx.beginPath();
+      // The shore, sliding in from the right: its top is the line the party climbs to.
+      const shorePath = (): void => {
+        const x0 = shoreEdge();
         ctx.moveTo(x0, height);
-        ctx.quadraticCurveTo(
-          x0 + width * 0.2,
-          height * (1 - state.level) - 40,
-          width + 40,
-          height * (1 - state.level) - 70,
-        );
+        for (let x = x0; x <= width + 40; x += 8) {
+          ctx.lineTo(x, shoreTopAt(x));
+        }
+        ctx.lineTo(width + 40, shoreTopAt(width + 40));
         ctx.lineTo(width + 40, height);
         ctx.closePath();
+      };
+      if (state.shore > 0.001) {
+        const bank = ctx.createLinearGradient(0, height * (1 - state.level) - 80, 0, height);
+        bank.addColorStop(0, colours.shore);
+        bank.addColorStop(1, colours.hallDeep);
+        ctx.fillStyle = bank;
+        ctx.beginPath();
+        shorePath();
         ctx.fill();
       }
       for (const swimmer of state.swimmers) {
-        drawSwimmer(swimmer);
+        drawSwimmer(swimmer, 1 - (swimmer.climb ?? 0));
       }
-      // A little of the water in front of the swimmers, so they sit in it.
+      // A little of the water in front of the swimmers, so they sit in it; the
+      // bank is not under water, so it is left out.
       if (state.level > 0.001) {
+        ctx.save();
+        if (state.shore > 0.001) {
+          ctx.beginPath();
+          ctx.rect(0, 0, width, height);
+          shorePath();
+          ctx.clip('evenodd');
+        }
         ctx.globalAlpha = 0.35;
         ctx.fillStyle = colours.water;
         ctx.beginPath();
@@ -377,6 +490,11 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
         ctx.closePath();
         ctx.fill();
         ctx.globalAlpha = 1;
+        ctx.restore();
+      }
+      // Whoever has climbed out stands in front of the water, dry.
+      for (const swimmer of state.swimmers) {
+        drawSwimmer(swimmer, swimmer.climb ?? 0);
       }
     },
   };

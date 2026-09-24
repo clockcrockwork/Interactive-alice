@@ -25,7 +25,8 @@
       "beats": [
         { "id": "door-inwards", "cue": "door", "segments": ["ch04.s0380", "ch04.s0390", "ch04.s0400", "ch04.s0410"] },
         { "id": "snatch", "cue": "snatch", "segments": ["ch04.s0420", "ch04.s0430"] },
-        { "id": "crash", "cue": "crash", "segments": ["ch04.s0440", "ch04.s0450", "ch04.s0460"] }
+        { "id": "crash", "cue": "crash", "segments": ["ch04.s0440", "ch04.s0450"] },
+        { "id": "to-the-chimney", "cue": "chimney", "segments": ["ch04.s0460"] }
       ]
     }
   ]

@@ -410,6 +410,61 @@
     mix-blend-mode: multiply;
   }
 
+  /* The court's doors, from inside: two leaves the width of the screen that
+     swing away to show the throne. The same pair the Lobster Quadrille's run
+     arrived at. Nothing under them is blocked once they are gone. */
+  .tr__doors {
+    --open: 0;
+    perspective: 900px;
+    perspective-origin: 50% 50%;
+    transform-style: preserve-3d;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .tr__door-leaf {
+    position: absolute;
+    inset-block: 0;
+    inline-size: 50%;
+    background:
+      linear-gradient(to bottom, transparent 30%, oklch(0% 0 0 / 0.25)),
+      repeating-linear-gradient(to bottom, oklch(42% 0.09 55) 0 18%, oklch(32% 0.07 50) 18% 20%);
+    box-shadow:
+      inset 0 0 0 0.3vmin var(--tr-gold),
+      0 0 8vmin oklch(0% 0 0 / 0.6);
+    backface-visibility: visible;
+  }
+
+  .tr__door-leaf::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 52%;
+    inline-size: 8%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--tr-gold);
+  }
+
+  .tr__door-leaf--left {
+    inset-inline-start: 0;
+    transform-origin: 0 50%;
+    transform: rotateY(calc(var(--open) * 100deg));
+  }
+
+  .tr__door-leaf--left::after {
+    inset-inline-end: 8%;
+  }
+
+  .tr__door-leaf--right {
+    inset-inline-end: 0;
+    transform-origin: 100% 50%;
+    transform: rotateY(calc(var(--open) * -100deg));
+  }
+
+  .tr__door-leaf--right::after {
+    inset-inline-start: 8%;
+  }
+
   .tr__prop-beat {
     inset-inline-start: 50%;
     inset-block-start: calc(var(--demo-bar-height) + 1rem);
@@ -496,6 +551,13 @@
 
     .tr__mark {
       transition: none;
+    }
+
+    /* The doors cross-fade instead of swinging. */
+    .tr__door-leaf--left,
+    .tr__door-leaf--right {
+      transform: none;
+      opacity: calc(1 - var(--open));
     }
   }
 }

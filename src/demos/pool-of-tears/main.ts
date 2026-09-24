@@ -19,6 +19,7 @@ import { createSea, type Swimmer } from './sea.ts';
 function mount(shell: DemoShell): void {
   const { master, reducedMotion } = shell;
   const cue = shell.cue;
+  const iGiant = cue('giant');
   const iRoof = cue('roof');
   const iTears = cue('tears');
   const iRabbit = cue('rabbit');
@@ -41,6 +42,13 @@ function mount(shell: DemoShell): void {
   if (!sea) {
     return;
   }
+  // Her own skirt and shoes at the bottom of the frame, as Drink Me left them:
+  // she is the camera still, nine feet high, until the pool takes her.
+  const selfLayer = shell.layer('pt__self-layer');
+  selfLayer.innerHTML = `<div class="pt__self">${figure('alice/looking-down')}</div>`;
+  const self = selfLayer.querySelector<HTMLElement>('.pt__self');
+  // The roof, folded in at the top of the frame where her head met it.
+  const roof = shell.layer('pt__roof');
   const under = shell.layer('pt__under');
   const props = shell.layer('pt__props');
   props.innerHTML =
@@ -52,23 +60,66 @@ function mount(shell: DemoShell): void {
   const fan = props.querySelector<HTMLElement>('.pt__fan');
 
   const { state } = sea;
-  const mouse: Swimmer = { x: 1.3, dir: -1, show: 0, jump: 0, bristle: 0, kind: 'mouse' };
-  const alice: Swimmer = { x: 0.5, dir: 1, show: 0, jump: 0, bristle: 0, kind: 'alice' };
+  const mouse: Swimmer = {
+    x: 1.3,
+    dir: -1,
+    show: 0,
+    jump: 0,
+    bristle: 0,
+    climb: 0,
+    kind: 'mouse',
+  };
+  const alice: Swimmer = {
+    x: 0.5,
+    dir: 1,
+    show: 0,
+    jump: 0,
+    bristle: 0,
+    climb: 0,
+    kind: 'alice',
+  };
   const others: Swimmer[] = (['duck', 'dodo', 'lory', 'eaglet'] as const).map((kind, i) => ({
     x: -0.3 - i * 0.18,
     dir: 1,
     show: 0,
     jump: 0,
     bristle: 0,
+    climb: 0,
     kind,
   }));
   state.swimmers = [...others, mouse, alice];
 
-  // --- Nine feet high: a low horizon, then the roof, then tears and the pool.
-  master.set(state, { horizon: 0.78, level: 0 }, 0);
+  // --- Nine feet high: the same giant view Drink Me ended on, her first tears
+  // already falling, a low horizon with the dolls' doors and the toy table on the
+  // floor. Then her head strikes the roof, and the tears come in earnest and the
+  // pool rises; her skirt and the furniture go under it.
+  state.horizon = 0.78;
+  state.tears = 0.18;
+  master.set(state, { horizon: 0.78, level: 0, tears: 0.18, hallDetail: 1 }, iGiant);
+  master.to(
+    roof,
+    { '--fold': 0.72, duration: reducedMotion ? 0.01 : 0.18, ease: 'power3.in' },
+    iRoof + 0.4,
+  );
+  master.call(
+    () => (master.time() >= iRoof + 0.55 ? shell.sound.play('thud') : undefined),
+    [],
+    iRoof + 0.55,
+  );
   master.to(state, { horizon: 0.86, duration: 0.6, ease: 'power2.in' }, iRoof);
   master.to(state, { tears: 1, duration: 0.5 }, iTears);
+  master.to(
+    roof,
+    { '--fold': 0, duration: reducedMotion ? 0.01 : 0.6, ease: 'power2.inOut' },
+    iTears + 0.1,
+  );
+  master.to(state, { hallDetail: 0, duration: 0.6 }, iTears + 0.2);
   master.to(state, { level: 0.14, duration: 1.6, ease: 'power1.in' }, iTears + 0.3);
+  master.to(
+    self,
+    { opacity: 0, yPercent: reducedMotion ? 0 : 30, duration: 0.8, ease: 'power1.in' },
+    iTears + 0.5,
+  );
   master.fromTo(
     rabbit,
     { opacity: 1, x: '110vw' },
@@ -128,7 +179,9 @@ function mount(shell: DemoShell): void {
   master.to(mouse, { x: 1.25, dir: 1, bristle: 0, duration: 0.7, ease: 'power2.in' }, iDogs + 0.3);
   master.to(mouse, { x: 0.68, dir: -1, duration: 0.9, ease: 'power1.out' }, iBack + 0.2);
 
-  // --- The pool fills with creatures, and everyone swims to the shore.
+  // --- The pool fills with creatures, and everyone swims to the shore: the bank
+  // comes in far enough to meet them, they swim up to it in a loose group on the
+  // right, and climb out one after another, the last of them as the beat ends.
   others.forEach((other, index) => {
     master.to(
       other,
@@ -138,9 +191,27 @@ function mount(shell: DemoShell): void {
   });
   master.to(state, { shore: 1, duration: 0.8, ease: 'power2.out' }, iShore);
   master.to(state, { pan: 0, level: 0.5, duration: 0.8 }, iShore);
-  for (const swimmer of state.swimmers) {
-    master.to(swimmer, { x: '+=0.3', dir: 1, duration: 0.9, ease: 'power1.inOut' }, iShore + 0.1);
-  }
+  const landing: [Swimmer, number][] = [
+    [others[0] as Swimmer, 0.5],
+    [others[1] as Swimmer, 0.62],
+    [alice, 0.7],
+    [others[2] as Swimmer, 0.79],
+    [others[3] as Swimmer, 0.88],
+    [mouse, 0.95],
+  ];
+  landing.forEach(([swimmer, x], index) => {
+    master.to(swimmer, { x, dir: 1, duration: 0.7, ease: 'power1.inOut' }, iShore + 0.05);
+    master.to(
+      swimmer,
+      { climb: 1, duration: 0.3, ease: 'power2.out' },
+      iShore + 0.45 + index * 0.05,
+    );
+  });
+  master.call(
+    () => shell.root.toggleAttribute('data-ashore', master.time() >= iShore + 0.5),
+    [],
+    iShore + 0.5,
+  );
 
   // --- Swimming: hold a finger on the water and she swims toward it. The Mouse
   // keeps its distance while it is offended, and comes back when you give it room.

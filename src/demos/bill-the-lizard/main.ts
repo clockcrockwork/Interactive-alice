@@ -10,7 +10,7 @@
  */
 
 import gsap from 'gsap';
-import { figure } from '../art/art.ts';
+import { figure, svgFigure } from '../art/art.ts';
 import { attachDemo, type DemoShell, seeded } from '../shell/shell.ts';
 import './bill.css';
 
@@ -36,11 +36,31 @@ function mount(shell: DemoShell): void {
         `<div class="bl__soot" style="--x: ${(35 + random() * 30).toFixed(1)}%; --y: ${(50 + random() * 40).toFixed(1)}%; --delay: ${(-random() * 2.6).toFixed(2)}s; --ly: ${random().toFixed(2)}"></div>`,
     ).join('')}</div>` +
     `<div class="bl__foot">${figure('alice/foot')}</div>` +
-    `<div class="bl__bill">${figure('bill')}</div>`;
+    `<div class="bl__bill">${figure('bill')}</div>` +
+    // The rooftop, from Bill's eyes at the chimney's rim, as the Rabbit's house
+    // left it: the roof's slates around, the garden and the little figures far
+    // below, the ladder he came up by, and his own feet on the rim.
+    `<div class="bl__rooftop"><svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMax slice" focusable="false">
+      <rect x="0" y="0" width="1000" height="1000" fill="var(--bl-grass)"/>
+      <polygon points="120,300 880,300 900,430 100,430" fill="var(--bl-roof-deep)"/>
+      <polygon points="100,430 900,430 960,820 40,820" fill="var(--bl-roof)"/>
+      <path d="M90 500 h820 M78 580 h844 M66 660 h868 M54 740 h892" stroke="var(--bl-roof-deep)" stroke-width="4" opacity="0.5"/>
+      <rect x="40" y="820" width="920" height="60" fill="var(--bl-wall)"/>
+      <rect x="40" y="820" width="920" height="10" fill="var(--bl-wall-shade)"/>
+      <path d="M740 990 V816 M770 990 V816 M740 845 h30 M740 875 h30 M740 905 h30 M740 935 h30 M740 965 h30" stroke="var(--bl-timber)" stroke-width="6" stroke-linecap="round"/>
+      <g transform="translate(285 962) rotate(-14)">${svgFigure('white-rabbit/garden', -18, -48, 36, 48)}</g>
+      <g transform="translate(712 978) rotate(-12)">${svgFigure('pat', -18, -42, 36, 42)}</g>
+      <polygon points="350,720 650,720 690,1000 310,1000" fill="var(--bl-timber)"/>
+      <path d="M360 760 h280 M370 810 h260 M380 860 h240" stroke="var(--bl-brick-dark)" stroke-width="4" opacity="0.5"/>
+      <polygon points="400,760 600,760 625,1000 375,1000" fill="var(--bl-soot)"/>
+      <polygon points="415,790 585,790 600,1000 400,1000" fill="var(--bl-brick-dark)" opacity="0.5"/>
+      <path d="M350 1000 q10 -30 40 -26 q14 8 4 26 M650 1000 q-10 -30 -40 -26 q-14 8 -4 26" fill="var(--bl-lizard)"/>
+    </svg></div>`;
   const chimney = world.querySelector<HTMLElement>('.bl__chimney');
   const foot = world.querySelector<HTMLElement>('.bl__foot');
   const bill = world.querySelector<HTMLElement>('.bl__bill');
   const crowd = world.querySelector<HTMLElement>('.bl__crowd');
+  const rooftop = world.querySelector<HTMLElement>('.bl__rooftop');
   const flash = shell.layer('bl__flash');
 
   // --- The camera: height in px above the roof line, spin, and daze.
@@ -52,6 +72,22 @@ function mount(shell: DemoShell): void {
   };
   apply();
 
+  // Off the rim and into the dark: the rooftop rushes up past the eyes and is
+  // gone; under reduced motion it is a cut with a blink.
+  master.fromTo(
+    rooftop,
+    { '--dive': 0 },
+    { '--dive': 1, duration: reducedMotion ? 0.01 : 0.7, ease: 'power2.in' },
+    iDescend - 0.3,
+  );
+  if (reducedMotion) {
+    master.fromTo(
+      flash,
+      { opacity: 0.8 },
+      { opacity: 0, duration: 0.3, immediateRender: false },
+      iDescend - 0.3,
+    );
+  }
   // Down the chimney: the shaft fades in around the camera as it sinks.
   master.to(camera, { y: -300, duration: 1, ease: 'power1.in', onUpdate: apply }, iDescend - 0.4);
   master.to(chimney, { opacity: 1, duration: 0.5 }, iDescend);

@@ -124,7 +124,7 @@ function mount(shell: DemoShell): void {
   const iCry = cue('cry');
   const iCake = cue('cake');
   const iBite = cue('bite');
-  const iGrow = cue('grow');
+  const iRoof = cue('roof');
 
   const bottleLabel = labelIn(shell.beats[iBottle]?.lines ?? []);
   const cakeLabel = labelIn(shell.beats[iCake]?.lines ?? []);
@@ -135,6 +135,9 @@ function mount(shell: DemoShell): void {
   hall.style.setProperty('--dk-eye', `${EYE}px`);
   buildHall(hall, bottleLabel, cakeLabel, shell.ui.demoTryDoor ?? '');
   world.append(hall);
+  // Over the hall, under everything of hers: the dim that takes the room toward the
+  // pool's colours at the end, so the next page's first frame is the same room.
+  const dim = shell.layer('dk__dim');
   const irisTop = shell.layer('dk__iris dk__iris--top');
   const irisBottom = shell.layer('dk__iris dk__iris--bottom');
   const tears = shell.layer('dk__tears');
@@ -142,6 +145,8 @@ function mount(shell: DemoShell): void {
   const selfLayer = shell.layer('dk__self-layer');
   selfLayer.innerHTML = `<div class="dk__self">${figure('alice/looking-down')}</div>`;
   const self = selfLayer.querySelector<HTMLElement>('.dk__self');
+  // Her first tears once she has grown: a few, big, falling past her own skirt.
+  const giantTears = shell.layer('dk__tears dk__tears--giant');
   const hands = shell.layer('dk__hands');
   hands.innerHTML =
     `<div class="dk__hand dk__hand--bottle">${bottleSvg(bottleLabel)}</div>` +
@@ -157,6 +162,11 @@ function mount(shell: DemoShell): void {
     { length: 14 },
     () =>
       `<div class="dk__tear" style="--x: ${(random() * 100).toFixed(1)}%; --delay: ${(-random() * 3.2).toFixed(2)}s; --ly: ${random().toFixed(2)}"></div>`,
+  ).join('');
+  giantTears.innerHTML = Array.from(
+    { length: 7 },
+    () =>
+      `<div class="dk__tear" style="--x: ${(8 + random() * 84).toFixed(1)}%; --delay: ${(-random() * 2.4).toFixed(2)}s; --ly: ${random().toFixed(2)}"></div>`,
   ).join('');
   const flavourColours = ['oklch(62% 0.2 25)', 'oklch(88% 0.12 90)', 'oklch(70% 0.12 60)'];
   flavours.innerHTML = Array.from(
@@ -273,7 +283,7 @@ function mount(shell: DemoShell): void {
       duration: reducedMotion ? 0 : 1.1,
       delay: reducedMotion ? 0 : 0.4,
     });
-    gsap.to(flavours, { opacity: 1, duration: 0.3 });
+    gsap.to(flavours, { '--show': 1, duration: 0.3 });
   };
   handBottle?.addEventListener('click', drink);
   drinkButton.addEventListener('click', drink);
@@ -285,7 +295,9 @@ function mount(shell: DemoShell): void {
     iTaste + 0.05,
   );
   master.call(() => (master.time() >= iTaste + 0.7 ? drink() : undefined), [], iTaste + 0.7);
-  master.to(flavours, { opacity: 0, duration: 0.3 }, iShrink + 0.3);
+  // The drink shows them and the story fades them, on two properties, so neither
+  // tween undoes the other.
+  master.to(flavours, { '--fade': 0, duration: 0.3 }, iShrink + 0.3);
   master.to(handBottle, { opacity: 0, y: 80, duration: 0.3 }, iShrink);
 
   // --- Folding up like a telescope: the hall grows around her feet, the view
@@ -359,16 +371,17 @@ function mount(shell: DemoShell): void {
   master.call(() => (master.time() >= iBite + 0.7 ? eat() : undefined), [], iBite + 0.7);
   master.call(
     () => {
-      if (master.time() >= iGrow + 0.6) {
+      if (master.time() >= iRoof + 0.05) {
         eat();
         eat();
       }
     },
     [],
-    iGrow + 0.6,
+    iRoof + 0.05,
   );
 
-  // --- Growing: the hall comes down to a normal size and then keeps coming.
+  // --- Growing: nothing happens for a beat, as the text says; then she finishes
+  // the cake, and the hall comes down to a normal size and then keeps coming.
   master.to(
     camera,
     {
@@ -376,14 +389,14 @@ function mount(shell: DemoShell): void {
       distance: 200 * 0.45,
       y: 0,
       pitch: 12,
-      duration: reducedMotion ? 0.01 : 0.35,
+      duration: reducedMotion ? 0.01 : 0.3,
       ease: reducedMotion ? 'none' : 'power4.in',
       onUpdate: apply,
     },
-    iGrow + 0.65,
+    iRoof + 0.1,
   );
-  master.fromTo(flash, { opacity: 0 }, { opacity: 0.9, duration: 0.05 }, iGrow + 0.98);
-  master.to(flash, { opacity: 0, duration: 0.4 }, iGrow + 1.03);
+  master.fromTo(flash, { opacity: 0 }, { opacity: 0.9, duration: 0.05 }, iRoof + 0.38);
+  master.to(flash, { opacity: 0, duration: 0.4 }, iRoof + 0.43);
   // And keeps coming. Her eye ends just under the ceiling, looking down at a toy
   // table and dolls' doors through a lens that widens as she goes up; her own
   // skirt and shoes rise into the bottom of the frame, and her head meets the
@@ -396,26 +409,26 @@ function mount(shell: DemoShell): void {
       y: 10,
       pitch: -28,
       persp: 420,
-      duration: reducedMotion ? 0.01 : 0.55,
+      duration: reducedMotion ? 0.01 : 0.4,
       ease: reducedMotion ? 'none' : 'power2.in',
       onUpdate: apply,
     },
-    iGrow + 1.05,
+    iRoof + 0.45,
   );
   master.fromTo(
     self,
     { yPercent: 110, opacity: 0 },
-    { yPercent: 0, opacity: 1, duration: reducedMotion ? 0.01 : 0.5, ease: 'power2.out' },
-    iGrow + 1.2,
+    { yPercent: 0, opacity: 1, duration: reducedMotion ? 0.01 : 0.35, ease: 'power2.out' },
+    iRoof + 0.55,
   );
   master.to(
     irisTop,
-    { '--fold': 0.55, duration: reducedMotion ? 0.01 : 0.35, ease: 'power3.in' },
-    iGrow + 1.3,
+    { '--fold': 0.55, duration: reducedMotion ? 0.01 : 0.3, ease: 'power3.in' },
+    iRoof + 0.62,
   );
   master.call(
     () => {
-      if (master.time() >= iGrow + 1.6) {
+      if (master.time() >= iRoof + 0.85) {
         shell.sound.play('thud');
         if (!reducedMotion) {
           gsap.fromTo(
@@ -427,8 +440,13 @@ function mount(shell: DemoShell): void {
       }
     },
     [],
-    iGrow + 1.6,
+    iRoof + 0.85,
   );
+  // And, head against the roof, she begins to cry: the first big tears fall past
+  // her skirt and the hall dims toward the pool of tears, which opens on this
+  // same view. Under reduced motion the tears hang still and only the dim moves.
+  master.to(dim, { opacity: 1, duration: 0.28, ease: 'power1.inOut' }, iRoof + 0.72);
+  master.to(giantTears, { opacity: 1, duration: 0.2 }, iRoof + 0.8);
 
   // --- The key. Take it off the table and it hangs in her hand; try it in any
   // door and the door will not have it, until the little one, which opens.

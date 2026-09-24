@@ -12,6 +12,12 @@
     --bl-brick-dark: oklch(24% 0.05 30);
     --bl-soot: oklch(12% 0.01 30);
     --bl-roof: oklch(48% 0.1 30);
+    /* The house's own colours, so the rooftop is the one the Rabbit's house left. */
+    --bl-roof-deep: oklch(36% 0.09 30);
+    --bl-timber: oklch(40% 0.06 50);
+    --bl-wall: oklch(92% 0.03 85);
+    --bl-wall-shade: oklch(80% 0.04 80);
+    --bl-grass: oklch(62% 0.12 130);
     --bl-hedge: oklch(46% 0.1 135);
     --bl-lizard: oklch(66% 0.12 130);
   }
@@ -115,6 +121,22 @@
       );
     opacity: 0;
     mask-image: linear-gradient(to bottom, transparent 0 46%, black 48%);
+  }
+
+  /* The rooftop from the rim: it grows past the eyes as Bill drops in. */
+  .bl__rooftop {
+    --dive: 0;
+    position: absolute;
+    inset: 0;
+    transform-origin: 50% 88%;
+    transform: scale(calc(1 + var(--dive) * 2.4));
+    opacity: calc(1 - var(--dive));
+  }
+
+  .bl__rooftop svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
   }
 
   .bl__soot {

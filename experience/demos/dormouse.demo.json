@@ -33,7 +33,8 @@
     {
       "id": "teapot",
       "beats": [
-        { "id": "walk-off", "cue": "teapot", "segments": ["ch07.s0850", "ch07.s0860", "ch07.s0870"] }
+        { "id": "walk-off", "cue": "teapot", "segments": ["ch07.s0850", "ch07.s0860"] },
+        { "id": "the-door-in-the-tree", "cue": "door", "segments": ["ch07.s0870"] }
       ]
     }
   ]

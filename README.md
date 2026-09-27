@@ -67,12 +67,13 @@ private changes nothing about crediting it.
 Specification complete for the text layer and the engineering baseline. The first
 implementation milestone is the Rabbit Hole PoC, issue #1.
 
-Twelve standalone concept demos live under `/demos/` — the fall down the rabbit hole
+Fourteen standalone concept demos live under `/demos/` — the fall down the rabbit hole
 in WebGL, the hall that grows around Alice as she drinks, the pool of tears on a
 Canvas sea, the Caucus-race as a ring the camera orbits, the Rabbit's house as a
 dollhouse the camera leaves, Bill's trip up the chimney, the Caterpillar's meadow
-that scales with her height, the Cheshire Cat masked away grin last, the Dormouse's
-tale on a treacle spiral in SVG, the Queen's croquet-ground with its live mallets,
+that scales with her height, the Duchess's kitchen where a baby becomes a pig, the
+Cheshire Cat masked away grin last, the Dormouse's tale on a treacle spiral in SVG, the
+Queen's croquet-ground with its live mallets, the Mock Turtle's school in the sea,
 the Lobster Quadrille the reader joins, and the trial's pack of cards in CSS 3D with
 her sister's dream after it. Where two adjacent demos are one moment of the book,
 the end of one is staged to lead into the opening of the next. The index lets the

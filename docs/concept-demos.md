@@ -1,16 +1,16 @@
 # Concept demos
 
-> Canonical document for the twelve standalone concept demos under `/demos/`: what they are for, how they relate to the story runtime, what each one stages, and how they are checked. Product intent is in [`product-principles.md`](product-principles.md); the story runtime is in [`scene-shot-model.md`](scene-shot-model.md) and [`frontend-architecture.md`](frontend-architecture.md).
+> Canonical document for the fourteen standalone concept demos under `/demos/`: what they are for, how they relate to the story runtime, what each one stages, and how they are checked. Product intent is in [`product-principles.md`](product-principles.md); the story runtime is in [`scene-shot-model.md`](scene-shot-model.md) and [`frontend-architecture.md`](frontend-architecture.md).
 
 ## 1. What they are
 
-Twelve ambitious, self-contained stagings of one moment of the book each, built to
+Fourteen ambitious, self-contained stagings of one moment of the book each, built to
 show how far an interactive telling can go before the story runtime is asked to carry
 it. They are demonstrations, not the product: each one chooses the technique that
 makes its moment strongest and spends its budget on that.
 
 ```text
-/demos/                  the index: twelve cards on a table, and the choice of Alice
+/demos/                  the index: fourteen cards on a table, and the choice of Alice
 /demos/rabbit-hole/      Down the Rabbit-Hole: a WebGL well the camera falls down
 /demos/drink-me/         Drink Me: a first-person hall in CSS 3D that scales around her
 /demos/pool-of-tears/    The Pool of Tears: a Canvas sea the reader can stir
@@ -18,9 +18,11 @@ makes its moment strongest and spends its budget on that.
 /demos/rabbit-house/     Growing in the House: a dollhouse cutaway in SVG the camera leaves
 /demos/bill-the-lizard/  There Goes Bill: the reader is Bill, down the chimney and up
 /demos/caterpillar/      Advice from a Caterpillar: a meadow that scales with her height
+/demos/pig-and-pepper/   Pig and Pepper: a kitchen of pepper and crockery, a baby that becomes a pig
 /demos/cheshire-cat/     The Cheshire Cat: a night wood in depth, a Cat masked away
 /demos/dormouse/         A Mad Tea-Party: the Dormouse's tale on a treacle spiral, SVG
 /demos/croquet/          The Queen's Croquet-Ground: a garden in CSS 3D with live mallets
+/demos/mock-turtle/      The Mock Turtle's Story: school in the sea, subjects written on the waves
 /demos/lobster-quadrille/ The Lobster Quadrille: a dance on the shore the reader joins
 /demos/trial/            Who Stole the Tarts?: a paper courtroom in CSS 3D, and the pack
 ```
@@ -47,9 +49,10 @@ by segment id at build time, the same way a story page resolves its text.
 `text/locales/<locale>/chNN.json`, ordered by the structure file. The demos added the
 adapted text they needed: the giant Alice, the pool and the Mouse in chapter 2, the
 race and the prizes in chapter 3, the little bottle, the window and Bill in chapter
-4, the Caterpillar, the mushroom and the Pigeon in chapter 5, the Cheshire Cat in
-chapter 6, the Dormouse's tale in chapter 7, the rose-tree, the procession, the game
-and the Cat's head in chapter 8, the quadrille and its songs in chapter 10, the opening
+4, the Caterpillar, the mushroom and the Pigeon in chapter 5, the kitchen, the pig and
+the Cheshire Cat in chapter 6, the Dormouse's tale in chapter 7, the rose-tree, the procession, the game
+and the Cat's head in chapter 8, the Gryphon and the Mock Turtle's schooling in
+chapter 9, the quadrille and its songs in chapter 10, the opening
 of the court in chapter 11, and the sentence-first climax, the waking and her sister's
 dream in chapter 12. Drink Me uses chapter 1's existing text. The added chapter files are partial on purpose: they
 hold the sections the demos stage, with segment ids numbered to leave room before and
@@ -166,7 +169,7 @@ with another scene of the book between them (Bill and the Caterpillar, the Cater
 and the Cat, the Cat and the tea-party, the race and the house, the croquet-ground and
 the quadrille) change scene through the page transition and nothing more.
 
-## 4. The twelve demos
+## 4. The fourteen demos
 
 ### Down the Rabbit-Hole: the fall is the parallax
 

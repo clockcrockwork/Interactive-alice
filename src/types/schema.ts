@@ -717,5 +717,13 @@ export interface LocaleUIStrings {
      * Button on the snail in the song: it draws into its shell.
      */
     demoSnail: string;
+    /**
+     * Technique note on the demo index card for Pig and Pepper.
+     */
+    demoTechPig: string;
+    /**
+     * Technique note on the demo index card for the Mock Turtle's story.
+     */
+    demoTechMockTurtle: string;
   };
 }

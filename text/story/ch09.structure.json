@@ -1,0 +1,374 @@
+{
+  "$schema": "../../schema/chapter-structure.schema.json",
+  "chapter": 9,
+  "sourceFile": "text/raw/ch09-the-mock-turtles-story.txt",
+  "sections": [
+    {
+      "id": "the-gryphon"
+    },
+    {
+      "id": "the-mock-turtle"
+    },
+    {
+      "id": "school-in-the-sea"
+    },
+    {
+      "id": "the-subjects"
+    },
+    {
+      "id": "lessons"
+    }
+  ],
+  "segments": [
+    {
+      "id": "ch09.s0300",
+      "section": "the-gryphon",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0310",
+      "section": "the-gryphon",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0320",
+      "section": "the-gryphon",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch09.s0330",
+      "section": "the-gryphon",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0340",
+      "section": "the-gryphon",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0350",
+      "section": "the-gryphon",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0360",
+      "section": "the-gryphon",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    },
+    {
+      "id": "ch09.s0370",
+      "section": "the-gryphon",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0380",
+      "section": "the-mock-turtle",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0390",
+      "section": "the-mock-turtle",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0400",
+      "section": "the-mock-turtle",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0410",
+      "section": "the-mock-turtle",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0420",
+      "section": "the-mock-turtle",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    },
+    {
+      "id": "ch09.s0430",
+      "section": "the-mock-turtle",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0440",
+      "section": "the-mock-turtle",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    },
+    {
+      "id": "ch09.s0450",
+      "section": "the-mock-turtle",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0460",
+      "section": "the-mock-turtle",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0470",
+      "section": "the-mock-turtle",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0480",
+      "section": "the-mock-turtle",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0490",
+      "section": "the-mock-turtle",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0500",
+      "section": "the-mock-turtle",
+      "kind": "sound"
+    },
+    {
+      "id": "ch09.s0510",
+      "section": "school-in-the-sea",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0520",
+      "section": "school-in-the-sea",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0530",
+      "section": "school-in-the-sea",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0540",
+      "section": "school-in-the-sea",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0550",
+      "section": "school-in-the-sea",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    },
+    {
+      "id": "ch09.s0560",
+      "section": "school-in-the-sea",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0570",
+      "section": "school-in-the-sea",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    },
+    {
+      "id": "ch09.s0580",
+      "section": "school-in-the-sea",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0590",
+      "section": "school-in-the-sea",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0600",
+      "section": "school-in-the-sea",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0610",
+      "section": "school-in-the-sea",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0620",
+      "section": "school-in-the-sea",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0630",
+      "section": "school-in-the-sea",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0640",
+      "section": "school-in-the-sea",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0650",
+      "section": "school-in-the-sea",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0660",
+      "section": "the-subjects",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0670",
+      "section": "the-subjects",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0680",
+      "section": "the-subjects",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0690",
+      "section": "the-subjects",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0700",
+      "section": "the-subjects",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0710",
+      "section": "the-subjects",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0720",
+      "section": "the-subjects",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    },
+    {
+      "id": "ch09.s0730",
+      "section": "the-subjects",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0740",
+      "section": "the-subjects",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    },
+    {
+      "id": "ch09.s0750",
+      "section": "the-subjects",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0760",
+      "section": "the-subjects",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0770",
+      "section": "the-subjects",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0780",
+      "section": "the-subjects",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0790",
+      "section": "the-subjects",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0800",
+      "section": "the-subjects",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    },
+    {
+      "id": "ch09.s0810",
+      "section": "the-subjects",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0820",
+      "section": "the-subjects",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0830",
+      "section": "lessons",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0840",
+      "section": "lessons",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0850",
+      "section": "lessons",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0860",
+      "section": "lessons",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    },
+    {
+      "id": "ch09.s0870",
+      "section": "lessons",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0880",
+      "section": "lessons",
+      "kind": "dialogue",
+      "speaker": "mock-turtle"
+    },
+    {
+      "id": "ch09.s0890",
+      "section": "lessons",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0900",
+      "section": "lessons",
+      "kind": "dialogue",
+      "speaker": "gryphon"
+    }
+  ]
+}

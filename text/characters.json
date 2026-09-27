@@ -76,6 +76,22 @@
     {
       "id": "mock-turtle",
       "devLabel": "the Mock Turtle"
+    },
+    {
+      "id": "fish-footman",
+      "devLabel": "the Fish-Footman"
+    },
+    {
+      "id": "frog-footman",
+      "devLabel": "the Frog-Footman"
+    },
+    {
+      "id": "duchess",
+      "devLabel": "the Duchess"
+    },
+    {
+      "id": "cook",
+      "devLabel": "the cook"
     }
   ]
 }

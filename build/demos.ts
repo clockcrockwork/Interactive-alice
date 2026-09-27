@@ -41,9 +41,11 @@ export const DEMO_ORDER = [
   'rabbit-house',
   'bill-the-lizard',
   'caterpillar',
+  'pig-and-pepper',
   'cheshire-cat',
   'dormouse',
   'croquet',
+  'mock-turtle',
   'lobster-quadrille',
   'trial',
 ] as const;
@@ -286,6 +288,8 @@ const TECH_KEY = {
   croquet: 'demoTechCroquet',
   'lobster-quadrille': 'demoTechQuadrille',
   trial: 'demoTechTrial',
+  'pig-and-pepper': 'demoTechPig',
+  'mock-turtle': 'demoTechMockTurtle',
 } as const;
 
 function renderIndex(project: DemoProject): string {

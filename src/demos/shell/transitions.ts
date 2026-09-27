@@ -17,10 +17,12 @@ const KIND: Record<string, 'hole' | 'whirl' | 'cards'> = {
   'cheshire-cat': 'whirl',
   caterpillar: 'whirl',
   'lobster-quadrille': 'whirl',
+  'mock-turtle': 'whirl',
   croquet: 'cards',
   'rabbit-house': 'cards',
   'caucus-race': 'cards',
   trial: 'cards',
+  'pig-and-pepper': 'cards',
 };
 
 export const transitionKindFor = (url: string): 'hole' | 'whirl' | 'cards' => {

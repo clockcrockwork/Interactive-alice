@@ -90,7 +90,9 @@
         "demoJoinDance",
         "demoSomersault",
         "demoOpenEyes",
-        "demoSnail"
+        "demoSnail",
+        "demoTechPig",
+        "demoTechMockTurtle"
       ],
       "additionalProperties": false,
       "properties": {
@@ -443,6 +445,16 @@
           "type": "string",
           "minLength": 1,
           "description": "Button on the snail in the song: it draws into its shell."
+        },
+        "demoTechPig": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for Pig and Pepper."
+        },
+        "demoTechMockTurtle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the Mock Turtle's story."
         }
       }
     }

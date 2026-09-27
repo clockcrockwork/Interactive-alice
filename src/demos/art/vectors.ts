@@ -638,3 +638,176 @@ export const HOUSE_PAT = `<ellipse cx="0" cy="-20" rx="20" ry="18" fill="oklch(5
       <circle cx="3" cy="-46" r="2" fill="#222"/>
       <path d="M22 -2 L26 -48" stroke="var(--hs-timber, oklch(40% 0.06 50))" stroke-width="4" stroke-linecap="round"/>
       <path d="M18 -58 h16 v12 h-16 z" fill="oklch(50% 0.02 240)"/>`;
+
+/** The Duchess's household: two footmen in livery, one with a fish's face and one
+    with a frog's, both in powdered curls. The curls tangle when they bow. */
+export const footmanSvg = (kind: 'fish' | 'frog'): string => `
+<svg viewBox="0 0 120 220" focusable="false">
+  <path d="M40 216 h14 v-40 h-14 z M66 216 h14 v-40 h-14 z" fill="oklch(94% 0.01 80)"/>
+  <path d="M34 216 h24 v-8 h-24 z M62 216 h24 v-8 h-24 z" fill="oklch(18% 0.02 40)"/>
+  <g class="pp__body">
+    <path d="M32 180 L34 104 Q60 92 86 104 L88 180 Z" fill="${kind === 'fish' ? 'oklch(50% 0.16 25)' : 'oklch(46% 0.12 160)'}"/>
+    <path d="M52 180 L52 106 Q60 100 68 106 L68 180 Z" fill="oklch(92% 0.04 85)"/>
+    <path d="M36 112 q-16 34 -8 66 M84 112 q16 34 8 66" stroke="${kind === 'fish' ? 'oklch(50% 0.16 25)' : 'oklch(46% 0.12 160)'}" stroke-width="12" stroke-linecap="round" fill="none"/>
+    <path d="M40 128 h6 M74 128 h6 M40 148 h6 M74 148 h6" stroke="oklch(80% 0.16 85)" stroke-width="4" stroke-linecap="round"/>
+    ${
+      kind === 'fish'
+        ? '<path d="M28 74 Q60 40 96 74 Q60 108 28 74 Z" fill="oklch(70% 0.1 200)"/>' +
+          '<path d="M96 74 L112 60 L110 88 Z" fill="oklch(62% 0.1 200)"/>' +
+          '<ellipse cx="46" cy="74" rx="12" ry="8" fill="oklch(60% 0.12 20)"/>' +
+          '<circle cx="66" cy="66" r="6" fill="oklch(97% 0 0)"/><circle cx="67" cy="66" r="3" fill="#222"/>'
+        : '<circle cx="60" cy="72" r="30" fill="oklch(62% 0.14 140)"/>' +
+          '<circle cx="46" cy="50" r="11" fill="oklch(62% 0.14 140)"/><circle cx="74" cy="50" r="11" fill="oklch(62% 0.14 140)"/>' +
+          '<circle cx="46" cy="50" r="7" fill="oklch(97% 0 0)"/><circle cx="74" cy="50" r="7" fill="oklch(97% 0 0)"/>' +
+          '<circle cx="47" cy="50" r="3.5" fill="#222"/><circle cx="75" cy="50" r="3.5" fill="#222"/>' +
+          '<path d="M40 84 q20 14 40 0" stroke="oklch(40% 0.1 140)" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    }
+    <g class="pp__curls">
+      <circle cx="30" cy="48" r="9" fill="oklch(96% 0.01 80)"/><circle cx="90" cy="48" r="9" fill="oklch(96% 0.01 80)"/>
+      <circle cx="26" cy="66" r="9" fill="oklch(96% 0.01 80)"/><circle cx="94" cy="66" r="9" fill="oklch(96% 0.01 80)"/>
+      <circle cx="30" cy="84" r="8" fill="oklch(96% 0.01 80)"/><circle cx="90" cy="84" r="8" fill="oklch(96% 0.01 80)"/>
+      <path d="M32 40 Q60 22 88 40" stroke="oklch(96% 0.01 80)" stroke-width="12" stroke-linecap="round" fill="none"/>
+    </g>
+    <path class="pp__tangle" d="M22 40 q30 -30 60 0 t30 20 q-40 30 -80 0 t-10 -20 q20 -12 40 6" stroke="oklch(96% 0.01 80)" stroke-width="5" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>`;
+
+/** The Duchess on her three-legged stool, arms out for the baby. */
+export const DUCHESS_SVG = `
+<svg viewBox="0 0 240 260" focusable="false">
+  <path d="M70 256 L86 200 M170 256 L154 200 M120 256 L120 200" stroke="oklch(40% 0.07 60)" stroke-width="8" stroke-linecap="round"/>
+  <g class="pp__duchess-body">
+    <path d="M30 200 Q40 110 120 104 Q200 110 210 200 Q120 224 30 200 Z" fill="oklch(46% 0.14 350)"/>
+    <path d="M60 196 Q70 130 120 128 Q170 130 180 196 Q120 208 60 196 Z" fill="oklch(90% 0.03 85)"/>
+    <path d="M40 150 q-16 30 30 42 M200 150 q16 30 -30 42" stroke="oklch(84% 0.06 60)" stroke-width="16" stroke-linecap="round" fill="none"/>
+    <path d="M78 104 Q120 60 162 104 Q120 128 78 104 Z" fill="oklch(84% 0.06 60)"/>
+    <path d="M82 96 q38 -26 76 0 q-6 -36 -38 -40 q-32 4 -38 40 z" fill="oklch(84% 0.06 60)"/>
+    <path d="M64 70 L74 30 L98 56 L120 18 L142 56 L166 30 L176 70 Z" fill="oklch(94% 0.02 80)"/>
+    <path d="M70 68 h100" stroke="oklch(46% 0.14 350)" stroke-width="6"/>
+    <circle cx="104" cy="82" r="4" fill="#222"/><circle cx="136" cy="82" r="4" fill="#222"/>
+    <path d="M100 74 l10 -4 M140 74 l-10 -4" stroke="#222" stroke-width="3" stroke-linecap="round"/>
+    <path d="M106 100 q14 -8 28 0" stroke="oklch(40% 0.1 20)" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M96 94 q24 10 48 0 l-6 22 q-18 8 -36 0 z" fill="oklch(78% 0.06 60)"/>
+  </g>
+</svg>`;
+
+/** The cook at her cauldron, in a cap and apron, with a ladle in a throwing arm. */
+export const COOK_SVG = `
+<svg viewBox="0 0 200 260" focusable="false">
+  <path d="M40 256 L46 150 Q80 138 114 150 L120 256 Z" fill="oklch(52% 0.06 240)"/>
+  <path d="M54 256 L56 140 Q80 130 104 140 L106 256 Z" fill="oklch(94% 0.02 85)"/>
+  <path d="M46 150 q-18 30 -2 60" stroke="oklch(84% 0.06 60)" stroke-width="14" stroke-linecap="round" fill="none"/>
+  <g class="pp__cook-arm">
+    <path d="M112 150 L150 110" stroke="oklch(84% 0.06 60)" stroke-width="14" stroke-linecap="round"/>
+    <path d="M150 110 L176 60" stroke="oklch(40% 0.07 60)" stroke-width="7" stroke-linecap="round"/>
+    <ellipse cx="178" cy="54" rx="11" ry="7" fill="oklch(40% 0.07 60)"/>
+  </g>
+  <circle cx="80" cy="104" r="30" fill="oklch(84% 0.06 60)"/>
+  <path d="M46 92 q34 -50 68 0 q-4 -20 -34 -22 q-30 2 -34 22 z" fill="oklch(96% 0.01 80)"/>
+  <path d="M48 92 h64" stroke="oklch(96% 0.01 80)" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="70" cy="104" r="3" fill="#222"/><circle cx="90" cy="104" r="3" fill="#222"/>
+  <path d="M64 96 l10 4 M96 96 l-10 4" stroke="#222" stroke-width="3" stroke-linecap="round"/>
+  <path d="M70 120 h20" stroke="oklch(40% 0.1 20)" stroke-width="3" stroke-linecap="round"/>
+</svg>`;
+
+/** The baby, arms and legs out like a starfish, drawn so that a stage number
+    (0 to 3, `--stage`) turns it stepwise into a pig: the snout grows, the eyes
+    shrink, the ears come, the skin pinkens. Its parts carry classes the demo styles. */
+export const PIG_BABY_SVG = `
+<svg viewBox="0 0 200 200" focusable="false">
+  <g class="pp__limbs">
+    <path class="pp__limb pp__limb--a" d="M70 120 L22 84" stroke="oklch(84% 0.06 60)" stroke-width="18" stroke-linecap="round"/>
+    <path class="pp__limb pp__limb--b" d="M130 120 L178 84" stroke="oklch(84% 0.06 60)" stroke-width="18" stroke-linecap="round"/>
+    <path class="pp__limb pp__limb--c" d="M82 150 L44 190" stroke="oklch(84% 0.06 60)" stroke-width="18" stroke-linecap="round"/>
+    <path class="pp__limb pp__limb--d" d="M118 150 L156 190" stroke="oklch(84% 0.06 60)" stroke-width="18" stroke-linecap="round"/>
+    <path class="pp__limb-pig pp__limb--a" d="M70 120 L22 84" stroke="oklch(78% 0.1 20)" stroke-width="18" stroke-linecap="round"/>
+    <path class="pp__limb-pig pp__limb--b" d="M130 120 L178 84" stroke="oklch(78% 0.1 20)" stroke-width="18" stroke-linecap="round"/>
+    <path class="pp__limb-pig pp__limb--c" d="M82 150 L44 190" stroke="oklch(78% 0.1 20)" stroke-width="18" stroke-linecap="round"/>
+    <path class="pp__limb-pig pp__limb--d" d="M118 150 L156 190" stroke="oklch(78% 0.1 20)" stroke-width="18" stroke-linecap="round"/>
+  </g>
+  <ellipse cx="100" cy="136" rx="46" ry="34" fill="oklch(92% 0.03 85)"/>
+  <ellipse class="pp__pig-skin" cx="100" cy="136" rx="46" ry="34" fill="oklch(78% 0.1 20)"/>
+  <path class="pp__tail" d="M144 130 q18 -12 8 -26 q-10 -8 -2 -16" stroke="oklch(78% 0.1 20)" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <g class="pp__head">
+    <circle cx="100" cy="76" r="44" fill="oklch(84% 0.06 60)"/>
+    <circle class="pp__pig-skin" cx="100" cy="76" r="44" fill="oklch(78% 0.1 20)"/>
+    <path class="pp__bonnet" d="M56 74 Q100 20 144 74 Q100 60 56 74 Z" fill="oklch(94% 0.02 85)"/>
+    <g class="pp__pig-ears">
+      <path d="M62 56 L46 18 L82 42 Z M138 56 L154 18 L118 42 Z" fill="oklch(78% 0.1 20)"/>
+      <path d="M66 54 L56 32 L78 46 Z M134 54 L144 32 L122 46 Z" fill="oklch(66% 0.12 20)"/>
+    </g>
+    <g class="pp__eyes">
+      <ellipse cx="84" cy="74" rx="6" ry="7" fill="#222"/>
+      <ellipse cx="116" cy="74" rx="6" ry="7" fill="#222"/>
+    </g>
+    <g class="pp__snout">
+      <ellipse cx="100" cy="94" rx="14" ry="9" fill="oklch(74% 0.12 20)"/>
+      <circle cx="94" cy="94" r="2.5" fill="oklch(40% 0.1 20)"/><circle cx="106" cy="94" r="2.5" fill="oklch(40% 0.1 20)"/>
+    </g>
+    <path class="pp__mouth" d="M90 108 q10 8 20 0" stroke="oklch(40% 0.1 20)" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>`;
+
+/** The Cheshire Cat on the hearth, grinning from ear to ear: the same grin the
+    bough and the croquet-ground draw. */
+export const CAT_HEARTH_SVG = `
+<svg viewBox="0 0 240 160" focusable="false">
+  <path d="M50 130 C20 130 10 100 30 84 C40 76 60 80 62 96" stroke="var(--cc-cat, oklch(72% 0.12 320))" stroke-width="16" fill="none" stroke-linecap="round"/>
+  <ellipse cx="130" cy="120" rx="82" ry="34" fill="var(--cc-cat, oklch(72% 0.12 320))"/>
+  <path d="M90 100 q14 16 0 34 M120 96 q16 18 0 40 M150 98 q14 18 0 36" stroke="var(--cc-cat-stripe, oklch(52% 0.14 320))" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <circle cx="170" cy="76" r="46" fill="var(--cc-cat, oklch(72% 0.12 320))"/>
+  <path d="M136 46 L126 4 L160 34 Z M204 46 L214 4 L180 34 Z" fill="var(--cc-cat, oklch(72% 0.12 320))"/>
+  <path d="M140 44 L134 20 L154 38 Z M200 44 L206 20 L186 38 Z" fill="var(--cc-cat-stripe, oklch(52% 0.14 320))"/>
+  <ellipse cx="156" cy="68" rx="8" ry="10" fill="oklch(90% 0.15 110)"/>
+  <ellipse cx="184" cy="68" rx="8" ry="10" fill="oklch(90% 0.15 110)"/>
+  <ellipse cx="156" cy="68" rx="2.5" ry="8" fill="#222"/>
+  <ellipse cx="184" cy="68" rx="2.5" ry="8" fill="#222"/>
+  <g class="pp__cat-grin">
+    <path d="M130 92 Q170 130 210 92" stroke="var(--cc-grin, oklch(97% 0.02 90))" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M140 98 v8 M154 108 v10 M170 112 v11 M186 108 v10 M200 98 v8" stroke="var(--cc-grin, oklch(97% 0.02 90))" stroke-width="3.5" stroke-linecap="round"/>
+  </g>
+</svg>`;
+
+/** The Mock Turtle's old master: a Turtle called Tortoise, upright, spectacled, with a cane. */
+export const TORTOISE_MASTER_SVG = `
+<svg viewBox="0 0 200 240" focusable="false">
+  <ellipse cx="100" cy="150" rx="62" ry="70" fill="var(--lq-turtle-shell)"/>
+  <path d="M60 120 q40 -30 80 0 M52 160 q48 -26 96 0 M60 196 q40 -22 80 0" stroke="oklch(0% 0 0 / 0.18)" stroke-width="7" fill="none"/>
+  <path d="M70 214 l-10 24 M130 214 l10 24" stroke="var(--lq-turtle)" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="100" cy="62" r="34" fill="var(--lq-turtle)"/>
+  <ellipse cx="100" cy="76" rx="18" ry="10" fill="oklch(80% 0.05 60)"/>
+  <circle cx="88" cy="56" r="9" fill="none" stroke="#222" stroke-width="3"/>
+  <circle cx="112" cy="56" r="9" fill="none" stroke="#222" stroke-width="3"/>
+  <path d="M97 56 h6" stroke="#222" stroke-width="3"/>
+  <circle cx="88" cy="56" r="3" fill="#222"/><circle cx="112" cy="56" r="3" fill="#222"/>
+  <path d="M74 30 q26 -18 52 0" stroke="oklch(92% 0.02 90)" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M40 130 q-20 20 -8 44" stroke="var(--lq-turtle)" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <g class="art__cane">
+    <path d="M166 120 l-4 116" stroke="oklch(40% 0.08 60)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M152 118 q14 -14 28 0" stroke="oklch(40% 0.08 60)" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M160 130 q-20 6 -22 20" stroke="var(--lq-turtle)" stroke-width="14" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>`;
+
+/** The Drawling-master: an old conger-eel, fainting in coils. */
+export const CONGER_EEL_SVG = `
+<svg viewBox="0 0 300 200" focusable="false">
+  <path d="M20 170 q30 -90 90 -60 q60 30 20 70 q-40 30 -20 -30 q30 -70 90 -50 q60 20 40 70 q-20 40 -30 10 q-6 -40 40 -60" stroke="oklch(46% 0.06 250)" stroke-width="22" fill="none" stroke-linecap="round"/>
+  <path d="M20 170 q30 -90 90 -60 q60 30 20 70 q-40 30 -20 -30 q30 -70 90 -50 q60 20 40 70 q-20 40 -30 10 q-6 -40 40 -60" stroke="oklch(62% 0.06 240)" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <ellipse cx="256" cy="120" rx="30" ry="20" fill="oklch(46% 0.06 250)"/>
+  <circle cx="264" cy="114" r="5" fill="oklch(96% 0.01 90)"/><circle cx="265" cy="114" r="2.5" fill="#222"/>
+  <path d="M276 128 q10 4 14 -2" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+/** The Classics master: an old crab, sideways as crabs are. */
+export const CRAB_SVG = `
+<svg viewBox="0 0 200 120" focusable="false">
+  <path d="M30 96 l-16 20 M60 104 l-8 16 M140 104 l8 16 M170 96 l16 20 M44 90 l-24 10 M156 90 l24 10" stroke="oklch(52% 0.18 30)" stroke-width="8" stroke-linecap="round"/>
+  <ellipse cx="100" cy="80" rx="62" ry="34" fill="oklch(58% 0.19 30)"/>
+  <path d="M46 62 q-30 -30 -14 -50 q14 10 14 30 M154 62 q30 -30 14 -50 q-14 10 -14 30" stroke="oklch(52% 0.18 30)" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M30 22 q-14 12 -2 26 M170 22 q14 12 2 26" stroke="oklch(52% 0.18 30)" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <circle cx="84" cy="50" r="8" fill="oklch(96% 0.01 90)"/><circle cx="116" cy="50" r="8" fill="oklch(96% 0.01 90)"/>
+  <circle cx="85" cy="51" r="3.5" fill="#222"/><circle cx="117" cy="51" r="3.5" fill="#222"/>
+  <path d="M84 40 v-10 M116 40 v-10" stroke="oklch(52% 0.18 30)" stroke-width="4"/>
+  <path d="M88 78 q12 -10 24 0" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>`;

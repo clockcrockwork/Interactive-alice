@@ -159,15 +159,16 @@ per-demo `mode` (the rabbit hole reports `webgl` or `flat`).
 **Joins.** The demos are viewed in the book's order, and where two adjacent demos are
 one moment of the book they join: the end of the first is staged so that it leads
 straight into the opening of the second, and the opening picks the picture up where
-the first left it. Six pairs join today: the rabbit hole and Drink Me through the door
-in the floor; Drink Me and the pool at the roof, in tears; the pool and the race at the
-bank; the house and Bill at the chimney; the tea-party and the croquet-ground through
-the door in the tree and the little door; the quadrille and the trial at the court's
+the first left it. Eight pairs join today: the rabbit hole and Drink Me through the
+door in the floor; Drink Me and the pool at the roof, in tears; the pool and the race
+at the bank; the house and Bill at the chimney; the kitchen and the Cat at a bough; the
+tea-party and the croquet-ground through the door in the tree and the little door; the
+Mock Turtle and the quadrille at his sigh; the quadrille and the trial at the court's
 doors. Each demo remains complete on its own, each join has a reduced-motion version
 of cuts and cross-fades, and each is described under its two demos below. The pairs
 with another scene of the book between them (Bill and the Caterpillar, the Caterpillar
-and the Cat, the Cat and the tea-party, the race and the house, the croquet-ground and
-the quadrille) change scene through the page transition and nothing more.
+and the kitchen, the Cat and the tea-party, the race and the house, the croquet-ground
+and the Mock Turtle) change scene through the page transition and nothing more.
 
 ## 4. The fourteen demos
 
@@ -402,6 +403,41 @@ shoo it and it goes off for a moment and comes back worse.
 **Reduced motion.** Size changes are cuts with a blink; the smoke hangs still; the
 neck holds straight; the Pigeon's wings are spread and do not beat.
 
+### Pig and Pepper: the kitchen comes at you
+
+It opens at the wood's edge at dusk: the little house, a tree, and the two footmen,
+one with a fish's face and one with a frog's, in powdered curls. The Fish-Footman runs
+out of the wood and raps; they bow, and their curls tangle. Alice laughs her way back
+into the wood and out again; a plate comes out of the door and breaks on the tree; and
+when she opens the door the camera goes in through it, and from there the reader is
+Alice. The kitchen is smoke and pepper as drifting specks, the Duchess on her stool
+with the baby, the cook at the cauldron in the hearth, and the Cat on the hearthstone
+wearing the grin it wears everywhere else. Every sneeze jolts the camera. Then the cook
+throws the fire-irons and the crockery at the reader in CSS 3D: half clatter off the
+edges, half stick to the glass as the trial's cards do; a large saucepan skims past his
+precious nose. The Duchess sings, tossing the baby at the end of every line so the
+whole kitchen bounces, and the chorus is the words themselves, big and bouncing. The
+baby is flung and lands in her own two hands at the bottom of the frame, a starfish
+that doubles up and straightens; she knots it and carries it outside, and grunt by
+grunt it turns into a pig in four steps (snout, eyes, ears, skin) until she sets it
+down and it trots off into the night wood.
+
+**Interaction.** *Bow*, or a tap on a footman, bows them again and tangles the curls.
+*Shake the pepper*, or press the cauldron, shakes more out and sets everyone sneezing.
+Every pot on the glass is a button, *Bat it away*; *Duck!* drops the view and sends the
+lot over your head. *Hold it tight*, or a drag on the bundle, knots the baby before the
+story does. *Poke the baby* makes it grunt and turn one stage more pig early; the next
+beat's own stage takes over from there. The pointer leans the view a little.
+
+The last beat looks up at a bough at the wood's edge, close, with a grin just arriving
+on it, in the colours of the Cheshire Cat's wood; the Cat's demo opens on the same
+bough and settles into its own framing with the Cat under the grin.
+
+**Reduced motion.** The pepper hangs still; sneezes are a blink; the pots appear in
+place on the glass and the duck is a dip; the tosses and the bounce are cuts; the bow
+is a cut that holds; the pig's stages are cuts; the door, the walk outside and the look
+up are cuts with a blink.
+
 ### The Cheshire Cat: depth and a mask
 
 A night wood in layers: far trunks, mid trunks with the bough, mist, near trunks, a
@@ -427,6 +463,10 @@ March Hare; press one and the wood walks that way for a moment. Fireflies follow
 pointer, and if you draw a way on the ground with your finger it stays as a chalk
 line and the fireflies run along it. The story's own vanishings take the Cat back when
 they begin.
+
+It opens on the bough Pig and Pepper ended looking up at, close, with the grin
+already on it; over the first beat the bough settles to its place in the wood and the
+layer fades to find the Cat under the grin.
 
 **Reduced motion.** The Cat cross-fades rather than sweeps; the wood does not tilt;
 the tail, the fireflies, the stars, the lines and the signposts hold still.
@@ -512,6 +552,55 @@ events, so the roses are buttons all the while.
 
 **Reduced motion.** The door frame fades instead of sliding; the camera cuts; nobody steps, skips, runs or waddles; the
 flamingo does not look up, so every strike lands; the red flash without the shake.
+
+### The Mock Turtle's Story: the sea answers, and the picture goes under it
+
+The quadrille's shore a little earlier in the day: the same sky, the three swells that
+breathe on the ambient timeline, the same shingle, with a morning sun and a band of
+grass above the shore where the Gryphon lies asleep. The Queen walks off, the Gryphon
+sits up, rubs its eyes and chuckles, and at *Come on!* the camera follows it along the
+shore: every band slides at its own rate, the grass fastest, the sky hardly at all,
+until a ledge of rock comes in from the right with the Mock Turtle on it. His sighs
+can be seen: each one lifts him, heaves the sea (the swells sit in a wrapper that
+translates and stretches with the sigh, so the breathing and the heaving never fight
+over one transform), sends a ripple out across the water and plays on the breeze; at
+*eyes full of tears* the tears fill and drop into the sea. "Hjckrrh!" is the Gryphon's
+own noise, taken from the sound line of the text at mount and drawn as a big jagged
+word.
+
+When he tells of school in the sea the picture goes under the water: the shore rises
+out of the frame and the school comes up from below, drawn in depth in CSS 3D, the old
+Tortoise with his spectacles and cane at the back, three rows of desks with the little
+sea-creatures of the quadrille at them, light caustics moving over everything, bubbles
+for the extras and the washing; the captions move up into the clear water. Back on the
+shore, the subjects are written on the wet sand: the capitalised words of what the
+Mock Turtle says in each beat (five letters or more, his lines only), each word an
+element of its own made of letters, written with a stagger and taken away by a wave of
+foam that comes in over them and goes back. The Drawling-master rises out of the sea
+in coils, the old crab comes along the shingle, and both creatures hide their faces in
+their paws. The lessons are a row of suns in the sky that shrink from day to day, a
+dashed empty ring for the holiday and a faint circle for the twelfth, which the
+Gryphon sweeps away.
+
+**Interaction.** The Mock Turtle is a button: press him, or *Comfort him*, and he
+sighs harder each time and the sea heaves with it. On the sand, tap a word and its
+letters writhe, or press *Uglify a word*; the story uglifies the word it argues about
+by itself. Drag a wave across the sand, or press *Wash the words away*, and the wave
+takes them early; the story washes them anyway before the next are written, and
+scrolling back before they were written takes the reader's wave back. The pointer
+leans the shore and the school.
+
+**Reduced motion.** The walk along the shore, the settle and every hop are cuts; the
+descent is a cross-fade; a sigh is a cut in the wave line rather than a spreading
+ring; tears and bubbles hang still, the caustics and the pupils do not move; the words
+fade instead of drifting and no wave comes for them; uglified letters are jumbled
+where they stand.
+
+The Mock Turtle's story and the quadrille are one afternoon on one shore, and they
+join. In the last beat, as the Gryphon cuts the lessons off, the row of suns goes, the
+ledge fades and the two step down onto the shingle to exactly the places and sizes the
+quadrille's ring gives them, the sun goes, and the Mock Turtle draws breath. The
+quadrille's first frame is that breath, and its first sigh is the breath let go.
 
 ### The Lobster Quadrille: a dance the reader joins
 
@@ -607,11 +696,15 @@ button that changes it; the croquet roses are buttons that paint red, the garden
 can be hidden, a strike sends the hedgehog off and the Cat's grin comes first and goes
 last; the quadrille's lobster can be thrown, the sea somersaulted in and the dance
 joined; the sister's dream fills the bank and opening her eyes turns it into the farm;
+the kitchen's pig turns stage by stage and a poke advances it, the pots stick to the
+glass and *Duck!* clears them; the Mock Turtle's subjects on the sand are the words of
+his own sentences, the wave takes them and comforting him heaves the sea;
 each join holds at both ends (Drink Me cries at the roof and the pool opens on that
 view; the pool's party comes ashore and the race opens from the water; the house ends
 at the chimney's rim and Bill opens on it; the tea-party ends at the open door in the
 tree and the croquet-ground opens through the little door; the run reaches the court's
-doors and the trial opens inside them), and scrolling back undoes it; no demo's
+doors and the trial opens inside them; the kitchen ends at the bough the Cat opens on;
+the Mock Turtle's breath is the quadrille's first sigh), and scrolling back undoes it; no demo's
 timeline overruns its beats; and the index's picker chooses an Alice the next page
 still wears.
 

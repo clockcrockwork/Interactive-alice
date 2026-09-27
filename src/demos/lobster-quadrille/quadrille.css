@@ -286,6 +286,15 @@
     scale: calc(1 + var(--lead) * 0.3);
   }
 
+  .lq__turtle {
+    --breath: 0;
+  }
+
+  .lq__turtle .art {
+    transform-origin: 50% 100%;
+    transform: scale(calc(1 + var(--breath) * 0.06), calc(1 + var(--breath) * 0.08));
+  }
+
   .lq__turtle .lq__tear {
     opacity: var(--sob);
     transform: translateY(calc(var(--sob) * 14px));

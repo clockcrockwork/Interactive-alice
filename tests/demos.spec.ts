@@ -977,3 +977,187 @@ test('the pool of tears → the caucus-race: the party climbs the bank, and the 
   await expect.poll(() => customProperty(page, '.cr__runner', '--r')).toBeCloseTo(1, 1);
   await expect.poll(() => customProperty(page, '.cr__ring', '--lift')).toBeCloseTo(0, 0);
 });
+
+test('pig and pepper: the baby turns into a pig by beats, and a poke brings the next stage early', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'pig-and-pepper');
+  test.skip(!demo, 'no pig-and-pepper demo in this build');
+  await page.goto(demo?.url ?? '');
+  const stage = () => page.locator('.pp__baby').getAttribute('data-stage');
+  await atCue(page, 'catch', 0.5);
+  await expect.poll(stage, { timeout: 8000 }).toBe('0');
+  await expect(page.locator('.demo')).toHaveAttribute('data-holding', '');
+  await atCue(page, 'grunt', 0.5);
+  await expect.poll(stage, { timeout: 8000 }).toBe('1');
+  await expect.poll(() => customProperty(page, '.pp__baby', '--stage')).toBe(1);
+  // A poke is one stage early; the next beat's own stage takes over from there.
+  await page.locator('.pp__baby').click();
+  await expect.poll(stage, { timeout: 5000 }).toBe('2');
+  await atCue(page, 'snout', 0.5);
+  await expect.poll(stage, { timeout: 8000 }).toBe('2');
+  await atCue(page, 'pig', 0.5);
+  await expect.poll(stage, { timeout: 8000 }).toBe('3');
+  // And back: the stages are a function of the scroll.
+  await atCue(page, 'knot', 0.3);
+  await expect.poll(stage, { timeout: 8000 }).toBe('0');
+});
+
+test('pig and pepper: the pots and pans reach the glass, and the reader can duck', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'pig-and-pepper');
+  test.skip(!demo, 'no pig-and-pepper demo in this build');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'grin', 0.5);
+  await page.waitForTimeout(400);
+  await expect(page.locator('.pp__glass .pp__thing')).toHaveCount(0);
+  await atCue(page, 'throw', 0.9);
+  const stuck = () => page.locator('.pp__glass .pp__thing').count();
+  await expect.poll(stuck, { timeout: 10000 }).toBeGreaterThan(2);
+  await expect(page.locator('.pp__prop--duck')).toBeVisible();
+  await page.locator('.pp__prop--duck').click();
+  await expect.poll(stuck, { timeout: 8000 }).toBe(0);
+});
+
+test('pig and pepper → the cheshire cat: she looks up at a bough with a grin on it, and the Cat opens from that look', async ({
+  page,
+}) => {
+  const pig = demos.find((candidate) => candidate.demo === 'pig-and-pepper');
+  const cat = demos.find((candidate) => candidate.demo === 'cheshire-cat');
+  test.skip(!pig || !cat, 'both demos are needed for the join');
+  const opacity = (selector: string) =>
+    page.evaluate(
+      (sel) => Number(getComputedStyle(document.querySelector(sel) as Element).opacity),
+      selector,
+    );
+  await page.goto(pig?.url ?? '');
+  await atCue(page, 'trot', 0.5);
+  await expect.poll(() => opacity('.pp__bough'), { timeout: 8000 }).toBeLessThan(0.05);
+  await scrollTo(page, 1);
+  await expect.poll(() => opacity('.pp__bough'), { timeout: 8000 }).toBeGreaterThan(0.9);
+  await expect.poll(() => opacity('.pp__close-grin'), { timeout: 8000 }).toBeGreaterThan(0.9);
+  await atCue(page, 'trot', 0.5);
+  await expect.poll(() => opacity('.pp__bough'), { timeout: 8000 }).toBeLessThan(0.05);
+
+  // The Cat's wood opens on the same bough, close, with the grin already there,
+  // and it has settled into the wood's own framing by the next beat.
+  await page.goto(cat?.url ?? '');
+  await expect(page.locator('.cc__join .cc__close-grin')).toBeAttached();
+  await expect.poll(() => opacity('.cc__join')).toBeGreaterThan(0.9);
+  await atCue(page, 'puss', 0.3);
+  await expect.poll(() => opacity('.cc__join'), { timeout: 8000 }).toBeLessThan(0.05);
+  await scrollTo(page, 0);
+  await expect.poll(() => opacity('.cc__join'), { timeout: 8000 }).toBeGreaterThan(0.9);
+});
+
+test('the mock turtle: the subjects on the sand are the words of his own sentences, and the wave takes them', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'mock-turtle');
+  test.skip(!demo, 'no mock-turtle demo in this build');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'reeling', 0.6);
+  const group = page.locator('.mt__group[data-cue="reeling"]');
+  await expect
+    .poll(() => customProperty(page, '.mt__group[data-cue="reeling"]', '--show'), {
+      timeout: 8000,
+    })
+    .toBeCloseTo(1, 1);
+  // Every word written on the sand is in the beat's own caption text, and there
+  // is more than one of them.
+  const words = await group
+    .locator('.mt__subject')
+    .evaluateAll((nodes) => nodes.map((node) => (node as HTMLElement).dataset.word ?? ''));
+  const caption = await page.locator('.demo-beat[data-cue="reeling"]').innerText();
+  expect(words.length).toBeGreaterThan(1);
+  for (const word of words) {
+    expect(word.length).toBeGreaterThan(0);
+    expect(caption).toContain(word);
+  }
+  // Wash sends the wave over them; scrolling back before they were written undoes it.
+  await expect(page.locator('.mt__prop--wash')).toBeVisible();
+  await page.locator('.mt__prop--wash').click();
+  await expect
+    .poll(() => customProperty(page, '.mt__group[data-cue="reeling"]', '--wash'), {
+      timeout: 5000,
+    })
+    .toBeGreaterThan(0.9);
+  await atCue(page, 'reeling', 0.02);
+  await expect
+    .poll(() => customProperty(page, '.mt__group[data-cue="reeling"]', '--wash'), {
+      timeout: 8000,
+    })
+    .toBeLessThan(0.05);
+  // Uglify makes a word writhe, and the story uglifies the word it argues about.
+  await atCue(page, 'reeling', 0.6);
+  await expect(page.locator('.mt__prop--uglify')).toBeVisible({ timeout: 8000 });
+  await page.locator('.mt__prop--uglify').click();
+  await expect(page.locator('.mt__subject[data-uglified]')).toHaveCount(1);
+});
+
+test('the mock turtle: comforting him makes him sigh harder, and the sea heaves', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'mock-turtle');
+  test.skip(!demo, 'no mock-turtle demo in this build');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'tears', 0.5);
+  await expect(page.locator('.mt__prop--comfort')).toBeVisible({ timeout: 8000 });
+  await expect(page.locator('.mt__turtle')).toHaveAttribute('data-tappable', '');
+  await expect
+    .poll(() => customProperty(page, '.mt__shore', '--swell'), { timeout: 8000 })
+    .toBeLessThan(0.1);
+  await page.locator('.mt__turtle').click();
+  await expect
+    .poll(() => customProperty(page, '.mt__shore', '--swell'), { timeout: 3000 })
+    .toBeGreaterThan(0.3);
+  // The button does the same for a keyboard.
+  await page.waitForTimeout(1500);
+  await page.locator('.mt__prop--comfort').click();
+  await expect
+    .poll(() => customProperty(page, '.mt__shore', '--swell'), { timeout: 3000 })
+    .toBeGreaterThan(0.3);
+  await expect(page.locator('.demo__status')).not.toBeEmpty();
+});
+
+test('the mock turtle → the lobster quadrille: the shore settles on the quadrille, and the sigh is the breath let go', async ({
+  page,
+}) => {
+  const story = demos.find((candidate) => candidate.demo === 'mock-turtle');
+  const quadrille = demos.find((candidate) => candidate.demo === 'lobster-quadrille');
+  test.skip(!story || !quadrille, 'both demos are needed for the join');
+  await page.goto(story?.url ?? '');
+  // Before the last beat the two stand where the story put them: the Turtle on
+  // his ledge, nothing settled.
+  await atCue(page, 'holiday', 0.5);
+  await expect(page.locator('.demo')).not.toHaveAttribute('data-settled', '');
+  await expect
+    .poll(() => customProperty(page, '.mt__shore', '--settle'), { timeout: 8000 })
+    .toBeLessThan(0.05);
+  // At the end the camera has settled on the quadrille's opening and he draws breath.
+  await scrollTo(page, 1);
+  await expect(page.locator('.demo')).toHaveAttribute('data-settled', '', { timeout: 8000 });
+  await expect
+    .poll(() => customProperty(page, '.mt__shore', '--settle'), { timeout: 8000 })
+    .toBeCloseTo(1, 1);
+  await expect
+    .poll(() => customProperty(page, '.mt__turtle', '--breath'), { timeout: 8000 })
+    .toBeGreaterThan(0.5);
+  await expect.poll(() => customProperty(page, '.mt__school', '--depth')).toBeLessThan(0.05);
+  // And back again: the join is a function of the scroll.
+  await atCue(page, 'holiday', 0.5);
+  await expect(page.locator('.demo')).not.toHaveAttribute('data-settled', '', { timeout: 8000 });
+
+  // The quadrille opens on that frame: the breath is drawn, and the first sigh lets it go.
+  await page.goto(quadrille?.url ?? '');
+  await expect(page.locator('.lq__turtle .art')).toBeAttached();
+  await expect.poll(() => customProperty(page, '.lq__turtle', '--breath')).toBeGreaterThan(0.9);
+  await atCue(page, 'sigh', 0.6);
+  await expect
+    .poll(() => customProperty(page, '.lq__turtle', '--breath'), { timeout: 8000 })
+    .toBeLessThan(0.05);
+  await expect
+    .poll(() => customProperty(page, '.lq__turtle', '--sob'), { timeout: 8000 })
+    .toBeGreaterThan(0);
+});

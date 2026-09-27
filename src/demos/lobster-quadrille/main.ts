@@ -173,6 +173,14 @@ function mount(shell: DemoShell): void {
   };
 
   // The Mock Turtle sighs and cries; the Gryphon bounds into the air at its shouts.
+  // The first frame is the one the Mock Turtle's story ended on: he has drawn
+  // breath, and the sigh is that breath let go.
+  master.fromTo(
+    turtle,
+    { '--breath': 1 },
+    { '--breath': 0, duration: reducedMotion ? 0.01 : 0.12, ease: 'sine.out' },
+    iSigh,
+  );
   master.to(turtle, { '--sob': 1, duration: 0.3, yoyo: true, repeat: 3 }, iSigh + 0.1);
   for (const beat of shell.spokenBy('gryphon')) {
     beat.lines.forEach((line, n) => {

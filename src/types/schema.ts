@@ -725,5 +725,41 @@ export interface LocaleUIStrings {
      * Technique note on the demo index card for the Mock Turtle's story.
      */
     demoTechMockTurtle: string;
+    /**
+     * Button that makes the two footmen bow again, tangling their curls.
+     */
+    demoBow: string;
+    /**
+     * Button, and the cauldron's label: more pepper, and a sneeze.
+     */
+    demoPepper: string;
+    /**
+     * Button that ducks the reader under the flying pots and pans.
+     */
+    demoDuck: string;
+    /**
+     * Label on a pan stuck to the glass: a tap bats it away.
+     */
+    demoBatPan: string;
+    /**
+     * Button that knots the baby into a bundle in her arms.
+     */
+    demoHoldTight: string;
+    /**
+     * Label on the baby in her arms: a tap makes it grunt and turn a little more pig.
+     */
+    demoPokeBaby: string;
+    /**
+     * Button on the Mock Turtle: comforting him makes him sigh harder and the sea heave.
+     */
+    demoComfort: string;
+    /**
+     * Button that sends a wave over the subject words written on the sand.
+     */
+    demoWash: string;
+    /**
+     * Button that makes one of the subject words writhe; tapping a word does the same.
+     */
+    demoUglify: string;
   };
 }

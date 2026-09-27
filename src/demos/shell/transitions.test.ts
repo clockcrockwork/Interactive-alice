@@ -10,6 +10,8 @@ describe('which way the screen turns between demo pages', () => {
 
   it('whirls it for the spiral, the pool and the wood', () => {
     expect(transitionKindFor('https://x/demos/dormouse/')).toBe('whirl');
+    expect(transitionKindFor('https://x/demos/mock-turtle/')).toBe('whirl');
+    expect(transitionKindFor('https://x/demos/pig-and-pepper/')).toBe('cards');
     expect(transitionKindFor('https://x/demos/pool-of-tears/')).toBe('whirl');
     expect(transitionKindFor('https://x/demos/cheshire-cat/')).toBe('whirl');
   });

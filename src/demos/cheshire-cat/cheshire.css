@@ -343,6 +343,35 @@
     animation: cc-point 0.8s ease-in-out infinite alternate;
   }
 
+  /* The join from Pig and Pepper: the bough close, with the grin already on it,
+     settling into the wood's framing over the first beat. */
+  .cc__join {
+    pointer-events: none;
+    background: linear-gradient(to bottom, var(--cc-night), var(--cc-night-low));
+  }
+
+  .cc__close {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 26%;
+    inline-size: clamp(16rem, 60vmin, 34rem);
+    translate: -50% 0;
+  }
+
+  .cc__close-bare svg,
+  .cc__close-grin svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .cc__close-grin {
+    position: absolute;
+    inset-inline-start: 62.5%;
+    inset-block-start: 44%;
+    inline-size: 25%;
+  }
+
   .cc__prop {
     inset-inline-start: 50%;
     inset-block-start: calc(var(--demo-bar-height) + 1rem);

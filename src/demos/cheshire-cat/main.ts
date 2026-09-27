@@ -17,7 +17,7 @@ import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import './cheshire.css';
-import { BARE_BOUGH_SVG, GRIN_SVG, signSvg } from './figures.ts';
+import { BARE_BOUGH_SVG, closeBough, GRIN_SVG, signSvg } from './figures.ts';
 
 /** Where the boughs are, as a share of the stage; the Cat starts on the middle one. */
 const BOUGHS = [
@@ -29,6 +29,7 @@ const BOUGHS = [
 function mount(shell: DemoShell): void {
   const { master, reducedMotion } = shell;
   const cue = shell.cue;
+  const iBough = cue('bough');
   const iPuss = cue('puss');
   const iSigns = cue('signs');
   const iMad = cue('mad');
@@ -80,6 +81,24 @@ function mount(shell: DemoShell): void {
   const chalkPath = chalk.querySelector<SVGPathElement>('path');
   const aliceBox = wood.querySelector<HTMLElement>('.cc__alice');
   const stars = [...wood.querySelectorAll<HTMLElement>('.cc__star')];
+  // The join from Pig and Pepper: it ended looking up at this bough, close, with
+  // the grin just arrived on it. The first beat settles from that look into the
+  // wood's own framing, and the Cat is there under it.
+  const join = shell.layer('cc__join');
+  join.innerHTML = closeBough('cc__close');
+  const close = join.querySelector<HTMLElement>('.cc__close');
+  if (reducedMotion) {
+    gsap.set(close, { scale: 1.8 });
+    master.fromTo(join, { opacity: 1 }, { opacity: 0, duration: 0.3 }, iBough + 0.25);
+  } else {
+    master.fromTo(
+      close,
+      { scale: 1.8, y: 0 },
+      { scale: 1, y: 0, duration: 0.7, ease: 'power2.inOut' },
+      iBough + 0.05,
+    );
+    master.fromTo(join, { opacity: 1 }, { opacity: 0, duration: 0.35 }, iBough + 0.4);
+  }
   const signs = shell.layer('cc__signs');
   signs.innerHTML =
     `<button type="button" class="cc__sign cc__sign--left" aria-label="${shell.ui.demoWayHatter ?? ''}">${signSvg('left')}</button>` +

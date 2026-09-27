@@ -19,3 +19,9 @@ export const signSvg = (direction: 'left' | 'right'): string => `
     <path d="M24 38 h44" stroke="var(--cc-grin)" stroke-width="4" stroke-linecap="round"/>
   </g>
 </svg>`;
+
+/** The bough close up with the grin already on it: the last frame of Pig and
+    Pepper and the first of the Cat's own demo, so the two join. `prefix` names
+    the classes each demo styles. */
+export const closeBough = (prefix: string): string =>
+  `<div class="${prefix}"><div class="${prefix}-bare">${BARE_BOUGH_SVG}</div><div class="${prefix}-grin">${GRIN_SVG}</div></div>`;

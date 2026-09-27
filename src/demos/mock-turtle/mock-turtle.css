@@ -1,0 +1,865 @@
+/* The Mock Turtle's Story: the quadrille's shore a little earlier in the day, a
+   walk along it in layers, a sea that answers his sighs, a school under the water
+   in CSS 3D, subjects written on the sand, and suns that lessen from day to day. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    /* The quadrille's own palette: the two demos are one shore. */
+    --lq-sky: oklch(86% 0.06 230);
+    --lq-sky-low: oklch(93% 0.05 80);
+    --lq-sea: oklch(62% 0.11 220);
+    --lq-sea-deep: oklch(48% 0.11 235);
+    --lq-shingle: oklch(72% 0.05 70);
+    --lq-shingle-deep: oklch(58% 0.05 65);
+    --lq-gryphon: oklch(66% 0.12 60);
+    --lq-gryphon-wing: oklch(78% 0.1 70);
+    --lq-turtle: oklch(62% 0.08 140);
+    --lq-turtle-shell: oklch(46% 0.09 145);
+    --lq-lobster: oklch(58% 0.2 25);
+    --mt-radius: clamp(180px, 36vmin, 340px);
+    --mt-figure: clamp(7rem, 24vmin, 14rem);
+    --mt-grass: oklch(66% 0.12 130);
+    --mt-grass-deep: oklch(52% 0.11 135);
+    --mt-sand-ink: oklch(40% 0.05 60);
+    --mt-deep: oklch(56% 0.1 215);
+    --mt-deeper: oklch(32% 0.09 238);
+  }
+}
+
+@layer scene {
+  .demo--mock-turtle .demo-beat {
+    inset-block-end: 9vh;
+    color: oklch(20% 0.03 240);
+    text-shadow: 0 1px 0 oklch(100% 0 0 / 0.5);
+  }
+
+  .demo--mock-turtle .line[data-speaker="mock-turtle"] {
+    font-style: italic;
+    color: oklch(30% 0.08 150);
+  }
+
+  .demo--mock-turtle .line[data-speaker="gryphon"] {
+    font-weight: 700;
+    color: oklch(38% 0.1 60);
+  }
+
+  .demo--mock-turtle .line[data-speaker="queen-of-hearts"] {
+    font-weight: 700;
+    color: oklch(42% 0.18 20);
+  }
+
+  .demo--mock-turtle .line[data-kind="sound"] {
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    color: oklch(38% 0.1 60);
+  }
+
+  /* Under the water, and while the subjects are on the sand, the captions move
+     up into the empty sky so the school and the words are in the clear. */
+  .demo--mock-turtle[data-under] .demo-beat,
+  .demo--mock-turtle[data-words] .demo-beat {
+    inset-block-end: auto;
+    inset-block-start: calc(var(--demo-bar-height) + 1.5rem);
+  }
+
+  .demo--mock-turtle[data-words] .demo-beat {
+    inset-block-start: calc(var(--demo-bar-height) + 4rem);
+  }
+
+  /* Under the water the captions go pale, whoever speaks. */
+  .demo--mock-turtle[data-under] .demo-beat {
+    color: oklch(96% 0.02 200);
+    text-shadow: 0 1px 10px oklch(20% 0.06 240 / 0.8);
+  }
+
+  .demo--mock-turtle[data-under] .line[data-speaker] {
+    color: oklch(96% 0.02 200);
+  }
+
+  /* --- The shore in layers. `--pan` is the walk along it, each band at its own
+     rate; `--swell` the sea's answer to a sigh; `--depth` the descent; `--settle`
+     the camera coming to rest on the quadrille's opening. */
+  .mt__shore {
+    --pan: 0;
+    --swell: 0;
+    --lean: 0;
+    --depth: 0;
+    --settle: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transform: translateY(calc(var(--depth) * -36%));
+  }
+
+  .mt__shore > * {
+    position: absolute;
+    inset-inline: -30%;
+  }
+
+  .mt__sky {
+    inset-block: 0 46%;
+    background: linear-gradient(to bottom, var(--lq-sky), var(--lq-sky-low));
+    transform: translateX(calc(var(--pan) * -5vw + var(--lean) * -0.6vw));
+  }
+
+  .mt__sun {
+    position: absolute;
+    inset-inline-end: 26%;
+    inset-block-start: 14%;
+    inline-size: 9vmin;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, oklch(97% 0.1 90), oklch(90% 0.14 85));
+    box-shadow: 0 0 6vmin oklch(92% 0.14 85 / 0.7);
+    opacity: calc(1 - var(--settle));
+  }
+
+  .mt__swell {
+    inset-block: 0;
+    transform-origin: 50% 62%;
+    transform: translateX(calc(var(--pan) * -14vw + var(--lean) * -1.2vw))
+      translateY(calc(var(--swell) * -1.3vh)) scaleY(calc(1 + var(--swell) * 0.1));
+  }
+
+  .mt__sea {
+    position: absolute;
+    inset-inline: -10%;
+    inset-block: 44% 40%;
+    background: linear-gradient(to bottom, var(--lq-sea), var(--lq-sea-deep));
+    border-start-start-radius: 50% 8px;
+    border-start-end-radius: 50% 8px;
+  }
+
+  .mt__sea--far {
+    inset-block: 50% 44%;
+    opacity: 0.9;
+  }
+
+  .mt__sea--mid {
+    inset-block: 52% 42%;
+  }
+
+  .mt__sea--near {
+    inset-block: 54% 38%;
+    background: linear-gradient(to bottom, oklch(68% 0.1 215), var(--lq-sea-deep));
+  }
+
+  /* A sigh's ripple: a ring that spreads across the water from under the ledge. */
+  .mt__ripple {
+    position: absolute;
+    inset-inline-start: 74%;
+    inset-block-start: 58%;
+    inline-size: 22vmin;
+    aspect-ratio: 3 / 1;
+    translate: -50% -50%;
+    border: 0.6vmin solid oklch(96% 0.02 220 / 0.9);
+    border-radius: 50%;
+    opacity: 0;
+  }
+
+  .mt__shingle {
+    inset-inline: -50%;
+    inset-block: 60% 0;
+    background:
+      radial-gradient(circle at 20% 30%, oklch(0% 0 0 / 0.08) 0 6px, transparent 7px),
+      radial-gradient(circle at 70% 60%, oklch(100% 0 0 / 0.12) 0 5px, transparent 6px),
+      linear-gradient(to bottom, var(--lq-shingle), var(--lq-shingle-deep));
+    background-size:
+      140px 90px,
+      170px 110px,
+      auto;
+    transform: translateX(calc(var(--pan) * -40vw + var(--lean) * -2vw));
+  }
+
+  /* The ledge of rock by the sea, far along the shore until the walk brings it
+     in; it is gone once the camera settles on the quadrille. */
+  .mt__ledge {
+    inset-inline: 60% auto;
+    inset-block: 52% 34%;
+    inline-size: clamp(11rem, 30vw, 24rem);
+    transform: translateX(calc((1 - var(--pan)) * 120vw + var(--lean) * -2vw));
+    opacity: calc(1 - var(--settle));
+    filter: drop-shadow(0 6px 6px oklch(0% 0 0 / 0.25));
+  }
+
+  .mt__ledge svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  /* The grass above the shore where the Gryphon sleeps; the walk leaves it behind. */
+  .mt__grass {
+    inset-inline: -10% 40%;
+    inset-block: 57% 30%;
+    background:
+      radial-gradient(ellipse at 10% 0, var(--mt-grass) 0 3vmin, transparent 3.2vmin),
+      radial-gradient(ellipse at 50% 0, var(--mt-grass) 0 3.5vmin, transparent 3.7vmin),
+      radial-gradient(ellipse at 85% 0, var(--mt-grass) 0 2.8vmin, transparent 3vmin),
+      linear-gradient(to bottom, var(--mt-grass) 20%, var(--mt-grass-deep));
+    background-size:
+      30vmin 8vmin,
+      34vmin 8vmin,
+      26vmin 8vmin,
+      auto;
+    background-repeat: repeat-x, repeat-x, repeat-x, no-repeat;
+    border-start-start-radius: 40% 2vmin;
+    border-start-end-radius: 60% 3vmin;
+    transform: translateX(calc(var(--pan) * -110vw + var(--lean) * -2.6vw));
+  }
+
+  /* --- The figures. Each stands at a point with its feet there; the wrapper's
+     transforms pivot about the feet. */
+  .mt__figures {
+    --pan: 0;
+    --settle: 0;
+    --depth: 0;
+    pointer-events: none;
+    opacity: calc(1 - var(--depth));
+  }
+
+  .mt__figures > *,
+  .mt__turtle {
+    position: absolute;
+    inset-inline-start: 50%;
+    transform-origin: 0 0;
+  }
+
+  .mt__figures .art,
+  .mt__turtle .art {
+    display: block;
+    inline-size: 100%;
+    translate: -50% -100%;
+  }
+
+  .mt__figures svg,
+  .mt__turtle svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .mt__queen {
+    inset-block-start: 66%;
+    inline-size: clamp(4.5rem, 15vmin, 8.5rem);
+    transform: translateX(24vw);
+  }
+
+  .mt__gryphon {
+    --sleep: 1;
+    --rub: 0;
+    --chuckle: 0;
+    --hop: 0;
+    --hide: 0;
+    inset-block-start: 66%;
+    inline-size: var(--mt-figure);
+    filter: drop-shadow(0 8px 8px oklch(0% 0 0 / 0.3));
+    transform: translate(
+        calc(-16vw * (1 - var(--settle)) - var(--mt-radius) * 0.4 * var(--settle)),
+        calc(var(--settle) * 8.5dvh + var(--hop) * -7vmin + var(--sleep) * -7vmin)
+      )
+      rotate(
+        calc(
+          var(--sleep) *
+          -88deg +
+          var(--chuckle) *
+          4deg +
+          var(--rub) *
+          -3deg +
+          var(--hide) *
+          -12deg
+        )
+      )
+      scale(calc(1 + var(--settle) * 0.13 - var(--hide) * 0.05));
+  }
+
+  /* The Mock Turtle: a real button on the stage. His sighs lift him; the
+     reader's comforting adds to them; the tears in the drawing show with `--sob`. */
+  .mt__turtle {
+    --pan: 0;
+    --settle: 0;
+    --depth: 0;
+    --sigh: 0;
+    --sigh-play: 0;
+    --sob: 0;
+    --count: 0;
+    --hide: 0;
+    --breath: 0;
+    inset-block-start: 55%;
+    inline-size: calc(var(--mt-figure) * 0.85);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    pointer-events: none;
+    filter: drop-shadow(0 8px 8px oklch(0% 0 0 / 0.3));
+    opacity: calc(1 - var(--depth));
+    transform: translate(
+        calc(
+          (1 - var(--pan)) *
+          120vw +
+          25vw *
+          (1 - var(--settle)) +
+          var(--mt-radius) *
+          0.4 *
+          var(--settle)
+        ),
+        calc(var(--settle) * 19.5dvh + (var(--sigh) + var(--sigh-play)) * -1.4vmin)
+      )
+      rotate(calc(var(--count) * 3deg + var(--hide) * 12deg))
+      scale(
+        calc(1 + var(--settle) * 0.33 + var(--breath) * 0.06 - var(--hide) * 0.05),
+        calc(
+          1 +
+          var(--settle) *
+          0.33 +
+          var(--breath) *
+          0.08 +
+          (var(--sigh) + var(--sigh-play)) *
+          0.05 -
+          var(--hide) *
+          0.05
+        )
+      );
+  }
+
+  .mt__turtle[data-tappable] {
+    pointer-events: auto;
+  }
+
+  .mt__turtle:focus-visible {
+    outline: 3px solid oklch(40% 0.15 250);
+    outline-offset: 4px;
+  }
+
+  .mt__turtle .lq__tear {
+    opacity: var(--sob);
+    transform: translateY(calc(var(--sob) * 10px));
+  }
+
+  /* Tears that drop into the sea while he cries. */
+  .mt__drop {
+    position: absolute;
+    inset-inline-start: calc(-8% + var(--d) * 5%);
+    inset-block-start: -72%;
+    inline-size: 1.6vmin;
+    aspect-ratio: 2 / 3;
+    border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+    background: oklch(85% 0.06 230 / 0.9);
+    opacity: 0;
+  }
+
+  .mt__turtle[data-crying] .mt__drop {
+    animation: mt-drop 1.3s ease-in infinite;
+    animation-delay: calc(var(--d) * -0.33s);
+  }
+
+  /* The Drawling-master rises out of the sea in coils; the old crab comes along the shingle. */
+  .mt__eel {
+    --up: 0;
+    inset-block-start: 60%;
+    inline-size: clamp(8rem, 28vmin, 16rem);
+    block-size: 20vmin;
+    overflow: hidden;
+    transform: translate(-40vw, -100%);
+    opacity: var(--up);
+  }
+
+  .mt__eel .art {
+    translate: -50% calc((1 - var(--up)) * 100%);
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 0;
+  }
+
+  .mt__crab {
+    --in: 0;
+    inset-block-start: 88%;
+    inline-size: clamp(5rem, 14vmin, 8rem);
+    transform: translateX(calc(70vw - var(--in) * 46vw));
+    opacity: var(--in);
+  }
+
+  /* --- Hjckrrh!: the Gryphon's noise as a big jagged word. */
+  .mt__cry {
+    pointer-events: none;
+  }
+
+  .mt__cry-word {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 36%;
+    translate: -50% -50%;
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 900;
+    font-size: clamp(3rem, 13vmin, 8rem);
+    letter-spacing: 0.04em;
+    color: oklch(38% 0.1 60);
+    text-shadow:
+      0 0 2px oklch(100% 0 0),
+      0 3px 0 oklch(90% 0.05 80);
+    white-space: nowrap;
+    opacity: 0;
+  }
+
+  .mt__letter {
+    display: inline-block;
+  }
+
+  .mt__cry-word .mt__letter:nth-child(odd) {
+    rotate: -9deg;
+    translate: 0 -0.12em;
+  }
+
+  .mt__cry-word .mt__letter:nth-child(even) {
+    rotate: 7deg;
+    translate: 0 0.1em;
+  }
+
+  .mt__cry-word .mt__letter:nth-child(3n) {
+    scale: 1.18;
+  }
+
+  /* --- The school in the sea, in depth: the picture goes under the water. */
+  .mt__school {
+    --depth: 0;
+    --attend: 0;
+    pointer-events: none;
+    perspective: 900px;
+    perspective-origin: 50% 40%;
+    overflow: hidden;
+    opacity: var(--depth);
+    transform: translateY(calc((1 - var(--depth)) * 100%));
+  }
+
+  .mt__deep {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, var(--mt-deep), var(--mt-deeper));
+  }
+
+  .mt__caustic {
+    position: absolute;
+    inset: -20%;
+    background: radial-gradient(
+      ellipse at center,
+      oklch(96% 0.03 200 / 0.4) 0 10%,
+      transparent 42%
+    );
+    background-size: 21vmin 12vmin;
+    mix-blend-mode: screen;
+    opacity: 0.3;
+    rotate: -6deg;
+    animation: mt-caustic 7s ease-in-out infinite alternate;
+  }
+
+  .mt__caustic--b {
+    background-size: 14vmin 9vmin;
+    opacity: 0.2;
+    rotate: 5deg;
+    animation-duration: 5s;
+    animation-direction: alternate-reverse;
+  }
+
+  .mt__school-world {
+    --lean: 0;
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform: rotateY(calc(var(--lean) * 4deg));
+  }
+
+  .mt__sand {
+    position: absolute;
+    inset-inline: -30%;
+    inset-block: 64% 0;
+    background: linear-gradient(to bottom, oklch(70% 0.06 80 / 0.7), oklch(52% 0.06 70));
+  }
+
+  .mt__master {
+    --rap: 0;
+    position: absolute;
+    inset-inline-start: 22%;
+    inset-block-start: 64%;
+    inline-size: clamp(6rem, 20vmin, 11rem);
+    transform: translate3d(-50%, -100%, -30vmin);
+  }
+
+  .mt__master .art,
+  .mt__pupil .art {
+    display: block;
+    inline-size: 100%;
+  }
+
+  .mt__master svg,
+  .mt__pupil svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .mt__master .art__cane {
+    transform-origin: 82% 50%;
+    transform: rotate(calc(var(--rap) * -22deg));
+  }
+
+  .mt__row {
+    position: absolute;
+    inset-inline: 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .mt__row--far {
+    inset-block-start: 61%;
+    gap: 12vmin;
+    transform: translateZ(-24vmin);
+  }
+
+  .mt__row--mid {
+    inset-block-start: 69%;
+    gap: 26vmin;
+    transform: translateZ(-12vmin);
+  }
+
+  .mt__row--near {
+    inset-block-start: 79%;
+    gap: 50vmin;
+  }
+
+  .mt__desk {
+    position: relative;
+    inline-size: clamp(3.5rem, 11vmin, 6.5rem);
+  }
+
+  .mt__desk-top {
+    block-size: 1.4vmin;
+    border-radius: 3px;
+    background: linear-gradient(to bottom, oklch(52% 0.08 60), oklch(40% 0.08 60));
+    box-shadow: 0 1vmin 1vmin oklch(0% 0 0 / 0.3);
+  }
+
+  .mt__pupil {
+    position: absolute;
+    inset-inline: 10%;
+    inset-block-end: 90%;
+    translate: 0 calc(var(--attend) * -1.4vmin);
+    transition: translate var(--demo-calm) var(--demo-ease);
+  }
+
+  .mt__pupil .art {
+    animation: mt-float 3s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -0.7s);
+  }
+
+  .mt__bubbles {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+  }
+
+  .mt__bubble {
+    position: absolute;
+    inset-inline-start: var(--x);
+    inset-block-end: -6vh;
+    inline-size: calc(var(--size) * 1vmin);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 2px solid oklch(96% 0.02 220 / 0.8);
+    opacity: 0;
+  }
+
+  .mt__bubbles[data-on] .mt__bubble {
+    animation: mt-rise 4s linear infinite;
+    animation-delay: var(--delay);
+  }
+
+  /* --- The subjects, written on the wet sand: each word its own element made
+     of letters, each letter able to writhe. `--show` writes a group, `--wash`
+     takes it, and each word lags the one before by its index. */
+  .mt__subjects {
+    pointer-events: none;
+  }
+
+  .mt__sand-words {
+    position: absolute;
+    inset-inline: 5%;
+    inset-block: 60.5% 30.5%;
+    touch-action: pan-y;
+  }
+
+  .mt__subjects[data-tappable] .mt__sand-words {
+    pointer-events: auto;
+  }
+
+  .mt__group {
+    --show: 0;
+    --wash: 0;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+    gap: 0 1em;
+  }
+
+  .mt__subject {
+    --s: clamp(0, calc(var(--show) * 2.2 - var(--i) * 0.16), 1);
+    --w: clamp(0, calc(var(--wash) * 1.7 - var(--i) * 0.09), 1);
+    display: inline-block;
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: clamp(1rem, 3.4vmin, 1.7rem);
+    letter-spacing: 0.06em;
+    color: var(--mt-sand-ink);
+    text-shadow: 0 1px 0 oklch(92% 0.03 80 / 0.8);
+    cursor: pointer;
+    opacity: calc(var(--s) * (1 - var(--w)));
+    translate: calc(var(--w) * 4vw) calc((1 - var(--s)) * 0.5em - var(--w) * 2vh);
+  }
+
+  .mt__subject[data-uglified] .mt__letter {
+    animation: mt-writhe 0.5s ease-in-out 3 alternate;
+    animation-delay: calc(var(--l) * -0.09s);
+  }
+
+  /* The wave that comes in over the words and goes back. */
+  .mt__wash-wave {
+    --wave: 0;
+    position: absolute;
+    inset-inline: -10%;
+    inset-block: 54% 24%;
+    border-start-start-radius: 50% 40%;
+    border-start-end-radius: 50% 40%;
+    background: linear-gradient(
+      to bottom,
+      oklch(97% 0.02 220 / 0.95),
+      oklch(74% 0.09 215 / 0.8) 35%,
+      oklch(64% 0.11 220 / 0.55)
+    );
+    opacity: min(1, var(--wave) * 3);
+    transform: translateY(calc(-100% + var(--wave) * 120%));
+  }
+
+  /* --- Lessons: a row of suns that lessen from day to day. */
+  .mt__days {
+    --off: 0;
+    pointer-events: none;
+    opacity: calc(1 - var(--off));
+    transform: translateX(calc(var(--off) * -120vw));
+  }
+
+  .mt__day-row {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 12%;
+    display: flex;
+    justify-content: center;
+    gap: clamp(0.3rem, 1.4vmin, 1rem);
+    padding-inline: 4%;
+  }
+
+  .mt__day {
+    --on: 0;
+    --k: 1;
+    display: grid;
+    place-items: center;
+    inline-size: clamp(1.4rem, 6vmin, 3.4rem);
+    aspect-ratio: 1;
+    opacity: var(--on);
+    scale: calc(0.6 + var(--on) * 0.4);
+  }
+
+  .mt__day-sun {
+    inline-size: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, oklch(96% 0.12 90), oklch(86% 0.16 80));
+    box-shadow: 0 0 1.5vmin oklch(90% 0.15 85 / 0.7);
+    scale: var(--k);
+  }
+
+  .mt__day--holiday .mt__day-sun {
+    background: none;
+    border: 0.35vmin dashed oklch(62% 0.05 80);
+    box-shadow: none;
+  }
+
+  .mt__day--twelfth .mt__day-sun {
+    background: none;
+    border: 0.35vmin solid oklch(62% 0.05 80 / 0.35);
+    box-shadow: none;
+    scale: 0.55;
+  }
+
+  /* --- Props. */
+  .mt__prop--comfort,
+  .mt__prop--wash,
+  .mt__prop--uglify {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: -50% 0;
+  }
+
+  .mt__prop--comfort {
+    inset-inline: auto 1rem;
+    translate: 0 0;
+  }
+
+  .mt__prop--wash {
+    translate: calc(-100% - 0.3rem) 0;
+  }
+
+  .mt__prop--uglify {
+    translate: 0.3rem 0;
+  }
+
+  /* The Gryphon's walk, last of the `.art` rules so its specificity reads in order. */
+  .mt__figures[data-walking] .mt__gryphon .art {
+    animation: mt-walk 0.45s ease-in-out infinite alternate;
+  }
+
+  .demo[data-paused] .mt__caustic,
+  .demo[data-paused] .mt__pupil .art,
+  .demo[data-paused] .mt__turtle[data-crying] .mt__drop,
+  .demo[data-paused] .mt__bubbles[data-on] .mt__bubble,
+  .demo[data-paused] .mt__subject[data-uglified] .mt__letter,
+  .demo[data-paused] .mt__figures[data-walking] .mt__gryphon .art {
+    animation-play-state: paused;
+  }
+
+  @keyframes mt-walk {
+    from {
+      transform: translateY(0) rotate(-2deg);
+    }
+
+    to {
+      transform: translateY(-7%) rotate(3deg);
+    }
+  }
+
+  @keyframes mt-drop {
+    from {
+      transform: translateY(0) scale(0.6);
+      opacity: 0.95;
+    }
+
+    to {
+      transform: translateY(26vmin) scale(1);
+      opacity: 0;
+    }
+  }
+
+  @keyframes mt-caustic {
+    from {
+      transform: translate(0, 0) scale(1);
+    }
+
+    to {
+      transform: translate(6vmin, 3vmin) scale(1.12);
+    }
+  }
+
+  @keyframes mt-float {
+    from {
+      transform: translateY(0) rotate(-3deg);
+    }
+
+    to {
+      transform: translateY(-1.6vmin) rotate(3deg);
+    }
+  }
+
+  @keyframes mt-rise {
+    from {
+      transform: translateY(0) translateX(0);
+      opacity: 0.9;
+    }
+
+    to {
+      transform: translateY(-110vh) translateX(3vmin);
+      opacity: 0;
+    }
+  }
+
+  @keyframes mt-writhe {
+    0% {
+      transform: translateY(0) rotate(0) skewX(0);
+    }
+
+    50% {
+      transform: translateY(0.18em) rotate(-14deg) skewX(18deg) scaleX(0.85);
+    }
+
+    100% {
+      transform: translateY(-0.24em) rotate(16deg) skewX(-14deg);
+    }
+  }
+
+  @media (max-width: 700px) {
+    .mt__prop--comfort {
+      inset-block-start: calc(var(--demo-bar-height) + 3.4rem);
+    }
+
+    .demo--mock-turtle[data-words] .demo-beat {
+      inset-block-start: calc(var(--demo-bar-height) + 6.5rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* The descent is a cross-fade, the settle a cut; the shore holds still. */
+    .mt__shore,
+    .mt__school,
+    .mt__days {
+      transform: none;
+    }
+
+    .mt__caustic,
+    .mt__pupil .art,
+    .mt__subject[data-uglified] .mt__letter,
+    .mt__figures[data-walking] .mt__gryphon .art {
+      animation: none;
+    }
+
+    .mt__pupil {
+      transition: none;
+    }
+
+    /* Tears hang in the air; bubbles hold their places. */
+    .mt__turtle[data-crying] .mt__drop {
+      animation: none;
+      opacity: 0.6;
+      transform: translateY(calc(var(--d) * 5vmin + 3vmin));
+    }
+
+    .mt__bubbles[data-on] .mt__bubble {
+      animation: none;
+      transform: translateY(calc(var(--ly, 0) * -90vh));
+      opacity: 0.6;
+    }
+
+    /* The words fade rather than drift, and no wave comes for them. */
+    .mt__subject {
+      translate: 0 0;
+    }
+
+    .mt__wash-wave {
+      opacity: 0;
+    }
+
+    /* Uglified letters are jumbled where they stand. */
+    .mt__subject[data-uglified] .mt__letter:nth-child(odd) {
+      translate: 0 -0.18em;
+      rotate: 12deg;
+    }
+
+    .mt__subject[data-uglified] .mt__letter:nth-child(even) {
+      translate: 0 0.12em;
+      rotate: -10deg;
+    }
+  }
+}

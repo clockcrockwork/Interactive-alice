@@ -92,7 +92,16 @@
         "demoOpenEyes",
         "demoSnail",
         "demoTechPig",
-        "demoTechMockTurtle"
+        "demoTechMockTurtle",
+        "demoBow",
+        "demoPepper",
+        "demoDuck",
+        "demoBatPan",
+        "demoHoldTight",
+        "demoPokeBaby",
+        "demoComfort",
+        "demoWash",
+        "demoUglify"
       ],
       "additionalProperties": false,
       "properties": {
@@ -455,6 +464,51 @@
           "type": "string",
           "minLength": 1,
           "description": "Technique note on the demo index card for the Mock Turtle's story."
+        },
+        "demoBow": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that makes the two footmen bow again, tangling their curls."
+        },
+        "demoPepper": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button, and the cauldron's label: more pepper, and a sneeze."
+        },
+        "demoDuck": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that ducks the reader under the flying pots and pans."
+        },
+        "demoBatPan": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Label on a pan stuck to the glass: a tap bats it away."
+        },
+        "demoHoldTight": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that knots the baby into a bundle in her arms."
+        },
+        "demoPokeBaby": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Label on the baby in her arms: a tap makes it grunt and turn a little more pig."
+        },
+        "demoComfort": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button on the Mock Turtle: comforting him makes him sigh harder and the sea heave."
+        },
+        "demoWash": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that sends a wave over the subject words written on the sand."
+        },
+        "demoUglify": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that makes one of the subject words writhe; tapping a word does the same."
         }
       }
     }

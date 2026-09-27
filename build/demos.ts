@@ -196,6 +196,15 @@ const UI_FOR_SCRIPT = [
   'demoSomersault',
   'demoOpenEyes',
   'demoSnail',
+  'demoBow',
+  'demoPepper',
+  'demoDuck',
+  'demoBatPan',
+  'demoHoldTight',
+  'demoPokeBaby',
+  'demoComfort',
+  'demoWash',
+  'demoUglify',
 ] as const;
 
 export function titleOf(project: DemoProject, demo: ExperienceConceptDemoFile): string {

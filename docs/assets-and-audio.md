@@ -1,6 +1,6 @@
 # Images, music and sound
 
-> Canonical document for how visual and audio assets enter the project, what they must satisfy, and how the experience plays them. Weight budgets live in [`performance-budget.md`](performance-budget.md); credits and provenance rules live in [`../CREDITS.md`](../CREDITS.md).
+> Canonical document for how visual and audio assets enter the project, what they must satisfy, and how the experience plays them. Visual palette and SVG/raster selection rules live in [`visual-design.md`](visual-design.md); weight budgets live in [`performance-budget.md`](performance-budget.md); credits and provenance rules live in [`../CREDITS.md`](../CREDITS.md).
 
 ## 1. Where assets come from
 
@@ -43,6 +43,11 @@ Rules for use:
 
 - every raster asset is referenced through the bundler so it is hashed and
   relative-path safe;
+- **do not pursue an all-SVG scene by default**: dense static backgrounds and
+  print/texture-heavy compositions should normally be rasterized, while elements
+  that need independent movement, recoloring, interaction, or reuse may remain SVG
+  or transparent raster assets; the decision procedure is in
+  [`visual-design.md`](visual-design.md);
 - a layer that is flat colour, a gradient, or a simple shape is CSS or SVG, not a
   raster file;
 - silhouettes and geometric placeholders are legitimate shipping assets during

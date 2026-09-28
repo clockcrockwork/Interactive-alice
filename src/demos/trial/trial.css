@@ -16,8 +16,9 @@
     --tr-card: var(--paper-base);
     --tr-card-ink: var(--ink-primary);
     --tr-card-red: var(--wonder-red);
-    --tr-leaf: var(--sepia-light);
-    --tr-leaf-deep: var(--world-leaf);
+    /* The leaves of a golden afternoon turning: sepia toward the book's own red. */
+    --tr-leaf: color-mix(in oklch, var(--paper-aged), var(--wonder-red-faded) 30%);
+    --tr-leaf-deep: color-mix(in oklch, var(--sepia-mid), var(--wonder-red) 45%);
     --tr-sky: var(--paper-warm);
     --tr-sky-high: var(--world-sky-deep);
     --tr-bank: var(--world-leaf);
@@ -409,7 +410,7 @@
     inset-block-start: -8vh;
     inline-size: clamp(1.2rem, 3.2vmin, 2.2rem);
     aspect-ratio: 1 / 1.4;
-    /* Each leaf between the light sepia and the world's leaf, by its `--turn`. */
+    /* Each leaf between the aged paper and the turned red, by its `--turn`. */
     background: color-mix(
       in oklch,
       var(--tr-leaf),

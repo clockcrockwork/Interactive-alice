@@ -689,7 +689,9 @@ spin: about half reach the glass and stay there, re-parented into a screen-space
 with a slap, the rest streak past. The stuck cards shy away from the pointer. When the
 bank arrives they turn into dead leaves (a `clip-path: path()` morph between a card
 and a leaf with the same number of points) and drift down, a whole shower of other
-leaves comes down with them, and the sister is behind them.
+leaves comes down with them, and the sister is behind them. The leaves are the
+leaves of a golden afternoon turning: aged paper toward the book's own red, each by
+its own degree, so the pack's red carries into the bank rather than going green.
 
 The jury write it all down: every sentence lands as a scribble on each slate and each
 juror marks whether it thought it important; press a juror and it changes its mind.

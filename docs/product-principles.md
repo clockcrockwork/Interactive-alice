@@ -186,13 +186,24 @@ Layout must assume that translations can change line length substantially.
 
 Language support is a structural requirement even if the Rabbit Hole PoC initially contains placeholder text only.
 
-## 7. Visual direction is intentionally deferred
+## 7. Visual direction is defined, but PoC work remains placeholder-tolerant
 
-The Rabbit Hole PoC must not become blocked by final Alice character design, final illustration style, or final production assets.
+The canonical color system and SVG/raster asset strategy now live in
+[`visual-design.md`](visual-design.md).
 
-Use temporary shapes, silhouettes, neutral props, generated placeholders, or debug layers to prove movement and interaction first.
+The Rabbit Hole PoC still must not become blocked by finished character art or final
+production assets. Temporary shapes, silhouettes, generated placeholders, or debug layers
+remain valid when they prove movement and interaction faster.
 
-The PoC succeeds when the interaction concept feels convincing **without depending on finished artwork**.
+The distinction is:
+
+- **visual rules are now intentional** — sepia Wonderland, stable yellow/brown Alice,
+  symbolic Wonderland Red, and transient contemporary interaction colors;
+- **asset finish is not a prerequisite** — a PoC may use placeholders while preserving
+  the intended contrast, layering, and interaction semantics.
+
+The PoC succeeds when the interaction concept feels convincing without requiring finished
+artwork, while no longer treating the project's visual language as undefined.
 
 ## 8. Decision rule for adding spectacle
 

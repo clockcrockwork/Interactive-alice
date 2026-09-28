@@ -112,8 +112,20 @@
       rotateX(calc(var(--tilt) * 1deg)) translateY(calc(-100% + var(--sink) * 70%))
       rotateX(calc(var(--flat) * -84deg));
     transform-origin: 50% 100%;
-    filter: drop-shadow(0 14px 14px var(--cq-shadow));
     pointer-events: none;
+  }
+
+  /* A pool of shadow at the feet, not a drop-shadow filter: the garden has many
+     pieces and a filter re-rasterises each on every frame of the walk. */
+  .cq__piece::after {
+    content: "";
+    position: absolute;
+    inset-inline: 6%;
+    inset-block-end: -2%;
+    block-size: 8%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 50%, var(--cq-shadow), transparent 72%);
+    z-index: -1;
   }
 
   .cq__piece .art,

@@ -155,7 +155,10 @@ where the landing happens, whatever number of beats precede it. Nothing may be p
 past the last beat: a tween that runs beyond it stretches the timeline, and then the
 scroll no longer lands each beat on its own unit of time. The shell reports such an
 overrun as a console error once the demo has composed, so the browser tests catch it,
-and the seam exposes it as `overrun()`. The link to the next demo is pinned to the bottom of the
+and the seam exposes it as `overrun()`. The seam also reports `settled()`, whether
+the scrubbed timeline has caught up with the scroll: the browser tests wait on it
+after every scroll instead of on a fixed delay, so a slow test machine makes them
+slower, not wrong. The link to the next demo is pinned to the bottom of the
 stage's last frame; on the last beat the shell marks the page `data-ending` and the
 captions lift clear of it (`--demo-end-lift`, which a demo whose captions sit high
 sets to zero).
@@ -746,6 +749,13 @@ doors and the trial opens inside them; the kitchen ends at the bough the Cat ope
 the Mock Turtle's breath is the quadrille's first sigh), and scrolling back undoes it; no demo's
 timeline overruns its beats; and the index's picker chooses an Alice the next page
 still wears.
+
+What costs frames, and what was done about it, is in
+[`performance-budget.md`](performance-budget.md) §2: a drop-shadow filter on many
+pieces became a shadow at their feet (the trial, the croquet-ground); a layer that a
+zoom paints at five times the screen, or that is faded to nothing but still painted,
+is composited and hidden (the kitchen); the Canvas sea is drawn smaller than the
+screen; the WebGL well draws only while it can be seen.
 
 `npm run check:frontend` covers the demo code with the same rules as the scenes:
 no prose in code, no absolute paths, no inline style writes other than custom

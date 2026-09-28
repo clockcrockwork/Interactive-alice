@@ -500,9 +500,25 @@ function mount(shell: DemoShell): void {
     const resize = (): void => well.resize(shell.stage.clientWidth, shell.stage.clientHeight);
     new ResizeObserver(resize).observe(shell.stage);
     resize();
+    // Draw only while the well can be seen, and only when a frame would differ:
+    // the surface before the drop and the hall after the doors leave the canvas
+    // invisible, and a paused page or a stepped (reduced-motion) camera needs a
+    // new frame only when the camera has moved.
+    let lastPose = '';
     gsap.ticker.add(() => {
+      const t = master.time();
+      if (t < iDrop || t > iEnd + 0.85) {
+        return;
+      }
       if (reducedMotion) {
         well.tick(0, elapsedSeen);
+      }
+      if (shell.paused || reducedMotion) {
+        const pose = `${camera.depth.toFixed(3)}|${camera.roll.toFixed(3)}|${camera.driftX.toFixed(3)}|${camera.driftY.toFixed(3)}|${camera.shake.toFixed(3)}|${camera.mood.toFixed(3)}|${camera.floor.toFixed(3)}`;
+        if (pose === lastPose) {
+          return;
+        }
+        lastPose = pose;
       }
       well.render();
     });

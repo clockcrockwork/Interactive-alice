@@ -120,6 +120,9 @@
   }
 
   .tr__court {
+    /* Composited: the dolly and the tremble then move a texture of the paper
+       theatre instead of painting its hundred pieces again on every frame. */
+    will-change: transform;
     --cam-x: 0;
     --cam-z: 0;
     --cam-ry: 0;
@@ -141,7 +144,20 @@
     inset-block-end: 22%;
     inline-size: var(--w, 12rem);
     transform: translate3d(calc(-50% + var(--x, 0) * 1vw), 0, calc(var(--z, 0) * 1px));
-    filter: drop-shadow(0 18px 24px var(--tr-ink-shadow));
+  }
+
+  /* A soft pool of shadow at the feet rather than a drop-shadow filter: a filter
+     re-rasterises every piece on every frame the court trembles or the dolly
+     moves, and the pack is a hundred pieces. */
+  .tr__piece::after {
+    content: "";
+    position: absolute;
+    inset-inline: 8%;
+    inset-block-end: -3%;
+    block-size: 9%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 50%, var(--tr-ink-shadow), transparent 72%);
+    z-index: -1;
   }
 
   .tr__backdrop {

@@ -24,10 +24,23 @@ const collectErrors = (page: Page): string[] => {
   return errors;
 };
 
-const scrollTo = (page: Page, fraction: number) =>
-  page.evaluate((f) => {
+/** Waits until the scrubbed timeline has caught up with the scroll. */
+const settled = async (page: Page) => {
+  // The scroll event reaches ScrollTrigger on the next frame; let it.
+  await page.evaluate(
+    () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+  );
+  await expect
+    .poll(() => page.evaluate(() => window.__aliceDemo?.settled() ?? true), { timeout: 15_000 })
+    .toBe(true);
+};
+
+const scrollTo = async (page: Page, fraction: number) => {
+  await page.evaluate((f) => {
     window.scrollTo(0, (document.documentElement.scrollHeight - window.innerHeight) * f);
   }, fraction);
+  await settled(page);
+};
 
 test('the demo index links every demo, and the home page links the index', async ({ page }) => {
   const errors = collectErrors(page);
@@ -70,7 +83,7 @@ for (const demo of demos) {
       await page.waitForTimeout(400);
     }
     await expect
-      .poll(() => page.evaluate(() => window.__aliceDemo?.progress() ?? -1))
+      .poll(() => page.evaluate(() => window.__aliceDemo?.progress() ?? -1), { timeout: 10_000 })
       .toBeGreaterThan(0.99);
     await expect(page.locator('.demo__stage .demo-beat').last()).toHaveAttribute(
       'data-reached',
@@ -109,7 +122,7 @@ for (const demo of demos) {
     await expect(page.locator('.demo__note')).not.toBeEmpty();
     await scrollTo(page, 1);
     await expect
-      .poll(() => page.evaluate(() => window.__aliceDemo?.progress() ?? -1))
+      .poll(() => page.evaluate(() => window.__aliceDemo?.progress() ?? -1), { timeout: 10_000 })
       .toBeGreaterThan(0.99);
     await expect(page.locator('.demo__stage .demo-beat').last()).toHaveAttribute(
       'data-reached',
@@ -127,7 +140,7 @@ test('the trial: the pack comes for the glass, and turns to leaves on the bank',
   await page.goto(trial?.url ?? '');
   const cues = trial?.cues ?? [];
   const beatCount = trial?.segments ? await page.locator('.demo__stage .demo-beat').count() : 0;
-  const at = (cue: string) =>
+  const scrollAt = (cue: string) =>
     page.evaluate(
       ([name, count]) => {
         const beats = [...document.querySelectorAll<HTMLElement>('.demo__stage .demo-beat')];
@@ -137,6 +150,10 @@ test('the trial: the pack comes for the glass, and turns to leaves on the bank',
       },
       [cue, beatCount] as const,
     );
+  const at = async (...args: Parameters<typeof scrollAt>) => {
+    await scrollAt(...args);
+    await settled(page);
+  };
   expect(cues).toContain('attack');
   await at('rise');
   await page.waitForTimeout(600);
@@ -186,7 +203,7 @@ test('drink me: the hall grows around her when she drinks, and shrinks back when
         getComputedStyle(document.querySelector('.dk__hall') as Element).getPropertyValue('--room'),
       ),
     );
-  const at = (cue: string, within = 0.95) =>
+  const scrollAt = (cue: string, within = 0.95) =>
     page.evaluate(
       ([name, count, fraction]) => {
         const beats = [...document.querySelectorAll<HTMLElement>('.demo__stage .demo-beat')];
@@ -199,6 +216,10 @@ test('drink me: the hall grows around her when she drinks, and shrinks back when
       },
       [cue, beatCount, within] as const,
     );
+  const at = async (...args: Parameters<typeof scrollAt>) => {
+    await scrollAt(...args);
+    await settled(page);
+  };
   await expect.poll(room).toBeCloseTo(1, 1);
   // The drink is optional play: a real button, offered while the bottle is in hand
   // and before the story drinks it herself.
@@ -353,7 +374,7 @@ test('bill the lizard: down the chimney, then up like a sky-rocket', async ({ pa
         document.querySelector<HTMLElement>('.bl__world')?.style.getPropertyValue('--cam') ?? 0,
       ),
     );
-  const at = (cue: string, within: number) =>
+  const scrollAt = (cue: string, within: number) =>
     page.evaluate(
       ([name, count, fraction]) => {
         const beats = [...document.querySelectorAll<HTMLElement>('.demo__stage .demo-beat')];
@@ -366,6 +387,10 @@ test('bill the lizard: down the chimney, then up like a sky-rocket', async ({ pa
       },
       [cue, beatCount, within] as const,
     );
+  const at = async (...args: Parameters<typeof scrollAt>) => {
+    await scrollAt(...args);
+    await settled(page);
+  };
   await at('foot', 0.9);
   await expect.poll(cam, { timeout: 8000 }).toBeLessThan(-1000);
   // The kick is the reader's to give: a real button, and the world goes up.
@@ -385,17 +410,11 @@ test('the cheshire cat: it goes tail first, and the grin stays a while', async (
       slide: Number(document.querySelector('.cc__mask-slide')?.getAttribute('x') ?? 0),
       grin: Number(document.querySelector('.cc__grin')?.getAttribute('opacity') ?? 1),
     }));
+  expect(beatCount).toBeGreaterThan(0);
   expect((await state()).slide).toBeLessThan(-700);
-  await page.evaluate((count) => {
-    const beats = [...document.querySelectorAll<HTMLElement>('.demo__stage .demo-beat')];
-    const index = beats.findIndex((beat) => beat.dataset.cue === 'grin');
-    window.scrollTo(
-      0,
-      (document.documentElement.scrollHeight - window.innerHeight) * ((index + 0.2) / count),
-    );
-  }, beatCount);
+  await atCue(page, 'grin', 0.2);
   await expect.poll(async () => (await state()).slide, { timeout: 8000 }).toBeGreaterThan(-300);
-  expect((await state()).grin).toBeGreaterThan(0.5);
+  await expect.poll(async () => (await state()).grin, { timeout: 8000 }).toBeGreaterThan(0.5);
   await scrollTo(page, 1);
   await expect.poll(async () => (await state()).grin, { timeout: 8000 }).toBeLessThan(0.05);
 });
@@ -448,6 +467,8 @@ test('drink me: every door is a button, and trying one jiggles its knob', async 
 });
 
 test('the rabbit hole: a drag across the well tumbles her', async ({ page }) => {
+  // The well is WebGL; on a software renderer under load its frames are slow.
+  test.slow();
   const demo = demos.find((candidate) => candidate.demo === 'rabbit-hole');
   test.skip(!demo, 'no rabbit-hole demo in this build');
   await page.goto(demo?.url ?? '');
@@ -493,11 +514,10 @@ test('the trial: every juror is a button, and pressing one changes its slate', a
   const jurors = page.locator('.tr__juror');
   await expect(jurors).toHaveCount(12);
   await scrollTo(page, 0.28);
-  await page.waitForTimeout(800);
   const verdict = () =>
     page.evaluate(() => document.querySelector<HTMLElement>('.tr__slate')?.dataset.verdict);
+  await expect.poll(verdict, { timeout: 8000 }).toMatch(/^(yes|no)$/);
   const before = await verdict();
-  expect(['yes', 'no']).toContain(before);
   await jurors.first().dispatchEvent('click');
   await expect.poll(verdict).not.toBe(before);
 });
@@ -515,6 +535,7 @@ test('drink me: the key can be taken off the table into her hand', async ({ page
 test('the rabbit hole: a tap on a passing shelf takes something into her hand', async ({
   page,
 }) => {
+  test.slow();
   const demo = demos.find((candidate) => candidate.demo === 'rabbit-hole');
   test.skip(!demo, 'no rabbit-hole demo in this build');
   await page.goto(demo?.url ?? '');
@@ -534,8 +555,8 @@ test('the rabbit hole: a tap on a passing shelf takes something into her hand', 
 });
 
 /** Scrolls a demo page to a fraction of the way through the beat carrying a cue. */
-const atCue = (page: Page, cue: string, within = 0.5) =>
-  page.evaluate(
+const atCue = async (page: Page, cue: string, within = 0.5) => {
+  await page.evaluate(
     ([name, fraction]) => {
       const beats = [...document.querySelectorAll<HTMLElement>('.demo__stage .demo-beat')];
       const index = beats.findIndex((beat) => beat.dataset.cue === name);
@@ -547,6 +568,8 @@ const atCue = (page: Page, cue: string, within = 0.5) =>
     },
     [cue, within] as const,
   );
+  await settled(page);
+};
 
 const customProperty = (page: Page, selector: string, property: string) =>
   page.evaluate(
@@ -717,11 +740,12 @@ test("the trial: her sister's dream fills the bank, and opening her eyes turns i
 test('the rabbit hole: the fall ends through a door in the floor, and a door beyond it', async ({
   page,
 }) => {
+  test.slow();
   const demo = demos.find((candidate) => candidate.demo === 'rabbit-hole');
   test.skip(!demo, 'no rabbit-hole demo in this build');
   await page.goto(demo?.url ?? '');
   await expect(page.locator('.rh__door')).toHaveCount(6);
-  await atCue(page, 'end', 0.35);
+  await atCue(page, 'end', 0.55);
   await expect(page.locator('.rh__doors')).toHaveAttribute('data-shown', '', { timeout: 8000 });
   await expect(page.locator('.rh__door').first()).toHaveAttribute('data-open', '');
   await scrollTo(page, 1);

@@ -269,7 +269,10 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
     resize(w, h) {
       width = w;
       height = h;
-      dpr = Math.min(window.devicePixelRatio, 2);
+      // The sea is soft: it is drawn at under two thirds of the screen's pixels
+      // and scaled up by the browser, which is most of its cost gone and no
+      // visible loss in a gradient and a swell.
+      dpr = Math.min(window.devicePixelRatio, 2) * 0.6;
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
     },

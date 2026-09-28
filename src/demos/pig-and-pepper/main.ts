@@ -303,8 +303,23 @@ function mount(shell: DemoShell): void {
     reducedMotion ? iIn + 0.7 : iIn + 0.45,
   );
   master.to(outside, { opacity: 0, duration: still(0.25) }, iIn + 0.75);
+  master.call(() => outside.toggleAttribute('data-away', master.time() >= iIn + 1), [], iIn + 1);
   master.fromTo(kitchen, { opacity: 0 }, { opacity: 1, duration: still(0.3) }, iIn + 0.7);
   master.fromTo(pepper, { opacity: 0 }, { opacity: 1, duration: 0.3 }, iIn + 0.85);
+  // Faded layers are hidden outright: the kitchen and its seventy drifting specks
+  // cost the same to paint at opacity zero.
+  kitchen.toggleAttribute('data-away', true);
+  pepper.toggleAttribute('data-away', true);
+  const away = (layer: HTMLElement, from: number, to: number): void => {
+    const apply = (): void => {
+      const t = master.time();
+      layer.toggleAttribute('data-away', t < from || t >= to);
+    };
+    master.call(apply, [], from);
+    master.call(apply, [], to);
+  };
+  away(kitchen, iIn + 0.7, iKnot + 1.05);
+  away(pepper, iIn + 0.85, iKnot + 0.85);
   wink(iIn + 0.7);
   master.call(
     () => shell.root.toggleAttribute('data-inside', master.time() >= iIn + 0.8),
@@ -734,6 +749,11 @@ function mount(shell: DemoShell): void {
   master.to(night, { opacity: 1, duration: 0.01 }, iKnot + 0.65);
   master.to(glass, { opacity: 0, duration: still(0.2) }, iKnot + 0.4);
   master.to(moon, { opacity: 1, duration: 0.01 }, iKnot + 0.65);
+  master.call(
+    () => outside.toggleAttribute('data-away', master.time() < iKnot + 0.65),
+    [],
+    iKnot + 0.65,
+  );
   master.to(outside, { opacity: 1, duration: still(0.3) }, iKnot + 0.7);
   master.to(
     world,

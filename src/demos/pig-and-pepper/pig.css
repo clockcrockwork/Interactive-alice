@@ -112,12 +112,23 @@
     background: var(--pp-night);
   }
 
+  /* While the kitchen is on, the outside is faded out and not merely invisible:
+     scaled five times about the door it would still be painted at that size. */
+  .pp__outside[data-away],
+  .pp__kitchen[data-away],
+  .pp__pepper[data-away] {
+    visibility: hidden;
+  }
+
   .pp__world {
     --cam-s: 1;
     --cam-x: 0;
     --look: 0;
     position: absolute;
     inset: 0;
+    /* Composited: the zoom through the door scales a texture instead of painting
+       the whole outside again at every step of the scale. */
+    will-change: transform;
     transform-origin: var(--ox, 62%) var(--oy, 84%);
     transform: translate(
         calc(var(--cam-x) * 1vw + var(--px) * -1.5vmin),
@@ -345,6 +356,8 @@
     --look-x: 0;
     position: absolute;
     inset: -12%;
+    /* Composited: every sneeze and every look moves a texture of the kitchen. */
+    will-change: transform;
     transform: translate(
         calc(var(--look-x) * -14vw + var(--jx) * 1px + var(--px) * -2vmin),
         calc(var(--jy) * 1px + var(--py) * -1.5vmin)
@@ -525,6 +538,8 @@
       ),
       linear-gradient(to bottom, oklch(from var(--pp-smoke) l c h / 0.35), transparent 60%);
     pointer-events: none;
+    /* Its fade is its own layer's, so the kitchen behind it is not repainted. */
+    will-change: opacity;
   }
 
   /* The Duchess's "Pig!" and her axes: Wonderland red, a flash, then gone. */

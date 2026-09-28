@@ -90,6 +90,8 @@ declare global {
       mode(): string;
       /** The master timeline's length against the beat count: they must agree. */
       overrun(): number;
+      /** Whether the scrubbed timeline has caught up with the scroll. */
+      settled(): boolean;
     };
   }
 }
@@ -388,6 +390,13 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     reduced: () => reducedMotion,
     mode: () => root.dataset.mode ?? '',
     overrun: () => master.duration() - beats.length,
+    settled: () => {
+      // With a smoothed scrub this is the tween easing the timeline after the
+      // scroll; with an instant one (reduced motion) there is none to wait for.
+      const tween = trigger.getTween?.() as { isActive?: () => boolean } | undefined;
+      const easing = typeof tween?.isActive === 'function' && tween.isActive();
+      return !easing && Math.abs(master.progress() - trigger.progress) < 0.002;
+    },
   };
   // A tween placed past the last beat stretches the timeline, and then the scroll
   // no longer lands each beat on its own unit of time. Say so once the demo has

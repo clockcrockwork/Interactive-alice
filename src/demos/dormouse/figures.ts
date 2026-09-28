@@ -9,5 +9,5 @@ export const TEAPOT_SVG = `
     <path d="M52 40 Q80 20 108 40 Z" fill="var(--dm-china-shade)"/>
     <circle cx="80" cy="26" r="6" fill="var(--dm-china-shade)"/>
   </g>
-  <path d="M56 72 q24 18 48 0" stroke="var(--dm-bubble-alice)" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M56 72 q24 18 48 0" stroke="var(--world-water)" stroke-width="4" fill="none" stroke-linecap="round"/>
 </svg>`;

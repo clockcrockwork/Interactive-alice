@@ -168,7 +168,8 @@ function mount(shell: DemoShell): void {
     () =>
       `<div class="dk__tear" style="--x: ${(8 + random() * 84).toFixed(1)}%; --delay: ${(-random() * 2.4).toFixed(2)}s; --ly: ${random().toFixed(2)}"></div>`,
   ).join('');
-  const flavourColours = ['oklch(62% 0.2 25)', 'oklch(88% 0.12 90)', 'oklch(70% 0.12 60)'];
+  // The tastes, in the interaction colours: they rise while she drinks and go.
+  const flavourColours = ['var(--ix-coral)', 'var(--ix-gold)', 'var(--ix-mint)'];
   flavours.innerHTML = Array.from(
     { length: 12 },
     (_, i) =>

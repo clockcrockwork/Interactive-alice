@@ -5,19 +5,23 @@
 
 @layer tokens {
   :root {
-    --cc-night: oklch(22% 0.06 280);
-    --cc-night-low: oklch(30% 0.08 300);
-    --cc-mad: oklch(36% 0.16 320);
-    --cc-moon: oklch(94% 0.05 95);
-    --cc-tree-far: oklch(26% 0.05 280);
-    --cc-tree-mid: oklch(18% 0.04 280);
-    --cc-tree-near: oklch(10% 0.02 280);
-    --cc-mist: oklch(60% 0.05 280 / 0.35);
-    --cc-cat: oklch(72% 0.12 320);
-    --cc-cat-stripe: oklch(52% 0.14 320);
-    --cc-grin: oklch(97% 0.02 90);
-    --cc-firefly: oklch(92% 0.16 110);
-    --cc-sign: oklch(40% 0.06 60);
+    /* The night wood, in the book's own night: deep at the top, the printed
+       night lower where the mist is. Trunks are ink; the Cat is a sepia print
+       with a paper grin; the moon and stars are the world's glow; fireflies
+       and the chalk way are the reader's gold, and go out. */
+    --cc-night: var(--world-night-deep);
+    --cc-night-low: var(--world-night);
+    --cc-moon: var(--world-glow);
+    --cc-tree-far: color-mix(in oklch, var(--ink-primary), var(--world-night) 55%);
+    --cc-tree-mid: var(--ink-primary);
+    --cc-tree-near: oklch(from var(--ink-primary) calc(l - 0.08) c h);
+    --cc-mist: oklch(from var(--sepia-light) l c h / 0.28);
+    --cc-cat: var(--sepia-light);
+    --cc-cat-stripe: var(--sepia-dark);
+    --cc-grin: var(--paper-base);
+    --cc-firefly: var(--ix-gold);
+    --cc-sign: var(--sepia-dark);
+    --cc-shadow: oklch(from var(--ink-primary) l c h / 0.6);
   }
 }
 
@@ -27,7 +31,7 @@
   }
 
   .demo--cheshire-cat .line[data-speaker="cheshire-cat"] {
-    color: oklch(90% 0.08 320);
+    color: var(--paper-warm);
     font-style: italic;
     letter-spacing: 0.02em;
   }
@@ -44,9 +48,18 @@
     overflow: hidden;
     background: linear-gradient(to bottom, var(--cc-night), var(--cc-night-low));
     transform: rotate(calc(var(--tilt) * 1deg)) scale(calc(1 + var(--tilt) * 0.02));
-    filter: hue-rotate(calc(var(--mad) * 40deg)) saturate(calc(1 + var(--mad) * 0.6));
     pointer-events: auto;
     cursor: pointer;
+  }
+
+  /* "We're all mad here": a lilac wash comes over the wood, and goes again. */
+  .cc__wood::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--ix-lilac);
+    opacity: calc(var(--mad) * 0.3);
+    pointer-events: none;
   }
 
   .cc__moon {
@@ -57,7 +70,7 @@
     aspect-ratio: 1;
     border-radius: 50%;
     background: var(--cc-moon);
-    box-shadow: 0 0 60px 20px oklch(94% 0.05 95 / 0.25);
+    box-shadow: 0 0 60px 20px oklch(from var(--world-glow) l c h / 0.25);
     translate: calc(var(--px) * -1vmin) 0;
     overflow: hidden;
   }
@@ -255,7 +268,7 @@
     inset-block-end: -4%;
     inline-size: clamp(7rem, 24vmin, 14rem);
     color: var(--alice-shadow);
-    filter: drop-shadow(0 0 20px oklch(0% 0 0 / 0.6));
+    filter: drop-shadow(0 0 20px var(--cc-shadow));
     pointer-events: none;
   }
 
@@ -281,7 +294,7 @@
     aspect-ratio: 1;
     border-radius: 50%;
     background: var(--cc-firefly);
-    box-shadow: 0 0 10px 3px oklch(92% 0.16 110 / 0.6);
+    box-shadow: 0 0 10px 3px oklch(from var(--ix-gold) l c h / 0.6);
     animation: cc-firefly 3s ease-out forwards;
   }
 

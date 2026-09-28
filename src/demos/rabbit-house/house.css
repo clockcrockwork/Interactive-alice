@@ -5,22 +5,34 @@
 
 @layer tokens {
   :root {
-    --hs-sky: oklch(88% 0.05 220);
-    --hs-sky-low: oklch(94% 0.03 90);
-    --hs-grass: oklch(62% 0.12 130);
-    --hs-grass-deep: oklch(48% 0.1 135);
-    --hs-wall: oklch(92% 0.03 85);
-    --hs-wall-shade: oklch(80% 0.04 80);
-    --hs-roof: oklch(48% 0.1 30);
-    --hs-roof-deep: oklch(36% 0.09 30);
-    --hs-timber: oklch(40% 0.06 50);
-    --hs-room: oklch(84% 0.05 70);
-    --hs-floor: oklch(58% 0.08 60);
-    --hs-glass: oklch(85% 0.04 220 / 0.55);
-    --hs-rabbit: oklch(96% 0.01 90);
-    --hs-soot: oklch(12% 0.01 30);
-    --hs-timber-deep: oklch(28% 0.05 50);
-    --bl-lizard: oklch(66% 0.12 130);
+    /* The book's palette (docs/visual-design.md): paper skies and walls, sepia
+       roof and timber, the garden in the world's leaf tint. Every value here
+       resolves from a shared token; the Bill demo repeats the roof, timber and
+       garden ones so its rooftop is this one. */
+    --hs-sky: var(--world-sky);
+    --hs-sky-low: var(--paper-base);
+    --hs-grass: var(--world-leaf);
+    --hs-grass-deep: var(--world-leaf-deep);
+    --hs-wall: var(--paper-warm);
+    --hs-wall-shade: var(--paper-aged);
+    --hs-roof: var(--sepia-dark);
+    --hs-roof-deep: var(--sepia-deep);
+    --hs-timber: oklch(from var(--sepia-deep) calc(l - 0.08) c h);
+    --hs-timber-deep: var(--ink-secondary);
+    --hs-room: var(--paper-warm);
+    --hs-ceiling: var(--paper-base);
+    --hs-floor: var(--sepia-mid);
+    --hs-floor-line: var(--sepia-dark);
+    --hs-glass: oklch(from var(--world-sky) calc(l + 0.06) c h / 0.6);
+    --hs-brass: var(--paper-aged);
+    /* The unlabelled bottle: paper-white glass, a printed sepia draught. */
+    --hs-cork: var(--sepia-mid);
+    --hs-drink: color-mix(in oklch, var(--sepia-mid), var(--paper-base) 30%);
+    --hs-bottle-glass: oklch(from var(--paper-base) l c h / 0.45);
+    --hs-bottle-edge: oklch(from var(--paper-base) l c h / 0.9);
+    --hs-shade: oklch(from var(--ink-primary) l c h / 0.5);
+    --hs-soot: var(--ink-primary);
+    --bl-lizard: var(--world-leaf);
   }
 }
 
@@ -29,7 +41,7 @@
     inset-block-end: 6vh;
     padding-block: 0.4em;
     border-radius: 1rem;
-    background: oklch(15% 0.03 60 / 0.5);
+    background: oklch(from var(--world-night-deep) l c h / 0.55);
     backdrop-filter: blur(6px);
   }
 
@@ -68,7 +80,7 @@
     background-image: repeating-linear-gradient(
       to right,
       transparent 0 78px,
-      oklch(0% 0 0 / 0.05) 78px 80px
+      oklch(from var(--ink-primary) l c h / 0.06) 78px 80px
     );
   }
 
@@ -95,7 +107,7 @@
     background: repeating-linear-gradient(
       to right,
       var(--hs-floor) 0 90px,
-      oklch(52% 0.08 60) 90px 100px
+      var(--hs-floor-line) 90px 100px
     );
   }
 
@@ -105,7 +117,7 @@
     transform-origin: 50% 0;
     /* Like the floor, it runs away from its near edge, over the whole room. */
     transform: rotateX(-90deg);
-    background: oklch(90% 0.02 85);
+    background: var(--hs-ceiling);
   }
 
   .hs__glass {
@@ -117,7 +129,7 @@
     translate: -50% 0;
     border: 12px solid var(--hs-timber);
     border-radius: 110px 110px 12px 12px;
-    background: linear-gradient(135deg, oklch(88% 0.03 220), oklch(78% 0.04 220));
+    background: linear-gradient(135deg, var(--world-sky), var(--world-sky-deep));
   }
 
   .hs__window-frame {
@@ -167,7 +179,7 @@
     inline-size: 34px;
     block-size: 70px;
     border-radius: 6px 6px 4px 4px;
-    background: linear-gradient(to bottom, oklch(60% 0.05 60) 0 18%, oklch(70% 0.15 25) 18%);
+    background: linear-gradient(to bottom, var(--hs-cork) 0 18%, var(--hs-drink) 18%);
   }
 
   .hs__room-door {
@@ -178,7 +190,7 @@
     block-size: 560px;
     border: 12px solid var(--hs-timber);
     border-block-end: 0;
-    background: oklch(46% 0.08 50);
+    background: var(--hs-roof);
     transform-origin: 0 50%;
     transform: rotateY(calc(var(--rattle, 0) * -4deg));
   }
@@ -191,7 +203,7 @@
     inline-size: 16px;
     block-size: 16px;
     border-radius: 50%;
-    background: oklch(80% 0.16 85);
+    background: var(--hs-brass);
   }
 
   .hs__hand-bottle {
@@ -204,7 +216,7 @@
     opacity: 0;
     pointer-events: auto;
     cursor: pointer;
-    filter: drop-shadow(0 20px 30px oklch(0% 0 0 / 0.5));
+    filter: drop-shadow(0 20px 30px var(--hs-shade));
   }
 
   .hs__hand-bottle svg {
@@ -213,8 +225,10 @@
     block-size: auto;
   }
 
+  /* While she drinks: a mint glint on the glass, the discovery's own colour,
+     gone with the bottle. */
   .hs__hand-bottle[data-held] {
-    filter: drop-shadow(0 0 24px oklch(90% 0.12 85 / 0.7));
+    filter: drop-shadow(0 0 24px oklch(from var(--ix-mint) l c h / 0.75));
   }
 
   .hs__liquid {
@@ -223,12 +237,16 @@
   }
 
   .hs__ceiling-shadow {
-    background: radial-gradient(ellipse 80% 40% at 50% 0%, oklch(0% 0 0 / 0.7), transparent 70%);
+    background: radial-gradient(
+      ellipse 80% 40% at 50% 0%,
+      oklch(from var(--ink-primary) l c h / 0.7),
+      transparent 70%
+    );
     opacity: 0;
   }
 
   .hs__flash {
-    background: oklch(95% 0.02 90);
+    background: var(--paper-base);
     opacity: 0;
   }
 
@@ -317,7 +335,7 @@
     justify-self: center;
     padding: 0.3em 0.9em;
     border-radius: 1.2em;
-    background: oklch(100% 0 0 / 0.85);
+    background: oklch(from var(--paper-base) l c h / 0.92);
     color: var(--demo-paper-ink);
     text-shadow: none;
     font-style: italic;

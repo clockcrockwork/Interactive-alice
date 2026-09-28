@@ -5,36 +5,46 @@
 
 @layer tokens {
   :root {
-    --ct-sky: oklch(84% 0.07 230);
-    --ct-sky-low: oklch(92% 0.05 100);
-    --ct-sky-high: oklch(72% 0.12 240);
-    --ct-cat: oklch(66% 0.14 230);
-    --ct-cat-stripe: oklch(78% 0.12 120);
-    --ct-mushroom: oklch(62% 0.16 40);
-    --ct-mushroom-spot: oklch(94% 0.02 90);
-    --ct-pigeon: oklch(72% 0.03 260);
-    --ct-pigeon-wing: oklch(60% 0.04 260);
-    --ct-smoke: oklch(96% 0.01 240 / 0.75);
+    /* The book's palette: a paper sky, the meadow and the sea of leaves in the
+       world's leaf tint, a sepia mushroom with paper spots, smoke in aged paper.
+       The Caterpillar is printed in the water tint so it reads against both. */
+    --ct-sky: var(--world-sky);
+    --ct-sky-low: var(--paper-base);
+    --ct-sky-high: var(--world-sky-deep);
+    --ct-cat: var(--world-water);
+    --ct-cat-stripe: var(--world-water-deep);
+    --ct-mushroom: var(--sepia-mid);
+    --ct-mushroom-spot: var(--paper-warm);
+    --ct-mushroom-gill: var(--paper-warm);
+    --ct-mushroom-edge: var(--paper-aged);
+    --ct-pigeon: var(--sepia-light);
+    --ct-pigeon-wing: var(--sepia-mid);
+    --ct-smoke: oklch(from var(--paper-aged) l c h / 0.7);
+    --ct-shade: oklch(from var(--ink-primary) l c h / 0.5);
+    --ct-shade-soft: oklch(from var(--ink-primary) l c h / 0.4);
+    /* The blink at a change of size: paper with a lilac leak, the guide's
+       colour for a change of size, gone with the blink. */
+    --ct-flash: color-mix(in oklch, var(--paper-base), var(--ix-lilac) 45%);
   }
 }
 
 @layer scene {
   .demo--caterpillar .demo-beat {
     inset-block-end: 10vh;
-    color: oklch(20% 0.03 240);
-    text-shadow: 0 1px 0 oklch(100% 0 0 / 0.6);
+    color: var(--ink-primary);
+    text-shadow: 0 1px 0 oklch(from var(--paper-base) l c h / 0.6);
   }
 
   .demo--caterpillar .line[data-speaker="caterpillar"] {
     --blur: 0;
     font-style: italic;
-    color: oklch(28% 0.06 240);
+    color: var(--ink-secondary);
     filter: blur(calc(var(--blur) * 1px));
   }
 
   .demo--caterpillar .line[data-speaker="pigeon"] {
     font-weight: 700;
-    color: oklch(30% 0.08 20);
+    color: var(--wonder-red-dark);
   }
 
   /* The sky, and a higher, bluer sky that shows the more she rises. */
@@ -53,10 +63,10 @@
     background:
       repeating-linear-gradient(
         to bottom,
-        oklch(0% 0 0 / 0) 0 2.2vh,
-        oklch(0% 0 0 / 0.05) 2.2vh 2.5vh
+        transparent 0 2.2vh,
+        oklch(from var(--ink-primary) l c h / 0.06) 2.2vh 2.5vh
       ),
-      linear-gradient(to bottom, oklch(64% 0.13 130), oklch(50% 0.12 135) 40%);
+      linear-gradient(to bottom, var(--world-leaf), var(--world-leaf-deep) 40%);
   }
 
   .ct__sky::after {
@@ -96,7 +106,12 @@
     block-size: calc(var(--h) * 0.36vmin);
     transform-origin: 50% 100%;
     transform: rotate(calc((var(--lean, 0) + var(--lean-own, 0)) * 1deg));
-    background: linear-gradient(to top, oklch(46% 0.12 var(--hue)), oklch(70% 0.14 var(--hue)));
+    /* Each blade leans its hue a little off the leaf tint (--hue from the demo). */
+    background: linear-gradient(
+      to top,
+      oklch(from var(--world-leaf-deep) l c calc(h + (var(--hue) - 135) * 0.4)),
+      oklch(from var(--world-leaf) calc(l + 0.08) c calc(h + (var(--hue) - 135) * 0.4))
+    );
     clip-path: polygon(0 100%, 50% 0, 100% 100%);
   }
 
@@ -170,12 +185,7 @@
     --fade: 0;
     --sway: 0;
     opacity: var(--fade);
-    background: linear-gradient(
-      to bottom,
-      var(--ct-sky-high),
-      var(--ct-sky) 45%,
-      oklch(80% 0.08 200)
-    );
+    background: linear-gradient(to bottom, var(--ct-sky-high), var(--ct-sky) 45%, var(--world-sky));
     pointer-events: none;
   }
 
@@ -188,7 +198,11 @@
   }
 
   .ct__leaf {
-    fill: oklch(var(--l) 0.13 var(--hue));
+    /* --l is the leaf's share of the lighter tint, --hue its lean, both from the demo. */
+    fill: oklch(
+      from color-mix(in oklch, var(--world-leaf-deep), var(--world-leaf) var(--l)) l c
+        calc(h + (var(--hue) - 136) * 0.4)
+    );
   }
 
   .ct__leaf[data-band="2"] {
@@ -196,7 +210,7 @@
   }
 
   .ct__nest {
-    fill: oklch(48% 0.08 70);
+    fill: var(--sepia-mid);
   }
 
   .ct__neck {
@@ -209,7 +223,7 @@
   }
 
   .ct__flash {
-    background: oklch(96% 0.02 90);
+    background: var(--ct-flash);
     opacity: 0;
   }
 
@@ -226,7 +240,7 @@
   /* Her chin on her foot: the foot rises into the frame and the frame folds. */
   .ct__iris {
     --fold: 0;
-    background: oklch(4% 0 0);
+    background: var(--world-night-deep);
     clip-path: inset(calc(100% - var(--fold) * 50%) 0 0 0);
   }
 
@@ -236,7 +250,7 @@
     inset-block-end: -30%;
     inline-size: clamp(20rem, 70vmin, 40rem);
     translate: -50% 70vh;
-    filter: drop-shadow(0 -10px 20px oklch(0% 0 0 / 0.5));
+    filter: drop-shadow(0 -10px 20px var(--ct-shade));
   }
 
   /* The two bits of mushroom, one in each hand: real buttons. */
@@ -268,7 +282,7 @@
     transform-origin: 50% 100%;
     transform: scale(calc(1 - var(--bite) * 0.12)) rotate(calc(var(--bite) * -4deg));
     transition: transform var(--demo-quick) var(--demo-ease);
-    filter: drop-shadow(0 12px 18px oklch(0% 0 0 / 0.45));
+    filter: drop-shadow(0 12px 18px var(--ct-shade));
   }
 
   .ct__bit svg {
@@ -287,7 +301,7 @@
   }
 
   .ct__bit:focus-visible {
-    outline: 3px solid oklch(40% 0.15 250);
+    outline: 3px solid var(--ink-secondary);
     outline-offset: 4px;
   }
 
@@ -312,11 +326,11 @@
     pointer-events: auto;
     transform: translate(-50%, -50%) translate(calc(var(--bx) * 1vw), calc(var(--by) * 1vh))
       scale(var(--bs));
-    filter: drop-shadow(0 16px 24px oklch(0% 0 0 / 0.4));
+    filter: drop-shadow(0 16px 24px var(--ct-shade-soft));
   }
 
   .ct__pigeon:focus-visible {
-    outline: 3px solid oklch(40% 0.15 250);
+    outline: 3px solid var(--ink-secondary);
     outline-offset: 4px;
   }
 
@@ -345,7 +359,7 @@
     font-family: system-ui, sans-serif;
     font-size: 0.75rem;
     letter-spacing: 0.1em;
-    color: oklch(28% 0.03 240);
+    color: var(--ink-secondary);
     opacity: 0;
     pointer-events: none;
     transition: opacity var(--demo-calm) var(--demo-ease);

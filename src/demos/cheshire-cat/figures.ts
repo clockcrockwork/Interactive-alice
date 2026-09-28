@@ -2,7 +2,7 @@
 
 export const BARE_BOUGH_SVG = `
 <svg viewBox="0 0 400 240" focusable="false">
-  <path d="M0 200 C80 180 140 190 220 176 C300 162 340 170 400 150" stroke="oklch(24% 0.05 60)" stroke-width="22" fill="none" stroke-linecap="round"/>
+  <path d="M0 200 C80 180 140 190 220 176 C300 162 340 170 400 150" stroke="var(--cc-tree-mid, var(--ink-primary))" stroke-width="22" fill="none" stroke-linecap="round"/>
 </svg>`;
 
 export const GRIN_SVG = `

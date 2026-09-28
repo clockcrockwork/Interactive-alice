@@ -29,7 +29,7 @@ export const DOOR_LEAF_SVG = `
   <rect x="0" y="0" width="80" height="136" fill="var(--pp-door)"/>
   <rect x="10" y="12" width="60" height="50" fill="none" stroke="var(--pp-roof)" stroke-width="4"/>
   <rect x="10" y="74" width="60" height="50" fill="none" stroke="var(--pp-roof)" stroke-width="4"/>
-  <circle cx="66" cy="70" r="5" fill="oklch(80% 0.16 85)"/>
+  <circle cx="66" cy="70" r="5" fill="var(--pp-brass)"/>
 </svg>`;
 
 export const TREE_SVG = `
@@ -62,7 +62,7 @@ export const CAULDRON_SVG = `
   <ellipse cx="120" cy="68" rx="66" ry="11" fill="var(--pp-soup)"/>
   <path d="M30 76 q-14 4 -8 18 M210 76 q14 4 8 18" stroke="var(--pp-iron)" stroke-width="8" fill="none" stroke-linecap="round"/>
   <g class="pp__steam">
-    <path d="M86 54 q-10 -18 0 -34 M120 50 q-12 -20 0 -40 M154 54 q-10 -18 0 -34" stroke="oklch(96% 0.01 90 / 0.7)" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M86 54 q-10 -18 0 -34 M120 50 q-12 -20 0 -40 M154 54 q-10 -18 0 -34" stroke="var(--pp-steam)" stroke-width="6" fill="none" stroke-linecap="round"/>
   </g>
 </svg>`;
 
@@ -71,8 +71,8 @@ export const THINGS: Record<string, string> = {
   saucepan:
     '<svg viewBox="0 0 120 80" focusable="false"><path d="M10 30 h70 v40 q0 6 -6 6 h-58 q-6 0 -6 -6 z" fill="var(--pp-iron)"/><ellipse cx="45" cy="30" rx="35" ry="8" fill="var(--pp-iron-rim)"/><path d="M80 34 h34" stroke="var(--pp-iron)" stroke-width="8" stroke-linecap="round"/></svg>',
   plate:
-    '<svg viewBox="0 0 100 100" focusable="false"><circle cx="50" cy="50" r="46" fill="var(--pp-china)"/><circle cx="50" cy="50" r="30" fill="none" stroke="var(--pp-china-blue)" stroke-width="4"/><circle cx="50" cy="50" r="42" fill="none" stroke="var(--pp-china-blue)" stroke-width="2"/></svg>',
-  dish: '<svg viewBox="0 0 120 70" focusable="false"><ellipse cx="60" cy="40" rx="56" ry="24" fill="var(--pp-china)"/><ellipse cx="60" cy="36" rx="40" ry="14" fill="none" stroke="var(--pp-china-blue)" stroke-width="3"/></svg>',
+    '<svg viewBox="0 0 100 100" focusable="false"><circle cx="50" cy="50" r="46" fill="var(--pp-china)"/><circle cx="50" cy="50" r="30" fill="none" stroke="var(--pp-china-rim)" stroke-width="4"/><circle cx="50" cy="50" r="42" fill="none" stroke="var(--pp-china-rim)" stroke-width="2"/></svg>',
+  dish: '<svg viewBox="0 0 120 70" focusable="false"><ellipse cx="60" cy="40" rx="56" ry="24" fill="var(--pp-china)"/><ellipse cx="60" cy="36" rx="40" ry="14" fill="none" stroke="var(--pp-china-rim)" stroke-width="3"/></svg>',
   'fire-iron':
     '<svg viewBox="0 0 140 40" focusable="false"><path d="M6 20 h116" stroke="var(--pp-iron)" stroke-width="8" stroke-linecap="round"/><path d="M122 20 l12 -12 M122 20 l12 12" stroke="var(--pp-iron)" stroke-width="6" stroke-linecap="round"/><circle cx="8" cy="20" r="8" fill="var(--pp-iron-rim)"/></svg>',
   'frying-pan':

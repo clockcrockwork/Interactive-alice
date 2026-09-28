@@ -27,7 +27,7 @@ export const HOUSE_SVG = `
         <rect x="262" y="440" width="120" height="8" fill="var(--hs-timber)"/>
         <rect x="270" y="448" width="8" height="42" fill="var(--hs-timber)"/>
         <rect x="366" y="448" width="8" height="42" fill="var(--hs-timber)"/>
-        <g class="hs__bottle"><rect x="300" y="404" width="14" height="36" rx="3" fill="oklch(70% 0.15 25)"/><rect x="303" y="396" width="8" height="10" fill="oklch(60% 0.05 60)"/></g>
+        <g class="hs__bottle"><rect x="300" y="404" width="14" height="36" rx="3" fill="var(--hs-drink)"/><rect x="303" y="396" width="8" height="10" fill="var(--hs-cork)"/></g>
         <!-- Alice, growing -->
         <g class="hs__alice-pose hs__pose--standing" transform="translate(320 490)">${svgFigure('alice/standing', -40, -110, 80, 110)}</g>
         <g class="hs__alice-pose hs__pose--kneeling" transform="translate(420 490)">${svgFigure('alice/kneeling', -130, -230, 230, 230)}</g>
@@ -44,7 +44,7 @@ export const HOUSE_SVG = `
       <!-- The door, opening inwards -->
       <g class="hs__door">
         <rect x="660" y="430" width="70" height="120" rx="3" fill="var(--hs-timber)"/>
-        <circle cx="716" cy="492" r="4" fill="oklch(80% 0.16 85)"/>
+        <circle cx="716" cy="492" r="4" fill="var(--hs-brass)"/>
       </g>
     </g>
     <g class="hs__roof">
@@ -93,7 +93,7 @@ export const HOUSE_SVG = `
 /** The unlabelled bottle by the looking-glass, raised to her lips. */
 export const BOTTLE_IN_HAND_SVG = `
 <svg viewBox="0 0 60 140" focusable="false">
-  <rect x="22" y="2" width="16" height="14" rx="3" fill="oklch(60% 0.05 60)"/>
-  <path d="M20 16 h20 v22 q14 8 14 30 v60 q0 10 -10 10 h-28 q-10 0 -10 -10 v-60 q0 -22 14 -30 z" fill="oklch(85% 0.03 200 / 0.4)" stroke="oklch(96% 0.02 200 / 0.8)" stroke-width="2"/>
-  <g class="hs__liquid"><path d="M9 62 h42 v66 q0 8 -8 8 h-26 q-8 0 -8 -8 z" fill="oklch(70% 0.15 25)"/></g>
+  <rect x="22" y="2" width="16" height="14" rx="3" fill="var(--hs-cork)"/>
+  <path d="M20 16 h20 v22 q14 8 14 30 v60 q0 10 -10 10 h-28 q-10 0 -10 -10 v-60 q0 -22 14 -30 z" fill="var(--hs-bottle-glass)" stroke="var(--hs-bottle-edge)" stroke-width="2"/>
+  <g class="hs__liquid"><path d="M9 62 h42 v66 q0 8 -8 8 h-26 q-8 0 -8 -8 z" fill="var(--hs-drink)"/></g>
 </svg>`;

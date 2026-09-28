@@ -54,22 +54,88 @@ const RADIUS = 7;
 const LAMP_SPACING = 14;
 const LAMP_COUNT = 5;
 
-function brickTexture(): THREE.CanvasTexture {
+/** The palette's tokens the well draws with; see rabbit-hole.css for what each is. */
+const TOKENS = {
+  well: '--rh-well',
+  dream: '--rh-dream',
+  rush: '--rh-rush',
+  brick: '--rh-brick',
+  brickLight: '--rh-brick-light',
+  wood: '--rh-wood',
+  lamp: '--rh-lamp',
+  ambient: '--rh-ambient',
+  dust: '--rh-dust',
+  paper: '--rh-paper',
+  paperInk: '--rh-paper-ink',
+  paperFrame: '--rh-paper-frame',
+  marmalade: '--rh-marmalade',
+  ground: '--rh-ground',
+  leaf: '--rh-leaf',
+  leafDeep: '--rh-leaf-deep',
+  book1: '--rh-book-1',
+  book2: '--rh-book-2',
+  book3: '--rh-book-3',
+  book4: '--rh-book-4',
+  book5: '--rh-book-5',
+  book6: '--rh-book-6',
+} as const;
+
+type Palette = Record<keyof typeof TOKENS, THREE.Color>;
+
+/**
+ * The tokens as the browser resolves them. A derived shade (color-mix, a relative
+ * oklch) only becomes a plain colour on an element, so a hidden probe carries each
+ * one in turn and a one-pixel canvas turns whatever the browser serialises into
+ * sRGB bytes, which is the one form Three reads without guessing.
+ */
+function readPalette(): Palette {
+  const probe = document.createElement('span');
+  probe.className = 'rh__probe';
+  document.body.append(probe);
+  const pixel = document.createElement('canvas');
+  pixel.width = 1;
+  pixel.height = 1;
+  const ctx = pixel.getContext('2d', { willReadFrequently: true });
+  const palette = {} as Palette;
+  for (const [key, token] of Object.entries(TOKENS) as [keyof typeof TOKENS, string][]) {
+    probe.style.setProperty('--probe', `var(${token})`);
+    const resolved = getComputedStyle(probe).color;
+    const colour = new THREE.Color();
+    if (ctx) {
+      ctx.clearRect(0, 0, 1, 1);
+      ctx.fillStyle = resolved;
+      ctx.fillRect(0, 0, 1, 1);
+      const [r = 0, g = 0, b = 0] = ctx.getImageData(0, 0, 1, 1).data;
+      colour.setRGB(r / 255, g / 255, b / 255, THREE.SRGBColorSpace);
+    } else {
+      colour.setStyle(resolved);
+    }
+    palette[key] = colour;
+  }
+  probe.remove();
+  return palette;
+}
+
+const hex = (colour: THREE.Color): string => `#${colour.getHexString()}`;
+
+function brickTexture(palette: Palette): THREE.CanvasTexture {
   const canvas = document.createElement('canvas');
   canvas.width = 512;
   canvas.height = 512;
   const ctx = canvas.getContext('2d');
   if (ctx) {
     const random = seeded(7);
-    ctx.fillStyle = '#2a2320';
+    // Mortar is the deep brick; each brick sits somewhere between the two shades.
+    ctx.fillStyle = hex(palette.brick);
     ctx.fillRect(0, 0, 512, 512);
     const rows = 16;
     const rowHeight = 512 / rows;
+    const brick = new THREE.Color();
     for (let row = 0; row < rows; row += 1) {
       const offset = row % 2 === 0 ? 0 : 48;
       for (let x = -48; x < 512; x += 96) {
-        const shade = 34 + random() * 22;
-        ctx.fillStyle = `rgb(${shade + 14} ${shade + 4} ${shade})`;
+        brick.copy(palette.brick).lerp(palette.brickLight, 0.2 + random() * 0.6);
+        ctx.fillStyle = hex(brick);
         ctx.fillRect(x + offset + 2, row * rowHeight + 2, 92, rowHeight - 4);
       }
     }
@@ -81,16 +147,16 @@ function brickTexture(): THREE.CanvasTexture {
   return texture;
 }
 
-function paperTexture(): THREE.CanvasTexture {
+function paperTexture(palette: Palette): THREE.CanvasTexture {
   const canvas = document.createElement('canvas');
   canvas.width = 256;
   canvas.height = 192;
   const ctx = canvas.getContext('2d');
   if (ctx) {
     const random = seeded(11);
-    ctx.fillStyle = '#d9c9a3';
+    ctx.fillStyle = hex(palette.paper);
     ctx.fillRect(0, 0, 256, 192);
-    ctx.strokeStyle = '#6e5a3a';
+    ctx.strokeStyle = hex(palette.paperInk);
     ctx.lineWidth = 2;
     for (let line = 0; line < 6; line += 1) {
       ctx.beginPath();
@@ -100,7 +166,7 @@ function paperTexture(): THREE.CanvasTexture {
       }
       ctx.stroke();
     }
-    ctx.strokeStyle = '#8a6d3b';
+    ctx.strokeStyle = hex(palette.paperFrame);
     ctx.lineWidth = 8;
     ctx.strokeRect(6, 6, 244, 180);
   }
@@ -127,9 +193,11 @@ export function createWell(
   }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, quality === 'full' ? 1.5 : 1));
 
+  const palette = readPalette();
   const scene = new THREE.Scene();
-  const wellColor = new THREE.Color('#0d0b12');
-  const dreamColor = new THREE.Color('#2a1640');
+  const wellColor = palette.well.clone();
+  const dreamColor = palette.dream.clone();
+  const rushColor = palette.rush.clone();
   const fog = new THREE.FogExp2(wellColor.getHex(), 0.075);
   scene.fog = fog;
   scene.background = wellColor.clone();
@@ -151,7 +219,7 @@ export function createWell(
   const height = depthTotal + 60;
   const shaft = new THREE.Mesh(
     new THREE.CylinderGeometry(RADIUS, RADIUS, height, 40, 1, true),
-    new THREE.MeshLambertMaterial({ map: brickTexture(), side: THREE.BackSide }),
+    new THREE.MeshLambertMaterial({ map: brickTexture(palette), side: THREE.BackSide }),
   );
   const brick = shaft.material.map;
   if (brick) {
@@ -167,21 +235,21 @@ export function createWell(
   const jarCount = Math.round(70 * scale);
   const mapCount = Math.round(44 * scale);
 
-  const wood = new THREE.MeshLambertMaterial({ color: '#5a3b22' });
+  const wood = new THREE.MeshLambertMaterial({ color: palette.wood });
   const shelves = new THREE.InstancedMesh(new THREE.BoxGeometry(2.4, 0.14, 0.9), wood, shelfCount);
   const books = new THREE.InstancedMesh(
     new THREE.BoxGeometry(0.22, 0.62, 0.5),
-    new THREE.MeshLambertMaterial({ color: '#ffffff' }),
+    new THREE.MeshLambertMaterial({ color: palette.book6 }),
     bookCount,
   );
   const jars = new THREE.InstancedMesh(
     new THREE.CylinderGeometry(0.22, 0.22, 0.5, 10),
-    new THREE.MeshLambertMaterial({ color: '#e08a2a', transparent: true, opacity: 0.9 }),
+    new THREE.MeshLambertMaterial({ color: palette.marmalade, transparent: true, opacity: 0.9 }),
     jarCount,
   );
   const maps = new THREE.InstancedMesh(
     new THREE.PlaneGeometry(1.5, 1.1),
-    new THREE.MeshLambertMaterial({ map: paperTexture() }),
+    new THREE.MeshLambertMaterial({ map: paperTexture(palette) }),
     mapCount,
   );
 
@@ -196,7 +264,14 @@ export function createWell(
     y: number;
     z: number;
   }[] = [];
-  const palette = ['#a33b3b', '#2f5d8a', '#3f7a4a', '#c9a24a', '#6b4a8a', '#d8d2c4'];
+  const cloth = [
+    palette.book1,
+    palette.book2,
+    palette.book3,
+    palette.book4,
+    palette.book5,
+    palette.book6,
+  ];
   let book = 0;
   let jar = 0;
   for (let i = 0; i < shelfCount; i += 1) {
@@ -226,7 +301,7 @@ export function createWell(
         books.setMatrixAt(book, dummy.matrix);
         books.setColorAt(
           book,
-          color.set(palette[Math.floor(random() * palette.length)] ?? '#ffffff'),
+          color.copy(cloth[Math.floor(random() * cloth.length)] ?? palette.book6),
         );
         dummy.rotation.z = 0;
         book += 1;
@@ -260,15 +335,15 @@ export function createWell(
 
   // Lamps: fixed in the world at a regular spacing, recycled so the five nearest the
   // camera are always the ones lit. A lamp is a light and a small glowing bulb.
-  const lampMaterial = new THREE.MeshBasicMaterial({ color: '#ffd9a0' });
+  const lampMaterial = new THREE.MeshBasicMaterial({ color: palette.lamp });
   const lamps: { light: THREE.PointLight; bulb: THREE.Mesh; phase: number }[] = [];
   for (let i = 0; i < LAMP_COUNT; i += 1) {
-    const light = new THREE.PointLight('#ffc27a', 26, 22, 1.6);
+    const light = new THREE.PointLight(palette.lamp, 26, 22, 1.6);
     const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.18, 10, 8), lampMaterial);
     scene.add(light, bulb);
     lamps.push({ light, bulb, phase: i * 1.7 });
   }
-  scene.add(new THREE.AmbientLight('#8a7cb0', 0.55));
+  scene.add(new THREE.AmbientLight(palette.ambient, 0.55));
 
   // Dust: a cloud that follows the camera and wraps, so it never runs out.
   const dustCount = quality === 'full' ? 700 : 300;
@@ -282,7 +357,7 @@ export function createWell(
   const dustGeometry = new THREE.BufferGeometry();
   dustGeometry.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
   const dustMaterial = new THREE.PointsMaterial({
-    color: '#f2e3c0',
+    color: palette.dust,
     size: 0.08,
     transparent: true,
     opacity: 0.7,
@@ -295,12 +370,15 @@ export function createWell(
   const floor = new THREE.Group();
   const ground = new THREE.Mesh(
     new THREE.CircleGeometry(RADIUS, 40),
-    new THREE.MeshLambertMaterial({ color: '#4a3a22' }),
+    new THREE.MeshLambertMaterial({ color: palette.ground }),
   );
   ground.rotation.x = -Math.PI / 2;
   floor.add(ground);
   const leafGeometry = new THREE.PlaneGeometry(0.6, 0.35);
-  const leafMaterial = new THREE.MeshLambertMaterial({ color: '#b8742c', side: THREE.DoubleSide });
+  const leafMaterial = new THREE.MeshLambertMaterial({
+    color: palette.leaf,
+    side: THREE.DoubleSide,
+  });
   const leafCount = quality === 'full' ? 160 : 70;
   const leaves = new THREE.InstancedMesh(leafGeometry, leafMaterial, leafCount);
   const leafRandom = seeded(5);
@@ -311,7 +389,7 @@ export function createWell(
     dummy.rotation.set(-Math.PI / 2 + (leafRandom() - 0.5) * 0.8, 0, leafRandom() * Math.PI);
     dummy.updateMatrix();
     leaves.setMatrixAt(i, dummy.matrix);
-    leaves.setColorAt(i, color.setHSL(0.07 + leafRandom() * 0.06, 0.6, 0.35 + leafRandom() * 0.2));
+    leaves.setColorAt(i, color.copy(palette.leaf).lerp(palette.leafDeep, leafRandom() * 0.7));
   }
   floor.add(leaves);
   floor.position.y = -floorDepth;
@@ -323,8 +401,8 @@ export function createWell(
   const pointer = new THREE.Vector2();
   const fogColor = new THREE.Color();
   const lampColor = new THREE.Color();
-  const lampWell = new THREE.Color('#ffc27a');
-  const lampDream = new THREE.Color('#b48cff');
+  const lampWell = palette.lamp.clone();
+  const lampDream = palette.lamp.clone().lerp(palette.dream, 0.45);
 
   const applyCamera = (): void => {
     const y = -state.depth;
@@ -340,7 +418,10 @@ export function createWell(
     );
     camera.rotation.y = 0;
 
-    fogColor.copy(wellColor).lerp(dreamColor, state.mood);
+    // The dream tints the depth lilac; falling fast leaks a little blue into it,
+    // and both recede as the fall does.
+    fogColor.copy(wellColor).lerp(rushColor, Math.max(0, state.rush - 0.3) / 0.7);
+    fogColor.lerp(dreamColor, state.mood);
     fog.color.copy(fogColor);
     (scene.background as THREE.Color).copy(fogColor);
     lampColor.copy(lampWell).lerp(lampDream, state.mood);

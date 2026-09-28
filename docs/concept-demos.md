@@ -27,17 +27,56 @@ makes its moment strongest and spends its budget on that.
 /demos/trial/            Who Stole the Tarts?: a paper courtroom in CSS 3D, and the pack
 ```
 
-### Which Alice
+### Colour, and which Alice
 
-The index offers two Alices, and every demo draws the one chosen. The **blue Alice**
-is the one everyone knows: blue dress, white apron, fair hair. The **yellow Alice** is
-the earlier one, for those who remember her: yellow dress, white apron, brown hair.
-The choice is a set of colour tokens (`--alice-hair`, `--alice-dress`, `--alice-apron`,
-`--alice-skin`, `--alice-band`, `--alice-shadow`) on the root, switched by
-`data-alice="yellow"`, remembered in the visitor's own browser under the demos' key,
+The demos draw from the palette of [`visual-design.md`](visual-design.md): Wonderland
+is an aged illustrated book in paper, ink and sepia, Alice is the most colourful
+thing in it, Wonderland red is symbolic and wanted (hearts, cards, the court, the
+Rabbit's waistcoat, the lobster, warnings and pursuit), and the interaction colours
+appear only while the reader does something or the story turns, then recede. The
+tokens are on the root in `shell/shell.css` (`--paper-*`, `--ink-*`, `--sepia-*`,
+`--wonder-red*`, `--ix-*`, and the world's own printed tints `--world-sky`,
+`--world-night`, `--world-water`, `--world-leaf`, `--world-glow`); every demo's own
+tokens resolve from them, and no literal colour names a thing a token could. A demo
+that steps off the palette on purpose says so in its section below, under
+*Off the palette*.
+
+The index offers two Alices, and every demo draws the one chosen. The **yellow
+Alice** is the guide's, and the default: yellow dress, white apron, brown hair, the
+earlier Alice for those who remember her. The **blue Alice** is the one everyone
+knows: blue dress, fair hair. The choice is the set of Alice tokens (`--alice-hair`,
+`--alice-dress`, `--alice-apron`, `--alice-skin`, `--alice-shoes`, `--alice-band`,
+`--alice-shadow`, with their light and shadow steps) on the root, switched by
+`data-alice="blue"`, remembered in the visitor's own browser under the demos' key,
 and applied by a line in each page's head before first paint so no figure flashes the
 other colours. Every Alice in the demos, SVG or Canvas, reads those tokens; nothing
 names a colour of hers directly. The words on the picker are UI copy in `ui.json`.
+
+**Off the palette, on purpose.** Where a moment earns it, a demo steps off the resting
+palette, always inside the guide's own colours and always transiently:
+
+- the rabbit hole tints the fog toward lilac in the dream of Dinah and toward blue
+  while the reader falls fast, and the jar glows gold in the hand;
+- Drink Me's flavour bubbles are coral, gold and mint while she drinks, and the key
+  and the door focus ring are gold;
+- the pool's water is a step bluer than the book's printed water, because the tears
+  are the moment, and the key on the table is gold;
+- the Caucus-race's comfits are pink, gold, mint and coral while the prizes go round,
+  and the runner the reader fed keeps its pink star;
+- the house's little bottle glows mint while she drinks; Bill's launch flashes gold;
+- the Caterpillar's size changes blink lilac, and the Pigeon's *Serpent!* is a warning
+  red;
+- the kitchen's *Pig!* and *chop off her head* flash Wonderland red, the chorus words
+  bounce in gold, and the fire is gold at rest;
+- the Cat's *we're all mad here* washes the wood with lilac for the beat, and the
+  fireflies and the chalk way are gold;
+- the tea-party's speech bubbles are tinted with Alice's yellow, lilac for the Hatter
+  and coral for the Hare, and the tale stays paper-light on the treacle because ink
+  would vanish there;
+- the Mock Turtle's uglified word writhes in lilac and the wash's foam carries mint;
+- the quadrille's thrown lobster trails coral;
+- the trial keeps to red and sepia, with gold only on the jurors' focus;
+- the index's cards lift with a gold edge.
 
 They are staged in the base locale (`en-simple`) for now. A locale switch is a later
 step and nothing in the build prevents it: every sentence on a demo page is resolved

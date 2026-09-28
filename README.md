@@ -77,8 +77,9 @@ Cheshire Cat masked away grin last, the Dormouse's tale on a treacle spiral in S
 Queen's croquet-ground with its live mallets, the Mock Turtle's school in the sea,
 the Lobster Quadrille the reader joins, and the trial's pack of cards in CSS 3D with
 her sister's dream after it. Where two adjacent demos are one moment of the book,
-the end of one is staged to lead into the opening of the next. The index lets the
-visitor choose the blue Alice everyone knows or the earlier yellow one. They show how far the
+the end of one is staged to lead into the opening of the next. The demos wear the
+palette of `docs/visual-design.md`, and the index lets the visitor choose the yellow
+Alice of the guide or the blue one everyone knows. They show how far the
 interactive telling can go; they are not the product.
 See [`docs/concept-demos.md`](docs/concept-demos.md).
 

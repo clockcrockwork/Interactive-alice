@@ -5,31 +5,41 @@
 
 @layer tokens {
   :root {
-    --bl-sky: oklch(76% 0.1 230);
-    --bl-sky-high: oklch(58% 0.12 250);
-    --bl-cloud: oklch(97% 0.01 90);
-    --bl-brick: oklch(38% 0.08 30);
-    --bl-brick-dark: oklch(24% 0.05 30);
-    --bl-soot: oklch(12% 0.01 30);
-    --bl-roof: oklch(48% 0.1 30);
-    /* The house's own colours, so the rooftop is the one the Rabbit's house left. */
-    --bl-roof-deep: oklch(36% 0.09 30);
-    --bl-timber: oklch(40% 0.06 50);
-    --bl-wall: oklch(92% 0.03 85);
-    --bl-wall-shade: oklch(80% 0.04 80);
-    --bl-grass: oklch(62% 0.12 130);
-    --bl-hedge: oklch(46% 0.1 135);
-    --bl-lizard: oklch(66% 0.12 130);
+    /* The book's palette: a paper sky, the shaft in deep sepia, soot in ink.
+       The roof, timber, wall and garden repeat the Rabbit's house's values
+       (src/demos/rabbit-house/house.css) so the rooftop is the one it left. */
+    --bl-sky: var(--world-sky);
+    --bl-sky-high: var(--world-sky-deep);
+    --bl-sky-low: var(--paper-base);
+    --bl-cloud: var(--paper-base);
+    --bl-brick: var(--sepia-deep);
+    --bl-brick-dark: oklch(from var(--sepia-deep) calc(l - 0.1) c h);
+    --bl-soot: var(--ink-primary);
+    --bl-roof: var(--sepia-dark);
+    --bl-roof-deep: var(--sepia-deep);
+    --bl-timber: oklch(from var(--sepia-deep) calc(l - 0.08) c h);
+    --bl-wall: var(--paper-warm);
+    --bl-wall-shade: var(--paper-aged);
+    --bl-grass: var(--world-leaf);
+    --bl-hedge: var(--world-leaf-deep);
+    --bl-hedge-deep: oklch(from var(--world-leaf-deep) calc(l - 0.06) c h);
+    --bl-hedge-light: color-mix(in oklch, var(--world-leaf-deep), var(--world-leaf) 40%);
+    --bl-lizard: var(--world-leaf);
+    --bl-shade: oklch(from var(--ink-primary) l c h / 0.5);
   }
 }
 
 @layer scene {
+  /* The sentences sit over a paper sky as often as over the shaft: a scrim. */
   .demo--bill-the-lizard .demo-beat {
     inset-block-end: 8vh;
+    padding-block: 0.4em;
+    border-radius: 1rem;
+    background: oklch(from var(--world-night-deep) l c h / 0.55);
   }
 
   .demo--bill-the-lizard .line[data-speaker="bill"] {
-    color: oklch(88% 0.1 130);
+    color: color-mix(in oklch, var(--paper-base), var(--world-leaf) 45%);
     font-style: italic;
   }
 
@@ -44,7 +54,7 @@
       to bottom,
       var(--bl-sky-high),
       var(--bl-sky) 60%,
-      oklch(86% 0.05 90)
+      var(--bl-sky-low)
     );
     transform: rotate(calc(var(--spin) * 1deg));
     filter: blur(calc(var(--daze) * 3px));
@@ -78,7 +88,7 @@
     inset-inline: 0;
     inset-block-start: 40%;
     block-size: 30%;
-    background: linear-gradient(to bottom, var(--bl-roof), oklch(36% 0.09 30));
+    background: linear-gradient(to bottom, var(--bl-roof), var(--bl-roof-deep));
     clip-path: polygon(0 40%, 50% 0, 100% 40%, 100% 100%, 0 100%);
   }
 
@@ -103,10 +113,10 @@
     block-size: 30%;
     background:
       radial-gradient(circle at 10% 20%, var(--bl-hedge) 8vmin, transparent 8.2vmin),
-      radial-gradient(circle at 35% 10%, oklch(42% 0.1 135) 9vmin, transparent 9.2vmin),
+      radial-gradient(circle at 35% 10%, var(--bl-hedge-deep) 9vmin, transparent 9.2vmin),
       radial-gradient(circle at 62% 18%, var(--bl-hedge) 8vmin, transparent 8.2vmin),
-      radial-gradient(circle at 88% 12%, oklch(50% 0.1 135) 9vmin, transparent 9.2vmin),
-      linear-gradient(to bottom, transparent 10%, oklch(40% 0.09 135) 10%);
+      radial-gradient(circle at 88% 12%, var(--bl-hedge-light) 9vmin, transparent 9.2vmin),
+      linear-gradient(to bottom, transparent 10%, var(--bl-hedge-deep) 10%);
   }
 
   .bl__chimney {
@@ -158,7 +168,7 @@
     inline-size: clamp(12rem, 40vmin, 26rem);
     translate: -50% 0;
     transform-origin: 50% 100%;
-    filter: drop-shadow(0 -10px 20px oklch(0% 0 0 / 0.5));
+    filter: drop-shadow(0 -10px 20px var(--bl-shade));
   }
 
   .bl__foot svg {
@@ -196,8 +206,9 @@
     block-size: 100%;
   }
 
+  /* The launch: a gold blink, the interaction's own, gone in a beat. */
   .bl__flash {
-    background: oklch(95% 0.05 90);
+    background: var(--ix-gold);
     opacity: 0;
   }
 

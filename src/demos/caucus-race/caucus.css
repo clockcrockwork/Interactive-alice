@@ -4,32 +4,39 @@
 @layer tokens, base, layout, scene, utilities;
 
 @layer tokens {
+  /* The bank in paper and sepia; the water is the pool's; chalk on the course;
+     the prizes and the thimble are the reader's moment, in the interaction colours. */
   :root {
-    --cr-sky: oklch(86% 0.06 230);
-    --cr-sky-low: oklch(92% 0.05 90);
-    --cr-bank: oklch(58% 0.1 130);
-    --cr-bank-deep: oklch(42% 0.09 135);
-    --cr-chalk: oklch(96% 0.01 90 / 0.8);
-    --cr-comfit: oklch(80% 0.15 340);
-    --cr-thimble: oklch(80% 0.05 80);
+    --cr-sky: var(--world-sky);
+    --cr-sky-low: var(--paper-base);
+    --cr-bank: var(--sepia-light);
+    --cr-bank-deep: var(--sepia-dark);
+    --cr-chalk: oklch(from var(--paper-base) l c h / 0.8);
+    --cr-comfit: var(--ix-pink);
+    --cr-thimble: var(--ix-gold);
+    --cr-thimble-dent: oklch(from var(--ix-gold) calc(l - 0.25) c h);
+    --cr-dust: oklch(from var(--paper-aged) l c h / 0.7);
+    --cr-drip: oklch(from var(--world-water) l c h / 0.8);
+    --cr-shadow: oklch(from var(--ink-primary) l c h / 0.3);
     --cr-radius: clamp(180px, 34vmin, 320px);
     /* The pool of tears' water (pool.css --pt-water, --pt-water-deep, --pt-foam):
        the party has just swum out of it. */
-    --cr-water: oklch(62% 0.1 230);
-    --cr-water-deep: oklch(38% 0.1 240);
+    --cr-water: color-mix(in oklch, var(--world-water), var(--ix-blue) 30%);
+    --cr-water-deep: color-mix(in oklch, var(--world-water-deep), var(--ix-blue) 20%);
+    --cr-foam: var(--paper-base);
   }
 }
 
 @layer scene {
   .demo--caucus-race .demo-beat {
     inset-block-end: 8vh;
-    color: oklch(22% 0.03 60);
-    text-shadow: 0 1px 0 oklch(100% 0 0 / 0.5);
+    color: var(--ink-primary);
+    text-shadow: 0 1px 0 oklch(from var(--paper-base) l c h / 0.5);
   }
 
   .demo--caucus-race .line[data-speaker="dodo"] {
     font-weight: 700;
-    color: oklch(34% 0.06 250);
+    color: var(--ink-secondary);
   }
 
   .cr__sky {
@@ -69,9 +76,13 @@
     inset-block-start: auto;
     block-size: 46%;
     background:
-      repeating-linear-gradient(to bottom, transparent 0 5vh, oklch(94% 0.03 220 / 0.1) 5vh 5.3vh),
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0 5vh,
+        oklch(from var(--cr-foam) l c h / 0.1) 5vh 5.3vh
+      ),
       linear-gradient(to bottom, var(--cr-water), var(--cr-water-deep));
-    border-block-start: 2px solid oklch(94% 0.03 220 / 0.6);
+    border-block-start: 2px solid oklch(from var(--cr-foam) l c h / 0.6);
     pointer-events: none;
   }
 
@@ -114,11 +125,11 @@
     transform: rotateY(calc(var(--a) * 1deg)) translateZ(calc(var(--cr-radius) * var(--r)))
       translateY(calc(var(--y, 0) * 1px)) rotateY(calc((var(--a) + var(--spin)) * -1deg))
       rotateX(calc(var(--tilt) * -1deg));
-    filter: drop-shadow(0 10px 8px oklch(0% 0 0 / 0.3));
+    filter: drop-shadow(0 10px 8px var(--cr-shadow));
   }
 
   .cr__runner:focus-visible {
-    outline: 3px solid oklch(40% 0.15 250);
+    outline: 3px solid var(--ix-gold);
     outline-offset: 4px;
   }
 
@@ -187,7 +198,7 @@
     font-family: system-ui, sans-serif;
     font-size: 0.75rem;
     letter-spacing: 0.1em;
-    color: oklch(28% 0.03 60);
+    color: var(--ink-secondary);
     opacity: 0;
     pointer-events: none;
     transition: opacity var(--demo-calm) var(--demo-ease);
@@ -211,7 +222,7 @@
     inline-size: 1.6vmin;
     aspect-ratio: 1;
     border-radius: 50%;
-    background: oklch(80% 0.04 90 / 0.7);
+    background: var(--cr-dust);
     animation: cr-puff 0.7s ease-out forwards;
   }
 
@@ -235,7 +246,7 @@
   }
 
   .cr__drips circle {
-    fill: oklch(70% 0.08 230 / 0.8);
+    fill: var(--cr-drip);
     animation: cr-drop 1.6s ease-in infinite;
     animation-delay: calc(var(--i, 0) * -0.5s);
   }
@@ -253,7 +264,7 @@
     border-radius: 50%;
     background: radial-gradient(
       circle at 35% 35%,
-      oklch(100% 0 0 / 0.8),
+      oklch(from var(--paper-base) l c h / 0.8),
       var(--c, var(--cr-comfit)) 55%
     );
     animation: cr-comfit 2.6s linear infinite;
@@ -267,7 +278,7 @@
     inline-size: clamp(3rem, 9vmin, 6rem);
     translate: -50% -50%;
     scale: 0;
-    filter: drop-shadow(0 10px 20px oklch(0% 0 0 / 0.35));
+    filter: drop-shadow(0 10px 20px var(--cr-shadow));
   }
 
   .cr__thimble svg {

@@ -19,9 +19,9 @@ export const SHORE_HTML = `
 <div class="mt__shingle"></div>
 <div class="mt__ledge">
   <svg viewBox="0 0 320 140" preserveAspectRatio="none" focusable="false">
-    <path d="M0 140 L10 70 Q40 30 110 34 L180 20 Q260 10 300 40 L320 140 Z" fill="oklch(52% 0.04 70)"/>
-    <path d="M30 80 Q90 50 150 60 Q230 40 290 70" stroke="oklch(0% 0 0 / 0.15)" stroke-width="8" fill="none"/>
-    <path d="M60 110 Q140 90 230 100" stroke="oklch(100% 0 0 / 0.12)" stroke-width="6" fill="none"/>
+    <path d="M0 140 L10 70 Q40 30 110 34 L180 20 Q260 10 300 40 L320 140 Z" fill="var(--sepia-mid)"/>
+    <path d="M30 80 Q90 50 150 60 Q230 40 290 70" stroke="oklch(from var(--ink-primary) l c h / 0.15)" stroke-width="8" fill="none"/>
+    <path d="M60 110 Q140 90 230 100" stroke="var(--lq-paper-faint)" stroke-width="6" fill="none"/>
   </svg>
 </div>
 <div class="mt__grass"></div>`;

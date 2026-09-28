@@ -5,36 +5,45 @@
 
 @layer tokens {
   :root {
-    --cq-sky: oklch(86% 0.06 220);
-    --cq-sky-low: oklch(93% 0.04 100);
-    --cq-turf: oklch(60% 0.14 135);
-    --cq-turf-deep: oklch(50% 0.13 138);
-    --cq-red: oklch(55% 0.22 25);
-    --cq-white: oklch(97% 0.01 90);
-    --cq-flamingo: oklch(76% 0.16 10);
-    --cq-pot: oklch(60% 0.12 45);
-    /* The little door she came in by: Drink Me's door tokens, repeated by value. */
-    --cq-door: oklch(38% 0.08 50);
-    --cq-door-frame: oklch(26% 0.05 50);
-    --cq-hall-wall-deep: oklch(36% 0.05 55);
+    /* The garden as the book prints it: a paper sky over the world's leaf; the
+       roses paper until painted, and then the Queen's red; the flamingo a
+       printed sepia-pink; the paint-pot sepia. */
+    --cq-sky: var(--world-sky);
+    --cq-sky-low: var(--paper-base);
+    --cq-turf: var(--world-leaf);
+    --cq-turf-deep: var(--world-leaf-deep);
+    --cq-red: var(--wonder-red);
+    --cq-white: var(--paper-base);
+    --cq-flamingo: color-mix(in oklch, var(--wonder-red-faded), var(--paper-warm) 45%);
+    --cq-pot: var(--sepia-dark);
+    --cq-shadow: oklch(from var(--ink-primary) l c h / 0.35);
+    /* The Cat's head in the air: a sepia print with a paper grin. */
+    --cc-cat: var(--sepia-light);
+    --cc-cat-stripe: var(--sepia-dark);
+    --cc-grin: var(--paper-base);
+    /* The little door she came in by: the same tokens the Dormouse's tree door
+       and hall end on. */
+    --cq-door: color-mix(in oklch, var(--sepia-dark), var(--sepia-deep));
+    --cq-door-frame: var(--sepia-deep);
+    --cq-hall-wall-deep: var(--sepia-dark);
   }
 }
 
 @layer scene {
   .demo--croquet .demo-beat {
     inset-block-end: 9vh;
-    color: oklch(20% 0.03 60);
-    text-shadow: 0 1px 0 oklch(100% 0 0 / 0.55);
+    color: var(--ink-primary);
+    text-shadow: 0 1px 0 oklch(from var(--paper-base) l c h / 0.55);
   }
 
   .demo--croquet .line[data-speaker="queen-of-hearts"] {
     font-weight: 700;
-    color: oklch(38% 0.2 25);
+    color: var(--wonder-red-dark);
   }
 
   .demo--croquet .line[data-speaker="cheshire-cat"] {
     font-style: italic;
-    color: oklch(34% 0.1 300);
+    color: var(--ink-secondary);
   }
 
   .cq__sky {
@@ -80,9 +89,9 @@
     background:
       repeating-linear-gradient(
         to bottom,
-        oklch(0% 0 0 / 0) 0 70px,
-        oklch(0% 0 0 / 0.12) 70px 110px,
-        oklch(100% 0 0 / 0.08) 110px 140px
+        oklch(from var(--ink-primary) l c h / 0) 0 70px,
+        oklch(from var(--ink-primary) l c h / 0.12) 70px 110px,
+        oklch(from var(--paper-base) l c h / 0.08) 110px 140px
       ),
       linear-gradient(to bottom, var(--cq-turf-deep), var(--cq-turf) 30%, var(--cq-turf-deep));
   }
@@ -103,7 +112,7 @@
       rotateX(calc(var(--tilt) * 1deg)) translateY(calc(-100% + var(--sink) * 70%))
       rotateX(calc(var(--flat) * -84deg));
     transform-origin: 50% 100%;
-    filter: drop-shadow(0 14px 14px oklch(0% 0 0 / 0.35));
+    filter: drop-shadow(0 14px 14px var(--cq-shadow));
     pointer-events: none;
   }
 
@@ -112,14 +121,6 @@
     display: block;
     inline-size: 100%;
     block-size: auto;
-  }
-
-  .cq__courtier .art {
-    filter: hue-rotate(200deg) saturate(1.4);
-  }
-
-  .cq__child .art {
-    filter: hue-rotate(-20deg) saturate(1.6);
   }
 
   .cq__flamingo .art,
@@ -141,7 +142,7 @@
   }
 
   .cq__rose-tree {
-    filter: drop-shadow(0 20px 20px oklch(0% 0 0 / 0.3));
+    filter: drop-shadow(0 20px 20px var(--cq-shadow));
   }
 
   .cq__roses {
@@ -160,8 +161,8 @@
     padding: 0;
     border: 0;
     border-radius: 50%;
-    background: radial-gradient(circle at 40% 35%, var(--cq-white), oklch(86% 0.02 90) 70%);
-    box-shadow: inset 0 -0.3em 0.4em oklch(0% 0 0 / 0.15);
+    background: radial-gradient(circle at 40% 35%, var(--cq-white), var(--paper-warm) 70%);
+    box-shadow: inset 0 -0.3em 0.4em oklch(from var(--ink-primary) l c h / 0.15);
     cursor: pointer;
     pointer-events: auto;
     transition:
@@ -183,7 +184,7 @@
   }
 
   .cq__rose[aria-pressed="true"] {
-    background: radial-gradient(circle at 40% 35%, oklch(68% 0.22 25), var(--cq-red) 70%);
+    background: radial-gradient(circle at 40% 35%, var(--wonder-red-light), var(--cq-red) 70%);
     transform: scale(1.12);
   }
 
@@ -192,7 +193,7 @@
   }
 
   .cq__rose:focus-visible {
-    outline: 3px solid oklch(40% 0.15 250);
+    outline: 3px solid var(--ix-gold);
     outline-offset: 3px;
   }
 
@@ -209,9 +210,9 @@
     aspect-ratio: 1 / 0.9;
     background: linear-gradient(
       to right,
-      oklch(52% 0.12 45),
+      oklch(from var(--cq-pot) calc(l - 0.06) c h),
       var(--cq-pot) 40%,
-      oklch(48% 0.12 45)
+      oklch(from var(--cq-pot) calc(l - 0.1) c h)
     );
     clip-path: polygon(0 0, 100% 0, 100% 14%, 92% 14%, 84% 100%, 16% 100%, 8% 14%, 0 14%);
   }
@@ -250,7 +251,7 @@
   }
 
   .cq__fury {
-    background: oklch(45% 0.2 25);
+    background: var(--wonder-red);
     opacity: 0;
     pointer-events: none;
   }
@@ -302,7 +303,7 @@
     inset-block-end: -4%;
     inline-size: clamp(16rem, 56vmin, 34rem);
     transform-origin: 50% 100%;
-    filter: drop-shadow(0 16px 24px oklch(0% 0 0 / 0.45));
+    filter: drop-shadow(0 16px 24px oklch(from var(--ink-primary) l c h / 0.45));
   }
 
   .cq__flamingo-head {
@@ -365,11 +366,12 @@
     cursor: pointer;
     pointer-events: auto;
     transform: rotate(calc(var(--wobble) * 8deg)) scale(calc(1 - var(--blink) * 0.15));
-    filter: drop-shadow(0 10px 18px oklch(0% 0 0 / 0.3));
+    /* A close shadow, so the paper grin still reads against the paper sky. */
+    filter: drop-shadow(0 4px 8px oklch(from var(--ink-primary) l c h / 0.45));
   }
 
   .cq__cat:focus-visible {
-    outline: 3px solid oklch(40% 0.15 250);
+    outline: 3px solid var(--ix-gold);
     outline-offset: 4px;
   }
 
@@ -421,9 +423,9 @@
     background: repeating-linear-gradient(
       to right,
       var(--cq-door) 0 9vmin,
-      oklch(32% 0.07 50) 9vmin 10.2vmin
+      var(--cq-door-frame) 9vmin 10.2vmin
     );
-    box-shadow: inset 0 0 6vmin oklch(0% 0 0 / 0.5);
+    box-shadow: inset 0 0 6vmin oklch(from var(--ink-primary) l c h / 0.5);
     transform-origin: 0 50%;
     transform: rotateY(-100deg);
   }

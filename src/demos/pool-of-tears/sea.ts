@@ -64,8 +64,24 @@ export interface Sea {
   surfaceAt(x: number): { y: number; slope: number };
 }
 
-const css = (name: string): string =>
-  getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+/**
+ * A token's colour as the browser resolves it, in a form the canvas reads. The
+ * demo's tokens are derived from the shared palette (color-mix, relative oklch),
+ * and those only become plain colours on an element, so a hidden probe carries
+ * each one in turn.
+ */
+function readColours<K extends string>(tokens: Record<K, string>): Record<K, string> {
+  const probe = document.createElement('span');
+  probe.className = 'pt__probe';
+  document.body.append(probe);
+  const colours = {} as Record<K, string>;
+  for (const [key, token] of Object.entries(tokens) as [K, string][]) {
+    probe.style.setProperty('--probe', `var(${token})`);
+    colours[key] = getComputedStyle(probe).color;
+  }
+  probe.remove();
+  return colours;
+}
 
 export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | undefined {
   const ctx = canvas.getContext('2d');
@@ -79,23 +95,32 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
   const rings: Ring[] = [];
   const tears: Tear[] = [];
   const random = seeded(23);
-  const colours = {
-    hall: css('--pt-hall') || '#6b5a48',
-    hallDeep: css('--pt-hall-deep') || '#3e3226',
-    water: css('--pt-water') || '#5a8fbf',
-    waterDeep: css('--pt-water-deep') || '#2d4f7a',
-    foam: css('--pt-foam') || '#e8f0f6',
-    mouse: css('--pt-mouse') || '#8a7a66',
-    shore: css('--pt-shore') || '#8a6a44',
-    door: css('--pt-door') || '#5a4030',
-    doorFrame: css('--pt-door-frame') || '#3a2a1e',
-    glass: css('--pt-glass') || 'rgba(220, 230, 240, 0.35)',
-    glassEdge: css('--pt-glass-edge') || 'rgba(240, 245, 250, 0.7)',
-    gold: css('--pt-gold') || '#e0c060',
-    hair: css('--alice-hair') || '#f0cb64',
-    skin: css('--alice-skin') || '#f6d9c1',
-    dress: css('--alice-dress') || '#3d6be8',
-  };
+  const colours = readColours({
+    hall: '--pt-hall',
+    hallDeep: '--pt-hall-deep',
+    water: '--pt-water',
+    waterDeep: '--pt-water-deep',
+    foam: '--pt-foam',
+    tile: '--pt-tile',
+    tileDark: '--pt-tile-dark',
+    ink: '--pt-ink',
+    mouse: '--pt-mouse',
+    shore: '--pt-shore',
+    door: '--pt-door',
+    doorFrame: '--pt-door-frame',
+    glass: '--pt-glass',
+    glassEdge: '--pt-glass-edge',
+    gold: '--pt-gold',
+    duck: '--pt-duck',
+    dodo: '--pt-dodo',
+    lory: '--pt-lory',
+    eaglet: '--pt-eaglet',
+    beak: '--pt-beak',
+    beakPale: '--pt-beak-pale',
+    hair: '--alice-hair',
+    skin: '--alice-skin',
+    dress: '--alice-dress',
+  });
 
   const state: SeaState = {
     level: 0,
@@ -189,7 +214,7 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
         ctx.moveTo(-28, -6);
         ctx.quadraticCurveTo(-60, -20, -70, 0);
         ctx.stroke();
-        ctx.fillStyle = '#222';
+        ctx.fillStyle = colours.ink;
         ctx.beginPath();
         ctx.arc(34, -18, 2, 0, Math.PI * 2);
         ctx.fill();
@@ -208,7 +233,7 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
         ctx.beginPath();
         ctx.ellipse(0, 4, 36, 10, 0, 0, Math.PI);
         ctx.fill();
-        ctx.fillStyle = '#222';
+        ctx.fillStyle = colours.ink;
         ctx.beginPath();
         ctx.arc(-7, -26, 2.2, 0, Math.PI * 2);
         ctx.arc(7, -26, 2.2, 0, Math.PI * 2);
@@ -216,23 +241,20 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
         break;
       }
       default: {
-        const hue = { duck: '#e2c25a', dodo: '#8a9aa8', lory: '#d86a3a', eaglet: '#7a5a3a' }[
-          swimmer.kind
-        ];
-        ctx.fillStyle = hue;
+        ctx.fillStyle = colours[swimmer.kind];
         ctx.beginPath();
         ctx.ellipse(0, -10, 28, 14, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.beginPath();
         ctx.arc(22, -30, 11, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = swimmer.kind === 'dodo' ? '#d8b070' : '#e0a030';
+        ctx.fillStyle = swimmer.kind === 'dodo' ? colours.beakPale : colours.beak;
         ctx.beginPath();
         ctx.moveTo(30, -32);
         ctx.lineTo(swimmer.kind === 'dodo' ? 58 : 44, -28);
         ctx.lineTo(30, -24);
         ctx.fill();
-        ctx.fillStyle = '#222';
+        ctx.fillStyle = colours.ink;
         ctx.beginPath();
         ctx.arc(24, -33, 2, 0, Math.PI * 2);
         ctx.fill();
@@ -311,7 +333,7 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
           const xb = cx + (col + 1 - cols / 2) * (width / cols) * spread0;
           const xc = cx + (col + 1 - cols / 2) * (width / cols) * spread1;
           const xd = cx + (col - cols / 2) * (width / cols) * spread1;
-          ctx.fillStyle = (row + col) % 2 === 0 ? '#e8e2d2' : '#1a1c2c';
+          ctx.fillStyle = (row + col) % 2 === 0 ? colours.tile : colours.tileDark;
           ctx.beginPath();
           ctx.moveTo(xa, y0);
           ctx.lineTo(xb, y0);

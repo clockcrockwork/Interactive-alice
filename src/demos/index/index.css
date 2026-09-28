@@ -1,6 +1,11 @@
 /* The demo index: three playing cards fanned on the table, each a door. */
 
 @layer scene {
+  /* The table the cards lie on: deep sepia, not the demos' night. */
+  .demo-body:has(.demos) {
+    --demo-ground: var(--sepia-deep);
+  }
+
   .demos {
     min-block-size: 100dvh;
     display: grid;
@@ -67,7 +72,7 @@
   }
 
   .demos__alice-choice[aria-pressed="true"] {
-    border-color: var(--demo-accent);
+    border-color: var(--demo-ink);
   }
 
   .demos__alice-choice:focus-visible {
@@ -92,6 +97,8 @@
     animation: none;
   }
 
+  /* Each picker figure in her own set whatever the root says. These are the
+     shell's two sets verbatim, since no token names the Alice not chosen. */
   .demos__alice-figure[data-alice="yellow"] {
     --alice-hair: #68472d;
     --alice-hair-deep: #513a2b;
@@ -100,7 +107,7 @@
     --alice-dress-light: #e7ca70;
     --alice-dress-deep: #b38a2f;
     --alice-dress-shadow: #84631f;
-    --alice-band: #a66e61;
+    --alice-band: var(--wonder-red-faded);
   }
 
   .demos__alice-figure[data-alice="blue"] {
@@ -157,13 +164,16 @@
     block-size: 100%;
     padding: var(--space-2);
     border-radius: 1rem;
+    /* Paper, worn to sepia at the edges, on a table that throws an ink shadow. */
     background:
-      radial-gradient(120% 90% at 50% 0%, oklch(100% 0 0 / 0.1), transparent 60%), var(--demo-paper);
+      radial-gradient(120% 90% at 50% 0%, var(--demo-paper), transparent 60%),
+      radial-gradient(90% 90% at 50% 50%, var(--demo-paper) 55%, var(--paper-aged)),
+      var(--demo-paper);
     color: var(--demo-paper-ink);
     text-decoration: none;
     box-shadow:
-      0 30px 60px -20px oklch(0% 0 0 / 0.7),
-      inset 0 0 0 1px oklch(0% 0 0 / 0.08);
+      0 30px 60px -20px oklch(from var(--world-night-deep) l c h / 0.8),
+      inset 0 0 0 1px var(--paper-shadow);
     view-transition-name: var(--card-name);
   }
 

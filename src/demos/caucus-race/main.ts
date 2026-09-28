@@ -280,12 +280,9 @@ function mount(shell: DemoShell): void {
 
   // --- Prizes.
   const comfits = shell.layer('cr__comfits');
-  const colours = [
-    'oklch(80% 0.15 340)',
-    'oklch(85% 0.12 90)',
-    'oklch(80% 0.12 200)',
-    'oklch(88% 0.08 30)',
-  ];
+  // The comfits, in the interaction colours: they fall while the prizes are
+  // handed round and are gone with the thimble.
+  const colours = ['var(--ix-pink)', 'var(--ix-gold)', 'var(--ix-mint)', 'var(--ix-coral)'];
   comfits.innerHTML = Array.from(
     { length: 40 },
     (_, i) =>

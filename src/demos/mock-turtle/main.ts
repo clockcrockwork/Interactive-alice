@@ -18,6 +18,7 @@ import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import { SHORE_HTML, schoolMarkup } from './figures.ts';
+import '../lobster-quadrille/shore.css';
 import './mock-turtle.css';
 
 /** A capitalised word of five letters or more, so the pronouns and the words

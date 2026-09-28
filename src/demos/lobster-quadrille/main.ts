@@ -18,6 +18,7 @@ import { DANCERS } from '../art/vectors.ts';
 import { attachDemo, type Beat, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import { COURT_DOORS, HANDS_WITH_LOBSTER, TUREEN_SVG } from './figures.ts';
 import './quadrille.css';
+import './shore.css';
 
 interface Dancer {
   el: HTMLElement;

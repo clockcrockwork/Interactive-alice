@@ -4,19 +4,30 @@
 @layer tokens, base, layout, scene, utilities;
 
 @layer tokens {
+  /* The courtroom is where Wonderland's red is strongest: the curtains and the
+     throne in it, the hearts on the cards. Everything else is paper and sepia;
+     the bank outside is the world's own sky, leaves and dusk. */
   :root {
-    --tr-curtain: oklch(34% 0.14 20);
-    --tr-curtain-deep: oklch(22% 0.1 20);
-    --tr-wall: oklch(62% 0.06 70);
-    --tr-floor: oklch(48% 0.08 60);
-    --tr-gold: oklch(80% 0.16 85);
-    --tr-card: oklch(97% 0.01 80);
-    --tr-card-ink: oklch(20% 0.02 30);
-    --tr-card-red: oklch(55% 0.22 25);
-    --tr-leaf: oklch(62% 0.14 55);
-    --tr-leaf-deep: oklch(48% 0.13 40);
-    --tr-sky: oklch(82% 0.08 60);
-    --tr-sky-high: oklch(70% 0.08 250);
+    --tr-curtain: var(--wonder-red-dark);
+    --tr-curtain-deep: oklch(from var(--wonder-red-dark) calc(l - 0.1) c h);
+    --tr-floor: var(--sepia-dark);
+    --tr-floor-deep: var(--sepia-deep);
+    --tr-gold: var(--world-glow);
+    --tr-card: var(--paper-base);
+    --tr-card-ink: var(--ink-primary);
+    --tr-card-red: var(--wonder-red);
+    --tr-leaf: var(--sepia-light);
+    --tr-leaf-deep: var(--world-leaf);
+    --tr-sky: var(--paper-warm);
+    --tr-sky-high: var(--world-sky-deep);
+    --tr-bank: var(--world-leaf);
+    --tr-bank-deep: var(--world-leaf-deep);
+    --tr-dusk: var(--world-night);
+    --tr-dusk-glow: color-mix(in oklch, var(--world-glow), var(--wonder-red-faded) 40%);
+    --tr-dusk-low: var(--sepia-mid);
+    --tr-ink-shadow: oklch(from var(--ink-primary) l c h / 0.45);
+    --tr-door: var(--sepia-dark);
+    --tr-door-deep: var(--sepia-deep);
     --tr-card-w: clamp(3.6rem, 9vmin, 6rem);
   }
 }
@@ -28,7 +39,7 @@
   }
 
   .demo--trial .line[data-speaker="queen-of-hearts"] {
-    color: oklch(88% 0.12 20);
+    color: color-mix(in oklch, var(--wonder-red-light), var(--paper-base) 45%);
     font-weight: 700;
     letter-spacing: 0.04em;
   }
@@ -38,14 +49,14 @@
   }
 
   .demo--trial .line[data-speaker="alice"] {
-    color: oklch(88% 0.08 240);
+    color: var(--alice-dress-light);
   }
 
   .demo--trial .line[data-speaker="white-rabbit"] {
     display: inline-block;
     justify-self: center;
     padding: 0.3em 1em;
-    background: oklch(92% 0.04 85);
+    background: var(--paper-warm);
     color: var(--demo-paper-ink);
     font-style: italic;
     text-shadow: none;
@@ -53,7 +64,7 @@
   }
 
   .demo--trial .line[data-speaker="alices-sister"] {
-    color: oklch(40% 0.06 60);
+    color: var(--sepia-dark);
     text-shadow: none;
   }
 
@@ -61,7 +72,7 @@
   .demo--trial .demo-beat[data-cue="wake"] {
     inset-block-end: auto;
     inset-block-start: calc(var(--demo-bar-height) + 6vh);
-    color: oklch(30% 0.04 60);
+    color: var(--ink-secondary);
     text-shadow: none;
   }
 
@@ -78,8 +89,8 @@
       to bottom,
       var(--tr-sky-high),
       var(--tr-sky) 60%,
-      oklch(50% 0.09 130) 60.5%,
-      oklch(42% 0.08 130)
+      var(--tr-bank) 60.5%,
+      var(--tr-bank-deep)
     );
     opacity: 0;
   }
@@ -130,7 +141,7 @@
     inset-block-end: 22%;
     inline-size: var(--w, 12rem);
     transform: translate3d(calc(-50% + var(--x, 0) * 1vw), 0, calc(var(--z, 0) * 1px));
-    filter: drop-shadow(0 18px 24px oklch(0% 0 0 / 0.45));
+    filter: drop-shadow(0 18px 24px var(--tr-ink-shadow));
   }
 
   .tr__backdrop {
@@ -162,8 +173,12 @@
     inline-size: 360vw;
     transform: translate3d(-50%, 0, -60px);
     background:
-      repeating-linear-gradient(90deg, oklch(0% 0 0 / 0.08) 0 2px, transparent 2px 9vw),
-      linear-gradient(to bottom, var(--tr-floor), oklch(36% 0.07 60));
+      repeating-linear-gradient(
+        90deg,
+        oklch(from var(--ink-primary) l c h / 0.1) 0 2px,
+        transparent 2px 9vw
+      ),
+      linear-gradient(to bottom, var(--tr-floor), var(--tr-floor-deep));
   }
 
   .tr__throne {
@@ -288,8 +303,8 @@
     background: var(--tr-card);
     color: var(--tr-card-ink);
     box-shadow:
-      0 2px 4px oklch(0% 0 0 / 0.35),
-      inset 0 0 0 2px oklch(0% 0 0 / 0.06);
+      0 2px 4px oklch(from var(--ink-primary) l c h / 0.35),
+      inset 0 0 0 2px oklch(from var(--paper-aged) l c h / 0.7);
     backface-visibility: hidden;
     font-family: var(--demo-serif);
     font-weight: 700;
@@ -334,8 +349,8 @@
     inset-block-start: var(--gy, 50%);
     pointer-events: auto;
     box-shadow:
-      0 0 0 1px oklch(0% 0 0 / 0.08),
-      0 24px 40px -10px oklch(0% 0 0 / 0.7);
+      0 0 0 1px oklch(from var(--ink-primary) l c h / 0.08),
+      0 24px 40px -10px oklch(from var(--ink-primary) l c h / 0.7);
     /* A card and a leaf, with the same number of points, so one turns into the other. */
     clip-path: path(
       "M2 2 C2 2 50 2 98 2 C98 2 98 70 98 138 C98 138 50 138 2 138 C2 138 2 70 2 2 Z"
@@ -378,7 +393,12 @@
     inset-block-start: -8vh;
     inline-size: clamp(1.2rem, 3.2vmin, 2.2rem);
     aspect-ratio: 1 / 1.4;
-    background: oklch(60% 0.14 calc(var(--hue, 40) * 1deg));
+    /* Each leaf between the light sepia and the world's leaf, by its `--turn`. */
+    background: color-mix(
+      in oklch,
+      var(--tr-leaf),
+      var(--tr-leaf-deep) calc(var(--turn, 0.5) * 100%)
+    );
     clip-path: path("M12 0 C12 0 23 7 23 19 C23 19 19 32 12 34 C12 34 5 32 1 19 C1 19 1 7 12 0 Z");
     opacity: 0;
   }
@@ -405,7 +425,7 @@
   }
 
   .tr__flash {
-    background: oklch(45% 0.2 25);
+    background: var(--wonder-red);
     opacity: 0;
     mix-blend-mode: multiply;
   }
@@ -427,11 +447,11 @@
     inset-block: 0;
     inline-size: 50%;
     background:
-      linear-gradient(to bottom, transparent 30%, oklch(0% 0 0 / 0.25)),
-      repeating-linear-gradient(to bottom, oklch(42% 0.09 55) 0 18%, oklch(32% 0.07 50) 18% 20%);
+      linear-gradient(to bottom, transparent 30%, oklch(from var(--ink-primary) l c h / 0.25)),
+      repeating-linear-gradient(to bottom, var(--tr-door) 0 18%, var(--tr-door-deep) 18% 20%);
     box-shadow:
       inset 0 0 0 0.3vmin var(--tr-gold),
-      0 0 8vmin oklch(0% 0 0 / 0.6);
+      0 0 8vmin oklch(from var(--ink-primary) l c h / 0.6);
     backface-visibility: visible;
   }
 
@@ -569,9 +589,9 @@
     --dusk: 0;
     background: linear-gradient(
       to bottom,
-      oklch(46% 0.1 290),
-      oklch(74% 0.14 45) 55%,
-      oklch(60% 0.1 60)
+      var(--tr-dusk),
+      var(--tr-dusk-glow) 55%,
+      var(--tr-dusk-low)
     );
     opacity: min(0.72, var(--dusk) * 0.7);
     pointer-events: none;
@@ -588,8 +608,8 @@
     inline-size: 12vmin;
     aspect-ratio: 1;
     border-radius: 50%;
-    background: oklch(92% 0.15 80);
-    box-shadow: 0 0 60px 20px oklch(90% 0.15 70 / 0.6);
+    background: var(--world-glow);
+    box-shadow: 0 0 60px 20px oklch(from var(--world-glow) l c h / 0.6);
     opacity: calc(var(--dusk) * 1.2);
   }
 
@@ -623,7 +643,7 @@
     inset-inline-start: var(--gx, 50%);
     inset-block-end: 22%;
     inline-size: clamp(3.5rem, 11vmin, 7rem);
-    color: oklch(34% 0.05 60);
+    color: var(--sepia-dark);
     opacity: 0;
     transform: translateY(20%);
     transition:
@@ -704,7 +724,7 @@
     inset-inline-start: calc(28% + var(--i, 0) * 20%);
     inset-block-end: 14%;
     inline-size: clamp(2.5rem, 8vmin, 5rem);
-    color: oklch(30% 0.05 60);
+    color: var(--ink-secondary);
     transform: scale(calc(0.8 + var(--i, 0) * 0.1));
   }
 

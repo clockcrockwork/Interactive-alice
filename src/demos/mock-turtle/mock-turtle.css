@@ -5,55 +5,40 @@
 @layer tokens, base, layout, scene, utilities;
 
 @layer tokens {
+  /* The shore's colours come from ../lobster-quadrille/shore.css: the two demos
+     are one place. Only sizes are this demo's own. */
   :root {
-    /* The quadrille's own palette: the two demos are one shore. */
-    --lq-sky: oklch(86% 0.06 230);
-    --lq-sky-low: oklch(93% 0.05 80);
-    --lq-sea: oklch(62% 0.11 220);
-    --lq-sea-deep: oklch(48% 0.11 235);
-    --lq-shingle: oklch(72% 0.05 70);
-    --lq-shingle-deep: oklch(58% 0.05 65);
-    --lq-gryphon: oklch(66% 0.12 60);
-    --lq-gryphon-wing: oklch(78% 0.1 70);
-    --lq-turtle: oklch(62% 0.08 140);
-    --lq-turtle-shell: oklch(46% 0.09 145);
-    --lq-lobster: oklch(58% 0.2 25);
     --mt-radius: clamp(180px, 36vmin, 340px);
     --mt-figure: clamp(7rem, 24vmin, 14rem);
-    --mt-grass: oklch(66% 0.12 130);
-    --mt-grass-deep: oklch(52% 0.11 135);
-    --mt-sand-ink: oklch(40% 0.05 60);
-    --mt-deep: oklch(56% 0.1 215);
-    --mt-deeper: oklch(32% 0.09 238);
   }
 }
 
 @layer scene {
   .demo--mock-turtle .demo-beat {
     inset-block-end: 9vh;
-    color: oklch(20% 0.03 240);
-    text-shadow: 0 1px 0 oklch(100% 0 0 / 0.5);
+    color: var(--ink-primary);
+    text-shadow: 0 1px 0 var(--lq-caption-shadow);
   }
 
   .demo--mock-turtle .line[data-speaker="mock-turtle"] {
     font-style: italic;
-    color: oklch(30% 0.08 150);
+    color: var(--world-leaf-deep);
   }
 
   .demo--mock-turtle .line[data-speaker="gryphon"] {
     font-weight: 700;
-    color: oklch(38% 0.1 60);
+    color: var(--sepia-dark);
   }
 
   .demo--mock-turtle .line[data-speaker="queen-of-hearts"] {
     font-weight: 700;
-    color: oklch(42% 0.18 20);
+    color: var(--wonder-red);
   }
 
   .demo--mock-turtle .line[data-kind="sound"] {
     font-weight: 900;
     letter-spacing: 0.1em;
-    color: oklch(38% 0.1 60);
+    color: var(--sepia-dark);
   }
 
   /* Under the water, and while the subjects are on the sand, the captions move
@@ -70,12 +55,12 @@
 
   /* Under the water the captions go pale, whoever speaks. */
   .demo--mock-turtle[data-under] .demo-beat {
-    color: oklch(96% 0.02 200);
-    text-shadow: 0 1px 10px oklch(20% 0.06 240 / 0.8);
+    color: var(--paper-base);
+    text-shadow: 0 1px 10px oklch(from var(--lq-under-deep) l c h / 0.8);
   }
 
   .demo--mock-turtle[data-under] .line[data-speaker] {
-    color: oklch(96% 0.02 200);
+    color: var(--paper-base);
   }
 
   /* --- The shore in layers. `--pan` is the walk along it, each band at its own
@@ -110,8 +95,8 @@
     inline-size: 9vmin;
     aspect-ratio: 1;
     border-radius: 50%;
-    background: radial-gradient(circle, oklch(97% 0.1 90), oklch(90% 0.14 85));
-    box-shadow: 0 0 6vmin oklch(92% 0.14 85 / 0.7);
+    background: radial-gradient(circle, var(--lq-sun), var(--lq-sun-deep));
+    box-shadow: 0 0 6vmin oklch(from var(--lq-sun) l c h / 0.7);
     opacity: calc(1 - var(--settle));
   }
 
@@ -142,7 +127,7 @@
 
   .mt__sea--near {
     inset-block: 54% 38%;
-    background: linear-gradient(to bottom, oklch(68% 0.1 215), var(--lq-sea-deep));
+    background: linear-gradient(to bottom, var(--lq-sea-near), var(--lq-sea-deep));
   }
 
   /* A sigh's ripple: a ring that spreads across the water from under the ledge. */
@@ -153,7 +138,7 @@
     inline-size: 22vmin;
     aspect-ratio: 3 / 1;
     translate: -50% -50%;
-    border: 0.6vmin solid oklch(96% 0.02 220 / 0.9);
+    border: 0.6vmin solid var(--lq-foam);
     border-radius: 50%;
     opacity: 0;
   }
@@ -162,8 +147,8 @@
     inset-inline: -50%;
     inset-block: 60% 0;
     background:
-      radial-gradient(circle at 20% 30%, oklch(0% 0 0 / 0.08) 0 6px, transparent 7px),
-      radial-gradient(circle at 70% 60%, oklch(100% 0 0 / 0.12) 0 5px, transparent 6px),
+      radial-gradient(circle at 20% 30%, var(--lq-ink-faint) 0 6px, transparent 7px),
+      radial-gradient(circle at 70% 60%, var(--lq-paper-faint) 0 5px, transparent 6px),
       linear-gradient(to bottom, var(--lq-shingle), var(--lq-shingle-deep));
     background-size:
       140px 90px,
@@ -180,7 +165,7 @@
     inline-size: clamp(11rem, 30vw, 24rem);
     transform: translateX(calc((1 - var(--pan)) * 120vw + var(--lean) * -2vw));
     opacity: calc(1 - var(--settle));
-    filter: drop-shadow(0 6px 6px oklch(0% 0 0 / 0.25));
+    filter: drop-shadow(0 6px 6px var(--lq-ink-shadow));
   }
 
   .mt__ledge svg {
@@ -194,10 +179,10 @@
     inset-inline: -10% 40%;
     inset-block: 57% 30%;
     background:
-      radial-gradient(ellipse at 10% 0, var(--mt-grass) 0 3vmin, transparent 3.2vmin),
-      radial-gradient(ellipse at 50% 0, var(--mt-grass) 0 3.5vmin, transparent 3.7vmin),
-      radial-gradient(ellipse at 85% 0, var(--mt-grass) 0 2.8vmin, transparent 3vmin),
-      linear-gradient(to bottom, var(--mt-grass) 20%, var(--mt-grass-deep));
+      radial-gradient(ellipse at 10% 0, var(--lq-grass) 0 3vmin, transparent 3.2vmin),
+      radial-gradient(ellipse at 50% 0, var(--lq-grass) 0 3.5vmin, transparent 3.7vmin),
+      radial-gradient(ellipse at 85% 0, var(--lq-grass) 0 2.8vmin, transparent 3vmin),
+      linear-gradient(to bottom, var(--lq-grass) 20%, var(--lq-grass-deep));
     background-size:
       30vmin 8vmin,
       34vmin 8vmin,
@@ -254,7 +239,7 @@
     --hide: 0;
     inset-block-start: 66%;
     inline-size: var(--mt-figure);
-    filter: drop-shadow(0 8px 8px oklch(0% 0 0 / 0.3));
+    filter: drop-shadow(0 8px 8px var(--lq-ink-shadow));
     transform: translate(
         calc(-16vw * (1 - var(--settle)) - var(--mt-radius) * 0.4 * var(--settle)),
         calc(var(--settle) * 8.5dvh + var(--hop) * -7vmin + var(--sleep) * -7vmin)
@@ -294,7 +279,7 @@
     color: inherit;
     cursor: pointer;
     pointer-events: none;
-    filter: drop-shadow(0 8px 8px oklch(0% 0 0 / 0.3));
+    filter: drop-shadow(0 8px 8px var(--lq-ink-shadow));
     opacity: calc(1 - var(--depth));
     transform: translate(
         calc(
@@ -330,7 +315,7 @@
   }
 
   .mt__turtle:focus-visible {
-    outline: 3px solid oklch(40% 0.15 250);
+    outline: 3px solid var(--lq-focus);
     outline-offset: 4px;
   }
 
@@ -347,7 +332,7 @@
     inline-size: 1.6vmin;
     aspect-ratio: 2 / 3;
     border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
-    background: oklch(85% 0.06 230 / 0.9);
+    background: color-mix(in oklch, var(--world-water), var(--paper-base) 55%);
     opacity: 0;
   }
 
@@ -396,10 +381,10 @@
     font-weight: 900;
     font-size: clamp(3rem, 13vmin, 8rem);
     letter-spacing: 0.04em;
-    color: oklch(38% 0.1 60);
+    color: var(--sepia-dark);
     text-shadow:
-      0 0 2px oklch(100% 0 0),
-      0 3px 0 oklch(90% 0.05 80);
+      0 0 2px var(--paper-base),
+      0 3px 0 var(--paper-warm);
     white-space: nowrap;
     opacity: 0;
   }
@@ -437,7 +422,7 @@
   .mt__deep {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, var(--mt-deep), var(--mt-deeper));
+    background: linear-gradient(to bottom, var(--lq-under), var(--lq-under-deep));
   }
 
   .mt__caustic {
@@ -445,7 +430,7 @@
     inset: -20%;
     background: radial-gradient(
       ellipse at center,
-      oklch(96% 0.03 200 / 0.4) 0 10%,
+      oklch(from var(--paper-base) l c h / 0.4) 0 10%,
       transparent 42%
     );
     background-size: 21vmin 12vmin;
@@ -475,7 +460,11 @@
     position: absolute;
     inset-inline: -30%;
     inset-block: 64% 0;
-    background: linear-gradient(to bottom, oklch(70% 0.06 80 / 0.7), oklch(52% 0.06 70));
+    background: linear-gradient(
+      to bottom,
+      oklch(from var(--sepia-light) l c h / 0.7),
+      var(--sepia-mid)
+    );
   }
 
   .mt__master {
@@ -537,8 +526,8 @@
   .mt__desk-top {
     block-size: 1.4vmin;
     border-radius: 3px;
-    background: linear-gradient(to bottom, oklch(52% 0.08 60), oklch(40% 0.08 60));
-    box-shadow: 0 1vmin 1vmin oklch(0% 0 0 / 0.3);
+    background: linear-gradient(to bottom, var(--sepia-dark), var(--sepia-deep));
+    box-shadow: 0 1vmin 1vmin var(--lq-ink-shadow);
   }
 
   .mt__pupil {
@@ -567,7 +556,7 @@
     inline-size: calc(var(--size) * 1vmin);
     aspect-ratio: 1;
     border-radius: 50%;
-    border: 2px solid oklch(96% 0.02 220 / 0.8);
+    border: 2px solid var(--lq-foam);
     opacity: 0;
   }
 
@@ -615,11 +604,18 @@
     font-weight: 700;
     font-size: clamp(1rem, 3.4vmin, 1.7rem);
     letter-spacing: 0.06em;
-    color: var(--mt-sand-ink);
-    text-shadow: 0 1px 0 oklch(92% 0.03 80 / 0.8);
+    color: var(--ink-primary);
+    text-shadow: 0 1px 0 oklch(from var(--paper-warm) l c h / 0.8);
     cursor: pointer;
+    transition: color var(--demo-calm) var(--demo-ease);
     opacity: calc(var(--s) * (1 - var(--w)));
     translate: calc(var(--w) * 4vw) calc((1 - var(--s)) * 0.5em - var(--w) * 2vh);
+  }
+
+  /* An uglified word goes lilac for the moment it writhes, then back to ink. */
+  .mt__subject[data-uglified] {
+    color: var(--ix-lilac);
+    transition-duration: var(--demo-quick);
   }
 
   .mt__subject[data-uglified] .mt__letter {
@@ -635,11 +631,13 @@
     inset-block: 54% 24%;
     border-start-start-radius: 50% 40%;
     border-start-end-radius: 50% 40%;
+    /* The foam at the top of the wave carries a little mint while it comes in. */
     background: linear-gradient(
       to bottom,
-      oklch(97% 0.02 220 / 0.95),
-      oklch(74% 0.09 215 / 0.8) 35%,
-      oklch(64% 0.11 220 / 0.55)
+      oklch(from var(--paper-base) l c h / 0.95),
+      color-mix(in oklch, var(--ix-mint) 45%, var(--paper-base)) 12%,
+      oklch(from var(--lq-sea-near) l c h / 0.8) 40%,
+      oklch(from var(--world-water) l c h / 0.55)
     );
     opacity: min(1, var(--wave) * 3);
     transform: translateY(calc(-100% + var(--wave) * 120%));
@@ -678,20 +676,20 @@
     inline-size: 100%;
     aspect-ratio: 1;
     border-radius: 50%;
-    background: radial-gradient(circle, oklch(96% 0.12 90), oklch(86% 0.16 80));
-    box-shadow: 0 0 1.5vmin oklch(90% 0.15 85 / 0.7);
+    background: radial-gradient(circle, var(--lq-sun), var(--lq-sun-deep));
+    box-shadow: 0 0 1.5vmin oklch(from var(--lq-sun) l c h / 0.7);
     scale: var(--k);
   }
 
   .mt__day--holiday .mt__day-sun {
     background: none;
-    border: 0.35vmin dashed oklch(62% 0.05 80);
+    border: 0.35vmin dashed var(--ink-ghost);
     box-shadow: none;
   }
 
   .mt__day--twelfth .mt__day-sun {
     background: none;
-    border: 0.35vmin solid oklch(62% 0.05 80 / 0.35);
+    border: 0.35vmin solid oklch(from var(--ink-ghost) l c h / 0.35);
     box-shadow: none;
     scale: 0.55;
   }
@@ -847,7 +845,8 @@
       animation: none;
     }
 
-    .mt__pupil {
+    .mt__pupil,
+    .mt__subject {
       transition: none;
     }
 

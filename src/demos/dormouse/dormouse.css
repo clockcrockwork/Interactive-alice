@@ -5,30 +5,39 @@
 
 @layer tokens {
   :root {
-    --dm-cloth: oklch(78% 0.05 150);
-    --dm-cloth-alt: oklch(92% 0.02 100);
-    --dm-china: oklch(96% 0.01 90);
-    --dm-china-shade: oklch(80% 0.02 80);
-    --dm-treacle: oklch(28% 0.07 55);
-    --dm-treacle-deep: oklch(18% 0.05 50);
-    --dm-treacle-shine: oklch(48% 0.1 60);
-    --dm-ink: oklch(94% 0.05 85);
-    --dm-mouse: oklch(62% 0.05 60);
-    --dm-bubble-alice: oklch(85% 0.08 240);
-    --dm-bubble-hatter: oklch(84% 0.1 300);
-    --dm-bubble-hare: oklch(84% 0.1 60);
+    /* The tea-table in denser sepia: a paper cloth, china of paper, treacle in
+       the deepest sepia with the tea's midtone as its shine, and the tale written
+       on the treacle in paper (ink would vanish into it). */
+    --dm-cloth: var(--paper-warm);
+    --dm-cloth-alt: var(--paper-base);
+    --dm-china: var(--paper-base);
+    --dm-china-shade: var(--paper-aged);
+    --dm-treacle: var(--sepia-deep);
+    --dm-treacle-deep: oklch(from var(--sepia-deep) calc(l - 0.1) c h);
+    --dm-treacle-shine: var(--sepia-mid);
+    --dm-ink: var(--paper-base);
+    --dm-mouse: var(--sepia-mid);
+    --dm-shadow: oklch(from var(--ink-primary) l c h / 0.3);
+    /* The tea-party's own leak of colour: the bubbles round the rim are paper,
+       tinted with Alice's dress for her, lilac for the Hatter, coral for the Hare. */
+    --dm-bubble-alice: color-mix(in oklch, var(--alice-dress-light), var(--paper-base) 65%);
+    --dm-bubble-hatter: color-mix(in oklch, var(--ix-lilac), var(--paper-base) 70%);
+    --dm-bubble-hare: color-mix(in oklch, var(--ix-coral), var(--paper-base) 70%);
     /* The wood she walks into, and the hall of doors seen through the tree: the
-       hall's colours are Drink Me's (its --dk-* tokens), repeated here by value. */
-    --dm-wood: oklch(24% 0.05 150);
-    --dm-wood-deep: oklch(12% 0.03 160);
-    --dm-bark: oklch(34% 0.05 60);
-    --dm-bark-deep: oklch(22% 0.04 55);
-    --dm-hall-wall: oklch(52% 0.06 60);
-    --dm-hall-wall-deep: oklch(36% 0.05 55);
-    --dm-hall-door: oklch(38% 0.08 50);
-    --dm-hall-door-frame: oklch(26% 0.05 50);
-    --dm-hall-gold: oklch(82% 0.15 85);
-    --dm-hall-garden: oklch(85% 0.12 130);
+       same tokens the croquet-ground opens with (hall sepia and paper, door
+       sepia-dark, garden leaf, roses Wonderland red). */
+    --dm-wood: var(--world-leaf-deep);
+    --dm-wood-deep: var(--world-night-deep);
+    --dm-bark: var(--sepia-dark);
+    --dm-bark-deep: var(--sepia-deep);
+    --dm-bark-mid: color-mix(in oklch, var(--sepia-dark), var(--sepia-deep) 40%);
+    --dm-hall-wall: var(--sepia-mid);
+    --dm-hall-wall-deep: var(--sepia-dark);
+    --dm-hall-wall-light: var(--sepia-light);
+    --dm-hall-door: color-mix(in oklch, var(--sepia-dark), var(--sepia-deep));
+    --dm-hall-door-frame: var(--sepia-deep);
+    --dm-hall-gold: var(--world-glow);
+    --dm-hall-garden: var(--world-leaf);
   }
 }
 
@@ -131,16 +140,16 @@
     justify-self: center;
     padding: 0.4em 0.9em;
     border-radius: 1.2em;
-    background: oklch(100% 0 0 / 0.85);
+    background: oklch(from var(--paper-base) l c h / 0.9);
     color: var(--demo-paper-ink);
-    box-shadow: 0 6px 20px oklch(0% 0 0 / 0.18);
+    box-shadow: 0 6px 20px oklch(from var(--ink-primary) l c h / 0.18);
     max-inline-size: 24rem;
   }
 
   .demo--dormouse .line[data-kind="narration"] {
-    background: oklch(96% 0.01 90 / 0.55);
+    background: oklch(from var(--paper-base) l c h / 0.55);
     box-shadow: none;
-    color: oklch(28% 0.03 60);
+    color: var(--ink-secondary);
     font-style: italic;
     text-align: center;
   }
@@ -183,7 +192,7 @@
     inline-size: clamp(6rem, 16vmin, 10rem);
     pointer-events: auto;
     cursor: pointer;
-    filter: drop-shadow(0 8px 14px oklch(0% 0 0 / 0.3));
+    filter: drop-shadow(0 8px 14px var(--dm-shadow));
   }
 
   .dm__mouse svg {
@@ -203,7 +212,7 @@
   .dm__zzz {
     font-family: var(--demo-serif);
     font-weight: 700;
-    fill: oklch(40% 0.05 60);
+    fill: var(--ink-secondary);
     opacity: calc(1 - var(--awake, 0));
     animation: dm-zzz 2.4s ease-in-out infinite;
   }
@@ -260,7 +269,7 @@
     position: absolute;
     inset-inline-start: var(--lx, 50%);
     inset-block-start: 100%;
-    text-shadow: 0 2px 10px oklch(0% 0 0 / 0.4);
+    text-shadow: 0 2px 10px oklch(from var(--ink-primary) l c h / 0.4);
     will-change: transform;
     animation: dm-float 7s linear infinite;
     animation-delay: var(--delay, 0s);
@@ -272,7 +281,7 @@
     inset-block-end: 8%;
     inline-size: clamp(8rem, 22vmin, 14rem);
     opacity: 0;
-    filter: drop-shadow(0 10px 18px oklch(0% 0 0 / 0.3));
+    filter: drop-shadow(0 10px 18px var(--dm-shadow));
   }
 
   .dm__teapot svg {
@@ -315,12 +324,16 @@
     translate: -50% 0;
     border-radius: 30% 30% 10% 10% / 8% 8% 3% 3%;
     background:
-      radial-gradient(ellipse at 50% 14%, oklch(0% 0 0 / 0.35), transparent 40%),
+      radial-gradient(
+        ellipse at 50% 14%,
+        oklch(from var(--ink-primary) l c h / 0.35),
+        transparent 40%
+      ),
       repeating-linear-gradient(
         to right,
         var(--dm-bark) 0 6vmin,
         var(--dm-bark-deep) 6vmin 7vmin,
-        oklch(30% 0.05 58) 7vmin 12vmin
+        var(--dm-bark-mid) 7vmin 12vmin
       );
   }
 
@@ -345,21 +358,40 @@
     inset: 0;
     background: radial-gradient(
       ellipse at 50% 55%,
-      oklch(64% 0.07 65),
+      var(--dm-hall-wall-light),
       var(--dm-hall-wall) 45%,
       var(--dm-hall-wall-deep)
     );
   }
 
   /* The tiles are a small SVG tile rather than a conic gradient, so their
-     diagonals stay smooth when the tree is scaled up; squashed for foreshortening. */
+     diagonals stay smooth when the tree is scaled up; squashed for foreshortening.
+     The tile is a mask over ink on paper, so the floor keeps the book's tokens. */
   .dm__hall-floor {
     position: absolute;
     inset: 66% 0 0 0;
-    background:
-      linear-gradient(to bottom, oklch(0% 0 0 / 0) 40%, oklch(0% 0 0 / 0.45)),
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' preserveAspectRatio='none'%3E%3Crect width='40' height='40' fill='%23e5e1d5'/%3E%3Cpath d='M20 0L40 20L20 40L0 20Z' fill='%231b1d27'/%3E%3C/svg%3E")
+    background: var(--paper-base);
+  }
+
+  .dm__hall-floor::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--ink-primary);
+    mask:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' preserveAspectRatio='none'%3E%3Cpath d='M20 0L40 20L20 40L0 20Z'/%3E%3C/svg%3E")
       50% 0 / 6vmin 3.6vmin;
+  }
+
+  .dm__hall-floor::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      oklch(from var(--ink-primary) l c h / 0) 40%,
+      oklch(from var(--ink-primary) l c h / 0.45)
+    );
   }
 
   .dm__little-door {
@@ -380,12 +412,12 @@
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(circle at 50% 30%, oklch(92% 0.06 220) 14%, transparent 15%),
+      radial-gradient(circle at 50% 30%, var(--world-glow) 14%, transparent 15%),
       linear-gradient(
         to bottom,
-        oklch(88% 0.07 220),
+        var(--world-sky),
         var(--dm-hall-garden) 60%,
-        oklch(62% 0.13 135)
+        var(--world-leaf-deep)
       );
   }
 
@@ -398,12 +430,12 @@
     translate: -50% 0;
     border-radius: 50% 50% 40% 40%;
     background:
-      radial-gradient(circle at 30% 35%, oklch(97% 0.01 90) 9%, transparent 10%),
-      radial-gradient(circle at 62% 28%, oklch(55% 0.22 25) 9%, transparent 10%),
-      radial-gradient(circle at 48% 58%, oklch(55% 0.22 25) 9%, transparent 10%),
-      radial-gradient(circle at 74% 62%, oklch(97% 0.01 90) 8%, transparent 9%),
-      radial-gradient(circle at 26% 70%, oklch(55% 0.22 25) 8%, transparent 9%),
-      radial-gradient(circle at 45% 45%, oklch(58% 0.14 140), oklch(42% 0.12 145) 75%);
+      radial-gradient(circle at 30% 35%, var(--paper-base) 9%, transparent 10%),
+      radial-gradient(circle at 62% 28%, var(--wonder-red) 9%, transparent 10%),
+      radial-gradient(circle at 48% 58%, var(--wonder-red) 9%, transparent 10%),
+      radial-gradient(circle at 74% 62%, var(--paper-base) 8%, transparent 9%),
+      radial-gradient(circle at 26% 70%, var(--wonder-red) 8%, transparent 9%),
+      radial-gradient(circle at 45% 45%, var(--world-leaf), var(--world-leaf-deep) 75%);
   }
 
   .dm__tree-leaf {
@@ -416,9 +448,9 @@
       repeating-linear-gradient(
         to right,
         var(--dm-hall-door) 0 10vmin,
-        oklch(32% 0.07 50) 10vmin 11.4vmin
+        var(--dm-hall-door-frame) 10vmin 11.4vmin
       );
-    box-shadow: inset 0 0 6vmin oklch(0% 0 0 / 0.5);
+    box-shadow: inset 0 0 6vmin oklch(from var(--ink-primary) l c h / 0.5);
     transform-origin: 0 50%;
     transform: rotateY(calc(var(--open) * -112deg));
     will-change: transform;
@@ -426,7 +458,7 @@
 
   /* Reduced motion: the cuts blink. */
   .dm__blink {
-    background: oklch(4% 0 0);
+    background: var(--ink-primary);
     opacity: 0;
     pointer-events: none;
   }

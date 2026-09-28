@@ -7,40 +7,57 @@
 
 @layer tokens {
   :root {
-    --pp-dusk: oklch(74% 0.07 60);
-    --pp-dusk-low: oklch(58% 0.09 300);
-    --pp-night: oklch(22% 0.06 280);
-    --pp-night-low: oklch(30% 0.08 300);
-    --pp-moon: oklch(94% 0.05 95);
-    --pp-tree-far: oklch(26% 0.05 280);
-    --pp-tree-mid: oklch(18% 0.04 280);
-    --pp-tree-near: oklch(10% 0.02 280);
-    --pp-wall: oklch(88% 0.03 80);
-    --pp-roof: oklch(40% 0.08 40);
-    --pp-window: oklch(82% 0.1 90);
-    --pp-door: oklch(48% 0.09 50);
-    --pp-dark: oklch(18% 0.03 40);
-    --pp-trunk: oklch(32% 0.06 60);
-    --pp-leaf: oklch(46% 0.12 140);
-    --pp-leaf-deep: oklch(38% 0.11 145);
-    --pp-kitchen: oklch(50% 0.05 60);
-    --pp-kitchen-deep: oklch(36% 0.05 50);
-    --pp-stone: oklch(58% 0.03 70);
-    --pp-stone-deep: oklch(42% 0.03 70);
-    --pp-soot: oklch(16% 0.02 40);
-    --pp-fire: oklch(70% 0.19 45);
-    --pp-fire-hot: oklch(88% 0.17 85);
-    --pp-iron: oklch(30% 0.02 260);
-    --pp-iron-rim: oklch(48% 0.02 260);
-    --pp-soup: oklch(62% 0.12 70);
-    --pp-china: oklch(94% 0.01 80);
-    --pp-china-blue: oklch(60% 0.12 250);
-    --pp-speck: oklch(24% 0.03 40);
-    --pp-smoke: oklch(86% 0.01 80);
-    /* The Cat's own colours, so its grin here is the one on the bough. */
-    --cc-cat: oklch(72% 0.12 320);
-    --cc-cat-stripe: oklch(52% 0.14 320);
-    --cc-grin: oklch(97% 0.02 90);
+    /* The book's palette: dusk in paper going down to the world's night, the
+       house in paper and sepia, the kitchen in sepia with the fire in the
+       world's glow, the crockery paper-white with an ink rim. The night and
+       the trees are the same --world-night tokens the Cheshire Cat's wood
+       uses, so the closing bough is the one that demo opens on. */
+    --pp-dusk: var(--paper-warm);
+    --pp-dusk-mid: var(--paper-aged);
+    --pp-dusk-low: color-mix(in oklch, var(--world-sky-deep), var(--world-night) 45%);
+    --pp-dusk-ground: var(--world-leaf-deep);
+    --pp-dusk-ground-deep: oklch(from var(--world-leaf-deep) calc(l - 0.08) c h);
+    --pp-night: var(--world-night);
+    --pp-night-low: oklch(from var(--world-night) calc(l + 0.06) c h);
+    --pp-night-ground: var(--world-night-deep);
+    --pp-night-ground-deep: oklch(from var(--world-night-deep) calc(l - 0.04) c h);
+    --pp-moon: var(--world-glow);
+    --pp-tree-far: color-mix(in oklch, var(--ink-primary), var(--world-night) 55%);
+    --pp-tree-mid: var(--ink-primary);
+    --pp-tree-near: oklch(from var(--ink-primary) calc(l - 0.08) c h);
+    --pp-wall: var(--paper-warm);
+    --pp-roof: var(--sepia-dark);
+    --pp-window: var(--world-glow);
+    --pp-door: var(--sepia-mid);
+    --pp-dark: var(--sepia-deep);
+    --pp-brass: var(--paper-aged);
+    --pp-trunk: var(--sepia-deep);
+    --pp-leaf: var(--world-leaf-deep);
+    --pp-leaf-deep: oklch(from var(--world-leaf-deep) calc(l - 0.1) c h);
+    --pp-kitchen: var(--sepia-dark);
+    --pp-kitchen-deep: var(--sepia-deep);
+    --pp-floor: oklch(from var(--sepia-deep) calc(l - 0.04) c h);
+    --pp-floor-deep: oklch(from var(--sepia-deep) calc(l - 0.14) c h);
+    --pp-stone: var(--sepia-mid);
+    --pp-stone-deep: var(--sepia-dark);
+    --pp-soot: var(--ink-primary);
+    --pp-fire: var(--ix-gold);
+    --pp-fire-hot: var(--world-glow);
+    --pp-iron: var(--ink-secondary);
+    --pp-iron-rim: var(--ink-faded);
+    --pp-soup: var(--sepia-light);
+    --pp-china: var(--paper-base);
+    --pp-china-rim: var(--ink-secondary);
+    --pp-speck: var(--ink-faded);
+    --pp-smoke: var(--paper-aged);
+    --pp-steam: oklch(from var(--paper-base) l c h / 0.7);
+    --pp-shade: oklch(from var(--ink-primary) l c h / 0.5);
+    --pp-line: oklch(from var(--ink-primary) l c h / 0.14);
+    /* The Cat's own colours, the ones the Cheshire Cat demo draws it in, so
+       its grin here is the one on the bough. */
+    --cc-cat: var(--sepia-light);
+    --cc-cat-stripe: var(--sepia-dark);
+    --cc-grin: var(--paper-base);
   }
 }
 
@@ -65,18 +82,18 @@
   }
 
   .demo--pig-and-pepper .line[data-speaker="duchess"] {
-    color: oklch(90% 0.1 350);
+    color: var(--paper-base);
     font-style: italic;
   }
 
   .demo--pig-and-pepper .line[data-speaker="fish-footman"],
   .demo--pig-and-pepper .line[data-speaker="frog-footman"] {
-    color: oklch(88% 0.08 160);
+    color: color-mix(in oklch, var(--paper-base), var(--world-leaf) 40%);
     font-style: italic;
   }
 
   .demo--pig-and-pepper .line[data-speaker="cook"] {
-    color: oklch(90% 0.06 60);
+    color: var(--paper-aged);
   }
 
   /* The chorus: big words that bounce. */
@@ -84,7 +101,8 @@
     font-size: 2.6em;
     font-weight: 700;
     letter-spacing: 0.06em;
-    color: oklch(92% 0.14 80);
+    /* Gold, the interaction's own, for the beat the chorus lasts. */
+    color: var(--ix-gold);
     animation: pp-wow 0.45s ease-in-out infinite alternate;
   }
 
@@ -118,10 +136,10 @@
     background: linear-gradient(
       to bottom,
       var(--pp-dusk),
-      oklch(82% 0.06 80) 50%,
+      var(--pp-dusk-mid) 50%,
       var(--pp-dusk-low) 75%,
-      oklch(34% 0.06 140) 75%,
-      oklch(26% 0.05 140)
+      var(--pp-dusk-ground) 75%,
+      var(--pp-dusk-ground-deep)
     );
   }
 
@@ -130,8 +148,8 @@
       to bottom,
       var(--pp-night),
       var(--pp-night-low) 75%,
-      oklch(16% 0.04 280) 75%,
-      oklch(12% 0.03 280)
+      var(--pp-night-ground) 75%,
+      var(--pp-night-ground-deep)
     );
     opacity: 0;
   }
@@ -144,7 +162,7 @@
     aspect-ratio: 1;
     border-radius: 50%;
     background: var(--pp-moon);
-    box-shadow: 0 0 60px 20px oklch(94% 0.05 95 / 0.25);
+    box-shadow: 0 0 60px 20px oklch(from var(--world-glow) l c h / 0.25);
     opacity: 0;
   }
 
@@ -338,11 +356,7 @@
     position: absolute;
     inset: 0;
     background:
-      repeating-linear-gradient(
-        to right,
-        transparent 0 18vmin,
-        oklch(0% 0 0 / 0.12) 18vmin 19.5vmin
-      ),
+      repeating-linear-gradient(to right, transparent 0 18vmin, var(--pp-line) 18vmin 19.5vmin),
       linear-gradient(
         to bottom,
         var(--pp-kitchen-deep),
@@ -381,8 +395,8 @@
     inset-block-end: 0;
     block-size: 38%;
     background:
-      repeating-linear-gradient(to right, transparent 0 8vmin, oklch(0% 0 0 / 0.14) 8vmin 8.6vmin),
-      linear-gradient(to bottom, oklch(46% 0.05 50), oklch(30% 0.05 45));
+      repeating-linear-gradient(to right, transparent 0 8vmin, var(--pp-line) 8vmin 8.6vmin),
+      linear-gradient(to bottom, var(--pp-floor), var(--pp-floor-deep));
   }
 
   .pp__hearth {
@@ -499,16 +513,25 @@
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(ellipse 60% 40% at 30% 40%, oklch(86% 0.01 80 / 0.55), transparent 70%),
-      radial-gradient(ellipse 50% 50% at 75% 30%, oklch(86% 0.01 80 / 0.5), transparent 70%),
-      linear-gradient(to bottom, oklch(86% 0.01 80 / 0.35), transparent 60%);
+      radial-gradient(
+        ellipse 60% 40% at 30% 40%,
+        oklch(from var(--pp-smoke) l c h / 0.55),
+        transparent 70%
+      ),
+      radial-gradient(
+        ellipse 50% 50% at 75% 30%,
+        oklch(from var(--pp-smoke) l c h / 0.5),
+        transparent 70%
+      ),
+      linear-gradient(to bottom, oklch(from var(--pp-smoke) l c h / 0.35), transparent 60%);
     pointer-events: none;
   }
 
+  /* The Duchess's "Pig!" and her axes: Wonderland red, a flash, then gone. */
   .pp__anger {
     position: absolute;
     inset: 0;
-    background: oklch(52% 0.22 25);
+    background: var(--wonder-red);
     opacity: 0;
     pointer-events: none;
   }
@@ -564,7 +587,7 @@
     background: none;
     cursor: pointer;
     pointer-events: auto;
-    filter: drop-shadow(0 6px 8px oklch(0% 0 0 / 0.4));
+    filter: drop-shadow(0 6px 8px var(--pp-shade));
   }
 
   .pp__thing:focus-visible {
@@ -590,7 +613,7 @@
     inline-size: clamp(8rem, 24vmin, 14rem);
     translate: -50% -50%;
     opacity: 0;
-    filter: drop-shadow(0 10px 12px oklch(0% 0 0 / 0.5));
+    filter: drop-shadow(0 10px 12px var(--pp-shade));
   }
 
   .pp__pan-after {
@@ -625,7 +648,7 @@
     inset-block-end: 3%;
     inline-size: clamp(9rem, 28vmin, 15rem);
     translate: -50% 0;
-    filter: drop-shadow(0 10px 14px oklch(0% 0 0 / 0.4));
+    filter: drop-shadow(0 10px 14px var(--pp-shade));
   }
 
   .pp__baby {
@@ -717,7 +740,9 @@
   .pp__bough {
     opacity: 0;
     pointer-events: none;
-    background: linear-gradient(to bottom, var(--pp-night), var(--pp-night-low));
+    /* The Cheshire Cat's wood, as that demo opens on it: deep night above,
+       the printed night below. */
+    background: linear-gradient(to bottom, var(--world-night-deep), var(--world-night));
   }
 
   .pp__close {
@@ -738,7 +763,7 @@
   }
 
   .pp__blink {
-    background: var(--pp-night);
+    background: var(--world-night-deep);
     opacity: 0;
     pointer-events: none;
   }
@@ -952,7 +977,7 @@
       inset-block-end: 36vh;
       padding-block: 0.4em;
       border-radius: 0.8rem;
-      background: oklch(0% 0 0 / 0.38);
+      background: oklch(from var(--world-night-deep) l c h / 0.5);
     }
   }
 

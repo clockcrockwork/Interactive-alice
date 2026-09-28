@@ -5,29 +5,40 @@
 @layer tokens, base, layout, scene, utilities;
 
 @layer tokens {
+  /* The hall in the book's inks: lighter paper walls, sepia doors, a checkered
+     floor of ink and paper. The key alone is gold; the size changes lean blue. */
   :root {
-    --dk-wall: oklch(52% 0.06 60);
-    --dk-wall-deep: oklch(36% 0.05 55);
-    --dk-tile: oklch(90% 0.02 90);
-    --dk-tile-dark: oklch(22% 0.02 270);
-    --dk-door: oklch(38% 0.08 50);
-    --dk-door-frame: oklch(26% 0.05 50);
-    --dk-gold: oklch(82% 0.15 85);
-    --dk-glass: oklch(88% 0.03 220 / 0.35);
-    --dk-glass-edge: oklch(96% 0.02 220 / 0.7);
-    --dk-drink: oklch(70% 0.18 25);
-    --dk-label: oklch(95% 0.02 85);
-    --dk-label-ink: oklch(25% 0.03 60);
-    --dk-cake: oklch(80% 0.09 70);
-    --dk-currant: oklch(35% 0.12 320);
-    --dk-garden: oklch(85% 0.12 130);
-    --dk-curtain: oklch(48% 0.14 20);
-    --dk-tear: oklch(90% 0.04 230 / 0.7);
+    --dk-wall: var(--paper-aged);
+    --dk-wall-deep: var(--sepia-mid);
+    --dk-ceiling: var(--sepia-dark);
+    --dk-tile: var(--paper-base);
+    --dk-tile-dark: var(--ink-primary);
+    --dk-door: var(--sepia-dark);
+    --dk-door-frame: var(--sepia-deep);
+    --dk-brass: color-mix(in oklch, var(--sepia-light), var(--world-glow) 40%);
+    --dk-gold: var(--ix-gold);
+    --dk-glass: oklch(from var(--paper-base) l c h / 0.3);
+    --dk-glass-edge: oklch(from var(--paper-base) l c h / 0.7);
+    --dk-drink: oklch(from var(--sepia-mid) l c h / 0.85);
+    --dk-label: var(--paper-base);
+    --dk-label-ink: var(--ink-primary);
+    --dk-cake: var(--paper-aged);
+    --dk-cake-crust: var(--sepia-mid);
+    --dk-currant: var(--sepia-deep);
+    --dk-garden: var(--world-leaf);
+    --dk-curtain: var(--sepia-dark);
+    --dk-curtain-fold: var(--sepia-deep);
+    --dk-lamp: var(--world-glow);
+    /* The fold of the telescope and, at the end, the roof: the pool's own roof
+       colour (pool.css --pt-night), so the next page opens on the same fold. */
+    --dk-night: var(--world-night-deep);
+    --dk-tear: oklch(from var(--paper-base) l c h / 0.75);
+    --dk-shadow: oklch(from var(--ink-primary) l c h / 0.55);
     /* The pool of tears' hall and its tears (pool.css --pt-hall, --pt-hall-deep,
        --pt-foam): the end of this demo dims toward them. */
-    --dk-pool-hall: oklch(44% 0.05 60);
-    --dk-pool-hall-deep: oklch(30% 0.04 55);
-    --dk-pool-foam: oklch(94% 0.03 220);
+    --dk-pool-hall: var(--sepia-dark);
+    --dk-pool-hall-deep: var(--sepia-deep);
+    --dk-pool-foam: var(--paper-base);
     --dk-hall-height: 900px;
     --dk-radius: 1100px;
     --dk-panel: 600px;
@@ -41,7 +52,7 @@
     inset-block-end: 8vh;
     padding-block: 0.4em;
     border-radius: 1rem;
-    background: oklch(10% 0.02 60 / 0.45);
+    background: oklch(from var(--ink-primary) l c h / 0.5);
     backdrop-filter: blur(6px);
   }
 
@@ -126,13 +137,13 @@
     background: repeating-radial-gradient(
       circle at 50% 50%,
       transparent 0 130px,
-      oklch(0% 0 0 / 0.55) 130px 260px
+      oklch(from var(--ink-primary) l c h / 0.55) 130px 260px
     );
     mix-blend-mode: multiply;
   }
 
   .dk__ceiling {
-    background: radial-gradient(circle at 50% 50%, oklch(34% 0.05 55), var(--dk-wall-deep) 70%);
+    background: radial-gradient(circle at 50% 50%, var(--dk-ceiling), var(--dk-wall-deep) 70%);
     /* Front face down, toward the room, so the trapdoor on it reads from below. */
     transform: translateY(calc(var(--dk-eye, 240px) - var(--dk-hall-height))) rotateX(90deg);
   }
@@ -147,7 +158,7 @@
     margin: -130px 0 0 -130px;
     border: 10px solid var(--dk-door-frame);
     border-radius: 50% 50% 10% 10%;
-    background: oklch(6% 0.01 270);
+    background: var(--dk-night);
     transform-style: preserve-3d;
   }
 
@@ -157,8 +168,8 @@
     border-radius: inherit;
     border: 10px solid var(--dk-door-frame);
     background:
-      radial-gradient(circle at 50% 70%, var(--dk-gold) 9px, transparent 10px),
-      repeating-linear-gradient(to right, var(--dk-door) 0 30px, oklch(34% 0.07 50) 30px 34px);
+      radial-gradient(circle at 50% 70%, var(--dk-brass) 9px, transparent 10px),
+      repeating-linear-gradient(to right, var(--dk-door) 0 30px, var(--dk-door-frame) 30px 34px);
     transform-origin: 50% 0;
     transform: rotateX(calc(var(--open, 0) * 110deg));
     backface-visibility: visible;
@@ -175,7 +186,12 @@
     transform: rotateY(calc(var(--i) * 30deg)) translateZ(calc(var(--dk-radius) * -1));
     background:
       linear-gradient(to bottom, transparent 82%, var(--dk-wall-deep) 82.5%),
-      linear-gradient(to right, oklch(0% 0 0 / 0.12), transparent 12% 88%, oklch(0% 0 0 / 0.12)),
+      linear-gradient(
+        to right,
+        oklch(from var(--ink-primary) l c h / 0.12),
+        transparent 12% 88%,
+        oklch(from var(--ink-primary) l c h / 0.12)
+      ),
       var(--dk-wall);
     display: flex;
     justify-content: center;
@@ -190,7 +206,7 @@
     inline-size: var(--w);
     block-size: var(--h);
     background: var(--dk-door);
-    box-shadow: inset 0 0 40px oklch(0% 0 0 / 0.4);
+    box-shadow: inset 0 0 40px oklch(from var(--ink-primary) l c h / 0.4);
     border: 14px solid var(--dk-door-frame);
     border-block-end: 0;
   }
@@ -204,7 +220,7 @@
     inline-size: 16px;
     block-size: 16px;
     border-radius: 50%;
-    background: var(--dk-gold);
+    background: var(--dk-brass);
     transform-origin: -30px 50%;
   }
 
@@ -254,7 +270,11 @@
     border-radius: 50%;
     border-block-end: 14px solid var(--dk-door-frame);
     margin-block-end: 140px;
-    background-image: radial-gradient(circle at 50% 50%, transparent 40%, oklch(0% 0 0 / 0.25) 41%);
+    background-image: radial-gradient(
+      circle at 50% 50%,
+      transparent 40%,
+      oklch(from var(--ink-primary) l c h / 0.25) 41%
+    );
   }
 
   .dk__door--double {
@@ -291,7 +311,7 @@
     border: 0;
     background-image: radial-gradient(
       circle at 50% 22%,
-      oklch(0% 0 0 / 0.3) 60px,
+      oklch(from var(--ink-primary) l c h / 0.3) 60px,
       transparent 61px
     );
   }
@@ -309,8 +329,8 @@
     --w: 260px;
     --h: 420px;
     background-image:
-      radial-gradient(circle, var(--dk-gold) 3px, transparent 4px),
-      radial-gradient(circle, var(--dk-gold) 3px, transparent 4px);
+      radial-gradient(circle, var(--dk-brass) 3px, transparent 4px),
+      radial-gradient(circle, var(--dk-brass) 3px, transparent 4px);
     background-size:
       40px 40px,
       40px 40px;
@@ -358,8 +378,8 @@
     inline-size: 28px;
     block-size: 28px;
     border-radius: 50%;
-    background: oklch(95% 0.1 85);
-    box-shadow: 0 0 60px 30px oklch(90% 0.12 85 / 0.55);
+    background: var(--dk-lamp);
+    box-shadow: 0 0 60px 30px oklch(from var(--dk-lamp) l c h / 0.55);
     transform: rotateY(calc(var(--i) * 60deg)) translateZ(calc(var(--dk-radius) * -0.55))
       translateY(calc(var(--dk-eye, 240px) - var(--dk-hall-height) + 120px));
   }
@@ -372,7 +392,7 @@
     inline-size: clamp(4rem, 12vmin, 8rem);
     translate: -50% -50%;
     opacity: 0;
-    filter: drop-shadow(0 20px 30px oklch(0% 0 0 / 0.6));
+    filter: drop-shadow(0 20px 30px var(--dk-shadow));
   }
 
   @keyframes dk-jiggle {
@@ -396,7 +416,7 @@
     background: repeating-linear-gradient(
       to right,
       var(--dk-curtain) 0 22px,
-      oklch(38% 0.13 20) 22px 34px
+      var(--dk-curtain-fold) 22px 34px
     );
     border-radius: 12px 12px 0 0;
     transform-origin: 0 0;
@@ -423,11 +443,11 @@
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(circle at 30% 80%, oklch(70% 0.2 25) 6px, transparent 7px),
-      radial-gradient(circle at 60% 85%, oklch(75% 0.18 300) 6px, transparent 7px),
-      radial-gradient(circle at 80% 78%, oklch(80% 0.17 60) 5px, transparent 6px),
-      radial-gradient(circle at 50% 40%, oklch(92% 0.06 220) 14px, transparent 15px),
-      linear-gradient(to bottom, oklch(88% 0.07 220), var(--dk-garden) 60%, oklch(62% 0.13 135));
+      radial-gradient(circle at 30% 80%, var(--wonder-red) 6px, transparent 7px),
+      radial-gradient(circle at 60% 85%, var(--wonder-red-light) 6px, transparent 7px),
+      radial-gradient(circle at 80% 78%, var(--world-glow) 5px, transparent 6px),
+      radial-gradient(circle at 50% 40%, var(--paper-base) 14px, transparent 15px),
+      linear-gradient(to bottom, var(--world-sky), var(--dk-garden) 60%, var(--world-leaf-deep));
     opacity: 0.001;
   }
 
@@ -437,7 +457,7 @@
     background: var(--dk-door);
     transform-origin: 0 50%;
     transform: rotateY(calc(var(--open, 0) * -100deg));
-    box-shadow: inset 0 0 20px oklch(0% 0 0 / 0.5);
+    box-shadow: inset 0 0 20px oklch(from var(--ink-primary) l c h / 0.5);
   }
 
   .dk__door-leaf::after {
@@ -448,7 +468,7 @@
     inline-size: 8px;
     block-size: 8px;
     border-radius: 50%;
-    background: var(--dk-gold);
+    background: var(--dk-brass);
   }
 
   /* The glass table, in the middle of the hall. */
@@ -489,7 +509,7 @@
     transform: rotateX(90deg) rotate(-20deg);
     transform-origin: 50% 100%;
     color: var(--dk-gold);
-    filter: drop-shadow(0 0 8px oklch(90% 0.15 85 / 0.6));
+    filter: drop-shadow(0 0 8px oklch(from var(--dk-gold) l c h / 0.6));
   }
 
   .dk__key svg,
@@ -544,7 +564,7 @@
     opacity: 0;
     pointer-events: auto;
     cursor: pointer;
-    filter: drop-shadow(0 20px 30px oklch(0% 0 0 / 0.5));
+    filter: drop-shadow(0 20px 30px oklch(from var(--ink-primary) l c h / 0.5));
   }
 
   .dk__hand svg {
@@ -554,7 +574,7 @@
   }
 
   .dk__hand[data-held] {
-    filter: drop-shadow(0 0 24px oklch(90% 0.12 85 / 0.7));
+    filter: drop-shadow(0 0 24px oklch(from var(--world-glow) l c h / 0.7));
   }
 
   .dk__hand--key {
@@ -562,7 +582,7 @@
     inset-inline-start: 72%;
     inset-block-end: 4%;
     color: var(--dk-gold);
-    filter: drop-shadow(0 6px 10px oklch(0% 0 0 / 0.5));
+    filter: drop-shadow(0 6px 10px oklch(from var(--ink-primary) l c h / 0.5));
   }
 
   .dk__prop--key {
@@ -587,7 +607,7 @@
 
   /* The telescope: the view folds up from the top and bottom as she shrinks. */
   .dk__iris {
-    background: oklch(4% 0 0);
+    background: var(--dk-night);
     clip-path: inset(0 0 100% 0);
     opacity: 0;
   }
@@ -648,15 +668,15 @@
     border-radius: 50%;
     background: radial-gradient(
       circle at 35% 35%,
-      oklch(100% 0 0 / 0.7),
-      var(--c, oklch(70% 0.18 25)) 60%
+      oklch(from var(--paper-base) l c h / 0.7),
+      var(--c, var(--ix-gold)) 60%
     );
     animation: dk-bubble 2.8s ease-out infinite;
     animation-delay: var(--delay, 0s);
   }
 
   .dk__flash {
-    background: oklch(95% 0.02 90);
+    background: var(--world-glow);
     opacity: 0;
   }
 
@@ -673,7 +693,7 @@
     inline-size: clamp(24rem, 120vmin, 70rem);
     translate: -50% 0;
     opacity: 0;
-    filter: drop-shadow(0 -16px 30px oklch(0% 0 0 / 0.55));
+    filter: drop-shadow(0 -16px 30px var(--dk-shadow));
   }
 
   .dk__self svg {

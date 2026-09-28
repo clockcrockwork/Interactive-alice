@@ -4,21 +4,36 @@
 @layer tokens, base, layout, scene, utilities;
 
 @layer tokens {
+  /* The hall is sepia; the water is the world's own printed water, allowed a
+     little of the interaction blue because the tears are the moment. The script
+     reads these through a probe element at mount, so the Canvas sea draws with
+     the same resolved colours. */
   :root {
-    --pt-hall: oklch(44% 0.05 60);
-    --pt-hall-deep: oklch(30% 0.04 55);
-    --pt-water: oklch(62% 0.1 230);
-    --pt-water-deep: oklch(38% 0.1 240);
-    --pt-foam: oklch(94% 0.03 220);
-    --pt-mouse: oklch(58% 0.05 60);
-    --pt-shore: oklch(52% 0.08 70);
+    --pt-hall: var(--sepia-dark);
+    --pt-hall-deep: var(--sepia-deep);
+    --pt-water: color-mix(in oklch, var(--world-water), var(--ix-blue) 30%);
+    --pt-water-deep: color-mix(in oklch, var(--world-water-deep), var(--ix-blue) 20%);
+    --pt-foam: var(--paper-base);
+    --pt-tile: var(--paper-base);
+    --pt-tile-dark: var(--ink-primary);
+    --pt-ink: var(--ink-primary);
+    --pt-mouse: var(--sepia-mid);
+    --pt-shore: var(--sepia-light);
+    --pt-duck: var(--paper-warm);
+    --pt-dodo: var(--ink-ghost);
+    --pt-lory: var(--wonder-red-faded);
+    --pt-eaglet: var(--sepia-dark);
+    --pt-beak: var(--sepia-light);
+    --pt-beak-pale: var(--paper-aged);
+    --pt-night: var(--world-night-deep);
     /* The hall's furniture, in Drink Me's colours (drink-me.css --dk-door, --dk-glass,
        --dk-gold), since the first frame is the room that demo ends in. */
-    --pt-door: oklch(38% 0.08 50);
-    --pt-door-frame: oklch(26% 0.05 50);
-    --pt-glass: oklch(88% 0.03 220 / 0.35);
-    --pt-glass-edge: oklch(96% 0.02 220 / 0.7);
-    --pt-gold: oklch(82% 0.15 85);
+    --pt-door: var(--sepia-dark);
+    --pt-door-frame: var(--sepia-deep);
+    --pt-glass: oklch(from var(--paper-base) l c h / 0.3);
+    --pt-glass-edge: oklch(from var(--paper-base) l c h / 0.7);
+    --pt-gold: var(--ix-gold);
+    --pt-shadow: oklch(from var(--ink-primary) l c h / 0.55);
   }
 }
 
@@ -33,20 +48,24 @@
     inset-block-start: 54vh;
     padding-block: 0.4em;
     border-radius: 1rem;
-    background: oklch(20% 0.05 240 / 0.35);
+    background: oklch(from var(--pt-water-deep) calc(l - 0.15) c h / 0.45);
     backdrop-filter: blur(4px);
     translate: 0 calc(var(--bob, 0) * 1px);
     rotate: calc(var(--tilt, 0) * 1deg);
   }
 
   .demo--pool-of-tears .line[data-speaker="mouse"] {
-    color: oklch(88% 0.06 60);
+    color: var(--paper-warm);
     font-style: italic;
   }
 
-  /* Under the water for a moment: blue, and the sentences ripple. */
+  /* Under the water for a moment: the water's own blue, and the sentences ripple. */
   .pt__under {
-    background: linear-gradient(to bottom, oklch(45% 0.12 240 / 0.7), oklch(30% 0.12 245 / 0.85));
+    background: linear-gradient(
+      to bottom,
+      oklch(from var(--pt-water) l c h / 0.7),
+      oklch(from var(--pt-water-deep) l c h / 0.85)
+    );
     opacity: 0;
     pointer-events: none;
   }
@@ -58,7 +77,7 @@
     background: repeating-linear-gradient(
       to bottom,
       transparent 0 6vh,
-      oklch(80% 0.08 220 / 0.12) 6vh 6.4vh
+      oklch(from var(--pt-foam) l c h / 0.12) 6vh 6.4vh
     );
     animation: pt-caustic 2.2s linear infinite;
   }
@@ -80,13 +99,13 @@
     inset-block-end: -4%;
     inline-size: clamp(24rem, 120vmin, 70rem);
     translate: -50% 0;
-    filter: drop-shadow(0 -16px 30px oklch(0% 0 0 / 0.55));
+    filter: drop-shadow(0 -16px 30px var(--pt-shadow));
   }
 
   /* The roof, folded in at the top of the frame where her head met it. */
   .pt__roof {
     --fold: 0.55;
-    background: oklch(4% 0 0);
+    background: var(--pt-night);
     clip-path: inset(0 0 calc(100% - var(--fold) * 50%) 0);
     pointer-events: none;
   }
@@ -104,7 +123,7 @@
     inset-block-end: 40%;
     inset-inline-start: 0;
     inline-size: clamp(4rem, 12vmin, 8rem);
-    color: oklch(96% 0.01 90);
+    color: var(--paper-base);
     opacity: 0;
   }
 
@@ -122,7 +141,7 @@
     translate: -50% 0;
     transform-origin: 50% 100%;
     opacity: 0;
-    filter: drop-shadow(0 16px 24px oklch(0% 0 0 / 0.5));
+    filter: drop-shadow(0 16px 24px var(--pt-shadow));
   }
 
   .pt__fan svg {
@@ -140,7 +159,7 @@
     inset-inline-end: 8%;
     inset-block-start: 12%;
     inline-size: clamp(5rem, 16vmin, 9rem);
-    color: oklch(85% 0.04 60 / 0.55);
+    color: oklch(from var(--paper-aged) l c h / 0.55);
     opacity: 0;
     filter: blur(1px);
   }
@@ -149,6 +168,15 @@
     display: block;
     inline-size: 100%;
     block-size: auto;
+  }
+
+  /* Where the script reads a token's resolved colour. */
+  .pt__probe {
+    position: absolute;
+    inline-size: 0;
+    block-size: 0;
+    color: var(--probe, var(--ink-primary));
+    visibility: hidden;
   }
 
   .pt__prop {

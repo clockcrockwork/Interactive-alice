@@ -4,28 +4,13 @@
 @layer tokens, base, layout, scene, utilities;
 
 @layer tokens {
+  /* The colours are the shore's, in ./shore.css, shared with the Mock Turtle. */
   :root {
-    --lq-sky: oklch(86% 0.06 230);
-    --lq-sky-low: oklch(93% 0.05 80);
-    --lq-sea: oklch(62% 0.11 220);
-    --lq-sea-deep: oklch(48% 0.11 235);
-    --lq-shingle: oklch(72% 0.05 70);
-    --lq-shingle-deep: oklch(58% 0.05 65);
-    --lq-gryphon: oklch(66% 0.12 60);
-    --lq-gryphon-wing: oklch(78% 0.1 70);
-    --lq-turtle: oklch(62% 0.08 140);
-    --lq-turtle-shell: oklch(46% 0.09 145);
-    --lq-lobster: oklch(58% 0.2 25);
     --lq-radius: clamp(180px, 36vmin, 340px);
-    /* The court's own colours, for the doors at the end of the shore. */
-    --lq-court-floor: oklch(48% 0.08 60);
-    --lq-court-floor-deep: oklch(36% 0.07 60);
-    --lq-court-frame: oklch(22% 0.1 20);
-    --lq-court-door: oklch(42% 0.09 55);
-    --lq-court-door-deep: oklch(32% 0.07 50);
-    --lq-court-gold: oklch(80% 0.16 85);
-    --lq-court-light: oklch(90% 0.12 85);
-    --lq-court-curtain: oklch(34% 0.14 20);
+    /* The dusk that comes late in the song: the world's night, warmed by the
+       last of the glow. */
+    --lq-dusk: var(--world-night);
+    --lq-dusk-low: color-mix(in oklch, var(--world-night), var(--world-glow) 45%);
   }
 }
 
@@ -36,20 +21,20 @@
 
   .demo--lobster-quadrille .demo-beat {
     inset-block-end: 9vh;
-    color: oklch(20% 0.03 240);
-    text-shadow: 0 1px 0 oklch(100% 0 0 / 0.5);
+    color: var(--ink-primary);
+    text-shadow: 0 1px 0 var(--lq-caption-shadow);
   }
 
   .demo--lobster-quadrille .line[data-speaker="mock-turtle"] {
     --wave: 0;
     font-style: italic;
-    color: oklch(30% 0.08 150);
+    color: var(--world-leaf-deep);
     transform: translateY(calc(var(--wave) * 0.4em)) rotate(calc(var(--wave) * -2deg));
   }
 
   .demo--lobster-quadrille .line[data-speaker="gryphon"] {
     font-weight: 700;
-    color: oklch(38% 0.1 60);
+    color: var(--sepia-dark);
   }
 
   .demo--lobster-quadrille .line[data-speaker="white-rabbit"] {
@@ -79,7 +64,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, oklch(56% 0.1 280), oklch(80% 0.12 50));
+    background: linear-gradient(to bottom, var(--lq-dusk), var(--lq-dusk-low));
     opacity: var(--dusk);
   }
 
@@ -101,14 +86,14 @@
 
   .lq__sea--near {
     inset-block: 54% 38%;
-    background: linear-gradient(to bottom, oklch(68% 0.1 215), var(--lq-sea-deep));
+    background: linear-gradient(to bottom, var(--lq-sea-near), var(--lq-sea-deep));
   }
 
   .lq__shingle {
     inset-block: 60% 0;
     background:
-      radial-gradient(circle at 20% 30%, oklch(0% 0 0 / 0.08) 0 6px, transparent 7px),
-      radial-gradient(circle at 70% 60%, oklch(100% 0 0 / 0.12) 0 5px, transparent 6px),
+      radial-gradient(circle at 20% 30%, var(--lq-ink-faint) 0 6px, transparent 7px),
+      radial-gradient(circle at 70% 60%, var(--lq-paper-faint) 0 5px, transparent 6px),
       linear-gradient(to bottom, var(--lq-shingle), var(--lq-shingle-deep));
     background-size:
       140px 90px,
@@ -159,7 +144,7 @@
     margin-block-start: -27vmin;
     border: 0.6vmin solid var(--lq-court-frame);
     border-block-end: 0;
-    box-shadow: 0 0 6vmin oklch(0% 0 0 / 0.5);
+    box-shadow: 0 0 6vmin oklch(from var(--ink-primary) l c h / 0.5);
     background: var(--lq-court-frame);
     /* The block stays flat, so the leaves paint over the light in DOM order and
        swing in a perspective of their own that scales with the block. */
@@ -185,7 +170,7 @@
     inset-block: 0;
     inline-size: 50%;
     background:
-      linear-gradient(to bottom, transparent 30%, oklch(0% 0 0 / 0.25)),
+      linear-gradient(to bottom, transparent 30%, oklch(from var(--ink-primary) l c h / 0.25)),
       repeating-linear-gradient(
         to bottom,
         var(--lq-court-door) 0 18%,
@@ -269,7 +254,7 @@
     transform: rotateY(calc(var(--a) * 1deg)) translateZ(calc(var(--lq-radius) * var(--r)))
       rotateY(calc(var(--a) * -1deg)) rotateX(calc(var(--tilt) * -1deg))
       translateY(calc(var(--hop) * -30%));
-    filter: drop-shadow(0 8px 8px oklch(0% 0 0 / 0.3));
+    filter: drop-shadow(0 8px 8px var(--lq-ink-shadow));
     opacity: var(--shown);
   }
 
@@ -378,11 +363,11 @@
     inset-block-end: 6%;
     inline-size: clamp(7rem, 22vmin, 12rem);
     translate: -50% 0;
-    filter: drop-shadow(0 10px 14px oklch(0% 0 0 / 0.4));
+    filter: drop-shadow(0 10px 14px oklch(from var(--ink-primary) l c h / 0.4));
   }
 
   .lq__lobster-held[data-changed] {
-    filter: hue-rotate(40deg) drop-shadow(0 10px 14px oklch(0% 0 0 / 0.4));
+    filter: hue-rotate(40deg) drop-shadow(0 10px 14px oklch(from var(--ink-primary) l c h / 0.4));
   }
 
   .lq__thrown {
@@ -396,6 +381,9 @@
     inline-size: clamp(7rem, 22vmin, 12rem);
     translate: -50% 0;
     opacity: 0;
+    /* The reader's own throw: it trails coral while it is in the air, and it is
+       only in the air while it is visible. */
+    filter: drop-shadow(0 0 1.2vmin var(--ix-coral));
   }
 
   .lq__splash-ring {
@@ -405,7 +393,7 @@
     inline-size: 12vmin;
     aspect-ratio: 2 / 1;
     translate: -50% -50%;
-    border: 0.8vmin solid oklch(96% 0.02 220 / 0.9);
+    border: 0.8vmin solid var(--lq-foam);
     border-radius: 50%;
     opacity: 0;
   }
@@ -434,7 +422,11 @@
   .lq__water {
     --depth: 0;
     --blink: 0;
-    background: linear-gradient(to bottom, oklch(60% 0.12 225 / 0.8), oklch(40% 0.12 240 / 0.9));
+    background: linear-gradient(
+      to bottom,
+      oklch(from var(--lq-under) l c h / 0.8),
+      oklch(from var(--lq-under-deep) l c h / 0.9)
+    );
     opacity: calc(var(--depth) * 0.85 + var(--blink) * 0.15);
     clip-path: inset(calc((1 - var(--depth)) * 100%) 0 0 0);
     pointer-events: none;
@@ -452,7 +444,7 @@
     inline-size: calc(var(--size) * 1vmin);
     aspect-ratio: 1;
     border-radius: 50%;
-    border: 2px solid oklch(96% 0.02 220 / 0.8);
+    border: 2px solid var(--lq-foam);
     animation: lq-rise 4s linear infinite;
     animation-delay: var(--delay);
   }
@@ -467,7 +459,7 @@
     inset-block-start: 44%;
     inline-size: clamp(3.5rem, 10vmin, 6rem);
     opacity: 0;
-    filter: drop-shadow(0 4px 6px oklch(0% 0 0 / 0.3));
+    filter: drop-shadow(0 4px 6px var(--lq-ink-shadow));
   }
 
   .lq__swimmer--whiting {
@@ -487,7 +479,7 @@
   }
 
   .lq__swimmer--snail:focus-visible {
-    outline: 3px solid oklch(40% 0.15 250);
+    outline: 3px solid var(--lq-focus);
     outline-offset: 4px;
   }
 

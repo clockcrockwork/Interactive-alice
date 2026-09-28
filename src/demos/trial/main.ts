@@ -600,7 +600,7 @@ function mount(shell: DemoShell): void {
   leafFall.innerHTML = Array.from(
     { length: lite ? 40 : 90 },
     (_, i) =>
-      `<div class="tr__leaf" style="--x: ${(pick() * 100).toFixed(1)}%; --delay: ${(pick() * 6).toFixed(2)}s; --dur: ${(5 + pick() * 5).toFixed(2)}s; --sway: ${((pick() - 0.5) * 30).toFixed(1)}vw; --hue: ${(30 + (i % 5) * 12).toFixed(0)}; --ly: ${pick().toFixed(2)}"></div>`,
+      `<div class="tr__leaf" style="--x: ${(pick() * 100).toFixed(1)}%; --delay: ${(pick() * 6).toFixed(2)}s; --dur: ${(5 + pick() * 5).toFixed(2)}s; --sway: ${((pick() - 0.5) * 30).toFixed(1)}vw; --turn: ${((i % 5) / 4).toFixed(2)}; --ly: ${pick().toFixed(2)}"></div>`,
   ).join('');
   master.to(leafFall, { opacity: 1, duration: 0.4 }, iLeaves + 0.3);
   master.call(

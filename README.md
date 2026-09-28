@@ -30,6 +30,7 @@ See:
 
 - [`docs/implementation-charter.md`](docs/implementation-charter.md) — fixed decisions, implementation boundaries, and agent authority.
 - [`docs/product-principles.md`](docs/product-principles.md)
+- [`docs/visual-design.md`](docs/visual-design.md) — sepia/Alice/interaction color system and SVG/raster asset strategy
 - [`docs/scene-shot-model.md`](docs/scene-shot-model.md)
 - [`docs/poc/rabbit-hole.md`](docs/poc/rabbit-hole.md)
 

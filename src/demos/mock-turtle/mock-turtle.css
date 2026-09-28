@@ -808,6 +808,28 @@
     .demo--mock-turtle[data-words] .demo-beat {
       inset-block-start: calc(var(--demo-bar-height) + 6.5rem);
     }
+
+    /* A tall narrow frame: the captions at the top take a third of it, so under
+       the water the school sits lower and the sentences are set smaller. */
+    .demo--mock-turtle[data-under] .demo-beat {
+      font-size: clamp(0.95rem, 0.85rem + 1vw, 1.1rem);
+    }
+
+    .mt__master {
+      inset-block-start: 74%;
+    }
+
+    .mt__row--far {
+      inset-block-start: 71%;
+    }
+
+    .mt__row--mid {
+      inset-block-start: 78%;
+    }
+
+    .mt__row--near {
+      inset-block-start: 87%;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

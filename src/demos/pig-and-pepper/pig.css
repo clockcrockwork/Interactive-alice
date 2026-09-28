@@ -931,6 +931,31 @@
     }
   }
 
+  @media (max-width: 700px) {
+    /* A tall narrow frame: the captions take the lower third, so the kitchen's
+       people stand higher and the sentences are set smaller. */
+    .demo--pig-and-pepper .demo-beat {
+      font-size: clamp(0.95rem, 0.85rem + 1vw, 1.1rem);
+    }
+
+    .pp__hearth,
+    .pp__cook {
+      inset-block-end: 50%;
+    }
+
+    .pp__duchess {
+      inset-block-end: 42%;
+    }
+
+    /* With the baby in her hands the sentences sit over the kitchen: a scrim. */
+    .demo--pig-and-pepper[data-holding] .demo-beat {
+      inset-block-end: 36vh;
+      padding-block: 0.4em;
+      border-radius: 0.8rem;
+      background: oklch(0% 0 0 / 0.38);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .pp__tangle,
     .pp__curls,

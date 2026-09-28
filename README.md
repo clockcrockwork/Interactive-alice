@@ -24,7 +24,7 @@ The target is the **Deploy Now Contest 2026 Grand Prix**. Monthly awards are not
 
 ## First vertical slice
 
-The first implementation target is the **Rabbit Hole PoC**. It exists to prove the interaction model and runtime constraints before character art and final visual direction are locked.
+The first implementation target is the **Rabbit Hole PoC**. It exists to prove the interaction model and runtime constraints before final production artwork is locked; the current visual direction is defined in [`docs/visual-design.md`](docs/visual-design.md).
 
 See:
 

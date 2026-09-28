@@ -93,19 +93,25 @@
   }
 
   .demos__alice-figure[data-alice="yellow"] {
-    --alice-hair: #7a5230;
-    --alice-hair-deep: #5e3d22;
-    --alice-dress: #f2c94c;
-    --alice-dress-deep: #d9a92e;
-    --alice-band: #3b6fd6;
+    --alice-hair: #68472d;
+    --alice-hair-deep: #513a2b;
+    --alice-hair-light: #8a6543;
+    --alice-dress: #d8b348;
+    --alice-dress-light: #e7ca70;
+    --alice-dress-deep: #b38a2f;
+    --alice-dress-shadow: #84631f;
+    --alice-band: #a66e61;
   }
 
   .demos__alice-figure[data-alice="blue"] {
-    --alice-hair: #f0cb64;
-    --alice-hair-deep: #e9c35a;
-    --alice-dress: #3d6be8;
-    --alice-dress-deep: #2a4fb8;
-    --alice-band: #1f2a6b;
+    --alice-hair: #d9b45a;
+    --alice-hair-deep: #b8933f;
+    --alice-hair-light: #ecd08a;
+    --alice-dress: #5a76b8;
+    --alice-dress-light: #7f96cc;
+    --alice-dress-deep: #435c98;
+    --alice-dress-shadow: #2f4272;
+    --alice-band: #2f4272;
   }
 
   .demos__alice-name {

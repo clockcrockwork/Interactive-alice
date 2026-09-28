@@ -301,22 +301,30 @@ test('the index: the visitor chooses an Alice, and the demos remember her', asyn
   await page.goto('./demos/');
   const blue = page.locator('.demos__alice-choice[data-alice="blue"]');
   const yellow = page.locator('.demos__alice-choice[data-alice="yellow"]');
-  await expect(blue).toHaveAttribute('aria-pressed', 'true');
-  await expect(yellow).toHaveAttribute('aria-pressed', 'false');
-  await yellow.click();
   await expect(yellow).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('html')).toHaveAttribute('data-alice', 'yellow');
+  await expect(blue).toHaveAttribute('aria-pressed', 'false');
+  await blue.click();
+  await expect(blue).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('html')).toHaveAttribute('data-alice', 'blue');
   // Every demo page applies the choice before its own script runs.
   const first = demos[0];
   await page.goto(first?.url ?? './demos/');
-  await expect(page.locator('html')).toHaveAttribute('data-alice', 'yellow');
+  await expect(page.locator('html')).toHaveAttribute('data-alice', 'blue');
   const dress = await page.evaluate(() =>
     getComputedStyle(document.documentElement).getPropertyValue('--alice-dress').trim(),
   );
-  expect(dress).toBe('#f2c94c');
+  expect(dress).toBe('#5a76b8');
   await page.goto('./demos/');
-  await blue.click();
-  await expect(page.locator('html')).not.toHaveAttribute('data-alice', 'yellow');
+  await yellow.click();
+  await expect(page.locator('html')).not.toHaveAttribute('data-alice', 'blue');
+  // The yellow Alice and the book's palette are the design guide's.
+  const tokens = await page.evaluate(() => {
+    const style = getComputedStyle(document.documentElement);
+    return ['--alice-dress', '--paper-base', '--wonder-red', '--ix-gold'].map((name) =>
+      style.getPropertyValue(name).trim(),
+    );
+  });
+  expect(tokens).toEqual(['#d8b348', '#f2e8d8', '#a74838', '#d6b557']);
 });
 
 test("the rabbit's house: the camera pulls out as Alice fills the room", async ({ page }) => {

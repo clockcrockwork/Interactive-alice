@@ -30,7 +30,7 @@ const PROJECT_NAME = 'Interactive Alice';
  */
 const ALICE_SCRIPT =
   '<script>try{var a=localStorage.getItem("alice-demos:alice");' +
-  'if(a==="yellow")document.documentElement.dataset.alice=a}catch(e){}</script>';
+  'if(a==="blue")document.documentElement.dataset.alice=a}catch(e){}</script>';
 
 /** Order the index lists them in, and the order "next scene" follows. */
 export const DEMO_ORDER = [
@@ -334,15 +334,15 @@ function renderIndex(project: DemoProject): string {
       <p class="demos__intro">${escapeHtml(ui.demosIntro)}</p>
       <fieldset class="demos__alice">
         <legend class="demos__alice-title">${escapeHtml(ui.demoAliceTitle)}</legend>
-        <button class="demos__alice-choice" type="button" data-alice="blue" aria-pressed="true">
-          <span class="demos__alice-figure" data-alice="blue" aria-hidden="true">${figure('alice/falling')}</span>
-          <span class="demos__alice-name">${escapeHtml(ui.demoAliceBlue)}</span>
-          <span class="demos__alice-note">${escapeHtml(ui.demoAliceBlueNote)}</span>
-        </button>
-        <button class="demos__alice-choice" type="button" data-alice="yellow" aria-pressed="false">
+        <button class="demos__alice-choice" type="button" data-alice="yellow" aria-pressed="true">
           <span class="demos__alice-figure" data-alice="yellow" aria-hidden="true">${figure('alice/falling')}</span>
           <span class="demos__alice-name">${escapeHtml(ui.demoAliceYellow)}</span>
           <span class="demos__alice-note">${escapeHtml(ui.demoAliceYellowNote)}</span>
+        </button>
+        <button class="demos__alice-choice" type="button" data-alice="blue" aria-pressed="false">
+          <span class="demos__alice-figure" data-alice="blue" aria-hidden="true">${figure('alice/falling')}</span>
+          <span class="demos__alice-name">${escapeHtml(ui.demoAliceBlue)}</span>
+          <span class="demos__alice-note">${escapeHtml(ui.demoAliceBlueNote)}</span>
         </button>
       </fieldset>
       <ul class="demos__cards">

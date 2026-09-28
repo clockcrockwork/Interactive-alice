@@ -9,15 +9,52 @@
 @layer tokens, base, layout, scene, utilities;
 
 @layer tokens {
+  /* The palette of docs/visual-design.md: an old illustrated book. Every demo
+     draws from these; a demo that steps off them on purpose says so in its own
+     sheet and in docs/concept-demos.md. */
   :root {
-    --demo-ink: oklch(94% 0.02 80);
-    --demo-ink-soft: oklch(78% 0.03 80);
-    --demo-ground: oklch(14% 0.02 270);
-    --demo-paper: oklch(93% 0.03 85);
-    --demo-paper-ink: oklch(24% 0.03 60);
-    --demo-accent: oklch(72% 0.17 45);
-    --demo-heart: oklch(58% 0.22 25);
-    --demo-glass: oklch(20% 0.02 270 / 0.72);
+    --paper-base: #f2e8d8;
+    --paper-warm: #e4d3ba;
+    --paper-aged: #cfb999;
+    --paper-shadow: #bda586;
+    --ink-primary: #2a211a;
+    --ink-secondary: #544538;
+    --ink-faded: #85715f;
+    --ink-ghost: #ad9984;
+    --sepia-light: #c8b398;
+    --sepia-mid: #a3886d;
+    --sepia-dark: #755d49;
+    --sepia-deep: #594536;
+    --wonder-red: #a74838;
+    --wonder-red-light: #c46d5b;
+    --wonder-red-dark: #7c3028;
+    --wonder-red-faded: #a66e61;
+    --ix-gold: #d6b557;
+    --ix-coral: #d9826d;
+    --ix-pink: #d790a4;
+    --ix-lilac: #9c88b5;
+    --ix-blue: #7f9fbc;
+    --ix-mint: #8daf9d;
+    /* The world's own tints, printed in the same aged inks: a sky, a night, water
+       and leaves that belong to the book rather than to a screen. */
+    --world-sky: #dfd2bc;
+    --world-sky-deep: #c6b399;
+    --world-night: #3a2e27;
+    --world-night-deep: #241c17;
+    --world-water: #7b8d8c;
+    --world-water-deep: #4e5f60;
+    --world-leaf: #8b8f63;
+    --world-leaf-deep: #5c6340;
+    --world-glow: #e9d9a8;
+
+    --demo-ink: var(--paper-base);
+    --demo-ink-soft: var(--paper-aged);
+    --demo-ground: var(--world-night-deep);
+    --demo-paper: var(--paper-base);
+    --demo-paper-ink: var(--ink-primary);
+    --demo-accent: var(--ix-gold);
+    --demo-heart: var(--wonder-red);
+    --demo-glass: oklch(from var(--sepia-deep) l c h / 0.72);
     --demo-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
     --demo-bar-height: 3.25rem;
     --demo-caption-size: clamp(1.15rem, 1rem + 1.2vw, 1.75rem);
@@ -28,28 +65,36 @@
     --demo-z-captions: 5;
     --demo-z-bar: 10;
 
-    /* Alice, as everyone knows her: blue dress, white apron, fair hair. */
-    --alice-hair: #f0cb64;
-    --alice-hair-deep: #e9c35a;
-    --alice-dress: #3d6be8;
-    --alice-dress-deep: #2a4fb8;
-    --alice-apron: #f7f4ec;
-    --alice-skin: #f6d9c1;
-    --alice-band: #1f2a6b;
-    --alice-shadow: oklch(30% 0.08 250);
+    /* Alice, as the design guide has her: yellow dress, brown hair, the most
+       stable colour in the book. */
+    --alice-hair: #68472d;
+    --alice-hair-deep: #513a2b;
+    --alice-hair-light: #8a6543;
+    --alice-dress: #d8b348;
+    --alice-dress-light: #e7ca70;
+    --alice-dress-deep: #b38a2f;
+    --alice-dress-shadow: #84631f;
+    --alice-apron: #f4efe5;
+    --alice-apron-shadow: #d8cec0;
+    --alice-skin: #f0d5be;
+    --alice-skin-shadow: #d8b69d;
+    --alice-shoes: #513a2b;
+    --alice-band: var(--wonder-red-faded);
+    --alice-shadow: oklch(38% 0.06 80);
   }
 
-  /* The earlier Alice, for those who remember her: yellow dress, brown hair. Set
-     on the root by the picker on the demo index and remembered per visitor. */
-  :root[data-alice="yellow"] {
-    --alice-hair: #7a5230;
-    --alice-hair-deep: #5e3d22;
-    --alice-dress: #f2c94c;
-    --alice-dress-deep: #d9a92e;
-    --alice-apron: #fbf7ee;
-    --alice-skin: #f6dcc6;
-    --alice-band: #3b6fd6;
-    --alice-shadow: oklch(38% 0.09 80);
+  /* The other Alice, the one everyone knows: blue dress, fair hair. Set on the
+     root by the picker on the demo index and remembered per visitor. */
+  :root[data-alice="blue"] {
+    --alice-hair: #d9b45a;
+    --alice-hair-deep: #b8933f;
+    --alice-hair-light: #ecd08a;
+    --alice-dress: #5a76b8;
+    --alice-dress-light: #7f96cc;
+    --alice-dress-deep: #435c98;
+    --alice-dress-shadow: #2f4272;
+    --alice-band: #2f4272;
+    --alice-shadow: oklch(34% 0.07 260);
   }
 }
 

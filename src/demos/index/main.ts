@@ -20,8 +20,8 @@ const cards = [...document.querySelectorAll<HTMLElement>('.demos__card')];
 const ALICE_KEY = 'alice-demos:alice';
 const choices = [...document.querySelectorAll<HTMLButtonElement>('.demos__alice-choice')];
 const chooseAlice = (name: string, remember: boolean): void => {
-  if (name === 'yellow') {
-    document.documentElement.dataset.alice = 'yellow';
+  if (name === 'blue') {
+    document.documentElement.dataset.alice = 'blue';
   } else {
     delete document.documentElement.dataset.alice;
   }
@@ -36,9 +36,9 @@ const chooseAlice = (name: string, remember: boolean): void => {
     }
   }
 };
-chooseAlice(document.documentElement.dataset.alice === 'yellow' ? 'yellow' : 'blue', false);
+chooseAlice(document.documentElement.dataset.alice === 'blue' ? 'blue' : 'yellow', false);
 for (const choice of choices) {
-  choice.addEventListener('click', () => chooseAlice(choice.dataset.alice ?? 'blue', true));
+  choice.addEventListener('click', () => chooseAlice(choice.dataset.alice ?? 'yellow', true));
 }
 
 for (const card of cards) {

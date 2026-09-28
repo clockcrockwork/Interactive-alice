@@ -22,6 +22,7 @@ Use these documents together:
 - [`performance-budget.md`](performance-budget.md) — the numbers, and how they are measured.
 - [`testing.md`](testing.md) — the testing layers and the runtime's testability requirements.
 - [`assets-and-audio.md`](assets-and-audio.md) — generated images, music, and synthesized sound.
+- [`visual-design.md`](visual-design.md) — color system, Wonderland/Alice/interaction visual roles, and SVG/raster asset strategy.
 - [`deployment.md`](deployment.md) — preview and production deployment.
 - this document — what is fixed versus what an implementation agent may decide.
 

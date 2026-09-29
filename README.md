@@ -52,16 +52,16 @@ production is built and deployed by the host from a separate branch.
 
 ## Rights and licensing
 
-This repository is **private** and the work in it is **proprietary**. No open-source
-licence is granted, there is no `LICENSE` file on purpose, and `package.json`
-declares `"private": true` with `"license": "UNLICENSED"`. All rights to the code,
-the retelling, the translations, the artwork, and the music are reserved by the
-author.
+This repository is **public for source visibility and reproducibility**, but the
+project's own work remains **proprietary**. No open-source licence is granted over
+the project's code, retelling, translations, artwork, or music. `package.json`
+stays `"private": true` with `"license": "UNLICENSED"`, and all rights to those
+project-owned materials are reserved by the author.
 
-The one exception is the material the project builds on: the 1865 text of *Alice's
-Adventures in Wonderland* is in the public domain, and its provenance is documented
-in [`text/raw/SOURCE.md`](text/raw/SOURCE.md) and [`CREDITS.md`](CREDITS.md). Being
-private changes nothing about crediting it.
+The 1865 text of *Alice's Adventures in Wonderland* is public-domain source
+material; its provenance is documented in [`text/raw/SOURCE.md`](text/raw/SOURCE.md)
+and [`CREDITS.md`](CREDITS.md). Third-party material included in this repository
+keeps its own licence terms; see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
 ## Status
 

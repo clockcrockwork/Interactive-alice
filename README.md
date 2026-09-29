@@ -52,7 +52,7 @@ production is built and deployed by the host from a separate branch.
 
 ## Rights and licensing
 
-This repository is **public for source visibility and reproducibility**, but the
+This repository is **public for source visibility and build transparency**, but the
 project's own work remains **proprietary**. No open-source licence is granted over
 the project's code, retelling, translations, artwork, or music. `package.json`
 stays `"private": true` with `"license": "UNLICENSED"`, and all rights to those

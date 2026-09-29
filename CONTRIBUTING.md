@@ -1,7 +1,7 @@
 # Contributing
 
 Interactive Alice is public so that its implementation, design decisions, and
-build can be inspected and reproduced. Public visibility does **not** make the
+build process can be inspected. Public visibility does **not** make the
 project open source; the project-owned code, retelling, translations, artwork,
 and music remain proprietary unless the repository explicitly says otherwise.
 

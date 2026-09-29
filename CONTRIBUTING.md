@@ -19,10 +19,12 @@ issue is a request for outside implementation.
 Unsolicited implementation pull requests are not accepted by default. Open an
 issue first unless a maintainer has explicitly invited the change.
 
-If a pull request is invited, only submit material you have the right to submit.
-Do not add third-party text, images, audio, fonts, generated assets, or other
-material whose provenance and redistribution terms are unclear. Shipping image
-assets must follow `docs/assets-and-audio.md` and include the required provenance.
+If a pull request is invited, the issue or invitation must state the contribution
+and licensing terms before work begins. Only submit material you have the right to
+submit. Do not add third-party text, images, audio, fonts, generated assets, or
+other material whose provenance and redistribution terms are unclear. Shipping
+image assets must follow `docs/assets-and-audio.md` and include the required
+provenance.
 
-Submitting a pull request does not change this repository's licensing model or
-grant rights to unrelated project material.
+Submitting a pull request does not change the licensing of unrelated project
+material.

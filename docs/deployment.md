@@ -41,9 +41,11 @@ project takes without deciding it in the open first.
 
 ### The preview is protected, and stays that way
 
-The repository is private, and so are its previews. Vercel's Deployment Protection
-is left on: every preview URL answers `302` to anyone without access, including
-Lighthouse and any automated check. It is not turned off to make tooling easier.
+The repository is public, but preview deployments remain protected. Vercel's
+Deployment Protection is left on: every preview URL answers `302` to anyone
+without access, including Lighthouse and any automated check. Public source does
+not require making every in-progress deployment public, and protection is not
+turned off merely to make tooling easier.
 
 Automation reaches a preview through Vercel's own Automation Bypass instead: the
 project's bypass secret is sent as `x-vercel-protection-bypass` by whatever runs the
@@ -96,7 +98,8 @@ update this document with what is found:
 2. how directory URLs and trailing slashes behave, since `/<locale>/<scene>/`
    depends on it;
 3. whether the deploy can be mapped to a subdirectory rather than the root;
-4. whether the CLI deploy can run from CI once runner minutes return;
+4. whether the CLI deploy should ever run from CI; if adopted, deployment
+   credentials need an explicit environment/approval boundary;
 5. which Node versions the build environment offers, against the `.nvmrc` pin. Only
    relevant if this project ever moves to a source build there.
 
@@ -126,14 +129,14 @@ wider browser pass, desktop and phone Chromium plus Firefox and WebKit, is
 `npm run test:e2e:full`, and it belongs to interaction milestones and releases
 rather than to every pull request.
 
-### CI is paused for September 2026
+### CI execution
 
-GitHub-hosted runner minutes for this account are exhausted, so every queued run
-fails in about two seconds with no steps and no logs: the jobs never reach a
-runner. Nothing is wrong with the workflow. Until the allowance resets, the gate is
-this same list of commands run locally, and a pull request says which of them were
-run. Do not read a red check on a pull request from this period as a test failure,
-and do not read a green local run as proof that CI passes.
+The repository uses standard GitHub-hosted runners for ordinary pull-request and
+`main` checks. The repository is public, so these standard hosted jobs do not
+consume the account's private-repository Actions minutes.
+
+A local run is useful evidence when diagnosing a failure, but it does not replace
+the required GitHub checks for a merge once branch protection is enabled.
 
 The build's size output is the budget record. A pull request that grows a budget
 in [`performance-budget.md`](performance-budget.md) says so in its description;
@@ -151,7 +154,8 @@ in [`testing.md`](testing.md) must be current.
 - npm, as this project's own choice rather than the host's requirement (§1).
   `package-lock.json` is committed and CI installs with `npm ci`.
 - `package.json` carries `"private": true` and `"license": "UNLICENSED"`: the
-  repository is private and nothing here is published to a registry.
+  repository is public for source visibility, while the package remains
+  non-publishable and the project-owned work remains proprietary.
 - Node is pinned in `.nvmrc`, and CI reads the pin rather than naming a version. See
   the subsection below: the pin is a decision, and a checker keeps it from drifting.
 - Biome is pinned exactly; an upgrade is its own pull request, with the diff it
@@ -186,8 +190,8 @@ can change it; it is not in this repository.
 
 Why 22 rather than the newer line:
 
-- while CI is paused, the local run is the whole gate, and it runs 22. Pinning a
-  version nothing in the project actually executes would mean the pin is never tested;
+- local development and GitHub CI both run the repository's Node 22 pin, so the
+  declared compatibility target is exercised continuously;
 - nothing in the toolchain needs 24, and `@types/node` is on the 22 line;
 - what the toolchain does need is 22.12, which `engines` says exactly;
 - Node 22 is in maintenance LTS, supported until 2027-04-30, well past this proof of

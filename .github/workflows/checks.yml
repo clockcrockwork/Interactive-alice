@@ -5,14 +5,14 @@ on:
   push:
     branches: [main]
 
-# Note: GitHub-hosted runner minutes for this account are exhausted for September
-# 2026, so these jobs cannot start until the allowance resets. Until then the gate
-# is the same set of commands run locally; see docs/deployment.md §4.
+# Private-repository checks run on the repo-scoped Linux JIT plane so routine PR/main
+# validation does not consume GitHub-hosted included minutes. There is intentionally
+# no ubuntu-latest fallback: if the JIT plane is unavailable, the checks stay queued.
 
 jobs:
   repository:
     name: repository checkers
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, alice-core]
     steps:
       - uses: actions/checkout@v4
       # Node, because the checkers are launched through build/python.mjs, which finds
@@ -32,7 +32,7 @@ jobs:
 
   frontend:
     name: lint, typecheck, build, test
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, alice-core]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -49,5 +49,10 @@ jobs:
       - run: npm test
       - name: build, and record the size report
         run: npm run build
-      - run: npx playwright install --with-deps chromium
+      - name: Verify the pre-baked Playwright runtime
+        run: |
+          set -euo pipefail
+          test -d /ms-playwright
+          npx playwright --version
+          test "$(npx playwright --version)" = "Version 1.63.0"
       - run: npm run test:e2e

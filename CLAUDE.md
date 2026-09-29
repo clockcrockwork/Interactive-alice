@@ -25,9 +25,12 @@ the browser, readable in several languages, aimed at phones as well as desktops.
    test suite is incomplete. See `docs/testing.md`.
 10. **Motion and sound can be paused.** Looping animation and music need a visible
     pause control, not only a mute.
-11. **Private and proprietary.** No `LICENSE` file, no open-source licence, and
-    `package.json` stays `"private": true` with `"license": "UNLICENSED"`. Credit
-    for the public-domain source text is unaffected; see `CREDITS.md`.
+11. **Public repository, proprietary project.** Public visibility does not grant
+    an open-source licence over this project's own code, text, artwork, or music.
+    `package.json` stays `"private": true` with `"license": "UNLICENSED"`.
+    Third-party material keeps its own licence terms; see
+    `THIRD_PARTY_NOTICES.md`. Credit for the public-domain source text is
+    unaffected; see `CREDITS.md`.
 
 ## Browser support target
 
@@ -71,9 +74,9 @@ npm only, as this project's own choice: one package manager, one lockfile. Pytho
 launched through `node build/python.mjs`, never by name, so the gate runs on any
 operating system.
 
-**CI is paused for September 2026**: the account's runner minutes are exhausted, so
-queued runs fail in seconds without starting. Run the gate locally and say so in the
-pull request; see `docs/deployment.md` §4.
+The repository is intended to run its ordinary CI on standard GitHub-hosted runners
+once public. If CI is temporarily unavailable, run the same gate locally and record
+that fact in the pull request; see `docs/deployment.md` §4.
 
 ## Where decisions live
 

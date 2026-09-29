@@ -5,9 +5,8 @@ on:
   push:
     branches: [main]
 
-# Note: GitHub-hosted runner minutes for this account are exhausted for September
-# 2026, so these jobs cannot start until the allowance resets. Until then the gate
-# is the same set of commands run locally; see docs/deployment.md §4.
+permissions:
+  contents: read
 
 jobs:
   repository:

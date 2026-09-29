@@ -31,16 +31,23 @@ rejected rather than retouched.
 ## 3. Image intake
 
 1. Generate at a comfortable size, larger than the largest rendered size.
-2. Record the asset in `assets/images/provenance.json`: file name, what it is,
-   which model generated it, the prompt's intent in a sentence, the date, and any
-   manual editing afterwards. This is how the project can say honestly what is
-   generated and what is drawn.
-3. Process with the build step: strip metadata, resize to the widths the layout
+2. Keep generation masters, rejected variants, and editing work files **outside
+   this repository**. They are production inputs, not shipping source.
+3. Record each accepted asset in `assets/images/provenance.json`: shipped file
+   name, what it is, which model generated it, the prompt's intent in a sentence,
+   the date, and any manual editing afterwards. This is how the project can say
+   honestly what is generated and what is drawn.
+4. Process the accepted asset: strip metadata, resize to the widths the layout
    actually uses, encode AVIF plus WebP, and emit the `srcset` the scene imports.
-4. Check it against the page budget before committing.
+5. Commit the **optimized shipping assets** and their provenance. The repository
+   must be sufficient to build and deploy the site without the generation masters.
+6. Check the shipping files against the page budget before committing.
 
 Rules for use:
 
+- the public repository contains only assets required to build or explain the
+  shipped experience; raw generations, superseded variants, PSD/Krita/source
+  masters, and other heavyweight working files stay outside Git;
 - every raster asset is referenced through the bundler so it is hashed and
   relative-path safe;
 - **do not pursue an all-SVG scene by default**: dense static backgrounds and

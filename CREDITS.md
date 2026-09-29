@@ -44,7 +44,9 @@ Translators and contributors are credited here as they join.
 
 ## Rights
 
-The repository is private and the work is proprietary: no open-source licence is
-granted over this project's own code, retelling, translations, artwork, or music,
-and all rights to them are reserved by the author. That is separate from, and does
-not extend to, the public-domain 1865 text this project is built on.
+The repository is public, but this project's own work remains proprietary: no
+open-source licence is granted over the project's code, retelling, translations,
+artwork, or music, and all rights to them are reserved by the author. That is
+separate from, and does not extend to, the public-domain 1865 text this project is
+built on. Third-party material keeps its own licence terms; see
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).

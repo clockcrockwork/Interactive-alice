@@ -38,6 +38,10 @@ interface Camera {
   lookY: number;
   /** The lens: the perspective distance in px. Shorter is wider. */
   persp: number;
+  /** Her stoop toward the curtain while peeking: the reader's, never the story's. */
+  peekY: number;
+  peekDistance: number;
+  peekPitch: number;
 }
 
 /** Words on a label: the capitals a sentence quotes, taken from the text itself. */
@@ -75,8 +79,9 @@ function buildHall(
   const panels = DOORS.map((shape, i) => {
     const door =
       shape === 'curtain'
-        ? '<div class="dk__curtain"></div>' +
-          '<div class="dk__little-door"><div class="dk__garden"></div><div class="dk__door-leaf"></div></div>'
+        ? '<div class="dk__little-door"><div class="dk__garden"></div>' +
+          '<div class="dk__door-leaf"><div class="dk__keyhole"></div><div class="dk__keyhole-glow"></div></div></div>' +
+          '<div class="dk__curtain"></div>'
         : `<button type="button" class="dk__door dk__door--${shape}" style="--i: ${i}" aria-label="${tryLabel}"></button>`;
     return `<div class="dk__panel" style="--i: ${i}">${door}</div>`;
   }).join('');
@@ -178,6 +183,8 @@ function mount(shell: DemoShell): void {
 
   const garden = hall.querySelector<HTMLElement>('.dk__garden');
   const doorLeaf = hall.querySelector<HTMLElement>('.dk__door-leaf');
+  const curtain = hall.querySelector<HTMLElement>('.dk__curtain');
+  const keyholeGlow = hall.querySelector<HTMLElement>('.dk__keyhole-glow');
   const bottle = hall.querySelector<HTMLElement>('.dk__bottle');
   const cake = hall.querySelector<HTMLElement>('.dk__cake');
   const handBottle = hands.querySelector<HTMLElement>('.dk__hand--bottle');
@@ -195,6 +202,9 @@ function mount(shell: DemoShell): void {
     lookX: 0,
     lookY: 0,
     persp: 900,
+    peekY: 0,
+    peekDistance: 0,
+    peekPitch: 0,
   };
   const apply = (): void => {
     world.style.setProperty('--persp', camera.persp.toFixed(1));
@@ -204,10 +214,10 @@ function mount(shell: DemoShell): void {
     // hall is moved by (persp - z) scaled, less how far before it she is.
     hall.style.setProperty(
       '--cam-z',
-      ((camera.persp - camera.z) * camera.room - camera.distance).toFixed(1),
+      ((camera.persp - camera.z) * camera.room - camera.distance - camera.peekDistance).toFixed(1),
     );
-    hall.style.setProperty('--cam-y', camera.y.toFixed(1));
-    hall.style.setProperty('--cam-pitch', camera.pitch.toFixed(2));
+    hall.style.setProperty('--cam-y', (camera.y + camera.peekY).toFixed(1));
+    hall.style.setProperty('--cam-pitch', (camera.pitch + camera.peekPitch).toFixed(2));
     hall.style.setProperty('--yaw', camera.yaw.toFixed(2));
     hall.style.setProperty('--look-x', camera.lookX.toFixed(2));
     hall.style.setProperty('--look-y', camera.lookY.toFixed(2));
@@ -249,6 +259,30 @@ function mount(shell: DemoShell): void {
   master.call(() => hall.toggleAttribute('data-locked', master.time() < iHall), [], iHall);
   move(iHall, { yaw: 360, z: TABLE_Z - 200, distance: 0 }, 0.8);
   move(iKey, { z: TABLE_Z, distance: 330, pitch: -18 }, 0.7);
+  // The low curtain hides the little door until the story finds it with the key.
+  // The story's lift and the reader's peek are two objects; `applyCurtain`
+  // combines them, and the story's wins.
+  const storyCurtain = { lift: 0 };
+  const peek = { lift: 0, glow: 0, sway: 0, fade: 1 };
+  const STORY_LIFT_AT = iKey;
+  const applyCurtain = (): void => {
+    const lift = Math.max(storyCurtain.lift, peek.lift);
+    curtain?.style.setProperty('--curtain-lift', lift.toFixed(3));
+    curtain?.style.setProperty('--curtain-sway', peek.sway.toFixed(3));
+    curtain?.style.setProperty('--curtain-fade', peek.fade.toFixed(3));
+    keyholeGlow?.style.setProperty('--peek-glow', peek.glow.toFixed(3));
+  };
+  applyCurtain();
+  master.to(
+    storyCurtain,
+    {
+      lift: 1,
+      duration: reducedMotion ? 0.01 : 0.3,
+      ease: 'power2.out',
+      onUpdate: applyCurtain,
+    },
+    STORY_LIFT_AT,
+  );
   move(iGarden, { z: CURTAIN_Z, distance: 260, y: -150, pitch: 4 });
   master.to(doorLeaf, { '--open': 1, duration: 0.4 }, iGarden + 0.3);
   master.to(garden, { opacity: 1, duration: 0.4 }, iGarden + 0.3);
@@ -290,6 +324,7 @@ function mount(shell: DemoShell): void {
   drinkButton.addEventListener('click', drink);
   master.to(bottle, { opacity: 0, duration: 0.1 }, iTaste);
   master.fromTo(handBottle, { opacity: 0, y: 120 }, { opacity: 1, y: 0, duration: 0.3 }, iTaste);
+  master.call(() => hands.toggleAttribute('data-reach', master.time() >= iTaste), [], iTaste);
   master.call(
     () => (master.time() >= iTaste + 0.05 ? drinkButton.show() : drinkButton.hide()),
     [],
@@ -448,6 +483,190 @@ function mount(shell: DemoShell): void {
   // same view. Under reduced motion the tears hang still and only the dim moves.
   master.to(dim, { opacity: 1, duration: 0.28, ease: 'power1.inOut' }, iRoof + 0.72);
   master.to(giantTears, { opacity: 1, duration: 0.2 }, iRoof + 0.8);
+
+  // --- Peeking behind the curtain early. From the hall beat until the story lifts
+  // the curtain itself, the curtain or the button lifts it a little: the little
+  // door shows, the garden glows through its keyhole, and it drops back after a
+  // moment. Pressing the button again, or keeping the pointer on the curtain, keeps
+  // it up; it drops when let go or when the scroll moves to another beat.
+  const peekButton = shell.prop(shell.ui.demoPeekCurtain ?? '', 'dk__prop dk__prop--peek');
+  const PEEK_LIFT = 0.7;
+  const PEEK_MOMENT = 1400;
+  let peekUp = false;
+  let peekPinned = false;
+  let pressHeld = false;
+  let peekBeat = -1;
+  let peekTimer = 0;
+  const storyHasCurtain = (): boolean =>
+    storyCurtain.lift > 0 || master.time() >= STORY_LIFT_AT || master.time() < iHall;
+  const peekTween = (to: Partial<typeof peek>, duration: number): void => {
+    gsap.to(peek, {
+      ...to,
+      duration: reducedMotion ? 0 : duration,
+      ease: 'power2.out',
+      overwrite: 'auto',
+      onUpdate: applyCurtain,
+    });
+    if (reducedMotion) {
+      // A cut with a short fade, no sway.
+      gsap.fromTo(peek, { fade: 0.4 }, { fade: 1, duration: 0.25, onUpdate: applyCurtain });
+    }
+  };
+  /** She stoops toward the curtain to look: a lower eye and a step closer, hers
+   *  alone (the story never tweens these two), combined with the walk in `apply`. */
+  let stooping = false;
+  let onStooped: (() => void) | undefined;
+  const stoop = (to: number): void => {
+    stooping = to > 0;
+    gsap.to(camera, {
+      peekY: -140 * to,
+      peekDistance: -320 * to,
+      peekPitch: -7 * to,
+      duration: reducedMotion ? 0 : 0.6,
+      ease: 'power2.inOut',
+      overwrite: 'auto',
+      onUpdate: apply,
+      onComplete: () => {
+        stooping = false;
+        onStooped?.();
+      },
+    });
+  };
+  const dropCurtain = (): void => {
+    window.clearTimeout(peekTimer);
+    peekTimer = 0;
+    peekPinned = false;
+    if (!peekUp) {
+      return;
+    }
+    peekUp = false;
+    hoverHeld = false;
+    pressHeld = false;
+    curtain?.removeAttribute('data-peek');
+    peekTween({ lift: 0, glow: 0, sway: 0 }, 0.5);
+    stoop(0);
+  };
+  const liftCurtain = (): void => {
+    window.clearTimeout(peekTimer);
+    peekTimer = 0;
+    if (peekUp || storyHasCurtain()) {
+      return;
+    }
+    peekUp = true;
+    peekBeat = Math.floor(master.time());
+    curtain?.setAttribute('data-peek', '');
+    shell.sound.play('paper', 0.7);
+    peekTween({ lift: PEEK_LIFT, glow: 1 }, 0.45);
+    stoop(1);
+    if (!reducedMotion) {
+      gsap.fromTo(
+        peek,
+        { sway: 1 },
+        { sway: 0, duration: 1.2, ease: 'elastic.out(1, 0.35)', onUpdate: applyCurtain },
+      );
+    }
+  };
+  /** Let go: the curtain stays a moment, then drops, unless it is pinned up. */
+  const releaseCurtain = (): void => {
+    if (!peekUp || peekPinned || pressHeld) {
+      return;
+    }
+    window.clearTimeout(peekTimer);
+    peekTimer = window.setTimeout(dropCurtain, PEEK_MOMENT);
+  };
+  peekButton.addEventListener('click', () => {
+    if (!peekUp) {
+      liftCurtain();
+      releaseCurtain();
+    } else if (peekPinned) {
+      dropCurtain();
+    } else {
+      peekPinned = true;
+      window.clearTimeout(peekTimer);
+      peekTimer = 0;
+    }
+  });
+  // Press and hold: the pointer is captured, so the stoop moving the curtain
+  // under the finger does not let go of it; release drops it after the moment.
+  curtain?.addEventListener('pointerdown', (event) => {
+    event.preventDefault();
+    curtain.setPointerCapture(event.pointerId);
+    pressHeld = true;
+    liftCurtain();
+    peekPinned = false;
+    window.clearTimeout(peekTimer);
+    peekTimer = 0;
+  });
+  const letGo = (): void => {
+    pressHeld = false;
+    releaseCurtain();
+  };
+  // A resting fine pointer on the curtain keeps it up. The stoop moves the
+  // curtain on screen, so a leave during it is not a leave: when the stoop
+  // settles, the curtain is looked for under the pointer once. A curtain that has
+  // dropped back under a resting pointer waits for the pointer to move before it
+  // lifts again, so it cannot bob up and down on its own.
+  let hoverHeld = false;
+  let hoverBlocked = false;
+  const underPointer = (): boolean => {
+    if (!curtain) {
+      return false;
+    }
+    const x = ((shell.pointer.x + 1) / 2) * window.innerWidth;
+    const y = ((shell.pointer.y + 1) / 2) * window.innerHeight;
+    return curtain.contains(document.elementFromPoint(x, y));
+  };
+  const hoverLift = (): void => {
+    if (!shell.pointer.fine || hoverBlocked) {
+      return;
+    }
+    liftCurtain();
+    if (peekUp) {
+      hoverHeld = true;
+      window.clearTimeout(peekTimer);
+      peekTimer = 0;
+    }
+  };
+  const hoverLeave = (): void => {
+    hoverBlocked = false;
+    if (!hoverHeld || stooping) {
+      return;
+    }
+    hoverHeld = false;
+    releaseCurtain();
+  };
+  onStooped = () => {
+    if (hoverHeld && !underPointer()) {
+      hoverHeld = false;
+      hoverBlocked = true;
+      releaseCurtain();
+    }
+  };
+  curtain?.addEventListener('pointerenter', hoverLift);
+  curtain?.addEventListener('pointermove', () => {
+    if (hoverBlocked) {
+      hoverBlocked = false;
+      hoverLift();
+    }
+  });
+  curtain?.addEventListener('pointerleave', hoverLeave);
+  window.addEventListener('pointerup', letGo);
+  window.addEventListener('pointercancel', letGo);
+  const peekButtonCheck = (): void => {
+    if (storyHasCurtain()) {
+      peekButton.hide();
+      dropCurtain();
+    } else {
+      peekButton.show();
+    }
+  };
+  master.call(peekButtonCheck, [], iHall);
+  master.call(peekButtonCheck, [], STORY_LIFT_AT);
+  shell.onFrame(() => {
+    if (peekUp && (Math.floor(master.time()) !== peekBeat || storyHasCurtain())) {
+      dropCurtain();
+    }
+  });
 
   // --- The key. Take it off the table and it hangs in her hand; try it in any
   // door and the door will not have it, until the little one, which opens.

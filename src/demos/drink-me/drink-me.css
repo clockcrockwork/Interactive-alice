@@ -419,9 +419,17 @@
       var(--dk-curtain-fold) 22px 34px
     );
     border-radius: 12px 12px 0 0;
-    transform-origin: 0 0;
-    transform: scaleX(var(--curtain, 1));
+    /* Hung from its rod: it gathers up toward the top when lifted, and a peek
+       leaves it swaying for a moment. It sits a hair before the door it hides. */
+    transform-origin: 50% 0;
+    transform: translateZ(2px) scaleY(calc(1 - var(--curtain-lift, 0) * 0.7))
+      skewX(calc(var(--curtain-sway, 0) * 4deg));
     transform-style: preserve-3d;
+    opacity: var(--curtain-fade, 1);
+    pointer-events: auto;
+    cursor: pointer;
+    /* A finger may still scroll from the curtain: scroll is the guaranteed path. */
+    touch-action: pan-y;
   }
 
   .dk__little-door {
@@ -469,6 +477,35 @@
     block-size: 8px;
     border-radius: 50%;
     background: var(--dk-brass);
+  }
+
+  /* The keyhole under the knob, and the garden's light through it while the reader
+     peeks: a transient glow, gone when the curtain drops. */
+  .dk__keyhole {
+    position: absolute;
+    inset-inline-end: 13px;
+    inset-block-start: calc(50% + 14px);
+    inline-size: 6px;
+    block-size: 11px;
+    border-radius: 3px 3px 1px 1px;
+    background: var(--ink-primary);
+  }
+
+  .dk__keyhole-glow {
+    position: absolute;
+    inset-inline-end: -14px;
+    inset-block-start: calc(50% - 10px);
+    inline-size: 60px;
+    block-size: 60px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      color-mix(in oklch, var(--world-glow), var(--ix-mint) 45%) 0,
+      oklch(from var(--world-glow) l c h / 0.5) 30%,
+      transparent 70%
+    );
+    opacity: var(--peek-glow, 0);
+    pointer-events: none;
   }
 
   /* The glass table, in the middle of the hall. */
@@ -562,9 +599,14 @@
     translate: -50% 0;
     transform-origin: 50% 100%;
     opacity: 0;
-    pointer-events: auto;
+    pointer-events: none;
     cursor: pointer;
     filter: drop-shadow(0 20px 30px oklch(from var(--ink-primary) l c h / 0.5));
+  }
+
+  /* In reach once the bottle has come to hand; before that the hall behind gets the taps. */
+  .dk__hands[data-reach] .dk__hand {
+    pointer-events: auto;
   }
 
   .dk__hand svg {
@@ -678,6 +720,17 @@
   .dk__flash {
     background: var(--world-glow);
     opacity: 0;
+  }
+
+  /* Overlays over the hall let the pointer through to the doors, the curtain and
+     the key; the hand-held props set their own pointer-events back on. */
+  .dk__flash,
+  .dk__iris,
+  .dk__flavours,
+  .dk__hands,
+  .dk__self-layer,
+  .dk__falling-layer {
+    pointer-events: none;
   }
 
   /* Looking down at herself once she has grown: skirt and shoes fill the bottom

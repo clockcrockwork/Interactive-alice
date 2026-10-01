@@ -1,25 +1,28 @@
 # Concept demos
 
-> Canonical document for the fourteen standalone concept demos under `/demos/`: what they are for, how they relate to the story runtime, what each one stages, and how they are checked. Product intent is in [`product-principles.md`](product-principles.md); the story runtime is in [`scene-shot-model.md`](scene-shot-model.md) and [`frontend-architecture.md`](frontend-architecture.md).
+> Canonical document for the seventeen standalone concept demos under `/demos/`: what they are for, how they relate to the story runtime, what each one stages, and how they are checked. Product intent is in [`product-principles.md`](product-principles.md); the story runtime is in [`scene-shot-model.md`](scene-shot-model.md) and [`frontend-architecture.md`](frontend-architecture.md).
 
 ## 1. What they are
 
-Fourteen ambitious, self-contained stagings of one moment of the book each, built to
+Seventeen ambitious, self-contained stagings of one moment of the book each, built to
 show how far an interactive telling can go before the story runtime is asked to carry
 it. They are demonstrations, not the product: each one chooses the technique that
 makes its moment strongest and spends its budget on that.
 
 ```text
-/demos/                  the index: fourteen cards on a table, and the choice of Alice
+/demos/                  the index: seventeen cards on a table, and the choice of Alice
+/demos/riverbank/        A Golden Afternoon: the bank, a book without pictures, a rabbit with a watch
 /demos/rabbit-hole/      Down the Rabbit-Hole: a WebGL well the camera falls down
 /demos/drink-me/         Drink Me: a first-person hall in CSS 3D that scales around her
 /demos/pool-of-tears/    The Pool of Tears: a Canvas sea the reader can stir
 /demos/caucus-race/      A Caucus-Race: a ring of runners the camera orbits, CSS 3D
+/demos/mouse-tale/       A Long Tale: the Mouse's tale set as a tail, and the knot
 /demos/rabbit-house/     Growing in the House: a dollhouse cutaway in SVG the camera leaves
 /demos/bill-the-lizard/  There Goes Bill: the reader is Bill, down the chimney and up
 /demos/caterpillar/      Advice from a Caterpillar: a meadow that scales with her height
 /demos/pig-and-pepper/   Pig and Pepper: a kitchen of pepper and crockery, a baby that becomes a pig
 /demos/cheshire-cat/     The Cheshire Cat: a night wood in depth, a Cat masked away
+/demos/tea-party/        No Room: the table where it is always six o'clock, in CSS 3D
 /demos/dormouse/         A Mad Tea-Party: the Dormouse's tale on a treacle spiral, SVG
 /demos/croquet/          The Queen's Croquet-Ground: a garden in CSS 3D with live mallets
 /demos/mock-turtle/      The Mock Turtle's Story: school in the sea, subjects written on the waves
@@ -87,13 +90,13 @@ by segment id at build time, the same way a story page resolves its text.
 **Shared: the text layer.** Every sentence a demo shows is a segment of
 `text/locales/<locale>/chNN.json`, ordered by the structure file. The demos added the
 adapted text they needed: the giant Alice, the pool and the Mouse in chapter 2, the
-race and the prizes in chapter 3, the little bottle, the window and Bill in chapter
+race, the prizes and the Mouse's tale in chapter 3, the little bottle, the window and Bill in chapter
 4, the Caterpillar, the mushroom and the Pigeon in chapter 5, the kitchen, the pig and
-the Cheshire Cat in chapter 6, the Dormouse's tale in chapter 7, the rose-tree, the procession, the game
+the Cheshire Cat in chapter 6, the table, the riddle, the watch and the Dormouse's tale in chapter 7, the rose-tree, the procession, the game
 and the Cat's head in chapter 8, the Gryphon and the Mock Turtle's schooling in
 chapter 9, the quadrille and its songs in chapter 10, the opening
 of the court in chapter 11, and the sentence-first climax, the waking and her sister's
-dream in chapter 12. Drink Me uses chapter 1's existing text. The added chapter files are partial on purpose: they
+dream in chapter 12. The riverbank and Drink Me use chapter 1's existing text. The added chapter files are partial on purpose: they
 hold the sections the demos stage, with segment ids numbered to leave room before and
 after, so the rest of each chapter can be adapted later without renumbering.
 `npm run check:text` treats them like any other chapter.
@@ -201,18 +204,53 @@ per-demo `mode` (the rabbit hole reports `webgl` or `flat`).
 **Joins.** The demos are viewed in the book's order, and where two adjacent demos are
 one moment of the book they join: the end of the first is staged so that it leads
 straight into the opening of the second, and the opening picks the picture up where
-the first left it. Eight pairs join today: the rabbit hole and Drink Me through the
-door in the floor; Drink Me and the pool at the roof, in tears; the pool and the race
-at the bank; the house and Bill at the chimney; the kitchen and the Cat at a bough; the
-tea-party and the croquet-ground through the door in the tree and the little door; the
-Mock Turtle and the quadrille at his sigh; the quadrille and the trial at the court's
-doors. Each demo remains complete on its own, each join has a reduced-motion version
-of cuts and cross-fades, and each is described under its two demos below. The pairs
-with another scene of the book between them (Bill and the Caterpillar, the Caterpillar
-and the kitchen, the Cat and the tea-party, the race and the house, the croquet-ground
-and the Mock Turtle) change scene through the page transition and nothing more.
+the first left it. Twelve pairs join today: the riverbank and the rabbit hole at the
+hedge; the rabbit hole and Drink Me through the door in the floor; Drink Me and the
+pool at the roof, in tears; the pool and the race at the bank; the race and the Mouse's
+tale in the huddle; the tale and the house at the house's front; the house and Bill at
+the chimney; the kitchen and the Cat at a bough; the tea-party's first half and the
+Dormouse at the teacup; the Dormouse and the croquet-ground through the door in the
+tree and the little door; the Mock Turtle and the quadrille at his sigh; the quadrille
+and the trial at the court's doors. Each demo remains complete on its own, each join
+has a reduced-motion version of cuts and cross-fades, and each is described under its
+two demos below. The pairs with another scene of the book between them (Bill and the
+Caterpillar, the Caterpillar and the kitchen, the Cat and the tea-party, the
+croquet-ground and the Mock Turtle) change scene through the page transition and
+nothing more.
 
-## 4. The fourteen demos
+## 4. The seventeen demos
+
+### A Golden Afternoon: a camera that runs after the Rabbit
+
+The bank is paper and sepia: a paper sky with the sun where the rabbit hole keeps it,
+grass in the world's leaf tint, the river slow at the bottom in its water tint, a tree,
+and under it Alice's sister with a book on her lap and Alice beside her. The book is a
+real object, drawn in the DOM so a leaf can turn about the spine: its pages are paper
+with lines of ghost text-shapes and nothing else. The heat is a faint shimmer of glow
+over the bank, and through it Alice's lids drop. The White Rabbit runs past from right
+to left along the bank; the camera drifts after him, the near grass moving faster than
+the far bank; he stops, and his watch comes out of his pocket as a close-up, a gold
+case with a paper face and the minute hand in Wonderland red; she jumps to her feet, a
+cut from sitting to standing; and the camera runs after him across the field.
+
+**Interaction.** *Turn a page*, or a tap on the book, turns a leaf and finds nothing in
+it; the story turns one itself at *what is the good of a book like that*. *Pick a
+daisy*, or a tap on a flower, picks it and it joins the chain in her hand, until *too
+much work*, when the chain falls to the grass; scrolling back lifts it. *Look at the
+watch*, or a tap on it, spins the hands for a moment. The pointer leans the bank a
+little. None of it is needed: scroll alone reaches the hedge.
+
+At *Alice ran after him across the field* the bank, the tree, her sister and the river
+slide away and the field comes up: the hedge with the hole under it, drawn to the
+rabbit hole demo's design and proportions, sun, tree, hedge and hole in the same
+tokens, the hole at its smallest. The Rabbit makes for it and is nose-down in it with
+his tail out as the demo ends, and the rabbit hole opens on exactly that frame, the
+Rabbit popping down the hole before it starts to grow.
+
+**Reduced motion.** The shell lands on whole beats, so every moment is a cut that is
+complete when its beat shows, with a paper blink on crossing: the run, the watch, the
+jump and the field. The shimmer and the river's ripples stand still; a page turns with
+a cut; the watch's hands jump to another time instead of spinning.
 
 ### Down the Rabbit-Hole: the fall is the parallax
 
@@ -364,6 +402,42 @@ height and the party un-gathers into the ring.
 bobbing; the camera cuts between its shots and does not circle or follow; no dust, no
 panting; the comfits hang in the air.
 
+### A Long Tale: the tale is a tail
+
+The same bank as the race, and the same party: the page opens on the race's last
+frame, the party crowded round Alice with the chalk course still on the bank and the
+thimble where it fell, and as they sit down again in a ring the course wears off and
+the camera comes down low, to the Mouse. Then the tale is a tail. The verses the Mouse
+speaks are not the caption layer's: each sentence is cut into three-word chunks and
+laid along a curve that starts at the Mouse's own tail and winds down the bank, each
+chunk a little smaller than the last, the column leaning with the curve, as the book
+sets it. A verse appears chunk by chunk as it is spoken and slides a little way down
+the tail. At the knot the lower third of the curve ties itself into a loop and the
+words bunch up; the Mouse, insulted, gets up and walks off with the whole tail-text
+trailing after it, the party leaning and calling after it, and a ghost of Dinah drifts
+over the sky at Alice's words. Then the birds hurry off one by one, Alice is alone
+with a tear, and footsteps patter in from the right, little prints first and the White
+Rabbit behind them at a distance, as the picture tightens on his house, small on the
+horizon from the first frame, until its front and door fill the stage.
+
+**Interaction.** *Pull the tail*, or tap the Mouse, or drag along the tail itself, and
+the words slide along the curve and spring back; words pulled past the tip pile up.
+*Undo the knot* is tried and fails: the tail tugs, the knot only pulls tighter, and
+the Mouse takes offence. During the sensation every member of the party is a button,
+and a tap sends it off the ring at once; the story sends them all off before the beat
+is out. The pointer leans the camera, except while the Mouse speaks.
+
+**Reduced motion.** The huddle opens by a cut, the verses appear in place, the pull and
+the knot are cuts, the Mouse and its tail are simply gone at the walk-off, the calling
+and the offence are leans, the birds fade, half by one landing and the rest by the
+next, the tear sits on her cheek, and the house is a cut with a blink.
+
+The tale and the Rabbit's house are two pages of one walk, and they join. The tale's
+last beat tightens on the house front, drawn in the house demo's own tokens and
+markup, until it is the frame the house opens on; the house begins outside, on that
+same front over its garden, and goes in through the door to the room during its first
+beat.
+
 ### Growing in the House: zoom is the parallax
 
 It opens inside the room: a CSS 3D box the reader looks round (the pointer turns
@@ -512,6 +586,50 @@ layer fades to find the Cat under the grin.
 
 **Reduced motion.** The Cat cross-fades rather than sweeps; the wood does not tilt;
 the tail, the fireflies, the stars, the lines and the signposts hold still.
+
+### No Room: a long table in CSS 3D, and the clock that is the sun
+
+A table set out under a tree in front of the March Hare's house, laid for many and
+seen from Alice's seat at the near end: one plane in perspective with a checked paper
+cloth, fourteen laid places that are a single SVG symbol reused per seat, a teapot, a
+butter dish, and the three crowded at the far corner, the Dormouse between the Hatter
+and the Hare. The camera is Alice. It stands at the table's end, drops into the
+armchair at *No room!* (the Hare's words burst big, taken from the line at runtime),
+travels up the table to the Hatter for the riddle, where a raven and a writing-desk
+hang as paper cut-outs and change places on every "you might as well say", comes back
+for the watch, and looks up into the sky when Time himself is explained. The horizon
+is derived from the camera's pitch, so the house and the tree stay where the table
+says they are.
+
+Time is one number, the hour, and the sun's place on its arc, the hands that appear
+on it, the clock on the house and the dusk all follow it; moving round is one number,
+the round, and the party's seat and the dirty cups follow that, so reverse scrolling
+reconstructs both. The watch is a close-up with a ring of dates and one hand on the
+fourth, shaken, buttered by a knife that sweeps across (crumbs fall in), dipped into
+the Hare's cup with rings spreading, and brought out dripping. At *it is always six
+o'clock* the sun goes down to six and stays; at *always tea-time* the far places show
+their mess and the party moves one seat toward Alice, the places behind them dirty,
+the ones ahead clean. The Queen's *Off with his head!* is the one flash of Wonderland
+red. Everything stands on the compositor: the pieces are billboards on the plane,
+layers that are off are not painted, and the shadows are pseudo-elements, not filters.
+
+**Interaction.** *Look for wine* (or tap the teapot) lifts the lid and finds only tea.
+*Butter the watch* (or tap the butter) spreads the best butter before the Hatter does.
+*Whisper to Time* (or tap the sun) spins the hands and sends the sun to half-past one,
+then back. *Move round* (or drag down the table) moves everyone another seat, stopping
+short of Alice's end. The pointer leans the table and the sky. The story does each of
+these at its own beat, so none is required.
+
+**Reduced motion.** Every camera move, the sit, the swaps, the dip, the clock's spin
+and the round are cuts; the bat flies as a fade pinned at the top of its flight; the
+crumbs are already on the watch and the rings are drawn once; zzz, steam and the flap
+hold still.
+
+It joins the Dormouse. At *Then the Dormouse shall!* the camera turns to the sleeping
+Dormouse wherever it now sits and the last frame is its teacup from above, in the
+Dormouse demo's own treacle, china and cloth, at the size that demo's camera opens
+with. The Dormouse opens a little further out than it reads at, under the party's
+sepia, and settles into the spiral over its first half-beat.
 
 ### A Mad Tea-Party: rotation and zoom are the parallax
 
@@ -743,12 +861,19 @@ joined; the sister's dream fills the bank and opening her eyes turns it into the
 the kitchen's pig turns stage by stage and a poke advances it, the pots stick to the
 glass and *Duck!* clears them; the Mock Turtle's subjects on the sand are the words of
 his own sentences, the wave takes them and comforting him heaves the sea;
-each join holds at both ends (Drink Me cries at the roof and the pool opens on that
+the riverbank's page turns and finds nothing and its daisies chain; the tale's verses
+are the beats' own sentences laid along the tail, in order and shrinking, the knot
+will not undo and a tapped bird leaves; the tea-table moves round and the watch can be
+buttered;
+each join holds at both ends (the riverbank ends at the hedge the hole opens under;
+Drink Me cries at the roof and the pool opens on that
 view; the pool's party comes ashore and the race opens from the water; the house ends
 at the chimney's rim and Bill opens on it; the tea-party ends at the open door in the
 tree and the croquet-ground opens through the little door; the run reaches the court's
 doors and the trial opens inside them; the kitchen ends at the bough the Cat opens on;
-the Mock Turtle's breath is the quadrille's first sigh), and scrolling back undoes it; no demo's
+the Mock Turtle's breath is the quadrille's first sigh; the race's huddle is the tale's
+first frame and the tale's house front is the house's; the tea-party's last cup is the
+Dormouse's first), and scrolling back undoes it; no demo's
 timeline overruns its beats; and the index's picker chooses an Alice the next page
 still wears.
 

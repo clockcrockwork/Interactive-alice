@@ -279,14 +279,22 @@ function mount(shell: DemoShell): void {
   // door, and another, until the last one opens on the hall itself, far below.
   master.to(dark, { opacity: 0.7, duration: 0.8 }, iEnd);
   if (rabbit) {
-    // Above ground he runs for the hole and drops in; below, he runs for the door.
+    // Above ground the page opens where the riverbank demo ends: he is nose-down
+    // in the hole under the hedge with his tail out, and pops in; below, he runs
+    // for the door.
     master.fromTo(
       rabbit,
-      { x: '-30vw', y: '-6vh', scale: 1.1 },
-      { x: '45vw', y: '4vh', scale: 0.35, duration: iDrop * 0.9, ease: 'power1.in' },
-      0,
+      { x: '50vw', xPercent: -50, y: '-13.5vh', scaleX: -0.35, scaleY: 0.35, rotation: -70 },
+      {
+        y: '-9vh',
+        scaleX: -0.2,
+        scaleY: 0.2,
+        opacity: 0,
+        duration: reducedMotion ? 0.01 : 0.3,
+        ease: 'power2.in',
+      },
+      0.04,
     );
-    master.to(rabbit, { opacity: 0, duration: 0.05 }, iDrop * 0.9);
     master.set(rabbit, { opacity: 1, x: '110vw', y: '0vh', scale: 1 }, iEnd);
     master.to(rabbit, { x: '47vw', y: '-24vh', duration: 0.35, ease: 'power1.in' }, iEnd + 0.05);
     master.to(

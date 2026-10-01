@@ -1,0 +1,327 @@
+/* The Mouse's tale: the race's bank and ring (caucus.css is imported for them),
+   the camera low, and the tale drawn as a tail, winding down the screen and
+   thinning as it goes. The house in the distance is the Rabbit's own front
+   (house.css), so the next page opens on the same picture. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    /* Ink on the bank for the tail-text; the fifth bend is the reader's moment, in
+       gold; the tear is the pool's water; Dinah is a ghost of paper over the sky;
+       the Rabbit is paper-white; his footprints are pressed sepia. */
+    --mt-tail-ink: var(--ink-primary);
+    --mt-bend: var(--ix-gold);
+    --mt-tear: var(--world-water-deep);
+    --mt-tear-light: oklch(from var(--paper-base) l c h / 0.8);
+    --mt-ghost: oklch(from var(--paper-base) l c h / 0.85);
+    --mt-rabbit: var(--paper-base);
+    --mt-print: oklch(from var(--sepia-deep) l c h / 0.55);
+  }
+}
+
+@layer scene {
+  .demo--mouse-tale {
+    --demo-end-lift: 0;
+  }
+
+  /* Captions sit high, under the bar, so the tail has the bank to itself. */
+  .demo--mouse-tale .demo-beat {
+    inset-block-start: calc(var(--demo-bar-height) + 1.25rem);
+    inset-block-end: auto;
+    font-size: calc(var(--demo-caption-size) * 0.88);
+    color: var(--ink-primary);
+    text-shadow: 0 1px 0 oklch(from var(--paper-base) l c h / 0.5);
+  }
+
+  .demo--mouse-tale .line[data-speaker="mouse"] {
+    font-style: italic;
+  }
+
+  /* The verses of the tale are the tail's, not the caption layer's. */
+  .demo--mouse-tale .demo-beat[data-cue^="fury-"] {
+    visibility: hidden;
+  }
+
+  .mt__member {
+    --leave: 0;
+    opacity: calc(1 - var(--leave));
+  }
+
+  .mt__member:disabled {
+    cursor: default;
+  }
+
+  .mt__member[data-gone] {
+    visibility: hidden;
+  }
+
+  .mt__member[data-walking] .cr__figure {
+    animation: cr-run 0.42s ease-in-out infinite alternate;
+  }
+
+  .mt__member[data-sharp] .cr__figure {
+    animation: mt-sharp 0.5s ease-out 1;
+  }
+
+  .mt__member[data-offended] .cr__figure {
+    animation: mt-offended 0.7s ease-in-out 1;
+  }
+
+  .mt__member[data-call] .cr__figure {
+    animation: mt-call 0.7s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -110ms);
+  }
+
+  .mt__member[data-look] .cr__figure {
+    transform: rotate(7deg);
+    transition: transform var(--demo-calm) var(--demo-ease);
+  }
+
+  .mt__tear {
+    position: absolute;
+    inset-inline-start: 56%;
+    inset-block-start: 36%;
+    inline-size: 12%;
+    opacity: 0;
+  }
+
+  .mt__member[data-crying] .mt__tear {
+    animation: mt-tear 1.7s ease-in infinite;
+  }
+
+  .mt__tear svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* The tail: one SVG in stage pixels, the chunks of the verses laid along its
+     curve, each a little smaller than the last. */
+  .mt__tail {
+    pointer-events: none;
+    overflow: hidden;
+    transition: opacity var(--demo-quick) var(--demo-ease);
+  }
+
+  .mt__tail svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: visible;
+  }
+
+  .mt__tail-grip {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 44;
+    stroke-linecap: round;
+    pointer-events: stroke;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .mt__tail:not([data-pullable]) .mt__tail-grip {
+    pointer-events: none;
+  }
+
+  .mt__tail[data-dragging] .mt__tail-grip {
+    cursor: grabbing;
+  }
+
+  .mt__tail text {
+    fill: var(--mt-tail-ink);
+    font-family: inherit;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    opacity: 0;
+    user-select: none;
+  }
+
+  .mt__bend {
+    fill: none;
+    stroke: var(--mt-bend);
+    stroke-width: 3;
+    opacity: 0;
+  }
+
+  .mt__dinah {
+    pointer-events: none;
+  }
+
+  .mt__dinah .art {
+    position: absolute;
+    inset-inline-start: 68%;
+    inset-block-start: 18%;
+    inline-size: clamp(8rem, 28vmin, 17rem);
+    color: var(--mt-ghost);
+    opacity: 0;
+    filter: blur(1px) drop-shadow(0 0 18px var(--world-glow));
+  }
+
+  .mt__rabbit {
+    pointer-events: none;
+  }
+
+  .mt__rabbit .art {
+    position: absolute;
+    inset-inline-start: 74%;
+    inset-block-start: 48%;
+    inline-size: clamp(2.6rem, 9vmin, 5.5rem);
+    color: var(--mt-rabbit);
+    opacity: 0;
+    transform-origin: 50% 100%;
+    filter: drop-shadow(0 3px 3px var(--cr-shadow));
+  }
+
+  .mt__prints {
+    position: absolute;
+    inset-inline-start: 56%;
+    inset-block-start: 52%;
+    inline-size: clamp(8rem, 30vmin, 18rem);
+  }
+
+  .mt__prints svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .mt__step {
+    opacity: 0;
+  }
+
+  .mt__tail[data-tug] svg {
+    animation: mt-tug 0.45s ease-out 1;
+  }
+
+  .mt__rabbit[data-running] .art > svg {
+    animation: cr-run 0.3s ease-in-out infinite alternate;
+  }
+
+  .mt__flash {
+    background: var(--paper-base);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .mt__prop {
+    inset-inline-end: 1.25rem;
+    inset-block-end: calc(5vh + 0.5rem);
+  }
+
+  .mt__prop--undo {
+    inset-block-end: calc(5vh + 3.4rem);
+  }
+
+  .demo[data-paused] .mt__member .cr__figure,
+  .demo[data-paused] .mt__tear,
+  .demo[data-paused] .mt__tail svg,
+  .demo[data-paused] .mt__rabbit .art > svg {
+    animation-play-state: paused;
+  }
+
+  @keyframes mt-sharp {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    30% {
+      transform: translateX(-6%) rotate(-5deg);
+    }
+    60% {
+      transform: translateX(5%) rotate(4deg);
+    }
+  }
+
+  @keyframes mt-offended {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(-8deg) translateY(-6%);
+    }
+    55% {
+      transform: rotate(10deg) translateY(-6%);
+    }
+    80% {
+      transform: rotate(-4deg);
+    }
+  }
+
+  @keyframes mt-call {
+    from {
+      transform: rotate(-5deg) translateY(0);
+    }
+    to {
+      transform: rotate(-9deg) translateY(-7%);
+    }
+  }
+
+  @keyframes mt-tear {
+    0% {
+      transform: translateY(0) scale(0.6);
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(260%) scale(1);
+      opacity: 0;
+    }
+  }
+
+  @keyframes mt-tug {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    30% {
+      transform: translate(-8px, 6px);
+    }
+    65% {
+      transform: translate(6px, -4px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mt__member[data-walking] .cr__figure,
+    .mt__member[data-sharp] .cr__figure,
+    .mt__member[data-offended] .cr__figure,
+    .mt__member[data-call] .cr__figure,
+    .mt__member[data-crying] .mt__tear,
+    .mt__tail[data-tug] svg,
+    .mt__rabbit[data-running] .art > svg {
+      animation: none;
+    }
+
+    .mt__tail {
+      transition: none;
+    }
+
+    .mt__member[data-look] .cr__figure {
+      transition: none;
+    }
+
+    /* A walking figure leans into it; a calling one leans after the Mouse; an
+       offended one has turned its head away; the tear sits on her cheek. */
+    .mt__member[data-walking] .cr__figure {
+      transform: rotate(6deg) translateY(-4%);
+    }
+
+    .mt__member[data-call] .cr__figure {
+      transform: rotate(-8deg);
+    }
+
+    .mt__member[data-offended] .cr__figure {
+      transform: rotate(10deg);
+    }
+
+    .mt__member[data-crying] .mt__tear {
+      opacity: 1;
+      transform: translateY(120%);
+    }
+  }
+}

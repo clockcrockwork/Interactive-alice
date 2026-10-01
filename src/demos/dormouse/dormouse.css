@@ -59,6 +59,16 @@
     transform: translateY(calc(var(--leave) * -30%)) scale(calc(1 - var(--leave) * 0.6));
   }
 
+  /* Arriving from the tea-party: its dense sepia over the cup, lifting. */
+  .dm__arrive {
+    background: radial-gradient(
+      ellipse at 50% 47%,
+      oklch(from var(--sepia-dark) l c h / 0.25),
+      oklch(from var(--sepia-dark) l c h / 0.7)
+    );
+    pointer-events: none;
+  }
+
   .dm__cloth {
     background:
       repeating-conic-gradient(from 45deg, var(--dm-cloth) 0 25%, var(--dm-cloth-alt) 0 50%) 50% 50%

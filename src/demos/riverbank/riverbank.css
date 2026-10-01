@@ -1,0 +1,642 @@
+/* A Golden Afternoon: the bank in paper and sepia, a book with nothing in it, the
+   Rabbit's run, and the field that ends on the rabbit hole demo's first frame. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    /* The afternoon: paper sky, printed grass, the river in the world's water. */
+    --rb-sky: var(--world-sky);
+    --rb-grass: var(--world-leaf);
+    --rb-grass-deep: var(--world-leaf-deep);
+    --rb-water: var(--world-water);
+    --rb-water-deep: var(--world-water-deep);
+    --rb-trunk: var(--sepia-dark);
+    --rb-shade: oklch(from var(--ink-primary) l c h / 0.35);
+    --rb-shade-soft: oklch(from var(--ink-primary) l c h / 0.18);
+    --rb-page: var(--paper-base);
+    --rb-page-back: var(--paper-warm);
+    --rb-cover: var(--sepia-deep);
+    --rb-bar: var(--ink-ghost);
+    --rb-rabbit: var(--paper-base);
+    --rb-heat: oklch(from var(--world-glow) l c h / 0.22);
+    --rb-hole-deep: oklch(from var(--world-night-deep) calc(l - 0.05) c h);
+  }
+}
+
+@layer scene {
+  .demo--riverbank {
+    --cam: 0;
+    --pan: 0;
+    --lean: 0;
+  }
+
+  .demo--riverbank .demo-beat {
+    color: var(--ink-primary);
+  }
+
+  .demo--riverbank .line {
+    justify-self: center;
+    padding-inline: 0.45em;
+    border-radius: 0.3em;
+    background: oklch(from var(--paper-base) l c h / 0.78);
+  }
+
+  .demo--riverbank .line[data-speaker="white-rabbit"] {
+    font-style: italic;
+    color: var(--wonder-red-dark);
+  }
+
+  /* The sky: paper, with the sun where the rabbit hole demo keeps it. */
+  .rb__sky {
+    background: linear-gradient(to bottom, var(--rb-sky) 0%, var(--paper-base) 55%);
+  }
+
+  .rb__sun {
+    position: absolute;
+    inset-inline-start: 78%;
+    inset-block-start: 14%;
+    inline-size: 12vmin;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--world-glow), var(--ix-gold) 60%, transparent 62%);
+    box-shadow: 0 0 60px 20px oklch(from var(--world-glow) l c h / 0.35);
+  }
+
+  /* The bank: everyone sits on it, and the camera drifts after the Rabbit, then
+     runs. Every layer slides by the same two numbers at its own rate. */
+  .rb__bank {
+    transform: translateX(calc(var(--cam) * 3vw + var(--pan) * 110vw + var(--lean) * -1vw));
+  }
+
+  .rb__ground {
+    position: absolute;
+    inset-inline: -20%;
+    inset-block-start: 46%;
+    inset-block-end: 0;
+    border-start-start-radius: 40% 12%;
+    border-start-end-radius: 50% 10%;
+    background: linear-gradient(to bottom, var(--rb-grass), var(--rb-grass-deep) 85%);
+  }
+
+  .rb__tree {
+    position: absolute;
+    inset-inline-start: 8%;
+    inset-block-start: 48%;
+    inline-size: 30vmin;
+    aspect-ratio: 1 / 1.3;
+    translate: 0 -94%;
+    background:
+      radial-gradient(circle at 50% 35%, var(--rb-grass-deep) 38%, transparent 39%),
+      radial-gradient(
+        circle at 25% 55%,
+        oklch(from var(--rb-grass-deep) calc(l - 0.04) c h) 30%,
+        transparent 31%
+      ),
+      radial-gradient(
+        circle at 75% 55%,
+        oklch(from var(--rb-grass-deep) calc(l - 0.02) c h) 30%,
+        transparent 31%
+      ),
+      linear-gradient(to right, transparent 44%, var(--rb-trunk) 44% 56%, transparent 56%);
+  }
+
+  .rb__sister {
+    position: absolute;
+    inset-inline-start: 11%;
+    inset-block-end: 36%;
+    inline-size: 28vmin;
+  }
+
+  .rb__sister .art,
+  .rb__alice .art,
+  .rb__standing > svg,
+  .rb__rabbit .art,
+  .rb__link svg,
+  .rb__daisy svg,
+  .rb__watch svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* The book on her lap: cover, two pages, and a leaf that turns about the
+     spine. The pages are paper with lines of ghost text-shapes, and no pictures. */
+  .rb__book {
+    --page: 0;
+    position: absolute;
+    inset-inline-start: 24%;
+    inset-block-start: 60%;
+    inline-size: 34%;
+    aspect-ratio: 3 / 2;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    rotate: -8deg;
+    perspective: 24rem;
+    transform-style: preserve-3d;
+  }
+
+  .rb__cover {
+    position: absolute;
+    inset: -4% -3%;
+    border-radius: 4%;
+    background: var(--rb-cover);
+    box-shadow: 0 3px 6px var(--rb-shade);
+  }
+
+  .rb__page,
+  .rb__face {
+    position: absolute;
+    inset-block: 0;
+    inline-size: 50%;
+    background:
+      repeating-linear-gradient(to bottom, transparent 0 14%, var(--rb-bar) 14% 20%) 12%
+      calc(var(--page) * 3px) / 76% 100% no-repeat,
+      var(--rb-page);
+  }
+
+  .rb__page--left {
+    inset-inline-start: 0;
+  }
+
+  .rb__page--right {
+    inset-inline-start: 50%;
+  }
+
+  .rb__leaf {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 50%;
+    inline-size: 50%;
+    transform-origin: 0 50%;
+    transform-style: preserve-3d;
+    opacity: 0;
+  }
+
+  .rb__leaf[data-turning] {
+    opacity: 1;
+    animation: rb-turn 0.7s ease-in-out both;
+  }
+
+  .rb__face {
+    inset-inline-start: 0;
+    inline-size: 100%;
+    backface-visibility: hidden;
+  }
+
+  .rb__face--back {
+    background-color: var(--rb-page-back);
+    transform: rotateY(180deg);
+  }
+
+  .rb__bank[data-play] .rb__book:hover .rb__cover,
+  .rb__bank[data-play] .rb__book:focus-visible .rb__cover {
+    box-shadow: 0 0 0 3px var(--ix-gold);
+  }
+
+  /* Alice beside her: sitting, then a cut to her feet. Her lids drop with the
+     heat and her near arm reaches for a daisy and thinks better of it. */
+  .rb__alice {
+    --droop: 0;
+    --reach: 0;
+    position: absolute;
+    inset-inline-start: 31%;
+    inset-block-end: 35%;
+    inline-size: 20vmin;
+  }
+
+  .rb__sitting {
+    transform-origin: 50% 100%;
+  }
+
+  .rb__standing {
+    position: absolute;
+    inset-inline-start: 24%;
+    inset-block-end: 0;
+    inline-size: 52%;
+    opacity: 0;
+    transform-origin: 50% 100%;
+  }
+
+  .rb__alice[data-standing] .rb__sitting {
+    opacity: 0;
+  }
+
+  .rb__alice[data-standing] .rb__standing {
+    opacity: 1;
+    animation: rb-jump 0.4s ease-out both;
+  }
+
+  .rb__lids {
+    transform: translateY(calc(var(--droop) * 4.5px));
+  }
+
+  .rb__head {
+    transform-box: fill-box;
+    transform-origin: 50% 90%;
+    transform: rotate(calc(var(--droop) * 7deg));
+  }
+
+  .rb__arm {
+    transform-box: fill-box;
+    transform-origin: 0 0;
+    transform: rotate(calc(var(--reach) * -28deg));
+  }
+
+  /* The chain in her hand: a daisy per pick, in an arc; at "too much work" it
+     falls to the grass. */
+  .rb__chain {
+    --chain: 0;
+    position: absolute;
+    inset-inline-start: 78%;
+    inset-block-start: 58%;
+    inline-size: 20%;
+    transition:
+      translate 0.5s var(--demo-ease),
+      rotate 0.5s var(--demo-ease);
+  }
+
+  .rb__link {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: 100%;
+    transform: translate(calc(var(--i) * 48%), calc(var(--i) * var(--i) * 9%))
+      rotate(calc(var(--i) * 22deg)) scale(0);
+    transition: transform 0.35s var(--demo-ease);
+  }
+
+  .rb__link[data-shown] {
+    transform: translate(calc(var(--i) * 48%), calc(var(--i) * var(--i) * 9%))
+      rotate(calc(var(--i) * 22deg)) scale(1);
+  }
+
+  .rb__chain[data-dropped] {
+    translate: 10% 90%;
+    rotate: 40deg;
+  }
+
+  .rb__daisy {
+    position: absolute;
+    inset-inline-start: calc(var(--x) * 1%);
+    inset-block-start: calc(var(--y) * 1%);
+    inline-size: calc(var(--s) * 4vmin);
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    transform-origin: 50% 100%;
+    transition: transform 0.3s var(--demo-ease);
+  }
+
+  .rb__bank[data-play] .rb__daisy:hover,
+  .rb__bank[data-play] .rb__daisy:focus-visible {
+    transform: scale(1.15);
+  }
+
+  .rb__daisy[data-picked] {
+    transform: scale(0);
+    pointer-events: none;
+  }
+
+  /* The river, slow at the bottom. */
+  .rb__river {
+    inset-block-start: 86%;
+    background: linear-gradient(to bottom, var(--rb-water), var(--rb-water-deep));
+    transform: translateX(calc(var(--pan) * 110vw));
+    overflow: hidden;
+  }
+
+  .rb__river::before {
+    content: "";
+    position: absolute;
+    inset: 0 -50% 0 0;
+    background: repeating-linear-gradient(
+      135deg,
+      transparent 0 3vw,
+      oklch(from var(--paper-base) l c h / 0.22) 3vw 3.5vw
+    );
+    opacity: 0.6;
+    animation: rb-ripple 9s linear infinite;
+  }
+
+  /* The Rabbit, with the watch in his pocket. Drawn facing right; he runs left. */
+  .rb__runway {
+    pointer-events: none;
+  }
+
+  .rb__rabbit {
+    --watch: 0;
+    position: absolute;
+    inset-block-end: 34%;
+    inset-inline-start: 0;
+    inline-size: 5rem;
+    color: var(--rb-rabbit);
+  }
+
+  .rb__rabbit .art {
+    scale: -1 1;
+    transform-origin: 50% 100%;
+  }
+
+  .rb__rabbit[data-running] .art {
+    animation: rb-run 0.32s ease-in-out infinite alternate;
+  }
+
+  .rb__watch {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 90%;
+    inline-size: 9rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    pointer-events: auto;
+    translate: -70% 0;
+    transform-origin: 70% 100%;
+    scale: var(--watch);
+    filter: drop-shadow(0 6px 10px var(--rb-shade));
+  }
+
+  .rb__hands {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+  }
+
+  .rb__watch[data-spinning] .rb__hands {
+    animation: rb-spin 1.6s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+  }
+
+  /* The field: the rabbit hole demo's surface, to its proportions and tokens, that
+     slides in from the left as the camera runs after him. */
+  .rb__field {
+    --hole: 0.15;
+    visibility: hidden;
+    /* The sky and the sun stay the sky layer's: far away, they do not slide. */
+    background: linear-gradient(
+      to bottom,
+      transparent 55%,
+      var(--world-leaf) 56%,
+      var(--world-leaf-deep) 100%
+    );
+    transform: translateX(calc((1 - var(--pan)) * -100vw));
+  }
+
+  .rb__field[data-shown] {
+    visibility: visible;
+  }
+
+  .rb__field-tree {
+    position: absolute;
+    inset-inline-start: 12%;
+    inset-block-start: 50%;
+    inline-size: 18vmin;
+    aspect-ratio: 1 / 1.3;
+    translate: 0 -92%;
+    background:
+      radial-gradient(circle at 50% 35%, var(--world-leaf-deep) 38%, transparent 39%),
+      radial-gradient(
+        circle at 25% 55%,
+        oklch(from var(--world-leaf-deep) calc(l - 0.04) c h) 30%,
+        transparent 31%
+      ),
+      radial-gradient(
+        circle at 75% 55%,
+        oklch(from var(--world-leaf-deep) calc(l - 0.02) c h) 30%,
+        transparent 31%
+      ),
+      linear-gradient(to right, transparent 44%, var(--sepia-dark) 44% 56%, transparent 56%);
+  }
+
+  .rb__hedge {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 50%;
+    block-size: 12vh;
+    background:
+      radial-gradient(circle at 20% 60%, var(--world-leaf-deep) 20%, transparent 21%),
+      radial-gradient(
+        circle at 45% 40%,
+        oklch(from var(--world-leaf-deep) calc(l - 0.04) c h) 26%,
+        transparent 27%
+      ),
+      radial-gradient(
+        circle at 70% 55%,
+        oklch(from var(--world-leaf-deep) calc(l + 0.02) c h) 22%,
+        transparent 23%
+      ),
+      radial-gradient(
+        circle at 90% 45%,
+        oklch(from var(--world-leaf-deep) calc(l - 0.02) c h) 24%,
+        transparent 25%
+      );
+    background-size: 30vw 12vh;
+    translate: 0 -60%;
+  }
+
+  .rb__hole {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 68%;
+    inline-size: min(60vw, 44vh);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle at 45% 40%, var(--sepia-deep), var(--rb-hole-deep) 70%);
+    box-shadow: inset 0 12px 30px var(--rb-shade);
+    translate: -50% -50%;
+    scale: var(--hole, 0.2);
+  }
+
+  /* The near grass, in front of everything, moving fastest. */
+  .rb__near {
+    pointer-events: none;
+    inset-block-start: 78%;
+    inset-block-end: 14%;
+    inset-inline: -30%;
+    background:
+      radial-gradient(ellipse 2.5vw 5vh at 10% 100%, var(--rb-grass-deep) 60%, transparent 61%),
+      radial-gradient(ellipse 3vw 4vh at 32% 100%, var(--rb-grass) 60%, transparent 61%),
+      radial-gradient(ellipse 2.5vw 6vh at 55% 100%, var(--rb-grass-deep) 60%, transparent 61%),
+      radial-gradient(ellipse 3vw 4vh at 78% 100%, var(--rb-grass) 60%, transparent 61%),
+      radial-gradient(ellipse 2.5vw 5vh at 95% 100%, var(--rb-grass-deep) 60%, transparent 61%);
+    background-size: 36vw 100%;
+    transform: translateX(calc(var(--cam) * 8vw + var(--pan) * 140vw + var(--lean) * -3vw));
+  }
+
+  /* The heat: a faint shimmer of glow over the bank, rising. */
+  .rb__heat {
+    --heat: 0;
+    pointer-events: none;
+    inset-block-start: 40%;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      var(--rb-heat) 1.1vh,
+      transparent 2.2vh
+    );
+    opacity: calc(var(--heat) * 0.4);
+    animation: rb-heat 2.8s ease-in-out infinite alternate;
+  }
+
+  .rb__flash {
+    pointer-events: none;
+    background: var(--paper-base);
+    opacity: 0;
+  }
+
+  .rb__prop {
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+  }
+
+  .rb__prop--turn {
+    inset-inline-start: calc(50% - 0.4rem);
+    translate: -100% 0;
+  }
+
+  .rb__prop--pick {
+    inset-inline-start: calc(50% + 0.4rem);
+  }
+
+  .rb__prop--watch {
+    inset-inline-start: 50%;
+    translate: -50% 0;
+  }
+
+  /* Under reduced motion the shell's note takes the line under the bar. */
+  .demo[data-motion="reduced"] .rb__prop {
+    inset-block-start: calc(var(--demo-bar-height) + 2.6rem);
+  }
+
+  /* On a phone the captions take the lower part of the frame: the bank and the
+     people on it sit higher, and a little larger. */
+  @media (max-width: 700px) {
+    .rb__ground {
+      inset-block-start: 42%;
+    }
+
+    .rb__tree {
+      inset-block-start: 44%;
+    }
+
+    .rb__sister {
+      inset-block-end: 44%;
+      inline-size: 34vmin;
+    }
+
+    .rb__alice {
+      inset-block-end: 43%;
+      inline-size: 24vmin;
+    }
+
+    .rb__daisy {
+      inset-block-start: calc(var(--y) * 1% - 6%);
+    }
+  }
+
+  .demo[data-paused] .rb__river::before,
+  .demo[data-paused] .rb__heat,
+  .demo[data-paused] .rb__rabbit[data-running] .art,
+  .demo[data-paused] .rb__watch[data-spinning] .rb__hands,
+  .demo[data-paused] .rb__leaf[data-turning] {
+    animation-play-state: paused;
+  }
+
+  @keyframes rb-turn {
+    from {
+      transform: rotateY(0deg);
+    }
+
+    to {
+      transform: rotateY(-180deg);
+    }
+  }
+
+  @keyframes rb-jump {
+    from {
+      transform: translateY(-12%) scale(0.96);
+    }
+
+    to {
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes rb-ripple {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(-12vw);
+    }
+  }
+
+  @keyframes rb-run {
+    from {
+      transform: translateY(0) rotate(-4deg);
+    }
+
+    to {
+      transform: translateY(-8%) rotate(3deg);
+    }
+  }
+
+  @keyframes rb-spin {
+    from {
+      transform: rotate(0turn);
+    }
+
+    to {
+      transform: rotate(3.3turn);
+    }
+  }
+
+  @keyframes rb-heat {
+    from {
+      transform: translateY(0) scaleY(1);
+    }
+
+    to {
+      transform: translateY(-2vh) scaleY(1.04);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* The shimmer stands still; the ripples hold; the run is a cut with a blink
+       (the script does that); a page turns with a cut; the watch's hands jump. */
+    .rb__heat,
+    .rb__river::before,
+    .rb__rabbit[data-running] .art,
+    .rb__alice[data-standing] .rb__standing {
+      animation: none;
+    }
+
+    .rb__leaf[data-turning] {
+      animation: rb-blink 0.3s steps(1, end) both;
+    }
+
+    .rb__watch[data-spinning] .rb__hands {
+      animation: none;
+      transform: rotate(140deg);
+    }
+
+    .rb__chain,
+    .rb__link,
+    .rb__daisy {
+      transition: none;
+    }
+  }
+
+  @keyframes rb-blink {
+    from {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
+    }
+  }
+}

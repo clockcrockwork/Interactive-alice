@@ -186,6 +186,38 @@ export const SISTER_SVG = `
   <rect x="80" y="130" width="80" height="60" rx="6" fill="var(--paper-base)" transform="rotate(-8 120 160)"/>
 </svg>`;
 
+/** Alice sitting on the bank beside her sister, facing the reader; the lids drop
+ * with `--droop` and the near arm reaches for a daisy with `--reach`. */
+export const ALICE_SITTING_SVG = `
+<svg viewBox="0 0 160 150" focusable="false">
+  <ellipse cx="38" cy="142" rx="10" ry="5" fill="var(--alice-shoes)"/>
+  <ellipse cx="56" cy="144" rx="10" ry="5" fill="var(--alice-shoes)"/>
+  <path d="M62 72 C40 95 26 122 22 140 L148 140 C142 116 122 92 108 72 Z" fill="var(--alice-dress)"/>
+  <path d="M72 74 C62 95 54 118 54 138 L118 138 C116 118 106 95 98 74 Z" fill="var(--alice-apron)"/>
+  <path d="M66 46 L104 46 L108 76 L62 76 Z" fill="var(--alice-dress)"/>
+  <path d="M64 70 L106 70 L108 78 L62 78 Z" fill="var(--alice-dress-shadow)"/>
+  <path d="M66 50 L44 84" stroke="var(--alice-skin)" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="43" cy="86" r="5" fill="var(--alice-skin)"/>
+  <g class="rb__arm">
+    <path d="M104 50 L128 88" stroke="var(--alice-skin)" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="129" cy="90" r="5" fill="var(--alice-skin)"/>
+  </g>
+  <g class="rb__head">
+    <path d="M62 30 C54 44 56 60 64 70 L74 58 L72 34 Z" fill="var(--alice-hair-deep)"/>
+    <path d="M102 30 C110 44 108 60 100 70 L90 58 L92 34 Z" fill="var(--alice-hair-deep)"/>
+    <circle cx="82" cy="32" r="20" fill="var(--alice-skin)"/>
+    <path d="M62 28 C66 10 98 10 102 28 C94 22 70 22 62 28 Z" fill="var(--alice-hair)"/>
+    <rect x="63" y="14" width="38" height="4" rx="2" fill="var(--alice-band)"/>
+    <circle cx="75" cy="35" r="2.2" fill="var(--ink-primary)"/>
+    <circle cx="89" cy="35" r="2.2" fill="var(--ink-primary)"/>
+    <g class="rb__lids">
+      <path d="M70 32 a5 5 0 0 1 10 0 Z" fill="var(--alice-skin)"/>
+      <path d="M84 32 a5 5 0 0 1 10 0 Z" fill="var(--alice-skin)"/>
+    </g>
+    <path d="M77 43 Q82 47 87 43" stroke="var(--ink-secondary)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>`;
+
 export const FOOT_SVG = `
 <svg viewBox="0 0 200 260" focusable="false">
   <path d="M70 260 L70 120 Q70 90 100 90 Q130 90 130 120 L130 260 Z" fill="var(--alice-apron)"/>
@@ -813,4 +845,54 @@ export const CRAB_SVG = `
   <circle cx="85" cy="51" r="3.5" fill="var(--ink-primary)"/><circle cx="117" cy="51" r="3.5" fill="var(--ink-primary)"/>
   <path d="M84 40 v-10 M116 40 v-10" stroke="var(--sepia-deep)" stroke-width="4"/>
   <path d="M88 78 q12 -10 24 0" stroke="var(--ink-primary)" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>`;
+
+/** The Hatter, as seen across the tea-table: the hat with its paper tag, a wide
+    bow, eyes a demo can open very wide (`.tp__hatter-eyes`). Feet on the bottom edge. */
+export const HATTER_SVG = `
+<svg viewBox="0 0 160 260" focusable="false">
+  <path d="M56 256 L62 196 M104 256 L98 196" stroke="var(--sepia-deep)" stroke-width="10" stroke-linecap="round"/>
+  <g class="tp__hatter-body">
+    <path d="M24 212 Q30 128 80 122 Q130 128 136 212 Q80 230 24 212 Z" fill="var(--sepia-dark)"/>
+    <path d="M62 128 L80 150 L98 128 L92 200 L68 200 Z" fill="var(--paper-base)"/>
+    <path d="M60 134 l20 10 l20 -10 l-6 -10 l-14 6 l-14 -6 z" fill="var(--sepia-mid)"/>
+    <path d="M24 150 q-14 24 18 40 M136 150 q14 24 -18 40" stroke="var(--sepia-dark)" stroke-width="16" stroke-linecap="round" fill="none"/>
+    <path d="M40 96 Q50 70 80 72 Q110 70 120 96 L116 118 Q80 134 44 118 Z" fill="var(--paper-warm)"/>
+    <path d="M38 100 q-8 -22 10 -30 M122 100 q8 -22 -10 -30" stroke="var(--sepia-deep)" stroke-width="9" stroke-linecap="round" fill="none"/>
+    <g class="tp__hatter-eyes">
+      <ellipse cx="64" cy="100" rx="7" ry="5" fill="var(--paper-base)"/>
+      <ellipse cx="96" cy="100" rx="7" ry="5" fill="var(--paper-base)"/>
+      <circle cx="64" cy="101" r="3" fill="var(--ink-primary)"/>
+      <circle cx="96" cy="101" r="3" fill="var(--ink-primary)"/>
+    </g>
+    <path d="M70 118 q10 6 20 0" stroke="var(--ink-secondary)" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M24 78 h112 v10 h-112 z" fill="var(--sepia-deep)"/>
+    <path d="M38 80 L44 10 L116 10 L122 80 Z" fill="var(--sepia-deep)"/>
+    <path d="M42 66 h76 v10 h-76 z" fill="var(--sepia-mid)"/>
+    <path d="M90 30 l24 -6 l4 24 l-24 6 z" fill="var(--paper-base)"/>
+    <path d="M96 36 l12 -3 M98 44 l12 -3" stroke="var(--ink-primary)" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>`;
+
+/** The March Hare: long ears with straw in them, a coat, and a cup held up. */
+export const MARCH_HARE_SVG = `
+<svg viewBox="0 0 160 260" focusable="false">
+  <path d="M58 256 L64 200 M102 256 L96 200" stroke="var(--sepia-dark)" stroke-width="10" stroke-linecap="round"/>
+  <g class="tp__hare-body">
+    <path d="M28 212 Q34 132 80 126 Q126 132 132 212 Q80 228 28 212 Z" fill="var(--sepia-mid)"/>
+    <path d="M66 132 L80 156 L94 132 L90 204 L70 204 Z" fill="var(--paper-base)"/>
+    <path d="M30 156 q-18 28 20 38 M130 156 q18 28 -20 38" stroke="var(--sepia-mid)" stroke-width="14" stroke-linecap="round" fill="none"/>
+    <path d="M136 176 h28 v14 q0 12 -14 12 q-14 0 -14 -12 z" fill="var(--paper-base)"/>
+    <path d="M164 182 q12 2 10 12 q-2 6 -10 6" stroke="var(--paper-base)" stroke-width="4" fill="none"/>
+    <path d="M52 14 q-12 60 10 96 q16 -46 10 -96 q-10 -10 -20 0 z" fill="var(--sepia-light)"/>
+    <path d="M58 24 q-6 50 6 80 q10 -36 6 -80 q-6 -6 -12 0 z" fill="color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm))"/>
+    <path d="M108 14 q12 60 -10 96 q-16 -46 -10 -96 q10 -10 20 0 z" fill="var(--sepia-light)"/>
+    <path d="M102 24 q6 50 -6 80 q-10 -36 -6 -80 q6 -6 12 0 z" fill="color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm))"/>
+    <path d="M40 100 q10 -32 40 -34 q30 2 40 34 q4 20 -8 30 q-32 14 -64 0 q-12 -10 -8 -30 z" fill="var(--sepia-light)"/>
+    <path d="M62 92 l-16 -14 M64 88 l-20 -6 M98 92 l16 -14 M96 88 l20 -6" stroke="var(--paper-aged)" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="64" cy="98" r="4" fill="var(--ink-primary)"/>
+    <circle cx="96" cy="98" r="4" fill="var(--ink-primary)"/>
+    <path d="M76 112 q4 4 8 0 M80 114 v6" stroke="var(--ink-primary)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <path d="M66 122 q14 8 28 0" stroke="var(--ink-secondary)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  </g>
 </svg>`;

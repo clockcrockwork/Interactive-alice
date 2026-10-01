@@ -13,7 +13,7 @@
 
 import gsap from 'gsap';
 import { attachDemo, type DemoShell, seeded } from '../shell/shell.ts';
-import { BOTTLE_IN_HAND_SVG, HOUSE_SVG } from './figures.ts';
+import { BOTTLE_IN_HAND_SVG, HOUSE_FRONT_SVG, HOUSE_SVG } from './figures.ts';
 import './house.css';
 
 function mount(shell: DemoShell): void {
@@ -54,6 +54,11 @@ function mount(shell: DemoShell): void {
   const hands = shell.layer('hs__hands');
   hands.innerHTML = `<div class="hs__hand-bottle">${BOTTLE_IN_HAND_SVG}</div>`;
   const handBottle = hands.querySelector<HTMLElement>('.hs__hand-bottle');
+  // The arrival: the house from the path, as the Mouse's tale left it, over the
+  // room; the first beat goes in through the door and the room is there.
+  const arrivalGarden = shell.layer('hs__garden hs__garden--arrival');
+  const arrival = shell.layer('hs__arrival');
+  arrival.innerHTML = HOUSE_FRONT_SVG;
   const flash = shell.layer('hs__flash');
   const eye = { yaw: 20, pitch: -6, grow: 1, rise: 0, lookX: 0, lookY: 0 };
   const applyEye = (): void => {
@@ -63,6 +68,25 @@ function mount(shell: DemoShell): void {
     box?.style.setProperty('--rise', eye.rise.toFixed(1));
   };
   applyEye();
+  // In through the door: the front comes at the reader and gives way to the
+  // room. Under reduced motion the room is a cut with a blink, just after the
+  // page's first landing on the house.
+  if (reducedMotion) {
+    master.set([arrival, arrivalGarden], { opacity: 0 }, iRoom + 0.12);
+    master.fromTo(
+      flash,
+      { opacity: 0.8 },
+      { opacity: 0, duration: 0.1, immediateRender: false },
+      iRoom + 0.12,
+    );
+  } else {
+    master.to(
+      arrival,
+      { '--hz': 3.2, '--hy': 10, opacity: 0, duration: 0.55, ease: 'power2.in' },
+      iRoom + 0.05,
+    );
+    master.to(arrivalGarden, { opacity: 0, duration: 0.3 }, iRoom + 0.3);
+  }
   // Looking round the room, then to the bottle in the window.
   master.to(
     eye,

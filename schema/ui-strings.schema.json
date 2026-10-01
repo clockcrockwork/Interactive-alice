@@ -102,9 +102,20 @@
         "demoComfort",
         "demoWash",
         "demoUglify",
+        "demoPullTail",
+        "demoUndoKnot",
+        "demoKnotHolds",
+        "demoBirdLeave",
         "demoTechRiverbank",
+        "demoTurnPage",
+        "demoPickDaisy",
+        "demoLookWatch",
         "demoTechMouseTale",
-        "demoTechTeaParty"
+        "demoTechTeaParty",
+        "demoLookForWine",
+        "demoButterWatch",
+        "demoWhisperTime",
+        "demoMoveRound"
       ],
       "additionalProperties": false,
       "properties": {
@@ -388,6 +399,21 @@
           "minLength": 1,
           "description": "Index card: what the Lobster Quadrille demo shows."
         },
+        "demoTurnPage": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that turns a page of the sister's book on the riverbank."
+        },
+        "demoPickDaisy": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that picks a daisy for Alice's chain on the riverbank."
+        },
+        "demoLookWatch": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that looks at the White Rabbit's watch; its hands spin for a moment."
+        },
         "demoPuff": {
           "type": "string",
           "minLength": 1,
@@ -513,6 +539,26 @@
           "minLength": 1,
           "description": "Button that makes one of the subject words writhe; tapping a word does the same."
         },
+        "demoPullTail": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button in the Mouse's tale that slides the tail-text along its curve; a drag on the tail does the same."
+        },
+        "demoUndoKnot": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button at the knot in the Mouse's tale: trying to undo it only offends the Mouse."
+        },
+        "demoKnotHolds": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status line after a failed undo of the knot: it holds, and the Mouse takes offence."
+        },
+        "demoBirdLeave": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Label on each member of the party once the sensation starts: a tap sends it off at once."
+        },
         "demoTechRiverbank": {
           "type": "string",
           "minLength": 1,
@@ -527,6 +573,26 @@
           "type": "string",
           "minLength": 1,
           "description": "Technique note on the demo index card for the tea-party."
+        },
+        "demoLookForWine": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button at the tea-party that lifts the pot-lids: there is nothing but tea."
+        },
+        "demoButterWatch": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button at the tea-party that spreads the best butter on the Hatter's watch."
+        },
+        "demoWhisperTime": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button at the tea-party that whispers a hint to Time: round goes the clock."
+        },
+        "demoMoveRound": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button at the tea-party that moves everyone one seat along the table."
         }
       }
     }

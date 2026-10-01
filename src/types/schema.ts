@@ -662,6 +662,18 @@ export interface LocaleUIStrings {
      */
     demoTechQuadrille: string;
     /**
+     * Button that turns a page of the sister's book on the riverbank.
+     */
+    demoTurnPage: string;
+    /**
+     * Button that picks a daisy for Alice's chain on the riverbank.
+     */
+    demoPickDaisy: string;
+    /**
+     * Button that looks at the White Rabbit's watch; its hands spin for a moment.
+     */
+    demoLookWatch: string;
+    /**
      * Button that makes the Caterpillar blow a smoke ring.
      */
     demoPuff: string;
@@ -762,6 +774,22 @@ export interface LocaleUIStrings {
      */
     demoUglify: string;
     /**
+     * Button in the Mouse's tale that slides the tail-text along its curve; a drag on the tail does the same.
+     */
+    demoPullTail: string;
+    /**
+     * Button at the knot in the Mouse's tale: trying to undo it only offends the Mouse.
+     */
+    demoUndoKnot: string;
+    /**
+     * Status line after a failed undo of the knot: it holds, and the Mouse takes offence.
+     */
+    demoKnotHolds: string;
+    /**
+     * Label on each member of the party once the sensation starts: a tap sends it off at once.
+     */
+    demoBirdLeave: string;
+    /**
      * Technique note on the demo index card for the riverbank.
      */
     demoTechRiverbank: string;
@@ -773,5 +801,21 @@ export interface LocaleUIStrings {
      * Technique note on the demo index card for the tea-party.
      */
     demoTechTeaParty: string;
+    /**
+     * Button at the tea-party that lifts the pot-lids: there is nothing but tea.
+     */
+    demoLookForWine: string;
+    /**
+     * Button at the tea-party that spreads the best butter on the Hatter's watch.
+     */
+    demoButterWatch: string;
+    /**
+     * Button at the tea-party that whispers a hint to Time: round goes the clock.
+     */
+    demoWhisperTime: string;
+    /**
+     * Button at the tea-party that moves everyone one seat along the table.
+     */
+    demoMoveRound: string;
   };
 }

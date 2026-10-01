@@ -1193,3 +1193,301 @@ test('the mock turtle → the lobster quadrille: the shore settles on the quadri
     .poll(() => customProperty(page, '.lq__turtle', '--sob'), { timeout: 8000 })
     .toBeGreaterThan(0);
 });
+
+test('the tea-party: moving round shifts the seats, and the watch can be buttered', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'tea-party');
+  test.skip(!demo, 'no tea-party demo in this build');
+  await page.goto(demo?.url ?? '');
+  // The watch: the story butters it at its beat; the reader may do it earlier.
+  await atCue(page, 'watch', 0.8);
+  await expect(page.locator('.tp__watch-layer')).not.toHaveAttribute('data-buttered', '');
+  await page.locator('.tp__prop-butter').click();
+  await expect(page.locator('.tp__watch-layer')).toHaveAttribute('data-buttered', '', {
+    timeout: 8000,
+  });
+  // Moving round: the story's own round at tea-time, then one more for the reader.
+  await atCue(page, 'tea-time', 0.2);
+  await expect
+    .poll(() => customProperty(page, '.tp__scene', '--round'), { timeout: 8000 })
+    .toBeLessThan(0.05);
+  await atCue(page, 'tea-time', 0.95);
+  await expect
+    .poll(() => customProperty(page, '.tp__scene', '--round'), { timeout: 8000 })
+    .toBeCloseTo(1, 1);
+  await page.locator('.tp__prop-round').click();
+  await expect
+    .poll(() => customProperty(page, '.tp__scene', '--round'), { timeout: 8000 })
+    .toBeCloseTo(2, 1);
+  // The used places behind the party carry their mess; the ones ahead are clean.
+  await expect.poll(() => customProperty(page, '.tp__place', '--dirt')).toBeLessThan(0.05);
+});
+
+test('the tea-party → the dormouse: it ends looking down into the cup the tale is told in', async ({
+  page,
+}) => {
+  const party = demos.find((candidate) => candidate.demo === 'tea-party');
+  const dormouse = demos.find((candidate) => candidate.demo === 'dormouse');
+  test.skip(!party || !dormouse, 'both demos are needed for the join');
+  await page.goto(party?.url ?? '');
+  await atCue(page, 'story', 0.2);
+  await expect(page.locator('.demo')).not.toHaveAttribute('data-join', '');
+  await expect(page.locator('.tp__join')).toHaveAttribute('data-off', '');
+  await scrollTo(page, 1);
+  await expect(page.locator('.demo')).toHaveAttribute('data-join', '', { timeout: 8000 });
+  await expect(page.locator('.tp__join')).not.toHaveAttribute('data-off', '');
+  await expect
+    .poll(() => customProperty(page, '.tp__join', '--join'), { timeout: 8000 })
+    .toBeCloseTo(1, 1);
+  // And back: the join is a function of the scroll.
+  await atCue(page, 'story', 0.2);
+  await expect(page.locator('.demo')).not.toHaveAttribute('data-join', '', { timeout: 8000 });
+
+  // The Dormouse opens on that cup, a little further out, under the party's sepia,
+  // and has settled in by the time the tale begins.
+  await page.goto(dormouse?.url ?? '');
+  await expect(page.locator('.demo')).toHaveAttribute('data-join', '');
+  await expect(page.locator('.dm__arrive')).toBeAttached();
+  await atCue(page, 'spiral', 0.1);
+  await expect(page.locator('.demo')).not.toHaveAttribute('data-join', '', { timeout: 8000 });
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() =>
+          Number(getComputedStyle(document.querySelector('.dm__arrive') as Element).opacity),
+        ),
+      { timeout: 8000 },
+    )
+    .toBeLessThan(0.05);
+});
+
+test('the riverbank: a page turns and finds nothing, picked daisies chain in her hand, and the chain falls at "too much work"', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'riverbank');
+  test.skip(!demo, 'no riverbank demo in this build');
+  await page.goto(demo?.url ?? '');
+  await expect(page.locator('.rb__prop--turn')).toBeVisible({ timeout: 8000 });
+  await expect.poll(() => customProperty(page, '.rb__book', '--page')).toBe(0);
+  await page.locator('.rb__prop--turn').click();
+  await expect(page.locator('.rb__book')).toHaveAttribute('data-page', '1');
+  await expect.poll(() => customProperty(page, '.rb__book', '--page')).toBe(1);
+  // The pages are paper and lines of ghost text-shapes: no picture in any of them.
+  await expect(page.locator('.rb__book img, .rb__book svg')).toHaveCount(0);
+  await expect(page.locator('.demo__status')).not.toBeEmpty();
+  // A daisy by the button, and one by a tap on the flower itself.
+  await page.locator('.rb__prop--pick').click();
+  await expect(page.locator('.rb__chain')).toHaveAttribute('data-chain', '1');
+  await page.locator('.rb__daisy:not([data-picked])').first().click();
+  await expect.poll(() => customProperty(page, '.rb__chain', '--chain')).toBe(2);
+  await expect(page.locator('.rb__daisy[data-picked]')).toHaveCount(2);
+  await expect(page.locator('.rb__link[data-shown]')).toHaveCount(2);
+  // Too much work: the chain falls and the play is over; scrolling back lifts it.
+  await atCue(page, 'sleepy', 0.9);
+  await expect(page.locator('.rb__chain')).toHaveAttribute('data-dropped', '', { timeout: 8000 });
+  await expect(page.locator('.rb__prop--pick')).toBeHidden();
+  await atCue(page, 'book', 0.5);
+  await expect(page.locator('.rb__chain')).not.toHaveAttribute('data-dropped', '', {
+    timeout: 8000,
+  });
+  await expect(page.locator('.rb__prop--pick')).toBeVisible();
+});
+
+test('the riverbank → the rabbit hole: the Rabbit stops for his watch, she jumps up, and the field ends on the hole the next demo opens on', async ({
+  page,
+}) => {
+  const bank = demos.find((candidate) => candidate.demo === 'riverbank');
+  const hole = demos.find((candidate) => candidate.demo === 'rabbit-hole');
+  test.skip(!bank || !hole, 'both demos are needed for the join');
+  await page.goto(bank?.url ?? '');
+  // The watch comes out of his pocket, and the reader may look at it.
+  await atCue(page, 'watch', 0.5);
+  await expect
+    .poll(() => customProperty(page, '.rb__rabbit', '--watch'), { timeout: 8000 })
+    .toBeGreaterThan(0.9);
+  await expect(page.locator('.rb__prop--watch')).toBeVisible({ timeout: 8000 });
+  await page.locator('.rb__prop--watch').click();
+  await expect(page.locator('.rb__watch')).toHaveAttribute('data-spinning', '');
+  // She jumps to her feet: a cut from sitting to standing.
+  await atCue(page, 'up', 0.5);
+  await expect(page.locator('.rb__alice')).toHaveAttribute('data-standing', '', { timeout: 8000 });
+  await expect.poll(() => customProperty(page, '.rb__rabbit', '--watch')).toBeLessThan(0.05);
+  // The run across the field ends at the hedge, on the rabbit hole demo's frame.
+  await scrollTo(page, 1);
+  await expect(page.locator('.demo')).toHaveAttribute('data-at-hedge', '', { timeout: 8000 });
+  await expect(page.locator('.rb__field')).toHaveAttribute('data-shown', '');
+  await expect
+    .poll(() => customProperty(page, '.demo', '--pan'), { timeout: 8000 })
+    .toBeCloseTo(1, 1);
+  await expect.poll(() => customProperty(page, '.rb__field', '--hole')).toBeCloseTo(0.15, 2);
+  // And back: the join is a function of the scroll.
+  await atCue(page, 'book', 0.5);
+  await expect(page.locator('.demo')).not.toHaveAttribute('data-at-hedge', '', { timeout: 8000 });
+  await expect(page.locator('.rb__alice')).not.toHaveAttribute('data-standing', '');
+  await expect(page.locator('.rb__field')).not.toHaveAttribute('data-shown', '');
+  await expect
+    .poll(() => customProperty(page, '.demo', '--pan'), { timeout: 8000 })
+    .toBeLessThan(0.05);
+
+  // The rabbit hole opens on that frame: the same hole at the same size, with the
+  // Rabbit's tail just going in.
+  await page.goto(hole?.url ?? '');
+  await expect(page.locator('.rh__surface .rh__hole')).toBeAttached();
+  await expect.poll(() => customProperty(page, '.rh__surface', '--hole')).toBeCloseTo(0.15, 2);
+  await expect(page.locator('.rh__rabbit .art')).toBeAttached();
+});
+
+test("the mouse's tale: the verses are written along the tail in order, shrinking, and the tail can be pulled", async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'mouse-tale');
+  test.skip(!demo, 'no mouse-tale demo in this build');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'fury-four', 0.9);
+  // The verse beats' own sentences, in order, are what the tail carries: the
+  // chunks of each sentence, joined, read the sentence back.
+  const spoken = await page
+    .locator('.demo-beat[data-cue^="fury-"] .line')
+    .evaluateAll((nodes) => nodes.map((node) => node.textContent?.trim() ?? ''));
+  const onTail = await page.locator('.mt__tail text').evaluateAll((nodes) => {
+    const out: string[] = [];
+    let segment = '';
+    for (const node of nodes) {
+      const own = (node as SVGElement).dataset.segment ?? '';
+      const words = node.textContent?.trim() ?? '';
+      if (own === segment) {
+        out[out.length - 1] = `${out[out.length - 1]} ${words}`;
+      } else {
+        out.push(words);
+        segment = own;
+      }
+    }
+    return out;
+  });
+  expect(spoken.length).toBeGreaterThan(4);
+  expect(onTail).toEqual(spoken);
+  // Shrinking as it goes, and all of it shown by the last verse.
+  const sizes = await page
+    .locator('.mt__tail text')
+    .evaluateAll((nodes) => nodes.map((node) => Number(node.getAttribute('font-size'))));
+  for (let i = 1; i < sizes.length; i += 1) {
+    expect(sizes[i]).toBeLessThanOrEqual(sizes[i - 1] ?? 0);
+  }
+  const lastOpacity = () =>
+    page.evaluate(() => {
+      const texts = document.querySelectorAll('.mt__tail text');
+      return Number(getComputedStyle(texts[texts.length - 1] as Element).opacity);
+    });
+  await expect.poll(lastOpacity, { timeout: 8000 }).toBeGreaterThan(0.9);
+  // Pull the tail: the words slide along the curve, and spring back.
+  const firstTransform = () =>
+    page
+      .locator('.mt__tail text')
+      .first()
+      .evaluate((node) => node.getAttribute('transform'));
+  const before = await firstTransform();
+  await expect(page.locator('.mt__prop--pull')).toBeVisible();
+  await page.locator('.mt__prop--pull').click();
+  await expect.poll(firstTransform, { timeout: 3000 }).not.toBe(before);
+  await expect.poll(firstTransform, { timeout: 5000 }).toBe(before);
+});
+
+test("the mouse's tale: the tail ties a knot that will not undo, and a tapped bird leaves at once", async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'mouse-tale');
+  test.skip(!demo, 'no mouse-tale demo in this build');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'attending', 0.5);
+  await expect(page.locator('.demo')).not.toHaveAttribute('data-knot', '');
+  await atCue(page, 'knot', 0.6);
+  await expect(page.locator('.demo')).toHaveAttribute('data-knot', '', { timeout: 8000 });
+  // Undoing it is tried, and fails: the Mouse is offended, and says so.
+  await expect(page.locator('.mt__prop--undo')).toBeVisible({ timeout: 8000 });
+  await page.locator('.mt__prop--undo').click();
+  await expect(page.locator('.mt__member[data-kind="mouse"]')).toHaveAttribute('data-offended', '');
+  await expect(page.locator('.demo__status')).not.toBeEmpty();
+  await atCue(page, 'attending', 0.5);
+  await expect(page.locator('.demo')).not.toHaveAttribute('data-knot', '', { timeout: 8000 });
+  // The sensation: every bird is a button, and a tap sends it off the ring.
+  await atCue(page, 'sensation', 0.04);
+  const dodo = page.locator('.mt__member[data-kind="dodo"]');
+  await expect(dodo).toBeEnabled({ timeout: 8000 });
+  await expect(dodo).toHaveAttribute('aria-label', /.+/);
+  await expect(dodo).not.toHaveAttribute('data-gone', '');
+  await dodo.dispatchEvent('click');
+  await expect(dodo).toHaveAttribute('data-gone', '', { timeout: 5000 });
+  // Scrolling back before the sensation brings it back.
+  await atCue(page, 'dinah', 0.5);
+  await expect(dodo).not.toHaveAttribute('data-gone', '', { timeout: 8000 });
+});
+
+test("the caucus-race → the mouse's tale: the tale opens on the race's huddle and sits down in a ring", async ({
+  page,
+}) => {
+  const race = demos.find((candidate) => candidate.demo === 'caucus-race');
+  const tale = demos.find((candidate) => candidate.demo === 'mouse-tale');
+  test.skip(!race || !tale, 'both demos are needed for the join');
+  // The race ends crowded round Alice, the course still chalked on the bank.
+  await page.goto(race?.url ?? '');
+  await scrollTo(page, 1);
+  await expect
+    .poll(() => customProperty(page, '.cr__runner', '--r'), { timeout: 8000 })
+    .toBeCloseTo(0.5, 1);
+  await expect.poll(() => customProperty(page, '.cr__course circle', '--drawn')).toBeCloseTo(1, 1);
+  // The tale opens on that huddle, course and all, and opens into the ring.
+  await page.goto(tale?.url ?? '');
+  await expect(page.locator('.cr__runner.mt__member')).toHaveCount(8);
+  await expect.poll(() => customProperty(page, '.cr__runner', '--r')).toBeCloseTo(0.5, 1);
+  const courseOpacity = () =>
+    page.evaluate(() =>
+      Number(getComputedStyle(document.querySelector('.cr__course') as Element).opacity),
+    );
+  await expect.poll(courseOpacity).toBeGreaterThan(0.9);
+  await atCue(page, 'sad', 0.5);
+  await expect
+    .poll(() => customProperty(page, '.cr__runner', '--r'), { timeout: 8000 })
+    .toBeCloseTo(1, 1);
+  await expect.poll(courseOpacity, { timeout: 8000 }).toBeLessThan(0.05);
+});
+
+test("the mouse's tale → the rabbit's house: the footsteps lead to the house's door, and the house opens on it", async ({
+  page,
+}) => {
+  const tale = demos.find((candidate) => candidate.demo === 'mouse-tale');
+  const house = demos.find((candidate) => candidate.demo === 'rabbit-house');
+  test.skip(!tale || !house, 'both demos are needed for the join');
+  const opacity = (selector: string) =>
+    page.evaluate(
+      (sel) => Number(getComputedStyle(document.querySelector(sel) as Element).opacity),
+      selector,
+    );
+  await page.goto(tale?.url ?? '');
+  await expect(page.locator('.hs__arrival .hs__front')).toBeAttached();
+  // Alone on the bank, the house is small in the distance.
+  await atCue(page, 'alone', 0.5);
+  await expect(page.locator('.demo')).not.toHaveAttribute('data-at-house', '');
+  await expect
+    .poll(() => customProperty(page, '.hs__arrival', '--hz'), { timeout: 8000 })
+    .toBeLessThan(0.2);
+  // At the end the picture has tightened on it: the last frame is its front.
+  await scrollTo(page, 1);
+  await expect(page.locator('.demo')).toHaveAttribute('data-at-house', '', { timeout: 8000 });
+  await expect
+    .poll(() => customProperty(page, '.hs__arrival', '--hz'), { timeout: 8000 })
+    .toBeCloseTo(1, 1);
+  await expect.poll(() => opacity('.hs__garden'), { timeout: 8000 }).toBeGreaterThan(0.9);
+  await atCue(page, 'alone', 0.5);
+  await expect(page.locator('.demo')).not.toHaveAttribute('data-at-house', '', { timeout: 8000 });
+
+  // The house opens on that front, and goes in through the door to the room.
+  await page.goto(house?.url ?? '');
+  await expect(page.locator('.hs__arrival .hs__front')).toBeAttached();
+  await expect.poll(() => opacity('.hs__arrival')).toBeGreaterThan(0.9);
+  await expect.poll(() => customProperty(page, '.hs__arrival', '--hz')).toBeCloseTo(1, 1);
+  await atCue(page, 'sip', 0.5);
+  await expect.poll(() => opacity('.hs__arrival'), { timeout: 8000 }).toBeLessThan(0.05);
+  await scrollTo(page, 0);
+  await expect.poll(() => opacity('.hs__arrival'), { timeout: 8000 }).toBeGreaterThan(0.9);
+});

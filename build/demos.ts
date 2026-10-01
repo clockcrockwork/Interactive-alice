@@ -154,6 +154,9 @@ export function loadDemoProject(root: string, locale?: string): DemoProject {
 }
 
 const UI_FOR_SCRIPT = [
+  'demoTurnPage',
+  'demoPickDaisy',
+  'demoLookWatch',
   'demoPutBack',
   'demoJurorToggle',
   'demoSoundOn',
@@ -208,6 +211,14 @@ const UI_FOR_SCRIPT = [
   'demoComfort',
   'demoWash',
   'demoUglify',
+  'demoPullTail',
+  'demoUndoKnot',
+  'demoKnotHolds',
+  'demoBirdLeave',
+  'demoLookForWine',
+  'demoButterWatch',
+  'demoWhisperTime',
+  'demoMoveRound',
 ] as const;
 
 export function titleOf(project: DemoProject, demo: ExperienceConceptDemoFile): string {

@@ -6,7 +6,7 @@
     "localePartial": "Some parts ready",
     "localeNone": "Not ready yet",
     "demosTitle": "Concept demos",
-    "demosIntro": "Fourteen scenes, fourteen ways of moving through them, joined where the book joins them.",
+    "demosIntro": "Seventeen scenes, seventeen ways of moving through them, joined where the book joins them.",
     "demoBack": "All demos",
     "demoNext": "Next scene",
     "demoPause": "Pause motion",
@@ -84,7 +84,18 @@
     "demoWash": "Wash the words away",
     "demoUglify": "Uglify a word",
     "demoTechRiverbank": "A golden afternoon on the bank: a book without pictures, and a rabbit with a watch.",
+    "demoTurnPage": "Turn a page",
+    "demoPickDaisy": "Pick a daisy",
+    "demoLookWatch": "Look at the watch",
     "demoTechMouseTale": "The Mouse's tale told as a tail: the sentences wind down and the reader finds the knot.",
-    "demoTechTeaParty": "The tea-table where it is always six o'clock: move round, mend the watch with butter."
+    "demoTechTeaParty": "The tea-table where it is always six o'clock: move round, mend the watch with butter.",
+    "demoLookForWine": "Look for wine",
+    "demoButterWatch": "Butter the watch",
+    "demoWhisperTime": "Whisper to Time",
+    "demoMoveRound": "Move round",
+    "demoPullTail": "Pull the tail",
+    "demoUndoKnot": "Undo the knot",
+    "demoKnotHolds": "The knot only pulls tighter, and the Mouse is offended",
+    "demoBirdLeave": "Send this one off"
   }
 }

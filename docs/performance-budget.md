@@ -41,7 +41,7 @@ The concept demos under `/demos/` are outside these budgets by design; see
 introduced them: the shared demo shell (GSAP, ScrollTrigger and the shell) is 46 KB of
 JS; Drink Me, the pool, the Caucus-race, the Rabbit's house, Bill, the Dormouse, the
 Cheshire Cat, the Caterpillar, the kitchen, the croquet-ground, the Mock Turtle, the
-Lobster Quadrille and the trial add between 2 and 7 KB each to that; the rabbit hole adds 136 KB for Three.js and the
+Lobster Quadrille, the trial, the riverbank, the Mouse's tale and the tea-party add between 2 and 7 KB each to that; the rabbit hole adds 136 KB for Three.js and the
 well. Story pages are unaffected: they share none of these
 chunks, and their own sizes did not move.
 

@@ -166,7 +166,10 @@ function mount(shell: DemoShell): void {
 
   // --- The camera. Where a sentence sits and which way it runs come from the
   // rendered text itself, so the layout and the camera cannot disagree.
-  const camera: Camera = { x: CENTRE, y: CENTRE, angle: 0, scale: 0.95, nx: 0, ny: 0 };
+  // It opens a little further out than it reads at: the tea-party's last frame
+  // is this cup from above at this size, and the first half-beat settles in.
+  const ARRIVE_SCALE = 0.8;
+  const camera: Camera = { x: CENTRE, y: CENTRE, angle: 0, scale: ARRIVE_SCALE, nx: 0, ny: 0 };
   // The stage in px: the cup's 1000 units cover the longer side, as a sliced
   // viewBox would, and its centre sits on the stage's centre.
   const view = { w: 1, h: 1, k: 1 };
@@ -231,7 +234,12 @@ function mount(shell: DemoShell): void {
   const first = targets[0];
   if (first) {
     // Before the tale, the whole cup; at the first word, dive in.
-    master.set(camera, { x: CENTRE, y: CENTRE, angle: 0, scale: 0.95 }, 0);
+    master.set(camera, { x: CENTRE, y: CENTRE, angle: 0, scale: ARRIVE_SCALE }, 0);
+    master.to(
+      camera,
+      { scale: 0.95, duration: reducedMotion ? 0.01 : 0.45, ease: 'power2.out' },
+      0.02,
+    );
     master.to(
       camera,
       {
@@ -488,6 +496,13 @@ function mount(shell: DemoShell): void {
     [],
     iDoor + 0.45,
   );
+
+  // --- The join with the tea-party: its last frame is this cup, and the demo opens
+  // under the same sepia it ended in, which lifts over the first half-beat.
+  const arrive = shell.layer('dm__arrive');
+  master.to(arrive, { opacity: 0, duration: reducedMotion ? 0.01 : 0.4 }, 0.05);
+  master.call(() => shell.root.toggleAttribute('data-join', master.time() < 0.5), [], 0.5);
+  shell.root.toggleAttribute('data-join', true);
 
   // --- Reading ahead: with a finger held on the cup, the camera slides on down
   // the spiral so the next sentences can be read early; let go and it swings back.

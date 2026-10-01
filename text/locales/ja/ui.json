@@ -6,7 +6,7 @@
     "localePartial": "いちぶ よめます",
     "localeNone": "まだ よめません",
     "demosTitle": "コンセプトデモ",
-    "demosIntro": "じゅうよっつの ばめん、じゅうよっつの すすみかた。",
+    "demosIntro": "じゅうななの ばめん、じゅうななの すすみかた。",
     "demoBack": "デモいちらん",
     "demoNext": "つぎの ばめん",
     "demoPause": "うごきを とめる",
@@ -84,7 +84,18 @@
     "demoWash": "ことばを なみで あらう",
     "demoUglify": "ことばを みにくくする",
     "demoTechRiverbank": "かわべの きんいろの ごご。えのない ほんと、とけいを もった うさぎ。",
+    "demoTurnPage": "ページを めくる",
+    "demoPickDaisy": "ひなぎくを つむ",
+    "demoLookWatch": "とけいを みる",
     "demoTechMouseTale": "ネズミの はなしは しっぽの かたち。ことばが くねって、むすびめを さがす。",
-    "demoTechTeaParty": "いつも ろくじの おちゃの テーブル。せきを ずれて、とけいに バターを ぬる。"
+    "demoTechTeaParty": "いつも ろくじの おちゃの テーブル。せきを ずれて、とけいに バターを ぬる。",
+    "demoLookForWine": "ワインを さがす",
+    "demoButterWatch": "とけいに バターを ぬる",
+    "demoWhisperTime": "じかんに ささやく",
+    "demoMoveRound": "せきを ずれる",
+    "demoPullTail": "しっぽを ひっぱる",
+    "demoUndoKnot": "むすびめを ほどく",
+    "demoKnotHolds": "むすびめは ほどけない。ネズミは おこって しまった",
+    "demoBirdLeave": "この ひとを かえらせる"
   }
 }

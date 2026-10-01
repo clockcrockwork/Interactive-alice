@@ -289,7 +289,7 @@ test('the pool of tears: the sentences ride the swell once she is in the water',
     await page.waitForTimeout(120);
   }
   expect(Math.max(...samples) - Math.min(...samples)).toBeGreaterThan(0.5);
-  await expect(page.locator('.pt__prop')).toBeVisible();
+  await expect(page.locator('.pt__prop').first()).toBeVisible();
 });
 
 test('the index: the visitor chooses an Alice, and the demos remember her', async ({ page }) => {

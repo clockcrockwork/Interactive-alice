@@ -335,6 +335,7 @@ stepped beat by beat by the shell; the doors are a cut to the open tunnel.
 **Degraded mode.** If a WebGL context cannot be created, the well is drawn flat with
 CSS rings that scale with the fall, the page says so, and the seam reports `flat`.
 
+**Looking at a map.** While the shelves pass, from *Maps and pictures hung on little pegs* to the cupboard she tucks the jar into, a map on the wall can be looked at: tap one, or press *Look at the map*, and it comes up close and holds still in front, drawn large, a sea with waves, two coasts, a river, hills, a dotted route to a mark and a compass rose, pictures only, while the well goes on falling behind it. *Look away*, a tap on the map, or scrolling out of those beats in either direction puts it back on the wall, with a rustle of paper each way; it works the same over the flat well. Under reduced motion the map fades in and out in place, with no zoom.
 ### Drink Me: scale is the parallax
 
 The hall of doors is a round room in CSS 3D: a checkered floor, a ceiling with the
@@ -382,6 +383,7 @@ flash; the growth is a cut too, with the skirt already in place; no wobble, no
 head-turn; tears and flavours hang still, and the dim at the end is the one motion
 left in the join.
 
+**Peeking behind the curtain.** From the beat where she sees the low curtain until the key beat finds the door, the curtain can be lifted early: tap or hold the curtain, rest a mouse on it, or press *Peek behind the curtain*. Alice steps closer and stoops, the curtain gathers up with a paper rustle and a sway, and the little door shows with the garden's light glowing through its keyhole; it drops back a moment after it is let go, or the instant the scroll moves to another beat. Pressing the button again keeps it up, and pressing once more drops it. The story lifts the curtain itself when the key fits, and from then on the peek does nothing: the two lifts are separate numbers and the story's always wins, so finding the door early changes nothing about how the story finds it. Under reduced motion the curtain and the stoop are cuts with a short fade, with no sway and no glow animation.
 ### The Pool of Tears: the swell is the parallax
 
 A 2D Canvas draws the hall from a giant's eye, with a horizon that climbs as she
@@ -415,6 +417,7 @@ after another onto the bank, seen from the water.
 slowly, tears fall at half speed, and the captions do not ride the water; the roof's
 fold and the skirt are cuts, and the climb onto the bank is a cut too.
 
+**Tilting the water.** While Alice is in the pool the water can be tilted: on desktop the surface leans toward the mouse, and on a phone with *Steer by tilting* on it follows the phone, by up to six degrees. The water stands higher on the low side, the swimmers and the stir rings drift downhill, and the captions tip with the surface; a splash sounds when the slop reaches the edge. *Lean left* and *Lean right* tip it the same way for a couple of seconds and then let it level, so the lean needs neither a mouse nor a tilt sensor, and scrolling never needs it at all. Under reduced motion the water cuts to the leaned angle and back without the slop, and the buttons still work.
 ### A Caucus-Race: rotation is the parallax
 
 The party stands in a ring on the bank, each runner an SVG cutout on a CSS 3D circle
@@ -561,6 +564,7 @@ shoo it and it goes off for a moment and comes back worse.
 **Reduced motion.** Size changes are cuts with a blink; the smoke hangs still; the
 neck holds straight; the Pigeon's wings are spread and do not beat.
 
+**The strength of the puff.** Hold *Blow a smoke ring*, or press and hold the Caterpillar, and it draws in: the coal of the hookah glows brighter and its body swells for up to a second and a half, and on letting go the ring's size, pace and lifetime follow the hold, from the small quick ring of a tap to a big slow one that hangs low over her and wobbles. The keyboard charges the same way, Space or Enter held on the button; the first time the button appears the status line says *Hold to blow a bigger ring*, and a whoosh scales with the strength when sound is on. Under reduced motion the charge is a step rather than a swell and the ring appears at its final size and fades where it is, without drifting.
 ### Pig and Pepper: the kitchen comes at you
 
 It opens at the wood's edge at dusk: the little house, a tree, and the two footmen,
@@ -629,6 +633,7 @@ layer fades to find the Cat under the grin.
 **Reduced motion.** The Cat cross-fades rather than sweeps; the wood does not tilt;
 the tail, the fireflies, the stars, the lines and the signposts hold still.
 
+**Which end goes first.** At the slow vanishing the reader chooses which end goes first. Two props stand in for the one: *Vanish tail first* slides the mask along the bough as the story has it, and *Vanish head first* slants it in from the top so the ears go, then the eyes, the face, the body, and the tail last; the grin is outside the mask either way and stays, and still rises into the moon. A tap on the Cat's head or its tail during that beat chooses the same way. The choice is kept for the rest of the page, so the quick vanishings and the final one use it too, and may be changed before each. Under reduced motion both orders are two cuts, the chosen end and then the rest, with the grin staying.
 ### No Room: a long table in CSS 3D, and the clock that is the sun
 
 A table set out under a tree in front of the March Hare's house, laid for many and
@@ -673,6 +678,7 @@ Dormouse demo's own treacle, china and cloth, at the size that demo's camera ope
 with. The Dormouse opens a little further out than it reads at, under the party's
 sepia, and settles into the spiral over its first half-beat.
 
+**The used place.** Every place the party has sat at stays used: the tipped cup, the ring on the cloth and the crumbs remain, and *Move round* (or the drag down the table) is the Hatter's way, into the next clean place toward Alice. Once the party is moving round, any laid place can be tapped. A clean one is simply moved to; a used one is sat at anyway, and the Hatter frowns: his face turns away, his brows come down, the cup at that place wobbles and a glass clinks, with the status line saying so. Scrolling back undoes the story's own round while the places the reader chose keep their mess. Under reduced motion the move and the frown are cuts and the cup does not wobble.
 ### A Mad Tea-Party: rotation and zoom are the parallax
 
 Carroll set the Mouse's tale in the shape of a tail, shrinking as it went. Here the
@@ -755,6 +761,7 @@ events, so the roses are buttons all the while.
 **Reduced motion.** The door frame fades instead of sliding; the camera cuts; nobody steps, skips, runs or waddles; the
 flamingo does not look up, so every strike lands; the red flash without the shake.
 
+**The flamingo's mood.** From the beat she first holds it until the game breaks up, the flamingo drifts toward sulking while it is left alone, about twelve seconds from content to sulk: the head turns away from the ball a little more each second and the neck twists, until it looks straight up into her face and no blow is possible; a strike then swings wide, misses the hedgehog, and the status says so once. Draw the pointer along its neck and head, or press *Stroke the flamingo*, and it comes round with a small nod and a chime. The mood holds while the motion is paused, and the story's own looks, the escape and the catch happen at their beats as before. Under reduced motion the mood changes the pose in three cuts, content, wary and sulking, with no continuous twist and no nod.
 ### The Mock Turtle's Story: the sea answers, and the picture goes under it
 
 The quadrille's shore a little earlier in the day: the same sky, the three swells that
@@ -877,6 +884,8 @@ by the Knave, so the two demos are one arrival. The doors take no pointer events
 **Reduced motion.** The doors cross-fade open; the dolly cuts with a dip to black; the cards fade in at their
 places on the glass instead of flying; no tremble, no shake; the leaves change and
 fall without drifting; the dream's creatures stand still and swap without a fade.
+
+**Dodging the cards.** While the pack flies, her head leans with the pointer, or with the phone's tilt when *Steer by tilting* is on, and the court tilts with it. Every card has a lane, left or right of her face; lean away from a card's lane before it arrives and it whips past on the other side, bigger, with a whoosh, instead of hitting the glass, and the first miss says *Dodged*. *Dodge left* and *Dodge right* are the buttons for a reader with neither: a press leans her that way for about a second. The cards that still hit do what they always did, *Beat them off* still clears them, and the leaves fall whether or not she dodged. Under reduced motion the lean is a cut to the side and a dodged card simply never arrives: it fades out short of her, counted the same.
 
 ## 5. Checks
 

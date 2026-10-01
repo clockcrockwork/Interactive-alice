@@ -437,6 +437,8 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     p.className = 'demo__note';
     p.textContent = text;
     root.querySelector('.demo__bar')?.after(p);
+    // The status line sits under the note, not on it.
+    root.setAttribute('data-noted', '');
   };
   if (reducedMotion && ui.demoReducedMotion) {
     note(ui.demoReducedMotion);

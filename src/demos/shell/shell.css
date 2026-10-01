@@ -360,6 +360,11 @@
     transition-duration: var(--demo-quick);
   }
 
+  /* With a note under the bar (reduced motion, a flat well), the status goes below it. */
+  .demo[data-noted] .demo__status {
+    inset-block-start: calc(var(--demo-bar-height) + var(--space-2) + 1.5rem);
+  }
+
   /* A phone's bar stays one row: smaller type, tighter buttons, and the title
      kept for assistive technology only. */
   @media (max-width: 600px) {

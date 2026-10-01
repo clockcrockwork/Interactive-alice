@@ -72,7 +72,34 @@ export interface DemoShell {
   note(text: string): void;
   /** Current master progress, 0..1. */
   progress(): number;
+  /** Remembers a thing the reader did in this demo, for a later one to show. */
+  keep(kind: string): void;
+  /** The things the reader kept across the demos, in the order they were kept. */
+  kept(): string[];
 }
+
+const KEPT_KEY = 'alice-demos:kept';
+const readKept = (): string[] => {
+  try {
+    const raw = localStorage.getItem(KEPT_KEY);
+    const list: unknown = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? list.filter((x): x is string => typeof x === 'string') : [];
+  } catch {
+    return [];
+  }
+};
+const keepKind = (kind: string): void => {
+  const list = readKept();
+  if (list.includes(kind)) {
+    return;
+  }
+  list.push(kind);
+  try {
+    localStorage.setItem(KEPT_KEY, JSON.stringify(list));
+  } catch {
+    // A private window may refuse; the thing is kept for this page only.
+  }
+};
 
 export interface ShellOptions {
   /** Custom caption behaviour: return true to take over a beat's caption tweens. */
@@ -106,6 +133,18 @@ function readUi(): Record<string, string> {
   } catch {
     return {};
   }
+}
+
+/**
+ * When a beat's sentences come in. Under reduced motion the page snaps to the
+ * head of a beat, so they must already be there: the cut lands just before it,
+ * and the first beat's are set at the head. A custom caption uses the same timing.
+ */
+export function captionEntry(reduced: boolean, t: number): { at: number; duration: number } {
+  if (!reduced) {
+    return { at: t + 0.05, duration: 0.3 };
+  }
+  return t === 0 ? { at: 0, duration: 0 } : { at: t - 0.02, duration: 0.02 };
 }
 
 export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
@@ -167,11 +206,12 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     }
     const t = beat.index;
     const last = beat.index === beats.length - 1;
+    const entry = captionEntry(reducedMotion, t);
     master.fromTo(
       beat.lines,
       { opacity: 0, y: reducedMotion ? 0 : 18 },
-      { opacity: 1, y: 0, duration: 0.3, stagger: 0.08 },
-      t + 0.05,
+      { opacity: 1, y: 0, duration: entry.duration, stagger: reducedMotion ? 0 : 0.08 },
+      entry.at,
     );
     if (!last) {
       master.to(beat.lines, { opacity: 0, duration: 0.14 }, t + 0.84);
@@ -313,6 +353,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   }
 
   let live: HTMLElement | undefined;
+  let liveTimer = 0;
   const status = (text: string): void => {
     if (!live) {
       live = document.createElement('p');
@@ -321,6 +362,10 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
       stage.append(live);
     }
     live.textContent = text;
+    // Read out at once; shown for a few seconds, then faded, the text kept.
+    live.setAttribute('data-shown', '');
+    window.clearTimeout(liveTimer);
+    liveTimer = window.setTimeout(() => live?.removeAttribute('data-shown'), 4000);
   };
 
   const note = (text: string): void => {
@@ -381,6 +426,8 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     status,
     note,
     progress: () => trigger.progress,
+    keep: keepKind,
+    kept: readKept,
   };
 
   window.__aliceDemo = {

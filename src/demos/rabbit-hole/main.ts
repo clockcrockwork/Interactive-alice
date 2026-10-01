@@ -392,6 +392,7 @@ function mount(shell: DemoShell): void {
     holding = true;
     shell.sound.play('paper');
     held.innerHTML = heldSvg(picked.kind, picked.color);
+    shell.keep(picked.kind === 'jar' ? 'jar' : 'book');
     const handBox = hand.getBoundingClientRect();
     gsap.fromTo(
       held,

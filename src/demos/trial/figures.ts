@@ -1,5 +1,18 @@
 /** Paper-theatre cutouts for the trial. Decorative SVG, drawn once. */
 
+/** What the reader kept along the way, come to rest on the bank at the end. */
+const KEEPSAKES: Record<string, string> = {
+  daisy: `<svg viewBox="0 0 60 60" focusable="false"><g fill="var(--paper-base)"><ellipse cx="30" cy="12" rx="6" ry="11"/><ellipse cx="30" cy="48" rx="6" ry="11"/><ellipse cx="12" cy="30" rx="11" ry="6"/><ellipse cx="48" cy="30" rx="11" ry="6"/><ellipse cx="17" cy="17" rx="8" ry="8"/><ellipse cx="43" cy="17" rx="8" ry="8"/><ellipse cx="17" cy="43" rx="8" ry="8"/><ellipse cx="43" cy="43" rx="8" ry="8"/></g><circle cx="30" cy="30" r="8" fill="var(--world-glow)"/><circle cx="30" cy="30" r="8" fill="none" stroke="var(--ink-faded)" stroke-width="1"/></svg>`,
+  jar: `<svg viewBox="0 0 60 60" focusable="false"><rect x="16" y="6" width="28" height="8" rx="2" fill="var(--sepia-dark)"/><rect x="12" y="14" width="36" height="42" rx="6" fill="var(--paper-aged)"/><rect x="15" y="22" width="30" height="30" rx="4" fill="color-mix(in oklab, var(--sepia-mid) 55%, var(--world-glow))"/><rect x="18" y="28" width="24" height="12" fill="var(--paper-base)"/><path d="M21 34 h18" stroke="var(--ink-secondary)" stroke-width="2"/></svg>`,
+  book: `<svg viewBox="0 0 60 60" focusable="false"><rect x="10" y="8" width="40" height="46" rx="3" fill="var(--sepia-dark)"/><rect x="14" y="12" width="32" height="38" fill="var(--paper-warm)"/><path d="M19 20 h22 M19 26 h22 M19 32 h16" stroke="var(--ink-ghost)" stroke-width="2"/><rect x="10" y="8" width="6" height="46" fill="var(--sepia-deep)"/></svg>`,
+  key: `<svg viewBox="0 0 60 60" focusable="false"><circle cx="18" cy="30" r="11" fill="none" stroke="var(--ix-gold)" stroke-width="6"/><path d="M29 30 h26 v8 h-6 v-4 h-5 v6 h-6 v-6 h-9 z" fill="var(--ix-gold)"/></svg>`,
+  comfit: `<svg viewBox="0 0 60 60" focusable="false"><circle cx="30" cy="30" r="14" fill="color-mix(in oklab, var(--ix-pink) 55%, var(--paper-warm))"/><circle cx="25" cy="25" r="4" fill="var(--paper-base)" opacity="0.7"/></svg>`,
+  rose: `<svg viewBox="0 0 60 60" focusable="false"><path d="M30 52 v-16" stroke="var(--world-leaf-deep)" stroke-width="3"/><ellipse cx="22" cy="44" rx="7" ry="3" fill="var(--world-leaf)" transform="rotate(-30 22 44)"/><circle cx="30" cy="26" r="13" fill="var(--wonder-red)"/><circle cx="30" cy="26" r="7" fill="var(--wonder-red-light)"/><circle cx="30" cy="26" r="3" fill="var(--wonder-red-dark)"/></svg>`,
+  lobster: `<svg viewBox="0 0 60 60" focusable="false"><ellipse cx="32" cy="32" rx="14" ry="9" fill="var(--wonder-red)"/><path d="M18 32 q-8 -10 -2 -16 M18 32 q-8 10 -2 16" stroke="var(--wonder-red)" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M46 32 q10 -2 12 6 M46 32 q10 2 12 -6" stroke="var(--wonder-red-dark)" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="24" cy="29" r="1.6" fill="var(--ink-primary)"/></svg>`,
+};
+
+export const keepsakeSvg = (kind: string): string => KEEPSAKES[kind] ?? '';
+
 export const TARTS_SVG = `
 <svg viewBox="0 0 260 140" focusable="false">
   <rect x="10" y="80" width="240" height="14" rx="4" fill="var(--sepia-dark)"/>

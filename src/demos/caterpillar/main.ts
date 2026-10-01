@@ -12,7 +12,14 @@
 
 import gsap from 'gsap';
 import { figure, svgFigure } from '../art/art.ts';
-import { attachDemo, type Beat, type DemoShell, mix, seeded } from '../shell/shell.ts';
+import {
+  attachDemo,
+  type Beat,
+  captionEntry,
+  type DemoShell,
+  mix,
+  seeded,
+} from '../shell/shell.ts';
 import './caterpillar.css';
 import { LEFT_BIT_SVG, RIGHT_BIT_SVG } from './figures.ts';
 
@@ -42,11 +49,18 @@ function smokeCaption(
     return false;
   }
   const t = beat.index;
+  const entry = captionEntry(reduced, t);
   master.fromTo(
     beat.lines,
     { opacity: 0, y: reduced ? 0 : 26, '--blur': reduced ? 0 : 10 },
-    { opacity: 1, y: 0, '--blur': 0, duration: 0.34, stagger: 0.1 },
-    t + 0.05,
+    {
+      opacity: 1,
+      y: 0,
+      '--blur': 0,
+      duration: reduced ? entry.duration : 0.34,
+      stagger: reduced ? 0 : 0.1,
+    },
+    entry.at,
   );
   if (!last) {
     master.to(beat.lines, { opacity: 0, y: reduced ? 0 : -20, duration: 0.14 }, t + 0.84);

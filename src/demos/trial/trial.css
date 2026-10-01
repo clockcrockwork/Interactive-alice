@@ -731,6 +731,26 @@
     color: var(--demo-ground);
   }
 
+  .tr__kept {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .tr__keepsake {
+    position: absolute;
+    inset-inline-start: calc(50% + (var(--i, 0) - (var(--n, 1) - 1) / 2) * 8vmin);
+    inset-block-end: 9%;
+    inline-size: clamp(2rem, 6vmin, 3.5rem);
+    translate: -50% 0;
+    rotate: calc((var(--i, 0) - 2) * 9deg);
+  }
+
+  .tr__keepsake svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
   .tr__children {
     opacity: 0;
     pointer-events: none;

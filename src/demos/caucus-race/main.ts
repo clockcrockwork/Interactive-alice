@@ -377,6 +377,7 @@ function mount(shell: DemoShell): void {
       );
     });
     if (fed) {
+      shell.keep('comfit');
       comfit.remove();
       shell.sound.play('chime', 0.6);
       fed.el.removeAttribute('data-spurt');

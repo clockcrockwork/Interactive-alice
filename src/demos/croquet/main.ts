@@ -108,6 +108,7 @@ function mount(shell: DemoShell): void {
     rose.setAttribute('aria-pressed', 'true');
     rose.style.setProperty('--drip', (0.4 + random() * 0.8).toFixed(2));
     if (byReader) {
+      shell.keep('rose');
       shell.sound.play('splash', 0.3);
       shell.status(shell.ui.demoPaintRose ?? '');
     }

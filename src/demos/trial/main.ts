@@ -14,7 +14,7 @@ import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, seeded } from '../shell/shell.ts';
 import type { OneShotCue } from '../shell/sound.ts';
-import { PIG_BABY_SVG, REAL_SVG, TARTS_SVG, TEACUPS_SVG } from './figures.ts';
+import { keepsakeSvg, PIG_BABY_SVG, REAL_SVG, TARTS_SVG, TEACUPS_SVG } from './figures.ts';
 import './trial.css';
 
 const SUITS = [
@@ -772,6 +772,12 @@ function mount(shell: DemoShell): void {
     });
   }
 
+  // The court's crowd, until the pack rises and the bank takes over.
+  const crowd = (): void => shell.sound.level('murmur', master.time() < iRise ? 0.3 : 0);
+  master.call(crowd, [], 0.01);
+  master.call(crowd, [], iRise);
+  crowd();
+
   // The after-time: other little children gather about her, and the summer days.
   const children = shell.layer('tr__children');
   children.innerHTML = [0, 1, 2]
@@ -785,6 +791,39 @@ function mount(shell: DemoShell): void {
     iAfter + 0.3,
   );
   master.call(() => leafFall.toggleAttribute('data-slow', master.time() >= iSummer), [], iSummer);
+
+  // What the reader kept along the way comes down with the leaves and lies on
+  // the bank beside her: the daisy chain, the jar, the key, a comfit, a rose,
+  // the lobster. Nothing kept, nothing shown.
+  const kept = shell.kept().filter((kind) => keepsakeSvg(kind) !== '');
+  if (kept.length > 0) {
+    const keptLayer = shell.layer('tr__kept');
+    keptLayer.innerHTML = kept
+      .map(
+        (kind, i) =>
+          `<div class="tr__keepsake" data-kind="${kind}" style="--i: ${i}; --n: ${kept.length}">${keepsakeSvg(kind)}</div>`,
+      )
+      .join('');
+    master.fromTo(
+      keptLayer,
+      { opacity: 0 },
+      { opacity: 1, duration: 0.2, immediateRender: false },
+      iSummer + 0.1,
+    );
+    master.fromTo(
+      keptLayer.querySelectorAll('.tr__keepsake'),
+      { y: '-60vh', rotation: -40 },
+      {
+        y: 0,
+        rotation: 0,
+        duration: reducedMotion ? 0.01 : 0.45,
+        stagger: reducedMotion ? 0 : 0.06,
+        ease: 'bounce.out',
+        immediateRender: false,
+      },
+      iSummer + 0.12,
+    );
+  }
 }
 
 const shell = attachDemo();

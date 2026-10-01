@@ -71,6 +71,8 @@ function mount(shell: DemoShell): void {
   const iAlone = cue('alone');
   const iFun = cue('fun');
   const iDistance = cue('distance');
+  // The sea, all along this shore.
+  shell.sound.level('waves', 0.3);
   const iSorrow = cue('sorrow');
   const iTears = cue('tears');
   const iSilence = cue('silence');

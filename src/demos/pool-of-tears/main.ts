@@ -269,6 +269,7 @@ function mount(shell: DemoShell): void {
   let tilt = 0;
   shell.onFrame((dt, elapsed) => {
     sea.tick(dt, elapsed);
+    shell.sound.level('waves', Math.max(0, Math.min(1, (state.level - 0.2) * 1.2)) * 0.5);
     if (alice.show > 0.5 && !reducedMotion) {
       const want = swimTarget === undefined ? 0 : swimTarget - alice.x;
       const before = alice.offset ?? 0;

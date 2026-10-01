@@ -198,6 +198,30 @@ hall or the chimney swallow the screen into a hole; the spiral, the pool and the
 whirl it; a court, a race or the index deal it like a card. A browser without the
 Navigation API simply navigates.
 
+**Keepsakes.** A thing the reader does by hand, rather than the story doing it,
+can be kept: `shell.keep(kind)` records it in the visitor's own browser, under the
+demos' key, and `shell.kept()` reads the list back on any later page. The daisy chain
+on the bank, the jar or book off a shelf in the well, the key off the glass table, a
+comfit fed to a runner, a rose painted red and the lobster thrown out to sea are kept
+this way, and at the very end of the trial, in the summer days, whatever was kept
+comes down with the leaves and lies on the bank beside her. Nothing kept, nothing
+shown; it is the reader's record of having played, not a score.
+
+**Status, bar and snapped beats.** The polite live region that announces what the
+reader did shows for a few seconds and then fades, keeping its text for assistive
+technology. On a phone the bar stays one row: smaller type, tighter buttons, the
+title kept for assistive technology only. Under reduced motion the page snaps to the
+head of a beat, so each beat's sentences are already there when it lands: their cut
+is placed just before the head rather than just after it.
+
+**Sound of the place.** Besides the one-shot cues, the synthesiser has continuous
+ones a demo levels from its timeline: `wind`, `purr` and `drip` as before, and now
+`river` (a bright band of noise with a bird now and then, on the bank), `waves` (low
+noise on a slow breath, on the pool once she is in the water and on the shore of the
+Mock Turtle and the quadrille), `bubble` (the cauldron, while the kitchen is on) and
+`murmur` (the court's crowd, until the pack rises). All of them are nothing until the
+visitor turns sound on, and are held while motion is paused.
+
 `window.__aliceDemo` is the test seam: progress, active beat, paused, reduced, and a
 per-demo `mode` (the rabbit hole reports `webgl` or `flat`).
 
@@ -857,7 +881,9 @@ last; the Caterpillar's meadow scales with her height and each bit of mushroom i
 button that changes it; the croquet roses are buttons that paint red, the gardeners
 can be hidden, a strike sends the hedgehog off and the Cat's grin comes first and goes
 last; the quadrille's lobster can be thrown, the sea somersaulted in and the dance
-joined; the sister's dream fills the bank and opening her eyes turns it into the farm;
+joined; the sister's dream fills the bank and opening her eyes turns it into the farm; what the reader
+kept by hand lies on the bank at the end and what the story did does not; the status
+line fades and keeps its text; a snapped beat shows its sentences;
 the kitchen's pig turns stage by stage and a poke advances it, the pots stick to the
 glass and *Duck!* clears them; the Mock Turtle's subjects on the sand are the words of
 his own sentences, the wave takes them and comforting him heaves the sea;

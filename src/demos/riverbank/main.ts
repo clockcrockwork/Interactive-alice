@@ -137,6 +137,7 @@ function mount(shell: DemoShell): void {
     }
     target.setAttribute('data-picked', '');
     picked += 1;
+    shell.keep('daisy');
     chain?.style.setProperty('--chain', String(picked));
     chain?.setAttribute('data-chain', String(picked));
     links[picked - 1]?.setAttribute('data-shown', '');
@@ -320,6 +321,11 @@ function mount(shell: DemoShell): void {
     );
   master.call(wind, [], iField + 0.05);
   master.call(wind, [], iField + 0.9);
+  // The river and its birds, until the run across the field leaves them behind.
+  const river = (): void => shell.sound.level('river', master.time() < iField + 0.3 ? 0.3 : 0);
+  master.call(river, [], 0.01);
+  master.call(river, [], iField + 0.3);
+  river();
 
   // --- Ambient: her sister reads on, nodding over the book.
   const sisterArt = bank.querySelector<HTMLElement>('.rb__sister .art');

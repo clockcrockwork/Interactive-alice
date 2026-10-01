@@ -332,6 +332,43 @@
     font-size: 0.85rem;
     color: var(--demo-ink-soft);
     pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--demo-calm) var(--demo-ease);
+  }
+
+  .demo__status[data-shown] {
+    opacity: 1;
+    transition-duration: var(--demo-quick);
+  }
+
+  /* A phone's bar stays one row: smaller type, tighter buttons, and the title
+     kept for assistive technology only. */
+  @media (max-width: 600px) {
+    .demo__bar {
+      gap: var(--space-1, 4px);
+      font-size: 0.72rem;
+    }
+
+    .demo__title {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .demo__back,
+    .demo__motion,
+    .demo__sound,
+    .demo__tilt {
+      padding: 0.3em 0.6em;
+      white-space: nowrap;
+    }
+
+    .demo__back {
+      margin-inline-end: auto;
+    }
   }
 
   .sr-only {
@@ -432,6 +469,7 @@
   @media (prefers-reduced-motion: reduce) {
     .demo__hint,
     .demo__prop,
+    .demo__status,
     .demo[data-attached] .demo__captions {
       transition: none;
     }

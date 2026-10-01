@@ -320,6 +320,13 @@ function mount(shell: DemoShell): void {
   };
   away(kitchen, iIn + 0.7, iKnot + 1.05);
   away(pepper, iIn + 0.85, iKnot + 0.85);
+  // The cauldron on the fire, as long as the kitchen is.
+  const potSound = (): void => {
+    const t = master.time();
+    shell.sound.level('bubble', t >= iIn + 0.7 && t < iKnot + 0.8 ? 0.35 : 0);
+  };
+  master.call(potSound, [], iIn + 0.7);
+  master.call(potSound, [], iKnot + 0.8);
   wink(iIn + 0.7);
   master.call(
     () => shell.root.toggleAttribute('data-inside', master.time() >= iIn + 0.8),

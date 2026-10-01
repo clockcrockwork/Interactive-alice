@@ -15,7 +15,14 @@
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { DANCERS } from '../art/vectors.ts';
-import { attachDemo, type Beat, type DemoShell, mix, seeded } from '../shell/shell.ts';
+import {
+  attachDemo,
+  type Beat,
+  captionEntry,
+  type DemoShell,
+  mix,
+  seeded,
+} from '../shell/shell.ts';
 import { COURT_DOORS, HANDS_WITH_LOBSTER, TUREEN_SVG } from './figures.ts';
 import './quadrille.css';
 import './shore.css';
@@ -40,11 +47,18 @@ function sungCaption(
     return false;
   }
   const t = beat.index;
+  const entry = captionEntry(reduced, t);
   master.fromTo(
     beat.lines,
     { opacity: 0, y: reduced ? 0 : 22, '--wave': reduced ? 0 : 1 },
-    { opacity: last ? 0.55 : 1, y: 0, '--wave': 0, duration: 0.36, stagger: 0.1 },
-    t + 0.05,
+    {
+      opacity: last ? 0.55 : 1,
+      y: 0,
+      '--wave': 0,
+      duration: reduced ? entry.duration : 0.36,
+      stagger: reduced ? 0 : 0.1,
+    },
+    entry.at,
   );
   if (!last) {
     master.to(beat.lines, { opacity: 0, duration: 0.14 }, t + 0.84);
@@ -71,6 +85,11 @@ function mount(shell: DemoShell): void {
   const iSoup = cue('soup');
   const iCry = cue('cry');
   const iRun = cue('run');
+  // The sea on the shingle, until the run along the shore.
+  const seaSound = (): void => shell.sound.level('waves', master.time() < iRun ? 0.3 : 0);
+  master.call(seaSound, [], 0.01);
+  master.call(seaSound, [], iRun);
+  seaSound();
   const iFaint = cue('faint');
   const random = seeded(10);
   const lite = matchMedia('(max-width: 700px)').matches;
@@ -236,11 +255,14 @@ function mount(shell: DemoShell): void {
   seaTap.setAttribute('aria-label', shell.ui.demoThrowLobster ?? '');
   shell.stage.append(seaTap);
   let thrownAway = false;
-  const throwLobster = (): void => {
+  const throwLobster = (byReader = false): void => {
     if (thrownAway) {
       return;
     }
     thrownAway = true;
+    if (byReader) {
+      shell.keep('lobster');
+    }
     throwButton.hide();
     delete seaTap.dataset.shown;
     shell.sound.play('whoosh', 0.8);
@@ -274,8 +296,8 @@ function mount(shell: DemoShell): void {
     // Everyone else throws theirs too.
     ring.setAttribute('data-thrown', '');
   };
-  throwButton.addEventListener('click', throwLobster);
-  seaTap.addEventListener('click', throwLobster);
+  throwButton.addEventListener('click', () => throwLobster(true));
+  seaTap.addEventListener('click', () => throwLobster(true));
   master.fromTo(
     hands,
     { y: 140 },

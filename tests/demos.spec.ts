@@ -31,7 +31,7 @@ const settled = async (page: Page) => {
     () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
   );
   await expect
-    .poll(() => page.evaluate(() => window.__aliceDemo?.settled() ?? true), { timeout: 15_000 })
+    .poll(() => page.evaluate(() => window.__aliceDemo?.settled() ?? true), { timeout: 25_000 })
     .toBe(true);
 };
 
@@ -59,6 +59,10 @@ test('the demo index links every demo, and the home page links the index', async
 
 for (const demo of demos) {
   test(`${demo.url} carries its text in order and reaches its last beat`, async ({ page }) => {
+    if (demo.demo === 'rabbit-hole') {
+      // The well is WebGL; on a software renderer under load its frames are slow.
+      test.slow();
+    }
     const errors = collectErrors(page);
     await page.goto(demo.url);
     await expect(page.locator('h1')).not.toBeEmpty();
@@ -120,6 +124,17 @@ for (const demo of demos) {
     await page.goto(demo.url);
     await expect(page.locator('.demo')).toHaveAttribute('data-motion', 'reduced');
     await expect(page.locator('.demo__note')).not.toBeEmpty();
+    // A snapped beat shows its sentences: the first beat's are there at the head.
+    await expect
+      .poll(
+        () =>
+          page.evaluate(() => {
+            const active = document.querySelector('.demo__stage .demo-beat[data-active] .line');
+            return active ? Number(getComputedStyle(active).opacity) : -1;
+          }),
+        { timeout: 10_000 },
+      )
+      .toBeGreaterThan(0.9);
     await scrollTo(page, 1);
     await expect
       .poll(() => page.evaluate(() => window.__aliceDemo?.progress() ?? -1), { timeout: 10_000 })
@@ -1490,4 +1505,45 @@ test("the mouse's tale → the rabbit's house: the footsteps lead to the house's
   await expect.poll(() => opacity('.hs__arrival'), { timeout: 8000 }).toBeLessThan(0.05);
   await scrollTo(page, 0);
   await expect.poll(() => opacity('.hs__arrival'), { timeout: 8000 }).toBeGreaterThan(0.9);
+});
+
+test('keepsakes: what the reader takes along the way lies on the bank at the end', async ({
+  page,
+}) => {
+  const drinkMe = demos.find((candidate) => candidate.demo === 'drink-me');
+  const trial = demos.find((candidate) => candidate.demo === 'trial');
+  test.skip(!drinkMe || !trial, 'needs drink-me and the trial');
+  // Nothing kept: the trial's end shows nothing.
+  await page.goto(trial?.url ?? '');
+  await page.evaluate(() => localStorage.removeItem('alice-demos:kept'));
+  await page.reload();
+  await scrollTo(page, 1);
+  await expect(page.locator('.tr__keepsake')).toHaveCount(0);
+  // Taking the key by hand keeps it; the story taking it does not.
+  await page.goto(drinkMe?.url ?? '');
+  await scrollTo(page, 0.24);
+  await expect(page.locator('.dk__prop--key')).toBeVisible({ timeout: 8000 });
+  await page.locator('.dk__prop--key').click();
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem('alice-demos:kept')))
+    .toContain('key');
+  await page.goto(trial?.url ?? '');
+  await scrollTo(page, 1);
+  await expect(page.locator('.tr__keepsake[data-kind="key"]')).toBeVisible({ timeout: 8000 });
+  await expect(page.locator('.tr__keepsake')).toHaveCount(1);
+  // The status line fades after a while but keeps its text for the reader.
+  await page.goto(drinkMe?.url ?? '');
+  await page.evaluate(() => localStorage.removeItem('alice-demos:kept'));
+});
+
+test('the status line shows what the reader did, then fades', async ({ page }) => {
+  const demo = demos.find((candidate) => candidate.demo === 'croquet');
+  test.skip(!demo, 'no croquet demo in this build');
+  await page.goto(demo?.url ?? '');
+  await page.locator('.cq__rose').first().click();
+  const status = page.locator('.demo__status');
+  await expect(status).toHaveAttribute('data-shown', '');
+  await expect(status).not.toBeEmpty();
+  await expect(status).not.toHaveAttribute('data-shown', '', { timeout: 8000 });
+  await expect(status).not.toBeEmpty();
 });

@@ -458,11 +458,14 @@ function mount(shell: DemoShell): void {
   hands.append(keyInHand);
   const keyButton = shell.prop(shell.ui.demoTakeKey ?? '', 'dk__prop dk__prop--key');
   let hasKey = false;
-  const takeKey = (): void => {
+  const takeKey = (byReader = false): void => {
     if (hasKey) {
       return;
     }
     hasKey = true;
+    if (byReader) {
+      shell.keep('key');
+    }
     keyButton.hide();
     gsap.to(keyOnTable, { opacity: 0, duration: 0.2 });
     gsap.fromTo(
@@ -471,8 +474,8 @@ function mount(shell: DemoShell): void {
       { opacity: 1, y: 0, rotation: -12, duration: reducedMotion ? 0 : 0.5, ease: 'power3.out' },
     );
   };
-  keyButton.addEventListener('click', takeKey);
-  keyOnTable?.addEventListener('click', takeKey);
+  keyButton.addEventListener('click', () => takeKey(true));
+  keyOnTable?.addEventListener('click', () => takeKey(true));
   master.call(
     () =>
       master.time() >= iKey && master.time() < iKey + 0.8 && !hasKey

@@ -4,12 +4,13 @@
  * anyway), silent while motion is paused, and every cue is a small recipe of
  * oscillators, noise and envelopes.
  *
- * Continuous cues (`wind`, `purr`, `drip`) are started once and levelled from a
- * frame loop; one-shot cues (`thud`, `paper`, `splash`, `chime`, `whoosh`, `glass`)
- * play when asked.
+ * Continuous cues (`wind`, `purr`, `drip`, and the places' own: `river`, `waves`,
+ * `bubble`, `murmur`) are started once and levelled from a frame loop or a cue;
+ * one-shot cues (`thud`, `paper`, `splash`, `chime`, `whoosh`, `glass`) play when
+ * asked.
  */
 
-export type ContinuousCue = 'wind' | 'purr' | 'drip';
+export type ContinuousCue = 'wind' | 'purr' | 'drip' | 'river' | 'waves' | 'bubble' | 'murmur';
 export type OneShotCue = 'thud' | 'paper' | 'splash' | 'chime' | 'whoosh' | 'glass';
 
 export interface DemoSound {
@@ -113,6 +114,101 @@ export function createSound(): DemoSound {
     };
     setTimeout(plink, 600);
 
+    // River: a bright band of noise, and now and then a bird over it.
+    const riverSource = context.createBufferSource();
+    riverSource.buffer = noise;
+    riverSource.loop = true;
+    const riverFilter = context.createBiquadFilter();
+    riverFilter.type = 'bandpass';
+    riverFilter.frequency.value = 1400;
+    riverFilter.Q.value = 0.7;
+    const riverGain = context.createGain();
+    riverGain.gain.value = 0;
+    riverSource.connect(riverFilter).connect(riverGain).connect(master);
+    riverSource.start();
+    continuous.set('river', { gain: riverGain, target: 0 });
+    const chirp = (): void => {
+      const entry = continuous.get('river');
+      if (context && entry && entry.target > 0.05 && !held) {
+        const osc = context.createOscillator();
+        osc.type = 'sine';
+        const now = context.currentTime;
+        const base = 2200 + Math.random() * 1200;
+        osc.frequency.setValueAtTime(base, now);
+        osc.frequency.linearRampToValueAtTime(base * 1.3, now + 0.08);
+        osc.frequency.linearRampToValueAtTime(base * 0.9, now + 0.18);
+        const env = context.createGain();
+        env.gain.setValueAtTime(0.0001, now);
+        env.gain.exponentialRampToValueAtTime(0.5, now + 0.03);
+        env.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+        osc.connect(env).connect(riverGain);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      }
+      setTimeout(chirp, 1800 + Math.random() * 4200);
+    };
+    setTimeout(chirp, 1200);
+
+    // Waves: low noise that swells and falls on a slow breath.
+    const wavesSource = context.createBufferSource();
+    wavesSource.buffer = noise;
+    wavesSource.loop = true;
+    const wavesFilter = context.createBiquadFilter();
+    wavesFilter.type = 'lowpass';
+    wavesFilter.frequency.value = 520;
+    const wavesGain = context.createGain();
+    wavesGain.gain.value = 0;
+    const breath = context.createGain();
+    breath.gain.value = 0.55;
+    const breathLfo = context.createOscillator();
+    breathLfo.frequency.value = 0.11;
+    const breathDepth = context.createGain();
+    breathDepth.gain.value = 0.45;
+    breathLfo.connect(breathDepth).connect(breath.gain);
+    wavesSource.connect(wavesFilter).connect(breath).connect(wavesGain).connect(master);
+    wavesSource.start();
+    breathLfo.start();
+    continuous.set('waves', { gain: wavesGain, target: 0 });
+
+    // Bubble: a pot on the fire, low plops at a quick irregular rate.
+    const bubbleGain = context.createGain();
+    bubbleGain.gain.value = 0;
+    bubbleGain.connect(master);
+    continuous.set('bubble', { gain: bubbleGain, target: 0 });
+    const plop = (): void => {
+      const entry = continuous.get('bubble');
+      if (context && entry && entry.target > 0.01 && !held) {
+        const osc = context.createOscillator();
+        osc.type = 'sine';
+        const now = context.currentTime;
+        const base = 160 + Math.random() * 180;
+        osc.frequency.setValueAtTime(base, now);
+        osc.frequency.exponentialRampToValueAtTime(base * 2.2, now + 0.09);
+        const env = context.createGain();
+        env.gain.setValueAtTime(0.4, now);
+        env.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+        osc.connect(env).connect(bubbleGain);
+        osc.start(now);
+        osc.stop(now + 0.14);
+      }
+      setTimeout(plop, 140 + Math.random() * 500);
+    };
+    setTimeout(plop, 500);
+
+    // Murmur: a crowd, a middle band of noise that wavers.
+    const murmurSource = context.createBufferSource();
+    murmurSource.buffer = noise;
+    murmurSource.loop = true;
+    const murmurFilter = context.createBiquadFilter();
+    murmurFilter.type = 'bandpass';
+    murmurFilter.frequency.value = 480;
+    murmurFilter.Q.value = 1.2;
+    const murmurGain = context.createGain();
+    murmurGain.gain.value = 0;
+    murmurSource.connect(murmurFilter).connect(murmurGain).connect(master);
+    murmurSource.start();
+    continuous.set('murmur', { gain: murmurGain, target: 0 });
+
     // Levels follow their targets smoothly, from one place.
     const follow = (): void => {
       if (!context) {
@@ -120,7 +216,8 @@ export function createSound(): DemoSound {
       }
       const now = context.currentTime;
       for (const [name, entry] of continuous) {
-        entry.gain.gain.setTargetAtTime(held ? 0 : entry.target, now, 0.15);
+        const waver = name === 'murmur' ? 0.55 + Math.random() * 0.45 : 1;
+        entry.gain.gain.setTargetAtTime(held ? 0 : entry.target * waver, now, 0.15);
         if (name === 'wind') {
           windFilter.frequency.setTargetAtTime(300 + entry.target * 1800, now, 0.2);
         }

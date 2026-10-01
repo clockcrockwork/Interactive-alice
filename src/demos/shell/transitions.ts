@@ -9,10 +9,13 @@
  */
 
 const KIND: Record<string, 'hole' | 'whirl' | 'cards'> = {
+  riverbank: 'hole',
   'rabbit-hole': 'hole',
   'drink-me': 'hole',
   'bill-the-lizard': 'hole',
   dormouse: 'whirl',
+  'tea-party': 'whirl',
+  'mouse-tale': 'whirl',
   'pool-of-tears': 'whirl',
   'cheshire-cat': 'whirl',
   caterpillar: 'whirl',

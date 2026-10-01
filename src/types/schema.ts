@@ -761,5 +761,17 @@ export interface LocaleUIStrings {
      * Button that makes one of the subject words writhe; tapping a word does the same.
      */
     demoUglify: string;
+    /**
+     * Technique note on the demo index card for the riverbank.
+     */
+    demoTechRiverbank: string;
+    /**
+     * Technique note on the demo index card for the Mouse's tale.
+     */
+    demoTechMouseTale: string;
+    /**
+     * Technique note on the demo index card for the tea-party.
+     */
+    demoTechTeaParty: string;
   };
 }

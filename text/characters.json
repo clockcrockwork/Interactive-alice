@@ -92,6 +92,10 @@
     {
       "id": "cook",
       "devLabel": "the cook"
+    },
+    {
+      "id": "lory",
+      "devLabel": "the Lory"
     }
   ]
 }

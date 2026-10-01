@@ -11,6 +11,18 @@
     },
     {
       "id": "prizes"
+    },
+    {
+      "id": "the-long-tale"
+    },
+    {
+      "id": "fury-and-the-mouse"
+    },
+    {
+      "id": "a-knot"
+    },
+    {
+      "id": "alone-again"
     }
   ],
   "segments": [
@@ -165,6 +177,198 @@
     {
       "id": "ch03.s0570",
       "section": "prizes",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0580",
+      "section": "the-long-tale",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0590",
+      "section": "the-long-tale",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0600",
+      "section": "the-long-tale",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0610",
+      "section": "the-long-tale",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0620",
+      "section": "the-long-tale",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0630",
+      "section": "the-long-tale",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0640",
+      "section": "the-long-tale",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0650",
+      "section": "the-long-tale",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0660",
+      "section": "fury-and-the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0670",
+      "section": "fury-and-the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0680",
+      "section": "fury-and-the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0690",
+      "section": "fury-and-the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0700",
+      "section": "fury-and-the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0710",
+      "section": "fury-and-the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0720",
+      "section": "fury-and-the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0730",
+      "section": "fury-and-the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0740",
+      "section": "a-knot",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0750",
+      "section": "a-knot",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0760",
+      "section": "a-knot",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0770",
+      "section": "a-knot",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0780",
+      "section": "a-knot",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0790",
+      "section": "a-knot",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0800",
+      "section": "a-knot",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0810",
+      "section": "a-knot",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0820",
+      "section": "alone-again",
+      "kind": "dialogue",
+      "speaker": "lory"
+    },
+    {
+      "id": "ch03.s0830",
+      "section": "alone-again",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0840",
+      "section": "alone-again",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0850",
+      "section": "alone-again",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0860",
+      "section": "alone-again",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0870",
+      "section": "alone-again",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0880",
+      "section": "alone-again",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0890",
+      "section": "alone-again",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0900",
+      "section": "alone-again",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0910",
+      "section": "alone-again",
       "kind": "narration"
     }
   ]

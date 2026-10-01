@@ -1,0 +1,212 @@
+{
+  "id": "tea-party",
+  "titleChapter": 7,
+  "shots": [
+    {
+      "id": "no-room",
+      "beats": [
+        {
+          "id": "a-table",
+          "cue": "table",
+          "segments": [
+            "ch07.s0010",
+            "ch07.s0015",
+            "ch07.s0020",
+            "ch07.s0025"
+          ]
+        },
+        {
+          "id": "no-room",
+          "cue": "no-room",
+          "segments": [
+            "ch07.s0030",
+            "ch07.s0035",
+            "ch07.s0040",
+            "ch07.s0045"
+          ]
+        },
+        {
+          "id": "wine",
+          "cue": "wine",
+          "segments": [
+            "ch07.s0050",
+            "ch07.s0055",
+            "ch07.s0060",
+            "ch07.s0065"
+          ]
+        },
+        {
+          "id": "civil",
+          "cue": "civil",
+          "segments": [
+            "ch07.s0070",
+            "ch07.s0075"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-riddle",
+      "beats": [
+        {
+          "id": "hair",
+          "cue": "hair",
+          "segments": [
+            "ch07.s0080",
+            "ch07.s0085",
+            "ch07.s0090"
+          ]
+        },
+        {
+          "id": "raven",
+          "cue": "raven",
+          "segments": [
+            "ch07.s0095",
+            "ch07.s0100"
+          ]
+        },
+        {
+          "id": "say-what-you-mean",
+          "cue": "mean",
+          "segments": [
+            "ch07.s0105",
+            "ch07.s0110",
+            "ch07.s0115"
+          ]
+        },
+        {
+          "id": "eat-what-i-see",
+          "cue": "see",
+          "segments": [
+            "ch07.s0120",
+            "ch07.s0125",
+            "ch07.s0130"
+          ]
+        },
+        {
+          "id": "silence",
+          "cue": "silence",
+          "segments": [
+            "ch07.s0135",
+            "ch07.s0140"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-watch",
+      "beats": [
+        {
+          "id": "the-watch",
+          "cue": "watch",
+          "segments": [
+            "ch07.s0145",
+            "ch07.s0150",
+            "ch07.s0155"
+          ]
+        },
+        {
+          "id": "butter",
+          "cue": "butter",
+          "segments": [
+            "ch07.s0160",
+            "ch07.s0165",
+            "ch07.s0170"
+          ]
+        },
+        {
+          "id": "tea",
+          "cue": "tea",
+          "segments": [
+            "ch07.s0175",
+            "ch07.s0180"
+          ]
+        },
+        {
+          "id": "funny-watch",
+          "cue": "funny",
+          "segments": [
+            "ch07.s0185",
+            "ch07.s0190",
+            "ch07.s0195",
+            "ch07.s0200"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "time-himself",
+      "beats": [
+        {
+          "id": "give-it-up",
+          "cue": "give-up",
+          "segments": [
+            "ch07.s0205",
+            "ch07.s0210",
+            "ch07.s0215",
+            "ch07.s0220",
+            "ch07.s0225"
+          ]
+        },
+        {
+          "id": "time-is-him",
+          "cue": "him",
+          "segments": [
+            "ch07.s0230",
+            "ch07.s0235",
+            "ch07.s0240",
+            "ch07.s0245"
+          ]
+        },
+        {
+          "id": "quarrelled",
+          "cue": "quarrel",
+          "segments": [
+            "ch07.s0250",
+            "ch07.s0255"
+          ]
+        },
+        {
+          "id": "twinkle",
+          "cue": "twinkle",
+          "segments": [
+            "ch07.s0260",
+            "ch07.s0265",
+            "ch07.s0270",
+            "ch07.s0275",
+            "ch07.s0280"
+          ]
+        },
+        {
+          "id": "murdering-the-time",
+          "cue": "murder",
+          "segments": [
+            "ch07.s0285",
+            "ch07.s0290",
+            "ch07.s0295"
+          ]
+        },
+        {
+          "id": "always-tea-time",
+          "cue": "tea-time",
+          "segments": [
+            "ch07.s0300",
+            "ch07.s0305",
+            "ch07.s0310",
+            "ch07.s0315",
+            "ch07.s0320"
+          ]
+        },
+        {
+          "id": "a-story",
+          "cue": "story",
+          "segments": [
+            "ch07.s0325",
+            "ch07.s0330",
+            "ch07.s0335"
+          ]
+        }
+      ]
+    }
+  ]
+}

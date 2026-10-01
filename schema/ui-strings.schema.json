@@ -101,7 +101,10 @@
         "demoPokeBaby",
         "demoComfort",
         "demoWash",
-        "demoUglify"
+        "demoUglify",
+        "demoTechRiverbank",
+        "demoTechMouseTale",
+        "demoTechTeaParty"
       ],
       "additionalProperties": false,
       "properties": {
@@ -509,6 +512,21 @@
           "type": "string",
           "minLength": 1,
           "description": "Button that makes one of the subject words writhe; tapping a word does the same."
+        },
+        "demoTechRiverbank": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the riverbank."
+        },
+        "demoTechMouseTale": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the Mouse's tale."
+        },
+        "demoTechTeaParty": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the tea-party."
         }
       }
     }

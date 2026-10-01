@@ -34,15 +34,18 @@ const ALICE_SCRIPT =
 
 /** Order the index lists them in, and the order "next scene" follows. */
 export const DEMO_ORDER = [
+  'riverbank',
   'rabbit-hole',
   'drink-me',
   'pool-of-tears',
   'caucus-race',
+  'mouse-tale',
   'rabbit-house',
   'bill-the-lizard',
   'caterpillar',
   'pig-and-pepper',
   'cheshire-cat',
+  'tea-party',
   'dormouse',
   'croquet',
   'mock-turtle',
@@ -299,6 +302,9 @@ const TECH_KEY = {
   trial: 'demoTechTrial',
   'pig-and-pepper': 'demoTechPig',
   'mock-turtle': 'demoTechMockTurtle',
+  riverbank: 'demoTechRiverbank',
+  'mouse-tale': 'demoTechMouseTale',
+  'tea-party': 'demoTechTeaParty',
 } as const;
 
 function renderIndex(project: DemoProject): string {

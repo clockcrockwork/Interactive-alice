@@ -311,6 +311,18 @@
     --dirt: 0;
   }
 
+  /* Once the party is moving round, a place can be tapped. */
+  .tp__scene[data-seating] .tp__place {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  /* A used place tapped: its cup wobbles. */
+  .tp__place[data-wobble] .tp__setting {
+    transform-origin: 30% 80%;
+    animation: tp-wobble 0.7s ease-out;
+  }
+
   .tp__teapot {
     --stand: 0.7;
     pointer-events: auto;
@@ -351,13 +363,29 @@
     z-index: -1;
   }
 
-  .tp__hatter .art {
+  /* The Hatter: he rises to sing (`--sing`); at a used place he turns his face
+     away and frowns (`--frown`), the brows and the mouth laid over the figure. */
+  .tp__hatter-turn {
+    position: relative;
     transform-origin: 50% 100%;
-    transform: translateY(calc(var(--sing, 0) * -10%)) rotate(calc(var(--sing, 0) * 6deg));
+    transform: translateY(calc(var(--sing, 0) * -10%)) rotate(calc(var(--sing, 0) * 6deg))
+      rotateY(calc(var(--frown, 0) * -34deg)) rotate(calc(var(--frown, 0) * -5deg));
+  }
+
+  .tp__frown {
+    position: absolute;
+    inset: 0;
+    opacity: var(--frown, 0);
+  }
+
+  .tp__brows {
+    transform-box: view-box;
+    transform-origin: 80px 94px;
+    transform: translateY(calc((1 - var(--frown, 0)) * -6px));
   }
 
   .tp__hatter-eyes ellipse {
-    ry: calc(5px + var(--wide, 0) * 5px);
+    ry: calc(5px + var(--wide, 0) * 5px - var(--frown, 0) * 2px);
   }
 
   .tp__hare .art {
@@ -798,12 +826,29 @@
   }
 
   /* --- Pause: every loop stops. */
+  .demo[data-paused] .tp__place[data-wobble] .tp__setting,
   .demo[data-paused] .tp__steam,
   .demo[data-paused] .tp__dormouse .dm__zzz,
   .demo[data-paused] .tp__watch-layer[data-buttered] .tp__crumbs rect,
   .demo[data-paused] .tp__watch-layer[data-rings] .tp__ring,
   .demo[data-paused] .tp__bat .rh__wing {
     animation-play-state: paused;
+  }
+
+  @keyframes tp-wobble {
+    0%,
+    100% {
+      transform: rotate(0);
+    }
+    20% {
+      transform: rotate(-7deg);
+    }
+    45% {
+      transform: rotate(5deg);
+    }
+    70% {
+      transform: rotate(-3deg);
+    }
   }
 
   @keyframes tp-steam {
@@ -863,13 +908,14 @@
     }
   }
 
-  /* --- Reduced motion: moving round and the clock are cuts (the script makes
-     them so); here the loops hold still, the crumbs are already on the watch,
-     the rings are drawn once, and the bat is at the top of its flight and only
-     fades in. */
+  /* --- Reduced motion: moving round, the Hatter's frown and the clock are cuts
+     (the script makes them so); here the loops hold still, the cup at a used
+     place does not wobble, the crumbs are already on the watch, the rings are
+     drawn once, and the bat is at the top of its flight and only fades in. */
   @media (prefers-reduced-motion: reduce) {
     .tp__steam,
     .tp__dormouse .dm__zzz,
+    .tp__place[data-wobble] .tp__setting,
     .tp__bat .rh__wing {
       animation: none;
     }

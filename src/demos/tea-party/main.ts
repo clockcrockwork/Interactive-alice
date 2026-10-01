@@ -10,7 +10,9 @@
  * one reused symbol; the figures stand on the table as billboards. Time is one
  * number (the hour) that the sun's place, the clock's hands and the dusk all
  * follow, and moving round is one number (the round) that the party's seat and
- * the dirty cups follow, so reverse scrolling reconstructs both.
+ * the dirty cups follow, so reverse scrolling reconstructs both. The places the
+ * reader has sat the party at stay used on top of that: the Hatter's own way
+ * round goes into a clean place, and a used one tapped makes him frown.
  */
 
 import gsap from 'gsap';
@@ -21,6 +23,7 @@ import {
   CUP_BACK_SVG,
   CUP_FRONT_SVG,
   DESK_SVG,
+  FROWN_SVG,
   HOUSE_SVG,
   KNIFE_SVG,
   RAVEN_SVG,
@@ -143,13 +146,20 @@ function mount(shell: DemoShell): void {
   for (let slot = 0; slot < SLOTS; slot += 1) {
     for (const side of [-1, 1]) {
       const el = piece('tp__place', SETTING_USE, side * 172, NEAR_Z - slot * SEAT, 150);
+      el.dataset.slot = String(slot);
       places.push({ el, slot });
     }
   }
   const pot = piece('tp__teapot', TEAPOT_SVG, 30, -330, 230);
   piece('tp__butter-dish', BUTTER_SVG, -40, -560, 120);
   // The party, crowded together at the far end. Their seat follows the round.
-  const hatter = piece('tp__party tp__hatter', figure('hatter'), -150, PARTY_Z + 20, 230);
+  const hatter = piece(
+    'tp__party tp__hatter',
+    `<div class="tp__hatter-turn">${figure('hatter')}${FROWN_SVG}</div>`,
+    -150,
+    PARTY_Z + 20,
+    230,
+  );
   const dormouse = piece('tp__party tp__dormouse', figure('dormouse'), 0, PARTY_Z - 10, 170);
   const hare = piece('tp__party tp__hare', figure('march-hare'), 150, PARTY_Z + 20, 230);
 
@@ -473,52 +483,111 @@ function mount(shell: DemoShell): void {
   );
 
   // --- Always tea-time: the things are never washed, and everyone moves round.
+  // The party sits at slot FAR - round. The places it has sat at are used: the
+  // story's by the round (so scrolling back cleans them), the reader's for good.
   const storyRounds = { n: 0, mess: 0 };
   const readerRounds = { n: 0 };
+  const satAt = new Set<number>();
+  const seatOf = (round: number): number => FAR - round;
+  const totalRound = (): number => clamp(storyRounds.n + readerRounds.n, 0, FAR - 1);
+  const isUsed = (slot: number): boolean =>
+    satAt.has(slot) || Math.round(totalRound()) + storyRounds.mess - (FAR - slot) >= 1;
   const applyRounds = (): void => {
-    const total = clamp(storyRounds.n + readerRounds.n, 0, FAR - 1);
+    const total = totalRound();
     scene.style.setProperty('--round', total.toFixed(3));
+    world.dataset.seat = String(seatOf(Math.round(total)));
     for (const place of places) {
-      const dirt = clamp(total + storyRounds.mess - (FAR - place.slot), 0, 1);
+      const dirt = Math.max(
+        clamp(total + storyRounds.mess - (FAR - place.slot), 0, 1),
+        satAt.has(place.slot) ? 1 : 0,
+      );
       place.el.style.setProperty('--dirt', dirt.toFixed(2));
+      place.el.toggleAttribute('data-used', isUsed(place.slot));
     }
   };
   applyRounds();
   move(iTeaTime, { pitch: 22, y: 260 }, 0.6);
-  master.to(storyRounds, { mess: 2, duration: d(0.3), onUpdate: applyRounds }, iTeaTime + 0.05);
+  master.to(storyRounds, { mess: 1, duration: d(0.3), onUpdate: applyRounds }, iTeaTime + 0.05);
   master.to(
     storyRounds,
     { n: 1, duration: d(0.5), ease: 'power2.inOut', onUpdate: applyRounds },
     iTeaTime + 0.5,
   );
-  const roundButton = shell.prop(shell.ui.demoMoveRound ?? '', 'tp__prop-round');
-  const moveRound = (): void => {
-    if (storyRounds.n + readerRounds.n >= FAR - 1.01) {
-      return;
-    }
+  const seating = (): boolean => master.time() >= iTeaTime + 0.6;
+  /** Sits the party at a round: the reader's number is whatever makes the sum. */
+  const goRound = (round: number): void => {
+    satAt.add(seatOf(Math.round(totalRound())));
+    satAt.add(seatOf(round));
     gsap.to(readerRounds, {
-      n: Math.round(readerRounds.n) + 1,
+      n: round - Math.round(storyRounds.n),
       duration: d(0.6),
       ease: 'power2.inOut',
       onUpdate: applyRounds,
       overwrite: 'auto',
     });
-    shell.sound.play('glass', 0.4);
-    shell.status(shell.ui.demoMoveRound ?? '');
+  };
+  // The Hatter's way: the next clean place toward Alice, and never her end.
+  const roundButton = shell.prop(shell.ui.demoMoveRound ?? '', 'tp__prop-round');
+  const moveRound = (): void => {
+    for (let round = Math.round(totalRound()) + 1; round <= FAR - 1; round += 1) {
+      if (!isUsed(seatOf(round))) {
+        goRound(round);
+        shell.sound.play('glass', 0.4);
+        shell.status(shell.ui.demoMoveRound ?? '');
+        return;
+      }
+    }
   };
   roundButton.addEventListener('click', moveRound);
   propBetween(roundButton, iTeaTime + 0.6, end);
+  master.call(() => scene.toggleAttribute('data-seating', seating()), [], iTeaTime + 0.6);
   // Or drag along the table.
   let dragY: number | undefined;
   shell.stage.addEventListener('pointerdown', (event) => {
     dragY = event.clientY;
   });
   window.addEventListener('pointerup', (event) => {
-    if (dragY !== undefined && event.clientY - dragY > 60 && master.time() >= iTeaTime + 0.6) {
+    if (dragY !== undefined && event.clientY - dragY > 60 && seating()) {
       moveRound();
     }
     dragY = undefined;
   });
+  // Or tap a place. A used one is sat at anyway, and the Hatter frowns at it.
+  const mood = { frown: 0 };
+  const applyMood = (): void => {
+    hatter.style.setProperty('--frown', mood.frown.toFixed(3));
+  };
+  let frowning: gsap.core.Timeline | undefined;
+  const frown = (place: HTMLElement): void => {
+    frowning?.kill();
+    frowning = gsap
+      .timeline({ onUpdate: applyMood, onComplete: applyMood })
+      .to(mood, { frown: 1, duration: d(0.25), ease: 'power2.out' })
+      .to(mood, { frown: 0, duration: d(0.4), ease: 'power2.inOut' }, '+=1.4');
+    if (!reducedMotion) {
+      place.setAttribute('data-wobble', '');
+    }
+    shell.sound.play('glass', 0.5);
+    shell.status(shell.ui.demoDirtySeat ?? '');
+  };
+  const tapPlace = (place: { el: HTMLElement; slot: number }): void => {
+    if (!seating()) {
+      return;
+    }
+    const round = clamp(FAR - place.slot, 0, FAR - 1);
+    const used = isUsed(seatOf(round));
+    goRound(round);
+    if (used) {
+      frown(place.el);
+    } else {
+      shell.sound.play('glass', 0.4);
+      shell.status(shell.ui.demoMoveRound ?? '');
+    }
+  };
+  for (const place of places) {
+    place.el.addEventListener('click', () => tapPlace(place));
+    place.el.addEventListener('animationend', () => place.el.removeAttribute('data-wobble'));
+  }
 
   // --- Then the Dormouse shall: the camera turns to it, and down into its cup.
   const joinLayer = shell.layer('tp__join');
@@ -526,8 +595,7 @@ function mount(shell: DemoShell): void {
   between(joinLayer, iStory + 0.5, end);
   // Where the party sits when the turn begins, so it lands on the Dormouse
   // wherever the reader has moved it to.
-  const partyZ = (): number =>
-    PARTY_Z + clamp(storyRounds.n + readerRounds.n, 0, FAR - 1) * SEAT + 420;
+  const partyZ = (): number => PARTY_Z + totalRound() * SEAT + 420;
   move(iStory + 0.05, { z: partyZ, pitch: 26, y: 220, yaw: 0 }, 0.5);
   master.fromTo(
     joinLayer,

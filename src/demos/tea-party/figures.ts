@@ -34,6 +34,19 @@ export const SETTING_SYMBOL = `
 
 export const SETTING_USE = `<svg class="tp__setting" viewBox="0 0 160 120" focusable="false"><use href="#tp-setting"/></svg>`;
 
+/** The Hatter's frown, laid over his face in the figure's own box: brows that
+    come down and a mouth that turns, shown by `--frown`. */
+export const FROWN_SVG = `
+<svg class="tp__frown" viewBox="0 0 160 260" focusable="false" aria-hidden="true">
+  <g class="tp__brows">
+    <path d="M52 90 l22 7 M108 90 l-22 7" stroke="var(--ink-primary)" stroke-width="4" fill="none" stroke-linecap="round"/>
+  </g>
+  <g class="tp__mouth">
+    <ellipse cx="80" cy="119" rx="14" ry="5" fill="var(--paper-warm)"/>
+    <path d="M70 122 q10 -7 20 0" stroke="var(--ink-secondary)" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>`;
+
 /** The teapot nearest Alice: its lid lifts (`--lid`) and there is nothing but tea. */
 export const TEAPOT_SVG = `
 <svg viewBox="0 0 200 150" focusable="false">

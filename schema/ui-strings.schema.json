@@ -31,6 +31,20 @@
         "demoPause",
         "demoResume",
         "demoAuto",
+        "demoLookMap",
+        "demoLookAway",
+        "demoPeekCurtain",
+        "demoLeanLeft",
+        "demoLeanRight",
+        "demoPuffHold",
+        "demoVanishTail",
+        "demoVanishHead",
+        "demoDirtySeat",
+        "demoStrokeFlamingo",
+        "demoFlamingoSulks",
+        "demoDodgeLeft",
+        "demoDodgeRight",
+        "demoDodged",
         "demoScrollHint",
         "demoTechRabbitHole",
         "demoTechDormouse",
@@ -159,6 +173,76 @@
           "type": "string",
           "minLength": 1,
           "description": "Label of the motion toggle while ambient motion is playing."
+        },
+        "demoLookMap": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Rabbit hole: a button to look closely at a map on the well wall while falling."
+        },
+        "demoLookAway": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Rabbit hole: close the map and look down the well again."
+        },
+        "demoPeekCurtain": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Drink Me: a button to lift the low curtain before the little door is found."
+        },
+        "demoLeanLeft": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Pool of tears: tilt the water to the left (the button form of tilting the phone)."
+        },
+        "demoLeanRight": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Pool of tears: tilt the water to the right."
+        },
+        "demoPuffHold": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Caterpillar: hint that holding the puff button blows a bigger smoke ring."
+        },
+        "demoVanishTail": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Cheshire Cat: the reader chooses the Cat goes tail first; the grin always last."
+        },
+        "demoVanishHead": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Cheshire Cat: the reader chooses the Cat goes head first; the grin always last."
+        },
+        "demoDirtySeat": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Tea-party: status when the reader moves round into a used place."
+        },
+        "demoStrokeFlamingo": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Croquet: a button to settle the flamingo before it sulks and twists away."
+        },
+        "demoFlamingoSulks": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Croquet: status when the flamingo has been left alone too long."
+        },
+        "demoDodgeLeft": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Trial: lean out of the way of the flying cards, to the left."
+        },
+        "demoDodgeRight": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Trial: lean out of the way of the flying cards, to the right."
+        },
+        "demoDodged": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Trial: status when a card misses her."
         },
         "demoAuto": {
           "type": "string",

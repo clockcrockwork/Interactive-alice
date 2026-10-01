@@ -470,6 +470,62 @@ export interface LocaleUIStrings {
      */
     demoPause: string;
     /**
+     * Rabbit hole: a button to look closely at a map on the well wall while falling.
+     */
+    demoLookMap: string;
+    /**
+     * Rabbit hole: close the map and look down the well again.
+     */
+    demoLookAway: string;
+    /**
+     * Drink Me: a button to lift the low curtain before the little door is found.
+     */
+    demoPeekCurtain: string;
+    /**
+     * Pool of tears: tilt the water to the left (the button form of tilting the phone).
+     */
+    demoLeanLeft: string;
+    /**
+     * Pool of tears: tilt the water to the right.
+     */
+    demoLeanRight: string;
+    /**
+     * Caterpillar: hint that holding the puff button blows a bigger smoke ring.
+     */
+    demoPuffHold: string;
+    /**
+     * Cheshire Cat: the reader chooses the Cat goes tail first; the grin always last.
+     */
+    demoVanishTail: string;
+    /**
+     * Cheshire Cat: the reader chooses the Cat goes head first; the grin always last.
+     */
+    demoVanishHead: string;
+    /**
+     * Tea-party: status when the reader moves round into a used place.
+     */
+    demoDirtySeat: string;
+    /**
+     * Croquet: a button to settle the flamingo before it sulks and twists away.
+     */
+    demoStrokeFlamingo: string;
+    /**
+     * Croquet: status when the flamingo has been left alone too long.
+     */
+    demoFlamingoSulks: string;
+    /**
+     * Trial: lean out of the way of the flying cards, to the left.
+     */
+    demoDodgeLeft: string;
+    /**
+     * Trial: lean out of the way of the flying cards, to the right.
+     */
+    demoDodgeRight: string;
+    /**
+     * Trial: status when a card misses her.
+     */
+    demoDodged: string;
+    /**
      * Toggle at the end of a demo: when on, the page goes to the next scene by itself after a pause at the end.
      */
     demoAuto: string;

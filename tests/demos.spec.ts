@@ -1,46 +1,5 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
-import { expect, type Page, test } from '@playwright/test';
-import type { DemoPageEntry } from '../build/demos.ts';
-
-/** The demo pages the build generated; run `npm run build` first. */
-function demoPages(): DemoPageEntry[] {
-  const file = join(import.meta.dirname, '..', 'src', 'generated', 'demos-manifest.json');
-  try {
-    return (JSON.parse(readFileSync(file, 'utf8')) as { pages: DemoPageEntry[] }).pages;
-  } catch {
-    throw new Error(`no demo manifest at ${file}; run npm run build first`);
-  }
-}
-
-const pages = demoPages();
-const demos = pages.filter((page) => page.kind === 'demo');
-
-const collectErrors = (page: Page): string[] => {
-  const errors: string[] = [];
-  page.on('console', (message) => message.type() === 'error' && errors.push(message.text()));
-  page.on('pageerror', (error) => errors.push(error.message));
-  page.on('requestfailed', (request) => errors.push(`${request.method()} ${request.url()} failed`));
-  return errors;
-};
-
-/** Waits until the scrubbed timeline has caught up with the scroll. */
-const settled = async (page: Page) => {
-  // The scroll event reaches ScrollTrigger on the next frame; let it.
-  await page.evaluate(
-    () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
-  );
-  await expect
-    .poll(() => page.evaluate(() => window.__aliceDemo?.settled() ?? true), { timeout: 25_000 })
-    .toBe(true);
-};
-
-const scrollTo = async (page: Page, fraction: number) => {
-  await page.evaluate((f) => {
-    window.scrollTo(0, (document.documentElement.scrollHeight - window.innerHeight) * f);
-  }, fraction);
-  await settled(page);
-};
+import { expect, test } from '@playwright/test';
+import { atCue, collectErrors, customProperty, demos, scrollTo, settled } from './demo-helpers.ts';
 
 test('the demo index links every demo, and the home page links the index', async ({ page }) => {
   const errors = collectErrors(page);
@@ -570,29 +529,6 @@ test('the rabbit hole: a tap on a passing shelf takes something into her hand', 
 });
 
 /** Scrolls a demo page to a fraction of the way through the beat carrying a cue. */
-const atCue = async (page: Page, cue: string, within = 0.5) => {
-  await page.evaluate(
-    ([name, fraction]) => {
-      const beats = [...document.querySelectorAll<HTMLElement>('.demo__stage .demo-beat')];
-      const index = beats.findIndex((beat) => beat.dataset.cue === name);
-      window.scrollTo(
-        0,
-        (document.documentElement.scrollHeight - window.innerHeight) *
-          ((index + Number(fraction)) / beats.length),
-      );
-    },
-    [cue, within] as const,
-  );
-  await settled(page);
-};
-
-const customProperty = (page: Page, selector: string, property: string) =>
-  page.evaluate(
-    ([sel, prop]) =>
-      Number(getComputedStyle(document.querySelector(sel) as Element).getPropertyValue(prop)),
-    [selector, property] as const,
-  );
-
 test('the caterpillar: the meadow scales with her height, and the tree tops take over above it', async ({
   page,
 }) => {

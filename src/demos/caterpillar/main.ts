@@ -152,29 +152,129 @@ function mount(shell: DemoShell): void {
   const shoulders = treetops.querySelector<SVGGElement>('.ct__shoulders');
   const leafGroup = treetops.querySelector<SVGGElement>('.ct__leaves');
 
-  // --- Smoke: rings that leave the hookah and drift up toward the reader.
+  // --- Smoke: rings that leave the hookah and drift up toward the reader. A
+  // ring's strength (0..1) sets its size, its pace and how long it lasts: the
+  // story's own puffs are small; the reader's grow with how long the puff is held.
   const smoke = shell.layer('ct__smoke');
-  const puff = (strength = 1): void => {
+  smoke.style.setProperty('--strength', '0');
+  const ember = document.createElement('span');
+  ember.className = 'ct__ember';
+  caterpillar?.append(ember);
+  const puff = (strength = 0.15): void => {
+    const s = Math.max(0, Math.min(1, strength));
     const ring = document.createElement('div');
     ring.className = 'ct__ring';
+    ring.innerHTML = '<span class="ct__ring-body"></span>';
     const stage = shell.stage.getBoundingClientRect();
     const head = caterpillar?.getBoundingClientRect();
     if (head) {
       ring.style.setProperty('--rx', (head.left + head.width * 0.98 - stage.left).toFixed(0));
       ring.style.setProperty('--ry', (head.top + head.height * 0.5 - stage.top).toFixed(0));
     }
-    ring.style.setProperty('--drift', ((random() - 0.5) * 30).toFixed(1));
-    ring.style.setProperty('--size', (3 + strength * 3 + random() * 2).toFixed(1));
+    const seconds = 4 + s * 4;
+    ring.style.setProperty('--drift', ((random() - 0.5) * 30 * (1 - s * 0.6)).toFixed(1));
+    ring.style.setProperty('--size', (6 + s * 9 + random() * 2).toFixed(1));
+    ring.style.setProperty('--strength', s.toFixed(3));
+    ring.style.setProperty('--seconds', seconds.toFixed(2));
+    smoke.style.setProperty('--strength', s.toFixed(3));
     smoke.append(ring);
     if (reducedMotion) {
       ring.dataset.still = '';
     }
-    setTimeout(() => ring.remove(), 4200);
+    setTimeout(() => ring.remove(), seconds * 1000 + 200);
+  };
+
+  // --- The strength of a puff: holding the button (or the Caterpillar) charges
+  // it for up to a second and a half; the hookah glows and the body swells.
+  const HOLD_MS = 1500;
+  const charge = { v: 0 };
+  const applyCharge = (): void => {
+    caterpillar?.style.setProperty('--charge', charge.v.toFixed(3));
+  };
+  let heldSince: number | undefined;
+  let chargeTween: gsap.core.Tween | undefined;
+  const beginCharge = (): void => {
+    if (heldSince !== undefined) {
+      return;
+    }
+    heldSince = performance.now();
+    chargeTween?.kill();
+    if (reducedMotion) {
+      charge.v = 1;
+      applyCharge();
+      return;
+    }
+    chargeTween = gsap.to(charge, {
+      v: 1,
+      duration: HOLD_MS / 1000,
+      ease: 'none',
+      onUpdate: applyCharge,
+    });
+  };
+  const endCharge = (blow: boolean): void => {
+    if (heldSince === undefined) {
+      return;
+    }
+    const held = performance.now() - heldSince;
+    heldSince = undefined;
+    chargeTween?.kill();
+    if (reducedMotion) {
+      charge.v = 0;
+      applyCharge();
+    } else {
+      chargeTween = gsap.to(charge, { v: 0, duration: 0.25, onUpdate: applyCharge });
+    }
+    if (!blow) {
+      return;
+    }
+    const strength = Math.min(1, held / HOLD_MS);
+    puff(strength);
+    shell.sound.play('whoosh', 0.3 + strength * 0.7);
+  };
+  const holdable = (el: HTMLElement): void => {
+    el.addEventListener('pointerdown', (event) => {
+      if (event.button !== 0) {
+        return;
+      }
+      event.preventDefault();
+      el.setPointerCapture(event.pointerId);
+      beginCharge();
+    });
+    el.addEventListener('pointerup', () => endCharge(true));
+    el.addEventListener('pointercancel', () => endCharge(false));
+    el.addEventListener('contextmenu', (event) => event.preventDefault());
+    // Keyboard: Space or Enter held charges the same way; a repeat is not a new press.
+    el.addEventListener('keydown', (event) => {
+      if (event.key !== ' ' && event.key !== 'Enter') {
+        return;
+      }
+      event.preventDefault();
+      if (!event.repeat) {
+        beginCharge();
+      }
+    });
+    el.addEventListener('keyup', (event) => {
+      if (event.key === ' ' || event.key === 'Enter') {
+        event.preventDefault();
+        endCharge(true);
+      }
+    });
+    el.addEventListener('blur', () => endCharge(false));
+    // A click with no press behind it (assistive technology): a tap.
+    el.addEventListener('click', (event) => {
+      if (event.detail === 0 && heldSince === undefined) {
+        puff(0);
+        shell.sound.play('whoosh', 0.3);
+      }
+    });
   };
   const puffButton = shell.prop(shell.ui.demoPuff ?? '', 'ct__prop ct__prop--puff');
-  puffButton.addEventListener('click', () => puff(1.5));
-  caterpillar?.addEventListener('click', () => puff(1.5));
+  holdable(puffButton);
+  if (caterpillar) {
+    holdable(caterpillar);
+  }
   puffButton.show();
+  shell.status(shell.ui.demoPuffHold ?? '');
   // The story's own puffs: one per line the Caterpillar says, while it is on the mushroom.
   for (const beat of shell.spokenBy('caterpillar')) {
     if (beat.index > iCrawl) {
@@ -195,7 +295,7 @@ function mount(shell: DemoShell): void {
   master.call(
     () => {
       if (master.time() >= iPuff + 0.1 && master.time() < iPuff + 0.9) {
-        puff(0.6);
+        puff(0.3);
       }
     },
     [],
@@ -250,7 +350,12 @@ function mount(shell: DemoShell): void {
       master.fromTo(size, { h: from }, { ...vars, immediateRender: false }, at);
     }
     if (reducedMotion) {
-      master.fromTo(flash, { opacity: 0.6 }, { opacity: 0, duration: 0.2 }, at);
+      master.fromTo(
+        flash,
+        { opacity: 0.6 },
+        { opacity: 0, duration: 0.2, immediateRender: false },
+        at,
+      );
     }
   };
   const tilt = (at: number, pitch: number, duration = 0.8): void => {

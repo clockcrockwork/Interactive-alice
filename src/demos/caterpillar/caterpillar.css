@@ -25,6 +25,9 @@
     /* The blink at a change of size: paper with a lilac leak, the guide's
        colour for a change of size, gone with the blink. */
     --ct-flash: color-mix(in oklch, var(--paper-base), var(--ix-lilac) 45%);
+    /* The hookah's coal while a puff is held: the world's glow, gold at full. */
+    --ct-ember: var(--world-glow);
+    --ct-ember-hot: var(--ix-gold);
   }
 }
 
@@ -144,6 +147,7 @@
   }
 
   .ct__caterpillar {
+    --charge: 0;
     position: absolute;
     inset-inline-start: 24%;
     inset-block-start: -18%;
@@ -151,6 +155,36 @@
     transform-origin: 50% 100%;
     pointer-events: auto;
     cursor: pointer;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  /* Drawing in: the body swells with the charge (a step under reduced motion). */
+  .ct__caterpillar > .art {
+    display: block;
+    transform-origin: 50% 100%;
+    transform: scale(calc(1 + var(--charge) * 0.07), calc(1 + var(--charge) * 0.1));
+  }
+
+  /* The hookah's coal: dark at rest, glowing the longer the puff is held. */
+  .ct__ember {
+    position: absolute;
+    inset-inline-start: 101%;
+    inset-block-start: 47%;
+    inline-size: 22%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      var(--ct-ember-hot) 0 18%,
+      var(--ct-ember) 40%,
+      transparent 70%
+    );
+    opacity: calc(var(--charge) * 0.9);
+    transform: translate(-50%, -50%) scale(calc(0.6 + var(--charge) * 0.8));
+    pointer-events: none;
   }
 
   .ct__body {
@@ -158,26 +192,42 @@
     transform-origin: 50% 100%;
   }
 
-  /* Smoke rings from the hookah, drifting up toward the reader. */
+  /* Smoke rings from the hookah, drifting up toward the reader. Strength (0..1,
+     from the demo) sets how far it drifts, how big it grows and how long it lasts;
+     a strong ring hangs low over her and wobbles. */
   .ct__ring {
     --rx: 700;
     --ry: 250;
+    --strength: 0;
+    --seconds: 4;
+    --rise: calc(46 - var(--strength) * 22);
+    --grow: calc(3.2 + var(--strength) * 2.2);
     position: absolute;
     inset-inline-start: calc(var(--rx) * 1px);
     inset-block-start: calc(var(--ry) * 1px);
     inline-size: calc(var(--size) * 1vmin);
     aspect-ratio: 1;
     margin: calc(var(--size) * -0.5vmin);
+    animation: ct-ring calc(var(--seconds) * 1s) ease-out forwards;
+  }
+
+  .ct__ring-body {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
     border: 0.7vmin solid var(--ct-smoke);
     border-radius: 50%;
     filter: blur(0.6px);
-    animation: ct-ring 4s ease-out forwards;
+    animation: ct-wobble calc(1.6s + var(--strength) * 0.6s) ease-in-out infinite alternate;
   }
 
   .ct__ring[data-still] {
+    animation: ct-ring-still calc(var(--seconds) * 1s) linear forwards;
+    transform: translate(calc(var(--drift) * 1vmin), -20vh) scale(var(--grow));
+  }
+
+  .ct__ring[data-still] .ct__ring-body {
     animation: none;
-    opacity: 0.6;
-    transform: translate(calc(var(--drift) * 1vmin), -20vh) scale(2.2);
   }
 
   /* Above the trees: sky, a sea of leaves, and the neck. */
@@ -387,13 +437,18 @@
     opacity: 0.85;
   }
 
+  /* Under the status line, which is where the hold hint shows. */
   .ct__prop--puff {
     inset-inline-start: 50%;
-    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    inset-block-start: calc(var(--demo-bar-height) + 3.4rem);
     translate: -50% 0;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
   }
 
   .demo[data-paused] .ct__ring,
+  .demo[data-paused] .ct__ring-body,
   .demo[data-paused] .ct__body,
   .demo[data-paused] .ct__wing {
     animation-play-state: paused;
@@ -407,7 +462,29 @@
 
     to {
       opacity: 0;
-      transform: translate(calc(var(--drift) * 1vmin), -46vh) scale(3.2);
+      transform: translate(calc(var(--drift) * 1vmin), calc(var(--rise) * -1vh)) scale(var(--grow));
+    }
+  }
+
+  @keyframes ct-ring-still {
+    from {
+      opacity: 0.7;
+    }
+
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes ct-wobble {
+    from {
+      transform: rotate(calc(var(--strength) * -6deg))
+        scale(calc(1 + var(--strength) * 0.1), calc(1 - var(--strength) * 0.08));
+    }
+
+    to {
+      transform: rotate(calc(var(--strength) * 6deg))
+        scale(calc(1 - var(--strength) * 0.08), calc(1 + var(--strength) * 0.1));
     }
   }
 
@@ -467,9 +544,12 @@
     }
 
     .ct__ring {
+      animation: ct-ring-still calc(var(--seconds) * 1s) linear forwards;
+      transform: translate(calc(var(--drift) * 1vmin), -20vh) scale(var(--grow));
+    }
+
+    .ct__ring-body {
       animation: none;
-      opacity: 0.6;
-      transform: translate(calc(var(--drift) * 1vmin), -20vh) scale(2.2);
     }
 
     .ct__bit,

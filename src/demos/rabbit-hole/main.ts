@@ -4,14 +4,14 @@
  * The parallax here is the fall itself. A WebGL well runs the length of the
  * scroll, the camera descends through it, and the story's sentences rise out of
  * the depth, pass the reader and vanish overhead. Around the well, DOM layers carry
- * Alice, the jar she takes from a shelf, the bats she wonders about, Dinah in the
- * dream, and the ground that finally arrives.
+ * Alice, the jar she takes from a shelf, a map off the wall she may look at, the
+ * bats she wonders about, Dinah in the dream, and the ground that finally arrives.
  */
 
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { attachDemo, type Beat, type DemoShell, mix } from '../shell/shell.ts';
-import { heldSvg, JAR_SVG } from './figures.ts';
+import { heldSvg, JAR_SVG, MAP_SVG } from './figures.ts';
 import './rabbit-hole.css';
 import { createWell, type Well } from './well.ts';
 
@@ -80,6 +80,8 @@ function mount(shell: DemoShell): void {
   bats.innerHTML = [0.22, 0.4, 0.58]
     .map((y) => `<div class="rh__bat" style="--bat-y: ${y * 100}%">${figure('bat')}</div>`)
     .join('');
+  const mapLayer = shell.layer('rh__map');
+  mapLayer.innerHTML = `<div class="rh__map-sheet">${MAP_SVG}</div>`;
   const flash = shell.layer('rh__flash');
   const dark = shell.layer('rh__dark');
 
@@ -365,6 +367,58 @@ function mount(shell: DemoShell): void {
     iEnd + 0.45,
   );
 
+  // --- A map on the wall can be looked at while the shelves pass: it comes close
+  // and holds still in front while the fall goes on behind it. The window runs
+  // from the sentence that hangs the maps on their pegs to the end of the cupboard
+  // beat, and the timeline closes it on leaving the window in either direction.
+  const mapSheet = mapLayer.querySelector<HTMLElement>('.rh__map-sheet');
+  const mapFrom = iJar - 0.6;
+  const mapTo = iJar + 2;
+  const lookButton = shell.prop(shell.ui.demoLookMap ?? '', 'rh__prop-map');
+  const awayButton = shell.prop(shell.ui.demoLookAway ?? '', 'rh__prop-away');
+  let mapOpen = false;
+  const inMapBeats = (): boolean => master.time() >= mapFrom && master.time() < mapTo;
+  const mapButtons = (): void => {
+    const here = inMapBeats();
+    here && !mapOpen ? lookButton.show() : lookButton.hide();
+    here && mapOpen ? awayButton.show() : awayButton.hide();
+  };
+  const openMap = (fromX?: number, fromY?: number): void => {
+    if (mapOpen || !inMapBeats()) {
+      return;
+    }
+    mapOpen = true;
+    // It comes from where it was tapped, or from the wall at the right.
+    const box = shell.stage.getBoundingClientRect();
+    const dx = fromX === undefined ? box.width * 0.3 : fromX - box.left - box.width / 2;
+    const dy = fromY === undefined ? -box.height * 0.1 : fromY - box.top - box.height * 0.36;
+    mapLayer.style.setProperty('--map-x', `${dx.toFixed(0)}px`);
+    mapLayer.style.setProperty('--map-y', `${dy.toFixed(0)}px`);
+    mapLayer.setAttribute('data-open', '');
+    shell.sound.play('paper');
+    mapButtons();
+  };
+  const closeMap = (): void => {
+    if (!mapOpen) {
+      return;
+    }
+    mapOpen = false;
+    mapLayer.removeAttribute('data-open');
+    shell.sound.play('paper');
+    mapButtons();
+  };
+  lookButton.addEventListener('click', () => openMap());
+  awayButton.addEventListener('click', closeMap);
+  mapSheet?.addEventListener('click', closeMap);
+  const leaveMapBeats = (): void => {
+    if (!inMapBeats()) {
+      closeMap();
+    }
+    mapButtons();
+  };
+  master.call(leaveMapBeats, [], mapFrom);
+  master.call(leaveMapBeats, [], mapTo);
+
   // --- The shelves are full of things to take. Tap a book, a jar or a map as it
   // passes and it jumps into her hand; she would not drop it, so put it back into
   // a cupboard. A quick tap picks; a drag still tumbles her.
@@ -378,15 +432,26 @@ function mount(shell: DemoShell): void {
   let downAt: { x: number; y: number; t: number } | undefined;
   canvas.setAttribute('data-pickable', '');
   const pickAt = (clientX: number, clientY: number): void => {
-    if (!well || holding || !hand || master.time() < iDrop + 0.9 || master.time() > iThump - 0.3) {
+    if (!well || !hand || master.time() < iDrop + 0.9 || master.time() > iThump - 0.3) {
       return;
     }
     const box = shell.stage.getBoundingClientRect();
+    // A map in its beats is looked at, not taken; anything else is taken, unless
+    // her hand is full.
+    const lookable = (kind: string): boolean => kind === 'map' && inMapBeats();
     const picked = well.pick(
       ((clientX - box.left) / box.width) * 2 - 1,
       -(((clientY - box.top) / box.height) * 2 - 1),
+      (kind) => holding || lookable(kind),
     );
     if (!picked) {
+      return;
+    }
+    if (lookable(picked.kind)) {
+      openMap(clientX, clientY);
+      return;
+    }
+    if (holding) {
       return;
     }
     holding = true;
@@ -444,7 +509,7 @@ function mount(shell: DemoShell): void {
   let dragging = false;
   let lastX = 0;
   shell.stage.addEventListener('pointerdown', (event) => {
-    if ((event.target as HTMLElement).closest('button, .rh__jar')) {
+    if ((event.target as HTMLElement).closest('button, .rh__jar, .rh__map-sheet')) {
       return;
     }
     dragging = true;

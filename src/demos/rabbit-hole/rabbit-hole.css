@@ -23,6 +23,8 @@
     --rh-paper: var(--paper-warm);
     --rh-paper-ink: var(--ink-secondary);
     --rh-paper-frame: var(--sepia-mid);
+    /* The map's sea: the world's water, printed toward sepia. */
+    --rh-map-sea: color-mix(in oklch, var(--world-water), var(--sepia-mid) 45%);
     --rh-marmalade: color-mix(in oklch, var(--sepia-mid), var(--world-glow) 45%);
     --rh-ground: var(--sepia-dark);
     --rh-leaf: var(--sepia-light);
@@ -337,6 +339,55 @@
     cursor: grab;
   }
 
+  /* A map off the wall, looked at: it comes up from where it was tapped (or from
+     the wall at the right) and holds still in front while the well falls on behind
+     it. It stays above the captions' line, which are paper on dark. */
+  .rh__map {
+    --map-x: 30vw;
+    --map-y: -8vh;
+    /* In front of every other layer, so the open sheet takes its own tap. */
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .rh__map-sheet {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 36%;
+    inline-size: min(84vw, 66vh);
+    aspect-ratio: 4 / 3;
+    translate: -50% -50%;
+    transform: translate(var(--map-x), var(--map-y)) scale(0.16) rotate(-8deg);
+    opacity: 0;
+    visibility: hidden;
+    cursor: pointer;
+    filter: drop-shadow(0 18px 28px var(--rh-shadow));
+    transition:
+      transform var(--demo-calm) var(--demo-ease),
+      opacity var(--demo-calm) var(--demo-ease),
+      visibility 0s linear var(--demo-calm);
+  }
+
+  .rh__map-sheet svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .rh__map[data-open] .rh__map-sheet {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition-delay: 0s;
+  }
+
+  .rh__prop-map,
+  .rh__prop-away {
+    inset-inline-end: 4%;
+    inset-block-start: 22vh;
+  }
+
   .rh__bats {
     opacity: 0;
   }
@@ -557,6 +608,19 @@
 
     .rh__jar {
       transition: none;
+    }
+
+    /* The map appears and goes with a fade, in place, no zoom. */
+    .rh__map .rh__map-sheet,
+    .rh__map[data-open] .rh__map-sheet {
+      transform: none;
+      transition:
+        opacity var(--demo-quick) var(--demo-ease),
+        visibility 0s linear var(--demo-quick);
+    }
+
+    .rh__map[data-open] .rh__map-sheet {
+      transition-delay: 0s;
     }
   }
 }

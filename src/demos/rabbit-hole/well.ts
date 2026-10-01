@@ -46,7 +46,11 @@ export interface Well {
   tick(dt: number, elapsed: number): void;
   render(): void;
   /** What sits under a screen point (normalised -1..1), taken off its shelf. */
-  pick(ndcX: number, ndcY: number): Picked | undefined;
+  /**
+   * The nearest thing to where a tap lands on the wall. It leaves the wall unless
+   * `keep` says so for its kind, in which case it is only looked at.
+   */
+  pick(ndcX: number, ndcY: number, keep?: (kind: ShelfThing) => boolean): Picked | undefined;
   dispose(): void;
 }
 
@@ -475,7 +479,7 @@ export function createWell(
       applyCamera();
       renderer.render(scene, camera);
     },
-    pick(ndcX, ndcY) {
+    pick(ndcX, ndcY, keep) {
       // The things are small and the wall is far: a ray to the wall, then the
       // nearest thing to where it lands, is a fairer tap than a ray through a book.
       raycaster.setFromCamera(pointer.set(ndcX, ndcY), camera);
@@ -511,6 +515,9 @@ export function createWell(
       if (best.kind === 'book' && best.mesh.instanceColor) {
         best.mesh.getColorAt(best.index, color);
         picked = `#${color.getHexString()}`;
+      }
+      if (keep?.(best.kind)) {
+        return { kind: best.kind, color: picked };
       }
       // Taken: the instance is parked far below the floor, where nothing looks.
       dummy.position.set(0, -depthTotal - 300, 0);

@@ -129,6 +129,16 @@ SVG (an `<image>` per variant), and `loadArtImage()` for a Canvas, which draws i
 own vector stand-in until an image is registered. Alice's two looks come from tokens
 for vectors and from a file per variant for images; the picker changes nothing else.
 
+**One Cat, one pair of hands.** A figure that appears in more than one demo is
+drawn once. The Cheshire Cat's face (`catFace()` in `art/vectors.ts`: ears, face,
+eyes, pupils and the grin, each in a group a demo can move) is the same face on the
+bough, on the hearth in Pig and Pepper and in the air over the croquet-ground, and
+the grin alone that stays on a bough, on every tree and in the moon is the same
+grin; a unit test keeps it so. Alice's own hand, seen as she sees it with its sleeve
+and the apron's cuff, is one figure in two mirrored entries (`alice/hand-left`,
+`alice/hand-right`), held up by Pig and Pepper, the Lobster Quadrille and the
+Caterpillar's two bits of mushroom.
+
 **Not shared: the story runtime.** A demo is not a Scene. It has no pacing plan, no
 Part, and no entry in `experience/story.json`; the runtime in `src/runtime/` never
 sees it. Its composition lives in `experience/demos/<id>.demo.json`, validated by

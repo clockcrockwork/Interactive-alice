@@ -10,7 +10,9 @@
  * walk that way. At *we're all mad here* the wood tilts, turns a madder colour,
  * and every tree grins. The Cat's own vanishings are through an SVG mask, a
  * gradient slid along its body: quick, or slow, tail first and grin last, the
- * grin staying on and finally rising into the moon.
+ * grin staying on and finally rising into the moon. At the slow vanishing the
+ * reader chooses which end goes first: tail first, or head first (ears, eyes,
+ * face, then the body and the tail), the grin staying last either way.
  */
 
 import gsap from 'gsap';
@@ -111,27 +113,91 @@ function mount(shell: DemoShell): void {
   shell.stage.append(hint);
 
   // --- Presence, as numbers: 1 is all there, 0 is gone. The mask's gradient sits
-  // along the body; sliding it hides tail first.
+  // along the body; sliding it hides the Cat from one end. Which end is the
+  // reader's choice, kept for the rest of the page: tail first slides it along
+  // the bough; head first slants it from the top right, so the ears go, then the
+  // eyes, the face, the body, and the tail last. The grin is outside the mask.
+  type VanishOrder = 'tail' | 'head';
+  const SLIDES: Record<VanishOrder, { from: number; by: number; shape: Record<string, string> }> = {
+    tail: { from: -780, by: 530, shape: { transform: '', y: '0', height: '240' } },
+    head: {
+      from: -1140,
+      by: 550,
+      shape: { transform: 'rotate(-35) scale(-1 1)', y: '-600', height: '1600' },
+    },
+  };
+  const headParts = [...(cat?.querySelectorAll<SVGGElement>('[data-cat]') ?? [])];
+  const tailPart = wood.querySelector<SVGGElement>('.cc__tail');
+  let order: VanishOrder = 'tail';
+  // The order a vanishing is using; it follows the choice whenever the Cat is whole.
+  let active: VanishOrder = 'tail';
   const presence = { body: 1, grin: 1 };
   const apply = (): void => {
-    slide?.setAttribute('x', String(-780 + (1 - presence.body) * 530));
+    if (presence.body >= 0.999 && active !== order) {
+      active = order;
+    }
+    const geometry = SLIDES[active];
+    for (const [name, value] of Object.entries(geometry.shape)) {
+      if (value) {
+        slide?.setAttribute(name, value);
+      } else {
+        slide?.removeAttribute(name);
+      }
+    }
+    // Reduced motion: two cuts, the chosen end and then the rest, instead of the sweep.
+    const body = reducedMotion ? 1 : presence.body;
+    slide?.setAttribute('x', String(geometry.from + (1 - body) * geometry.by));
+    const endShown = reducedMotion
+      ? presence.body > 0.66
+        ? 1
+        : 0
+      : Math.min(1, Math.max(0, presence.body * 2 - 1));
+    const restShown = reducedMotion
+      ? presence.body > 0.33
+        ? 1
+        : 0
+      : Math.min(1, Math.max(0, presence.body * 2));
+    if (reducedMotion) {
+      cat?.setAttribute('opacity', String(restShown));
+      const end = active === 'tail' ? [tailPart] : headParts;
+      for (const part of end) {
+        part?.setAttribute('opacity', String(endShown));
+      }
+      for (const part of active === 'tail' ? headParts : [tailPart]) {
+        part?.setAttribute('opacity', '1');
+      }
+    }
+    catBox?.style.setProperty('--cc-tail', (active === 'tail' ? endShown : restShown).toFixed(3));
+    catBox?.style.setProperty('--cc-head', (active === 'head' ? endShown : restShown).toFixed(3));
     grin?.setAttribute('opacity', presence.grin.toFixed(3));
   };
+  const tailButton = shell.prop(shell.ui.demoVanishTail ?? '', 'cc__prop cc__prop--tail');
+  const headButton = shell.prop(shell.ui.demoVanishHead ?? '', 'cc__prop cc__prop--head');
+  const choose = (next: VanishOrder): void => {
+    order = next;
+    wood.dataset.vanish = next;
+    tailButton.setAttribute('aria-pressed', String(next === 'tail'));
+    headButton.setAttribute('aria-pressed', String(next === 'head'));
+    shell.status((next === 'tail' ? shell.ui.demoVanishTail : shell.ui.demoVanishHead) ?? '');
+    apply();
+  };
+  tailButton.addEventListener('click', () => choose('tail'));
+  headButton.addEventListener('click', () => choose('head'));
+  wood.dataset.vanish = order;
+  tailButton.setAttribute('aria-pressed', 'true');
+  headButton.setAttribute('aria-pressed', 'false');
   apply();
   const show = (at: number, to: number, duration: number, ease = 'power2.inOut'): void => {
     master.to(
       presence,
-      { body: to, duration: reducedMotion ? 0.01 : duration, ease, onUpdate: apply },
+      {
+        body: to,
+        duration: reducedMotion ? Math.min(duration, 0.3) : duration,
+        ease: reducedMotion ? 'none' : ease,
+        onUpdate: apply,
+      },
       at,
     );
-    if (reducedMotion) {
-      master.fromTo(
-        cat,
-        { opacity: to === 1 ? 0 : 1 },
-        { opacity: to === 1 ? 1 : 0, duration: 0.3 },
-        at,
-      );
-    }
   };
 
   // --- The story's own moments.
@@ -158,7 +224,29 @@ function mount(shell: DemoShell): void {
   master.to(presence, { grin: 0, duration: 0.15, onUpdate: apply }, iAgain - 0.15);
   show(iAgain + 0.3, 1, 0.2, 'power3.out');
   master.to(presence, { grin: 1, duration: 0.1, onUpdate: apply }, iAgain + 0.3);
-  show(iSlowly + 0.1, 0, 0.85, 'sine.inOut');
+  // The slow one waits a moment for the reader's choice of end, then goes.
+  show(iSlowly + 0.25, 0, 0.7, 'sine.inOut');
+  master.call(
+    () => {
+      if (master.time() >= iSlowly + 0.25) {
+        shell.sound.play('whoosh', 0.5);
+      }
+    },
+    [],
+    iSlowly + 0.25,
+  );
+  const choosing = (): boolean => master.time() >= iSlowly && master.time() < iGrin;
+  const showChoice = (): void => {
+    if (choosing()) {
+      tailButton.show();
+      headButton.show();
+    } else {
+      tailButton.hide();
+      headButton.hide();
+    }
+  };
+  master.call(showChoice, [], iSlowly);
+  master.call(showChoice, [], iGrin);
   // The grin stays, then goes up to the moon, and the moon keeps the smile.
   master.to(presence, { grin: 0, duration: 0.3, onUpdate: apply }, iGrin + 0.4);
   master.fromTo(
@@ -247,6 +335,16 @@ function mount(shell: DemoShell): void {
   });
   catBox?.addEventListener('click', (event) => {
     event.stopPropagation();
+    if (choosing()) {
+      // While the slow vanishing is the reader's: a tap on the head means head
+      // first, on the tail, tail first. The head is the right part of the figure.
+      const box = catBox.getBoundingClientRect();
+      choose(event.clientX > box.left + box.width * 0.58 ? 'head' : 'tail');
+      return;
+    }
+    if (master.time() >= iVanish1) {
+      return;
+    }
     // A tap on the Cat itself sends it somewhere else: you make it giddy.
     const others = boughs.filter((b) => b !== currentBough());
     sendTo(others[Math.floor(random() * others.length)]);

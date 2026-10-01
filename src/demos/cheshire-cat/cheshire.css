@@ -109,6 +109,8 @@
     block-size: 100%;
     background-repeat: repeat-x;
     background-position: bottom;
+    /* The wood takes the tap; the trunks in front must not hide the Cat from it. */
+    pointer-events: none;
   }
 
   .cc__trees--far {
@@ -393,6 +395,29 @@
 
   .cc__prop--call {
     inset-block-start: calc(var(--demo-bar-height) + 3.4rem);
+  }
+
+  /* Which end goes first: two choices side by side at the slow vanishing. */
+  .cc__prop--tail,
+  .cc__prop--head {
+    inset-block-start: calc(var(--demo-bar-height) + 3.4rem);
+    translate: 0 0;
+    white-space: nowrap;
+  }
+
+  .cc__prop--tail {
+    inset-inline-start: auto;
+    inset-inline-end: calc(50% + 0.3rem);
+  }
+
+  .cc__prop--head {
+    inset-inline-start: calc(50% + 0.3rem);
+  }
+
+  .cc__prop--tail[aria-pressed="true"],
+  .cc__prop--head[aria-pressed="true"] {
+    border-color: var(--demo-ink);
+    box-shadow: inset 0 0 0 1px var(--demo-ink);
   }
 
   .cc__hint {

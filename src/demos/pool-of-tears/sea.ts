@@ -18,6 +18,8 @@ export interface Swimmer {
   bristle: number;
   /** A live nudge across the water on top of `x`, for swimming and fleeing. */
   offset?: number;
+  /** How far the leaning water has carried it downhill, on top of `x`. */
+  drift?: number;
   /** 0 afloat, 1 stood on the shore's top at `x`. */
   climb?: number;
   kind: 'mouse' | 'alice' | 'duck' | 'dodo' | 'lory' | 'eaglet';
@@ -37,6 +39,8 @@ export interface SeaState {
   pan: number;
   /** The hall's furniture, seen from a giant's height: the doors and the table. */
   hallDetail: number;
+  /** The water's lean in degrees: positive drops the right side, negative the left. */
+  lean: number;
   swimmers: Swimmer[];
 }
 
@@ -130,8 +134,15 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
     shore: 0,
     pan: 0,
     hallDetail: 1,
+    lean: 0,
     swimmers: [],
   };
+  /**
+   * The surface's slope from the lean, as screen y per px across: leaning left
+   * drops the left edge, so the water stands higher there. The body's bands
+   * tilt on the same line.
+   */
+  const leanSlope = (): number => -Math.tan((state.lean * Math.PI) / 180);
 
   /** Where the shore begins, in px from the left; off the right edge until it slides in. */
   const shoreEdge = (): number => width * (1.05 - state.shore * 0.8) - state.pan;
@@ -146,6 +157,7 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
 
   const surfaceAt = (x: number): { y: number; slope: number } => {
     const base = height * (1 - state.level);
+    const slope = leanSlope();
     const wave = (px: number): number => {
       let y = 0;
       const a = state.swell;
@@ -161,8 +173,8 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
       }
       return y;
     };
-    const y = base + wave(x);
-    const y2 = base + wave(x + 6);
+    const y = base + (x - width / 2) * slope + wave(x);
+    const y2 = base + (x + 6 - width / 2) * slope + wave(x + 6);
     return { y, slope: (y2 - y) / 6 };
   };
 
@@ -171,7 +183,7 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
       return;
     }
     const climb = swimmer.climb ?? 0;
-    const x = (swimmer.x + (swimmer.offset ?? 0)) * width - state.pan;
+    const x = (swimmer.x + (swimmer.offset ?? 0) + (swimmer.drift ?? 0)) * width - state.pan;
     const surface = surfaceAt(x);
     // Climbing out lifts it from the surface onto the bank, and stands it straight.
     const y =
@@ -284,9 +296,12 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
     },
     tick(dt, elapsed) {
       time = reduced ? elapsed * 0.25 : elapsed;
+      // Rings slide downhill when the water leans; a quiet cut leaves them be.
+      const slide = reduced ? 0 : Math.sin((state.lean * Math.PI) / 180) * dt * 400;
       for (const ring of rings) {
         ring.r += dt * (reduced ? 60 : 140);
         ring.life *= 1 - dt * 0.9;
+        ring.x += slide;
       }
       while (rings.length && (rings[0]?.life ?? 0) < 0.03) {
         rings.shift();
@@ -451,11 +466,15 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
         ctx.globalAlpha = 0.18;
         ctx.strokeStyle = colours.foam;
         ctx.lineWidth = 2;
+        const bandSlope = leanSlope();
         for (let band = 0; band < 6; band += 1) {
           const y = height * (1 - state.level) + 30 + band * 34;
           ctx.beginPath();
           for (let x = 0; x <= width; x += 8) {
-            ctx.lineTo(x, y + Math.sin(x * 0.03 + time * 1.7 + band) * 6);
+            ctx.lineTo(
+              x,
+              y + (x - width / 2) * bandSlope + Math.sin(x * 0.03 + time * 1.7 + band) * 6,
+            );
           }
           ctx.stroke();
         }

@@ -6,7 +6,9 @@
  * eventually a Duck and a Dodo, a Lory and an Eaglet, to the shore. The captions
  * ride the surface: each frame the stage samples the water under them and the
  * sentences bob and tilt with it. The reader stirs the water with a finger or a
- * pointer, or with a button.
+ * pointer, or with a button, and leans it with the pointer, the phone's tilt, or
+ * a pair of buttons: the surface tips a few degrees, the water slops to the low
+ * side, and everything afloat drifts downhill.
  */
 
 import gsap from 'gsap';
@@ -261,6 +263,50 @@ function mount(shell: DemoShell): void {
   });
   master.call(() => (master.time() >= iSwim ? stirButton.show() : stirButton.hide()), [], iSwim);
 
+  // --- Leaning the water. While she is in the pool the surface tips with the
+  // pointer (the mouse, or the phone's tilt when the reader turned it on); the
+  // buttons tip it the same way for a couple of seconds and let it level again.
+  // The lean is one parameter the existing draw reads: no extra canvas pass.
+  const LEAN_MAX = 6;
+  const LEAN_HOLD = 2;
+  let lean = 0;
+  let leanSpeed = 0;
+  let pulseDir = 0;
+  let pulseUntil = 0;
+  let lastElapsed = 0;
+  let lastSplash = -1;
+  let atEdge = false;
+  const leanLeft = shell.prop(shell.ui.demoLeanLeft ?? '', 'pt__prop pt__prop--left');
+  const leanRight = shell.prop(shell.ui.demoLeanRight ?? '', 'pt__prop pt__prop--right');
+  const pulse = (dir: -1 | 1): void => {
+    pulseDir = dir;
+    pulseUntil = lastElapsed + LEAN_HOLD;
+  };
+  leanLeft.addEventListener('click', () => pulse(-1));
+  leanRight.addEventListener('click', () => pulse(1));
+  const inPool = (): boolean => {
+    const t = master.time();
+    return t >= iSplash + 0.3 && t < iShore + 0.45;
+  };
+  // Offered while she swims, from the drowning beat until the party is ashore.
+  const offerLean = (): void => {
+    const shown = master.time() >= iSwim && inPool();
+    for (const button of [leanLeft, leanRight]) {
+      shown ? button.show() : button.hide();
+    }
+  };
+  master.call(offerLean, [], iSwim);
+  master.call(offerLean, [], iShore + 0.45);
+  const leanTarget = (elapsed: number): number => {
+    if (elapsed < pulseUntil) {
+      return pulseDir * LEAN_MAX;
+    }
+    if (inPool() && shell.pointer.active) {
+      return Math.max(-1, Math.min(1, shell.pointer.x)) * LEAN_MAX;
+    }
+    return 0;
+  };
+
   // --- Per frame: the sea lives, and the captions ride it.
   const resize = (): void => sea.resize(shell.stage.clientWidth, shell.stage.clientHeight);
   new ResizeObserver(resize).observe(shell.stage);
@@ -268,6 +314,40 @@ function mount(shell: DemoShell): void {
   let bob = 0;
   let tilt = 0;
   shell.onFrame((dt, elapsed) => {
+    lastElapsed = elapsed;
+    // The lean: a loose spring toward the target, so the water slops past it and
+    // settles; under reduced motion a quiet cut to the angle instead.
+    const target = leanTarget(elapsed);
+    if (reducedMotion) {
+      lean = target;
+    } else {
+      // Small fixed steps, so a slow frame neither explodes the spring nor slows it.
+      for (let left = Math.min(dt, 0.25); left > 0; left -= 0.02) {
+        const step = Math.min(left, 0.02);
+        leanSpeed += ((target - lean) * 40 - leanSpeed * 7) * step;
+        lean += leanSpeed * step;
+      }
+      lean = Math.max(-LEAN_MAX * 1.15, Math.min(LEAN_MAX * 1.15, lean));
+    }
+    state.lean = lean;
+    // The slop reaching the edge: one splash as it arrives, not while it sits there.
+    const edge = Math.abs(lean) >= LEAN_MAX * 0.85;
+    if (edge && !atEdge && elapsed - lastSplash > 0.8) {
+      shell.sound.play('splash', 0.35);
+      lastSplash = elapsed;
+    }
+    atEdge = edge;
+    seaLayer.style.setProperty('--lean', lean.toFixed(2));
+    // Everything afloat drifts downhill, and comes back to its place when the
+    // water levels; the cut has no slop, so nothing drifts under it.
+    const downhill = reducedMotion ? 0 : Math.sin((lean * Math.PI) / 180) * dt * 0.5;
+    for (const swimmer of state.swimmers) {
+      const drift = swimmer.drift ?? 0;
+      swimmer.drift =
+        swimmer.show > 0.5 && (swimmer.climb ?? 0) < 0.5 && Math.abs(lean) > 0.3
+          ? Math.max(-0.2, Math.min(0.2, drift + downhill))
+          : mix(drift, 0, Math.min(1, dt * 0.8));
+    }
     sea.tick(dt, elapsed);
     shell.sound.level('waves', Math.max(0, Math.min(1, (state.level - 0.2) * 1.2)) * 0.5);
     if (alice.show > 0.5 && !reducedMotion) {
@@ -278,7 +358,7 @@ function mount(shell: DemoShell): void {
         alice.offset - before > 0.0005 ? 1 : alice.offset - before < -0.0005 ? -1 : alice.dir;
       if (Math.abs(alice.offset - before) > 0.0008 && Math.random() < dt * 6) {
         sea.stir(
-          (alice.x + alice.offset) * shell.stage.clientWidth,
+          (alice.x + alice.offset + (alice.drift ?? 0)) * shell.stage.clientWidth,
           shell.stage.clientHeight * (1 - state.level),
           0.3,
         );
@@ -298,7 +378,7 @@ function mount(shell: DemoShell): void {
       const surface = sea.surfaceAt(centre);
       const rest = shell.stage.clientHeight * (1 - state.level);
       bob = mix(bob, (surface.y - rest) * 0.6, Math.min(1, dt * 6));
-      tilt = mix(tilt, Math.atan(surface.slope) * 12, Math.min(1, dt * 6));
+      tilt = mix(tilt, Math.atan(surface.slope) * 12 - lean * 0.4, Math.min(1, dt * 6));
     } else {
       bob = mix(bob, 0, Math.min(1, dt * 4));
       tilt = mix(tilt, 0, Math.min(1, dt * 4));

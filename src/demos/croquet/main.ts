@@ -412,9 +412,10 @@ function mount(shell: DemoShell): void {
 
   // --- The flamingo under the arm: the mallet. It looks back up at the reader.
   const hands = shell.layer('cq__hands');
-  hands.innerHTML = `<div class="cq__flamingo">${figure('flamingo')}</div>`;
+  hands.innerHTML = `<div class="cq__flamingo">${figure('flamingo')}<div class="cq__stroke"></div></div>`;
   const flamingo = hands.querySelector<HTMLElement>('.cq__flamingo') ?? hands;
   const head = hands.querySelector<SVGGElement>('.cq__flamingo-head');
+  const strokeZone = hands.querySelector<HTMLElement>('.cq__stroke');
   const flamingoState = { looking: false, away: false, swinging: false };
   master.fromTo(
     flamingo,
@@ -424,6 +425,91 @@ function mount(shell: DemoShell): void {
   );
   const strikeButton = shell.prop(shell.ui.demoStrike ?? '', 'cq__prop cq__prop--strike');
   const catchButton = shell.prop(shell.ui.demoCatchFlamingo ?? '', 'cq__prop cq__prop--catch');
+  const strokeButton = shell.prop(shell.ui.demoStrokeFlamingo ?? '', 'cq__prop cq__prop--stroke');
+
+  // --- The flamingo's mood, from the beat she first holds it until the game
+  // breaks up: left alone it sulks, the head turning away from the ball and up
+  // into her face; stroked, it comes round. A function of time, not of scroll,
+  // so it only colours the in-between; the story's own looks and the escape
+  // happen at their beats regardless.
+  const SULK = 0.2;
+  const mood = { v: 1, live: false, sulking: false, said: false, nodding: false };
+  const moodStep = (v: number): string => (v > 0.6 ? 'content' : v > SULK ? 'wary' : 'sulking');
+  const applyMood = (): void => {
+    flamingo.style.setProperty('--mood', mood.v.toFixed(3));
+    flamingo.setAttribute('data-mood', moodStep(mood.v));
+    const sulking = mood.v <= SULK;
+    if (sulking !== mood.sulking) {
+      mood.sulking = sulking;
+      mood.said = false;
+    }
+  };
+  const nod = (): void => {
+    shell.sound.play('chime', 0.4);
+    if (reducedMotion || mood.nodding) {
+      return;
+    }
+    mood.nodding = true;
+    const bob = { n: 0 };
+    gsap.to(bob, {
+      n: 1,
+      duration: 0.14,
+      yoyo: true,
+      repeat: 3,
+      ease: 'sine.inOut',
+      onUpdate: () => flamingo.style.setProperty('--nod', bob.n.toFixed(2)),
+      onComplete: () => (mood.nodding = false),
+    });
+  };
+  const stroke = (amount: number, byButton = false): void => {
+    if (!mood.live || flamingoState.away || shell.paused) {
+      return;
+    }
+    const wasSulking = mood.sulking;
+    mood.v = Math.min(1, mood.v + amount);
+    applyMood();
+    if (byButton) {
+      shell.status(shell.ui.demoStrokeFlamingo ?? '');
+      nod();
+    } else if (wasSulking && !mood.sulking) {
+      nod();
+    }
+  };
+  strokeButton.addEventListener('click', () => stroke(0.35, true));
+  // A pointer drawn along the neck and head strokes it: the path's length counts.
+  let last: [number, number] | null = null;
+  strokeZone?.addEventListener('pointermove', (event) => {
+    if (last) {
+      const dist = Math.hypot(event.clientX - last[0], event.clientY - last[1]);
+      stroke(Math.min(dist, 40) / 500);
+    }
+    last = [event.clientX, event.clientY];
+  });
+  strokeZone?.addEventListener('pointerleave', () => (last = null));
+  shell.onFrame((dt) => {
+    if (!mood.live || flamingoState.away || mood.v <= 0) {
+      return;
+    }
+    mood.v = Math.max(0, mood.v - dt / 15);
+    applyMood();
+  });
+  const syncMood = (): void => {
+    const live = master.time() >= iFlamingo + 0.1 && master.time() < iGrin;
+    if (live !== mood.live) {
+      mood.live = live;
+      mood.v = 1;
+      applyMood();
+      flamingo.toggleAttribute('data-mood-live', live);
+      if (live && !flamingoState.away) {
+        strokeButton.show();
+      } else {
+        strokeButton.hide();
+      }
+    }
+  };
+  master.call(syncMood, [], iFlamingo + 0.1);
+  master.call(syncMood, [], iGrin);
+  applyMood();
   shell.onFrame((_dt, elapsed) => {
     // Every few seconds it twists round and looks up in her face; then down again.
     const phase = elapsed % 3.4;
@@ -443,6 +529,30 @@ function mount(shell: DemoShell): void {
     }
     flamingoState.swinging = true;
     const swing = gsap.timeline({ onComplete: () => (flamingoState.swinging = false) });
+    if (mood.sulking) {
+      // Sulking, its neck twisted up at her: the mallet swings wide and misses.
+      swing.to(flamingo, {
+        rotation: -70,
+        duration: reducedMotion ? 0.01 : 0.2,
+        ease: 'power3.in',
+      });
+      swing.to(flamingo, {
+        rotation: 12,
+        duration: reducedMotion ? 0.01 : 0.3,
+        ease: 'power2.out',
+      });
+      swing.to(flamingo, {
+        rotation: 0,
+        duration: reducedMotion ? 0.01 : 0.35,
+        ease: 'power2.inOut',
+      });
+      shell.sound.play('paper', 0.5);
+      if (!mood.said) {
+        mood.said = true;
+        shell.status(shell.ui.demoFlamingoSulks ?? '');
+      }
+      return;
+    }
     if (flamingoState.looking) {
       // It is looking up at you: no blow, only a wobble and a laugh.
       swing.to(flamingo, { rotation: -6, duration: 0.12, yoyo: true, repeat: 3 });
@@ -528,6 +638,10 @@ function mount(shell: DemoShell): void {
   const flyOff = (): void => {
     flamingoState.away = true;
     flamingo.removeAttribute('data-looking');
+    strokeButton.hide();
+    // It comes back from its run content again.
+    mood.v = 1;
+    applyMood();
     catchButton.show();
     gsap.to(flamingo, {
       yPercent: -160,
@@ -545,6 +659,9 @@ function mount(shell: DemoShell): void {
     }
     flamingoState.away = false;
     catchButton.hide();
+    if (mood.live) {
+      strokeButton.show();
+    }
     shell.status(shell.ui.demoCatchFlamingo ?? '');
     gsap.to(flamingo, {
       yPercent: 0,

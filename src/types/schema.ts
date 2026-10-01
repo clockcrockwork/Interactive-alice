@@ -470,6 +470,10 @@ export interface LocaleUIStrings {
      */
     demoPause: string;
     /**
+     * Toggle at the end of a demo: when on, the page goes to the next scene by itself after a pause at the end.
+     */
+    demoAuto: string;
+    /**
      * Label of the motion toggle while ambient motion is paused.
      */
     demoResume: string;

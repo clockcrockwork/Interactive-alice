@@ -198,6 +198,14 @@ hall or the chimney swallow the screen into a hole; the spiral, the pool and the
 whirl it; a court, a race or the index deal it like a card. A browser without the
 Navigation API simply navigates.
 
+**Going on by itself.** Scroll is the guaranteed path, and the link to the next
+scene is a link. A reader who would rather be carried can turn on *Go on by
+itself* beside it: the choice is remembered in their browser, and from then on,
+once the last beat has been reached and held for a few seconds, the page goes to
+the next scene. The ring round the link fills while it waits (in quarters under
+reduced motion), scrolling back empties it, and the motion pause holds it. Off by
+default, and never the only way forward.
+
 **Keepsakes.** A thing the reader does by hand, rather than the story doing it,
 can be kept: `shell.keep(kind)` records it in the visitor's own browser, under the
 demos' key, and `shell.kept()` reads the list back on any later page. The daisy chain

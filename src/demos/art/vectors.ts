@@ -236,6 +236,33 @@ export const ALICE_LOOKING_DOWN_SVG = `
   <path d="M90 200 Q200 176 310 200" stroke="var(--alice-apron-shadow)" stroke-width="5" fill="none"/>
 </svg>`;
 
+/**
+ * Alice's own hand, seen as she sees it: the back of the hand coming up from the
+ * bottom of the frame, four fingers curled over whatever she holds, the thumb
+ * on the inside, her dress sleeve and the apron's cuff at the wrist. The left
+ * hand; the right is its mirror. Whatever she holds is drawn over the fingers'
+ * tips by the demo.
+ */
+export function handSvg(side: 'left' | 'right'): string {
+  const flip = side === 'right' ? ' transform="translate(120 0) scale(-1 1)"' : '';
+  return `
+<svg viewBox="0 0 120 200" focusable="false">
+  <g${flip}>
+    <path d="M14 200 L14 160 Q20 150 60 150 Q100 150 106 160 L106 200 Z" fill="var(--alice-dress)"/>
+    <path d="M22 200 L24 166 M98 200 L96 166" stroke="var(--alice-dress-shadow)" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+    <path d="M12 164 Q60 150 108 164 L108 150 Q60 136 12 150 Z" fill="var(--alice-apron)"/>
+    <path d="M12 164 Q60 150 108 164" stroke="var(--alice-apron-shadow)" stroke-width="2.5" fill="none"/>
+    <path d="M28 152 Q22 100 34 74 Q50 58 72 60 Q96 64 100 92 Q104 120 94 152 Z" fill="var(--alice-skin)"/>
+    <path d="M30 150 Q26 112 36 86" stroke="var(--alice-skin-shadow)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <path d="M90 76 Q112 62 118 88 Q120 104 104 112" stroke="var(--alice-skin)" stroke-width="18" fill="none" stroke-linecap="round"/>
+    <path d="M104 110 q8 -8 6 -18" stroke="var(--alice-skin-shadow)" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <path d="M40 80 Q34 46 38 30 M58 68 Q52 30 56 14 M76 66 Q72 30 76 16 M92 76 Q90 46 96 32" stroke="var(--alice-skin)" stroke-width="17" fill="none" stroke-linecap="round"/>
+    <path d="M38 30 q4 -6 8 0 M56 14 q4 -6 8 0 M76 16 q4 -6 8 0 M96 32 q4 -6 8 0" stroke="var(--alice-skin-shadow)" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <path d="M48 70 Q44 48 46 36 M66 62 Q62 40 66 26 M84 66 Q82 44 86 30" stroke="var(--alice-skin-shadow)" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/>
+  </g>
+</svg>`;
+}
+
 /** The Caterpillar on nothing: it sits on the mushroom the demo draws. */
 export const CATERPILLAR_SVG = `
 <svg viewBox="0 0 240 200" focusable="false">
@@ -359,30 +386,72 @@ export const FLAMINGO_SVG = `
   </g>
 </svg>`;
 
+/** Which classes a demo hangs on the Cat's parts, so it can move them. */
+export interface CatFaceClasses {
+  ears?: string;
+  face?: string;
+  eyes?: string;
+  pupils?: string;
+  grin?: string;
+}
+
+/**
+ * The one Cheshire Cat face, drawn at any size: the ears, the round face with its
+ * whisker marks, the glowing eyes with slit pupils, and the grin from ear to ear.
+ * Every demo draws it from here so the Cat is the same Cat on the bough, on the
+ * hearth and in the air over the croquet-ground. The grin comes separately: it
+ * is the part that stays when the rest has gone.
+ */
+export function catFace(
+  cx: number,
+  cy: number,
+  r: number,
+  classes: CatFaceClasses = {},
+): { head: string; grin: string } {
+  const s = (r / 76).toFixed(4);
+  const at = `transform="translate(${cx} ${cy}) scale(${s})"`;
+  const cls = (name?: string): string => (name ? ` class="${name}"` : '');
+  const head =
+    `<g${cls(classes.ears)} data-cat="ears"><g ${at}>` +
+    '<path d="M-60 -20 L-80 -90 L-20 -48 Z M60 -20 L80 -90 L20 -48 Z" fill="var(--cc-cat, var(--sepia-mid))"/>' +
+    '<path d="M-56 -26 L-66 -70 L-30 -44 Z M56 -26 L66 -70 L30 -44 Z" fill="var(--cc-cat-stripe, var(--sepia-dark))"/>' +
+    '</g></g>' +
+    `<g${cls(classes.face)} data-cat="face"><g ${at}>` +
+    '<circle cx="0" cy="0" r="76" fill="var(--cc-cat, var(--sepia-mid))"/>' +
+    '<path d="M-50 -30 q-6 14 6 22 M50 -30 q6 14 -6 22 M-66 10 q10 10 24 6 M66 10 q-10 10 -24 6" stroke="var(--cc-cat-stripe, var(--sepia-dark))" stroke-width="8" fill="none" stroke-linecap="round"/>' +
+    '</g></g>' +
+    `<g${cls(classes.eyes)} data-cat="eyes"><g ${at}>` +
+    '<ellipse cx="-28" cy="-10" rx="14" ry="18" fill="var(--world-glow)"/>' +
+    '<ellipse cx="28" cy="-10" rx="14" ry="18" fill="var(--world-glow)"/>' +
+    '</g></g>' +
+    `<g${cls(classes.pupils)} data-cat="pupils"><g ${at}>` +
+    '<ellipse cx="-28" cy="-10" rx="4" ry="14" fill="var(--ink-primary)"/>' +
+    '<ellipse cx="28" cy="-10" rx="4" ry="14" fill="var(--ink-primary)"/>' +
+    '</g></g>';
+  const grin =
+    `<g${cls(classes.grin)} data-cat="grin"><g ${at}>` +
+    '<path d="M-64 26 Q0 86 64 26" stroke="var(--cc-grin, var(--paper-base))" stroke-width="9" fill="none" stroke-linecap="round"/>' +
+    '<path d="M-48 36 v10 M-24 50 v12 M0 56 v13 M24 50 v12 M48 36 v10" stroke="var(--cc-grin, var(--paper-base))" stroke-width="4" stroke-linecap="round"/>' +
+    '</g></g>';
+  return { head, grin };
+}
+
+/** The grin alone, as it stays on a bough, on every tree, and in the moon. */
+export const CAT_GRIN_SVG = `
+<svg viewBox="-70 20 140 80" focusable="false">${catFace(0, 0, 76).grin}</svg>`;
+
 /** The Cheshire Cat's head alone, in parts that can appear one after another. */
-export const CAT_HEAD_SVG = `
-<svg viewBox="0 0 240 200" focusable="false">
-  <g class="cq__cat-ears">
-    <path d="M60 90 L40 20 L100 62 Z M180 90 L200 20 L140 62 Z" fill="var(--cc-cat, var(--sepia-mid))"/>
-    <path d="M64 84 L54 40 L90 66 Z M176 84 L186 40 L150 66 Z" fill="var(--cc-cat-stripe, var(--sepia-dark))"/>
-  </g>
-  <g class="cq__cat-face">
-    <circle cx="120" cy="110" r="76" fill="var(--cc-cat, var(--sepia-mid))"/>
-    <path d="M70 80 q-6 14 6 22 M170 80 q6 14 -6 22 M54 120 q10 10 24 6 M186 120 q-10 10 -24 6" stroke="var(--cc-cat-stripe, var(--sepia-dark))" stroke-width="8" fill="none" stroke-linecap="round"/>
-  </g>
-  <g class="cq__cat-eyes">
-    <ellipse cx="92" cy="100" rx="14" ry="18" fill="var(--world-glow)"/>
-    <ellipse cx="148" cy="100" rx="14" ry="18" fill="var(--world-glow)"/>
-    <g class="cq__cat-pupils">
-      <ellipse cx="92" cy="100" rx="4" ry="14" fill="var(--ink-primary)"/>
-      <ellipse cx="148" cy="100" rx="4" ry="14" fill="var(--ink-primary)"/>
-    </g>
-  </g>
-  <g class="cq__cat-grin">
-    <path d="M56 136 Q120 196 184 136" stroke="var(--cc-grin, var(--paper-base))" stroke-width="9" fill="none" stroke-linecap="round"/>
-    <path d="M72 146 v10 M96 160 v12 M120 166 v13 M144 160 v12 M168 146 v10" stroke="var(--cc-grin, var(--paper-base))" stroke-width="4" stroke-linecap="round"/>
-  </g>
-</svg>`;
+export const CAT_HEAD_SVG = (() => {
+  const { head, grin } = catFace(120, 110, 76, {
+    ears: 'cq__cat-ears',
+    face: 'cq__cat-face',
+    eyes: 'cq__cat-eyes',
+    pupils: 'cq__cat-pupils',
+    grin: 'cq__cat-grin',
+  });
+  return `
+<svg viewBox="0 0 240 200" focusable="false">${head}${grin}</svg>`;
+})();
 
 /** The rose-tree by the garden entrance: a bush; the roses on it are the demo's own. */
 export const ROSE_TREE_SVG = `
@@ -522,22 +591,10 @@ export const CAT_SVG = `
     <ellipse cx="210" cy="140" rx="90" ry="50" fill="var(--cc-cat, var(--sepia-mid))"/>
     <path d="M150 110 q20 20 0 50 M180 100 q22 24 0 60 M215 96 q24 26 0 66 M250 102 q20 24 0 58" stroke="var(--cc-cat-stripe, var(--sepia-dark))" stroke-width="10" fill="none" stroke-linecap="round"/>
     <path d="M170 190 l-4 18 M240 190 l6 18 M280 176 l14 12" stroke="var(--cc-cat, var(--sepia-mid))" stroke-width="14" stroke-linecap="round"/>
-    <circle cx="300" cy="96" r="52" fill="var(--cc-cat, var(--sepia-mid))"/>
-    <path d="M262 60 L252 12 L288 46 Z M338 60 L348 12 L312 46 Z" fill="var(--cc-cat, var(--sepia-mid))"/>
-    <path d="M266 58 L262 30 L282 50 Z M334 58 L338 30 L318 50 Z" fill="var(--cc-cat-stripe, var(--sepia-dark))"/>
-    <path d="M270 72 q-6 10 4 14 M330 72 q6 10 -4 14" stroke="var(--cc-cat-stripe, var(--sepia-dark))" stroke-width="8" fill="none" stroke-linecap="round"/>
-    <ellipse cx="284" cy="88" rx="9" ry="12" fill="var(--world-glow)"/>
-    <ellipse cx="316" cy="88" rx="9" ry="12" fill="var(--world-glow)"/>
-    <g class="cc__pupils">
-      <ellipse cx="284" cy="88" rx="3" ry="10" fill="var(--ink-primary)"/>
-      <ellipse cx="316" cy="88" rx="3" ry="10" fill="var(--ink-primary)"/>
-    </g>
+    ${catFace(300, 96, 52, { pupils: 'cc__pupils' }).head}
   </g>
   <!-- The grin: outside the mask, so it stays when the rest has gone -->
-  <g class="cc__grin">
-    <path d="M256 116 Q300 156 344 116" stroke="var(--cc-grin, var(--paper-base))" stroke-width="7" fill="none" stroke-linecap="round"/>
-    <path d="M266 122 v8 M282 132 v10 M300 136 v11 M318 132 v10 M334 122 v8" stroke="var(--cc-grin, var(--paper-base))" stroke-width="3.5" stroke-linecap="round"/>
-  </g>
+  ${catFace(300, 96, 52, { grin: 'cc__grin' }).grin}
 </svg>`;
 
 export type RunnerKind =
@@ -790,17 +847,8 @@ export const CAT_HEARTH_SVG = `
   <path d="M50 130 C20 130 10 100 30 84 C40 76 60 80 62 96" stroke="var(--cc-cat, var(--sepia-mid))" stroke-width="16" fill="none" stroke-linecap="round"/>
   <ellipse cx="130" cy="120" rx="82" ry="34" fill="var(--cc-cat, var(--sepia-mid))"/>
   <path d="M90 100 q14 16 0 34 M120 96 q16 18 0 40 M150 98 q14 18 0 36" stroke="var(--cc-cat-stripe, var(--sepia-dark))" stroke-width="8" fill="none" stroke-linecap="round"/>
-  <circle cx="170" cy="76" r="46" fill="var(--cc-cat, var(--sepia-mid))"/>
-  <path d="M136 46 L126 4 L160 34 Z M204 46 L214 4 L180 34 Z" fill="var(--cc-cat, var(--sepia-mid))"/>
-  <path d="M140 44 L134 20 L154 38 Z M200 44 L206 20 L186 38 Z" fill="var(--cc-cat-stripe, var(--sepia-dark))"/>
-  <ellipse cx="156" cy="68" rx="8" ry="10" fill="var(--world-glow)"/>
-  <ellipse cx="184" cy="68" rx="8" ry="10" fill="var(--world-glow)"/>
-  <ellipse cx="156" cy="68" rx="2.5" ry="8" fill="var(--ink-primary)"/>
-  <ellipse cx="184" cy="68" rx="2.5" ry="8" fill="var(--ink-primary)"/>
-  <g class="pp__cat-grin">
-    <path d="M130 92 Q170 130 210 92" stroke="var(--cc-grin, var(--paper-base))" stroke-width="7" fill="none" stroke-linecap="round"/>
-    <path d="M140 98 v8 M154 108 v10 M170 112 v11 M186 108 v10 M200 98 v8" stroke="var(--cc-grin, var(--paper-base))" stroke-width="3.5" stroke-linecap="round"/>
-  </g>
+  ${catFace(170, 76, 46, { grin: 'pp__cat-grin' }).head}
+  ${catFace(170, 76, 46, { grin: 'pp__cat-grin' }).grin}
 </svg>`;
 
 /** The Mock Turtle's old master: a Turtle called Tortoise, upright, spectacled, with a cane. */

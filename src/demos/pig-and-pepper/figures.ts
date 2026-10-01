@@ -1,14 +1,13 @@
 /** Pig and Pepper's own props: the little house, the tree, the hearth and the
     cauldron, the crockery the cook throws, and Alice's own two hands. */
 
-const SKIN_HAND =
-  '<svg viewBox="0 0 120 160" focusable="false"><path d="M20 160 L20 80 Q30 40 60 46 Q90 40 100 80 L100 160 Z" fill="var(--alice-skin)"/><path d="M34 84 v-30 M54 78 v-40 M74 78 v-40 M94 90 v-26" stroke="var(--alice-skin)" stroke-width="14" stroke-linecap="round"/></svg>';
+import { figure } from '../art/art.ts';
 
 /** Her two hands at the bottom of the frame, and the bundle between them. */
 export const hands = (bundle: string): string =>
-  `<div class="pp__hand pp__hand--left">${SKIN_HAND}</div>` +
+  `<div class="pp__hand pp__hand--left">${figure('alice/hand-left')}</div>` +
   `<div class="pp__held">${bundle}</div>` +
-  `<div class="pp__hand pp__hand--right">${SKIN_HAND}</div>`;
+  `<div class="pp__hand pp__hand--right">${figure('alice/hand-right')}</div>`;
 
 /** The house front at the wood's edge: a wall, a roof, a window, and a door
     whose leaf is its own element so it can swing open. */

@@ -148,6 +148,7 @@
   .demo__sound,
   .demo__tilt,
   .demo__next,
+  .demo__auto,
   .demo__prop {
     color: inherit;
     font: inherit;
@@ -160,6 +161,7 @@
   }
 
   .demo__sound[aria-pressed="true"],
+  .demo__auto[aria-pressed="true"],
   .demo__motion[aria-pressed="true"] {
     background: var(--demo-ink);
     color: var(--demo-ground);
@@ -284,7 +286,9 @@
     position: relative;
     z-index: var(--demo-z-captions);
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
+    gap: var(--space-2);
     padding-block: var(--space-3) var(--space-4);
     font-family: system-ui, sans-serif;
   }
@@ -297,8 +301,23 @@
     pointer-events: none;
   }
 
-  .demo[data-attached] .demo__next {
+  .demo[data-attached] .demo__next,
+  .demo[data-attached] .demo__auto {
     pointer-events: auto;
+  }
+
+  /* While going on by itself, the next link's border is a ring that fills as the
+     end is held, and empties again when the reader scrolls back. */
+  .demo__end[data-auto] .demo__next {
+    --demo-auto: 0;
+    border: 2px solid transparent;
+    background:
+      linear-gradient(var(--demo-glass), var(--demo-glass)) padding-box,
+      conic-gradient(
+        var(--demo-ink) calc(var(--demo-auto) * 360deg),
+        oklch(from var(--demo-ink) l c h / 0.3) 0
+      )
+      border-box;
   }
 
   /* Interactive props sit above the captions, are real buttons, and only appear

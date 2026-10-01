@@ -83,4 +83,21 @@ describe('the character art', () => {
       }
     }
   });
+
+  it('draws the one Cheshire Cat face wherever the Cat appears', () => {
+    const cats = drawings.filter(([id]) => id.startsWith('cheshire-cat/'));
+    expect(cats.map(([id]) => id).sort()).toEqual([
+      'cheshire-cat/head',
+      'cheshire-cat/on-bough',
+      'cheshire-cat/on-hearth',
+    ]);
+    const parts = ['ears', 'face', 'eyes', 'pupils', 'grin'];
+    for (const [id, markup] of cats) {
+      for (const part of parts) {
+        expect(markup, `${id} ${part}`).toContain(`data-cat="${part}"`);
+      }
+      // The same grin path, only placed and scaled.
+      expect(markup, id).toContain('d="M-64 26 Q0 86 64 26"');
+    }
+  });
 });

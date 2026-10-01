@@ -3,9 +3,9 @@
 import { figure } from '../art/art.ts';
 
 export const HANDS_WITH_LOBSTER = `
-<div class="lq__hand lq__hand--left"><svg viewBox="0 0 120 160" focusable="false"><path d="M20 160 L20 80 Q30 40 60 46 Q90 40 100 80 L100 160 Z" fill="var(--alice-skin)"/><path d="M34 84 v-30 M54 78 v-40 M74 78 v-40 M94 90 v-26" stroke="var(--alice-skin)" stroke-width="14" stroke-linecap="round"/></svg></div>
+<div class="lq__hand lq__hand--left">${figure('alice/hand-left')}</div>
 <div class="lq__lobster-held">${figure('lobster')}</div>
-<div class="lq__hand lq__hand--right"><svg viewBox="0 0 120 160" focusable="false"><path d="M20 160 L20 80 Q30 40 60 46 Q90 40 100 80 L100 160 Z" fill="var(--alice-skin)"/><path d="M26 90 v-26 M46 78 v-40 M66 78 v-40 M86 84 v-30" stroke="var(--alice-skin)" stroke-width="14" stroke-linecap="round"/></svg></div>`;
+<div class="lq__hand lq__hand--right">${figure('alice/hand-right')}</div>`;
 
 export const TUREEN_SVG = `
 <svg viewBox="0 0 200 140" focusable="false">

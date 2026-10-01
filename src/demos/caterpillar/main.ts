@@ -307,8 +307,10 @@ function mount(shell: DemoShell): void {
   // --- The two bits, one in each hand. Real buttons: nibble either.
   const hands = shell.layer('ct__hands');
   hands.innerHTML =
-    `<button type="button" class="ct__bit ct__bit--left" aria-label="${shell.ui.demoNibbleLeft ?? ''}">${LEFT_BIT_SVG}</button>` +
-    `<button type="button" class="ct__bit ct__bit--right" aria-label="${shell.ui.demoNibbleRight ?? ''}">${RIGHT_BIT_SVG}</button>`;
+    `<button type="button" class="ct__bit ct__bit--left" aria-label="${shell.ui.demoNibbleLeft ?? ''}">` +
+    `<span class="ct__bit-hand">${figure('alice/hand-left')}</span><span class="ct__bit-piece">${LEFT_BIT_SVG}</span></button>` +
+    `<button type="button" class="ct__bit ct__bit--right" aria-label="${shell.ui.demoNibbleRight ?? ''}">` +
+    `<span class="ct__bit-hand">${figure('alice/hand-right')}</span><span class="ct__bit-piece">${RIGHT_BIT_SVG}</span></button>`;
   const bitLeft = hands.querySelector<HTMLButtonElement>('.ct__bit--left');
   const bitRight = hands.querySelector<HTMLButtonElement>('.ct__bit--right');
   const bites = { left: 0, right: 0 };

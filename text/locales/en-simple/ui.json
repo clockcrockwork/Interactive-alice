@@ -11,6 +11,7 @@
     "demoNext": "Next scene",
     "demoPause": "Pause motion",
     "demoResume": "Resume motion",
+    "demoAuto": "Go on by itself",
     "demoScrollHint": "Scroll to go on",
     "demoTechRabbitHole": "A WebGL well the camera falls down, with text that drifts past in depth.",
     "demoTechDormouse": "A tale written on a treacle spiral, shrinking as it turns, in pure SVG.",

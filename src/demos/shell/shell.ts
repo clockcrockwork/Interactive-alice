@@ -101,6 +101,25 @@ const keepKind = (kind: string): void => {
   }
 };
 
+/** Going on by itself: remembered per visitor, off until the reader turns it on. */
+const AUTO_KEY = 'alice-demos:auto';
+/** Seconds at the very end before the next page comes by itself. */
+const AUTO_DWELL = 4;
+const readAuto = (): boolean => {
+  try {
+    return localStorage.getItem(AUTO_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
+const writeAuto = (on: boolean): void => {
+  try {
+    localStorage.setItem(AUTO_KEY, on ? '1' : '0');
+  } catch {
+    // A private window may refuse; the choice holds for this page only.
+  }
+};
+
 export interface ShellOptions {
   /** Custom caption behaviour: return true to take over a beat's caption tweens. */
   caption?: (beat: Beat, master: gsap.core.Timeline, reduced: boolean, beats: Beat[]) => boolean;
@@ -119,6 +138,7 @@ declare global {
       overrun(): number;
       /** Whether the scrubbed timeline has caught up with the scroll. */
       settled(): boolean;
+      auto(): boolean;
     };
   }
 }
@@ -352,6 +372,50 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     });
   }
 
+  // --- Going on by itself. Scroll remains the way forward: this only follows a
+  // reader who asked for it, and only once the end has been reached and held.
+  // The ring round the next link fills while it waits; scrolling back empties it,
+  // and the motion pause holds it.
+  const end = root.querySelector<HTMLElement>('.demo__end');
+  const nextLink = root.querySelector<HTMLAnchorElement>('.demo__next');
+  const autoButton = root.querySelector<HTMLButtonElement>('.demo__auto');
+  let auto = readAuto();
+  let dwell = 0;
+  let left = false;
+  const showAuto = (): void => {
+    autoButton?.setAttribute('aria-pressed', String(auto));
+    end?.toggleAttribute('data-auto', auto);
+  };
+  if (autoButton) {
+    autoButton.hidden = false;
+    autoButton.addEventListener('click', () => {
+      auto = !auto;
+      dwell = 0;
+      writeAuto(auto);
+      showAuto();
+      nextLink?.style.setProperty('--demo-auto', '0');
+    });
+  }
+  showAuto();
+  const stepDwell = (dt: number): void => {
+    if (!auto || !nextLink || left) {
+      return;
+    }
+    const atEnd = activeIndex === beats.length - 1 && trigger.progress > 0.995;
+    dwell = atEnd ? Math.min(AUTO_DWELL, dwell + dt) : 0;
+    const fill = dwell / AUTO_DWELL;
+    // Reduced motion: the ring fills in quarters rather than sweeping.
+    nextLink.style.setProperty(
+      '--demo-auto',
+      (reducedMotion ? Math.floor(fill * 4) / 4 : fill).toFixed(3),
+    );
+    if (dwell >= AUTO_DWELL) {
+      left = true;
+      location.assign(nextLink.href);
+    }
+  };
+  frameFns.add(stepDwell);
+
   let live: HTMLElement | undefined;
   let liveTimer = 0;
   const status = (text: string): void => {
@@ -437,6 +501,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     reduced: () => reducedMotion,
     mode: () => root.dataset.mode ?? '',
     overrun: () => master.duration() - beats.length,
+    auto: () => auto,
     settled: () => {
       // With a smoothed scrub this is the tween easing the timeline after the
       // scroll; with an instant one (reduced motion) there is none to wait for.

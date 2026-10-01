@@ -291,6 +291,24 @@
     block-size: auto;
   }
 
+  /* Her hand comes up from the bottom of the frame; the bit sits on the fingertips. */
+  .ct__bit-hand {
+    display: block;
+  }
+
+  .ct__bit-piece {
+    position: absolute;
+    inset-inline-start: 6%;
+    inset-block-start: -22%;
+    inline-size: 78%;
+    filter: drop-shadow(0 8px 10px var(--ct-shade));
+  }
+
+  .ct__bit--right .ct__bit-piece {
+    inset-inline-start: auto;
+    inset-inline-end: 6%;
+  }
+
   .ct__bit--left {
     inset-inline-start: 6%;
   }

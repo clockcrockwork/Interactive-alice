@@ -182,6 +182,7 @@ const UI_FOR_SCRIPT = [
   'demoRaceStart',
   'demoPause',
   'demoResume',
+  'demoAuto',
   'demoGrabJar',
   'demoJarTucked',
   'demoPinch',
@@ -291,6 +292,7 @@ ${renderTrack(project, demo)}
       </div>
       <footer class="demo__end">
         <a class="demo__next" href="../${next}/">${escapeHtml(ui.demoNext)}</a>
+        <button class="demo__auto" type="button" aria-pressed="false" hidden>${escapeHtml(ui.demoAuto)}</button>
       </footer>
     </main>
   </body>

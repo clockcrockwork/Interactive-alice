@@ -30,6 +30,7 @@
         "demoNext",
         "demoPause",
         "demoResume",
+        "demoAuto",
         "demoScrollHint",
         "demoTechRabbitHole",
         "demoTechDormouse",
@@ -158,6 +159,11 @@
           "type": "string",
           "minLength": 1,
           "description": "Label of the motion toggle while ambient motion is playing."
+        },
+        "demoAuto": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Toggle at the end of a demo: when on, the page goes to the next scene by itself after a pause at the end."
         },
         "demoResume": {
           "type": "string",

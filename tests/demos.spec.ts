@@ -1547,3 +1547,78 @@ test('the status line shows what the reader did, then fades', async ({ page }) =
   await expect(status).not.toHaveAttribute('data-shown', '', { timeout: 8000 });
   await expect(status).not.toBeEmpty();
 });
+
+test('going on by itself is off until asked, then follows a held end to the next scene', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'mock-turtle');
+  test.skip(!demo, 'no Mock Turtle demo in this build');
+  await page.goto(demo?.url ?? '');
+  const toggle = page.locator('.demo__auto');
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  expect(await page.evaluate(() => window.__aliceDemo?.auto())).toBe(false);
+  await scrollTo(page, 1);
+  await page.waitForTimeout(1500);
+  expect(new URL(page.url()).pathname).toMatch(/\/demos\/mock-turtle\/?$/);
+  // Ask for it: remembered, and the ring starts to fill once the end is held.
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('.demo__end')).toHaveAttribute('data-auto', '');
+  await expect
+    .poll(
+      () =>
+        page.evaluate(
+          () =>
+            Number(
+              document
+                .querySelector<HTMLElement>('.demo__next')
+                ?.style.getPropertyValue('--demo-auto'),
+            ) || 0,
+        ),
+      { timeout: 4000 },
+    )
+    .toBeGreaterThan(0.1);
+  await page.waitForURL(/\/demos\/lobster-quadrille\/?$/, { timeout: 10_000 });
+  expect(await page.evaluate(() => window.__aliceDemo?.auto())).toBe(true);
+  await page.evaluate(() => localStorage.removeItem('alice-demos:auto'));
+});
+
+test('going on by itself empties its ring when the reader scrolls back', async ({ page }) => {
+  const demo = demos.find((candidate) => candidate.demo === 'mock-turtle');
+  test.skip(!demo, 'no Mock Turtle demo in this build');
+  await page.goto(demo?.url ?? '');
+  await page.locator('.demo__auto').click();
+  await scrollTo(page, 1);
+  await expect
+    .poll(
+      () =>
+        page.evaluate(
+          () =>
+            Number(
+              document
+                .querySelector<HTMLElement>('.demo__next')
+                ?.style.getPropertyValue('--demo-auto'),
+            ) || 0,
+        ),
+      { timeout: 4000 },
+    )
+    .toBeGreaterThan(0.1);
+  await scrollTo(page, 0.5);
+  await expect
+    .poll(
+      () =>
+        page.evaluate(
+          () =>
+            Number(
+              document
+                .querySelector<HTMLElement>('.demo__next')
+                ?.style.getPropertyValue('--demo-auto'),
+            ) || 0,
+        ),
+      { timeout: 4000 },
+    )
+    .toBe(0);
+  await page.waitForTimeout(1000);
+  expect(new URL(page.url()).pathname).toMatch(/\/demos\/mock-turtle\/?$/);
+  await page.evaluate(() => localStorage.removeItem('alice-demos:auto'));
+});

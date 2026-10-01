@@ -131,7 +131,11 @@ function mount(shell: DemoShell): void {
   const court = document.createElement('div');
   court.className = 'tr__court';
   buildCourt(court);
-  world.append(court);
+  // Her head: the court hangs inside a wrapper that leans when she dodges.
+  const head = document.createElement('div');
+  head.className = 'tr__head';
+  head.append(court);
+  world.append(head);
   const aliceLayer = shell.layer('tr__alice-layer');
   aliceLayer.innerHTML = `<div class="tr__alice">${figure('alice/silhouette')}</div>`;
   const alice = aliceLayer.querySelector<HTMLElement>('.tr__alice');
@@ -338,6 +342,80 @@ function mount(shell: DemoShell): void {
   while (stuckIndices.size < stuckCount) {
     stuckIndices.add(Math.floor(pick() * cards.length));
   }
+
+  // --- Dodging. Her head leans with the pointer (the phone's tilt), or for a
+  // second after a Dodge button. Every flying card has a lane, left or right;
+  // a card whose lane she has leant away from by the time it arrives whips past
+  // instead of hitting, and the misses are counted in `--dodged` on the court.
+  // Under reduced motion the lean is a cut and a dodged card simply fades out.
+  const dodge = { lean: 0, held: 0, until: 0, count: 0, told: false };
+  const flying = (): boolean => master.time() >= iAttack + 0.05 && master.time() < iLeaves;
+  court.style.setProperty('--dodged', '0');
+  shell.onFrame((dt) => {
+    let target = 0;
+    if (flying()) {
+      if (performance.now() < dodge.until) {
+        target = dodge.held;
+      } else if (shell.pointer.active) {
+        const raw = Math.max(-1, Math.min(1, shell.pointer.x * 1.25));
+        target = reducedMotion ? (Math.abs(raw) > 0.45 ? Math.sign(raw) : 0) : raw;
+      }
+    }
+    let next = reducedMotion ? target : dodge.lean + (target - dodge.lean) * Math.min(1, dt * 9);
+    if (Math.abs(target - next) < 0.005) {
+      next = target;
+    }
+    if (next !== dodge.lean) {
+      dodge.lean = next;
+      // One transform on one element per frame; the court beneath is composited.
+      gsap.set(head, { xPercent: next * -7, rotation: next * -5 });
+    }
+  });
+  const dodged = (lane: number): boolean => dodge.lean * lane < -0.45;
+  const miss = (card: Card, lane: number): void => {
+    dodge.count += 1;
+    court.style.setProperty('--dodged', String(dodge.count));
+    if (!dodge.told) {
+      dodge.told = true;
+      shell.status(shell.ui.demoDodged ?? '');
+    }
+    shell.sound.play('whoosh', 0.5);
+    if (reducedMotion) {
+      gsap.to(card.el, { opacity: 0, duration: 0.2 });
+      return;
+    }
+    gsap.to(card.el, {
+      x: `${lane * 70}vw`,
+      z: 1150,
+      rotationZ: `+=${lane * 120}`,
+      duration: 0.3,
+      ease: 'power1.in',
+    });
+    gsap.to(card.el, { opacity: 0, duration: 0.08, delay: 0.24 });
+  };
+  const hold = (direction: -1 | 1): void => {
+    dodge.held = direction;
+    dodge.until = performance.now() + 1000;
+  };
+  const dodgeLeft = shell.prop(shell.ui.demoDodgeLeft ?? '', 'tr__prop-dodge tr__prop-dodge--left');
+  const dodgeRight = shell.prop(
+    shell.ui.demoDodgeRight ?? '',
+    'tr__prop-dodge tr__prop-dodge--right',
+  );
+  dodgeLeft.addEventListener('click', () => hold(-1));
+  dodgeRight.addEventListener('click', () => hold(1));
+  const showDodge = (): void => {
+    const on = master.time() >= iAttack && master.time() < iLeaves;
+    for (const button of [dodgeLeft, dodgeRight]) {
+      if (on) {
+        button.show();
+      } else {
+        button.hide();
+      }
+    }
+  };
+  master.call(showDodge, [], iAttack);
+  master.call(showDodge, [], iLeaves);
   // --- On the glass: cards shy away from the pointer, and go when flicked.
   const flick = (card: Card): void => {
     if (!card.stuck) {
@@ -409,9 +487,12 @@ function mount(shell: DemoShell): void {
   cards.forEach((card, index) => {
     const stuck = stuckIndices.has(index);
     const at = index * 0.035 + (stuck ? 0.3 : 0);
+    const x = (pick() - 0.5) * 60;
+    const lane = x < 0 ? -1 : 1;
+    const arrive = (): void => (dodged(lane) ? miss(card, lane) : placeOnGlass(card, index));
     if (reducedMotion) {
       if (stuck) {
-        attack.call(() => placeOnGlass(card, index), [], at);
+        attack.call(arrive, [], at);
       } else {
         attack.to(card.el, { opacity: 0, duration: 0.2 }, at);
       }
@@ -420,7 +501,7 @@ function mount(shell: DemoShell): void {
     attack.to(
       card.el,
       {
-        x: `${(pick() - 0.5) * 60}vw`,
+        x: `${x}vw`,
         y: `${(pick() - 0.5) * 40}vh`,
         z: stuck ? 640 : 1180,
         rotationX: (pick() - 0.5) * 720,
@@ -428,7 +509,7 @@ function mount(shell: DemoShell): void {
         rotationZ: (pick() - 0.5) * 360,
         duration: stuck ? 0.7 : 0.9,
         ease: 'power2.in',
-        onComplete: stuck ? () => placeOnGlass(card, index) : undefined,
+        onComplete: stuck ? arrive : undefined,
       },
       at,
     );
@@ -438,6 +519,10 @@ function mount(shell: DemoShell): void {
   });
   const resetPack = (): void => {
     beatingOff = false;
+    dodge.count = 0;
+    dodge.told = false;
+    dodge.until = 0;
+    court.style.setProperty('--dodged', '0');
     for (const card of cards) {
       if (card.el.parentElement !== pack && pack) {
         pack.append(card.el);

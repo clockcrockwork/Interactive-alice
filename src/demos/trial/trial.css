@@ -120,7 +120,15 @@
     overflow: hidden;
   }
 
+  /* Her head: leans sideways (a transform the script sets) when she dodges. */
+  .tr__head {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+  }
+
   .tr__court {
+    --dodged: 0;
     /* Composited: the dolly and the tremble then move a texture of the paper
        theatre instead of painting its hundred pieces again on every frame. */
     will-change: transform;
@@ -506,6 +514,19 @@
     inset-inline-start: 50%;
     inset-block-start: calc(var(--demo-bar-height) + 1rem);
     translate: -50% 0;
+  }
+
+  .tr__prop-dodge {
+    inset-block-start: 50%;
+    translate: 0 -50%;
+  }
+
+  .tr__prop-dodge--left {
+    inset-inline-start: 1rem;
+  }
+
+  .tr__prop-dodge--right {
+    inset-inline-end: 1rem;
   }
 
   .demo--trial[data-shake] .tr__world {

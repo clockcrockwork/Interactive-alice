@@ -1,81 +1,7 @@
 {
   "id": "trial",
-  "titleChapter": 11,
+  "titleChapter": 12,
   "shots": [
-    {
-      "id": "looking-round-the-court",
-      "beats": [
-        {
-          "id": "throne",
-          "cue": "throne",
-          "segments": [
-            "ch11.s0010",
-            "ch11.s0020",
-            "ch11.s0030"
-          ]
-        },
-        {
-          "id": "knave",
-          "cue": "knave",
-          "segments": [
-            "ch11.s0040",
-            "ch11.s0050"
-          ]
-        },
-        {
-          "id": "tarts",
-          "cue": "tarts",
-          "segments": [
-            "ch11.s0060",
-            "ch11.s0070"
-          ]
-        },
-        {
-          "id": "judge",
-          "cue": "judge",
-          "segments": [
-            "ch11.s0080",
-            "ch11.s0090"
-          ]
-        },
-        {
-          "id": "jurors",
-          "cue": "jury",
-          "segments": [
-            "ch11.s0100",
-            "ch11.s0110"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "the-accusation-read",
-      "beats": [
-        {
-          "id": "herald",
-          "cue": "herald",
-          "segments": [
-            "ch11.s0120",
-            "ch11.s0130"
-          ]
-        },
-        {
-          "id": "verses",
-          "segments": [
-            "ch11.s0140",
-            "ch11.s0150"
-          ]
-        },
-        {
-          "id": "not-yet",
-          "segments": [
-            "ch11.s0160",
-            "ch11.s0170",
-            "ch11.s0180"
-          ]
-        }
-      ]
-    },
     {
       "id": "sentence-before-verdict",
       "beats": [
@@ -268,5 +194,6 @@
         }
       ]
     }
-  ]
+  ],
+  "titleSection": "sentence-first"
 }

@@ -858,6 +858,14 @@ export interface LocaleUIStrings {
      */
     demoTechMouseTale: string;
     /**
+     * Index card: what the witnesses demo shows.
+     */
+    demoTechWitnesses: string;
+    /**
+     * Index card: what the Duchess demo shows.
+     */
+    demoTechDuchess: string;
+    /**
      * Technique note on the demo index card for the tea-party.
      */
     demoTechTeaParty: string;

@@ -8,6 +8,15 @@
     },
     {
       "id": "the-accusation"
+    },
+    {
+      "id": "the-hatter"
+    },
+    {
+      "id": "the-guinea-pigs"
+    },
+    {
+      "id": "the-cook"
     }
   ],
   "segments": [
@@ -108,6 +117,315 @@
     {
       "id": "ch11.s0180",
       "section": "the-accusation",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch11.s0190",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch11.s0200",
+      "section": "the-hatter",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0210",
+      "section": "the-hatter",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0220",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch11.s0230",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch11.s0240",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch11.s0250",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "march-hare"
+    },
+    {
+      "id": "ch11.s0260",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch11.s0270",
+      "section": "the-hatter",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0280",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch11.s0290",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch11.s0300",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch11.s0310",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch11.s0320",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch11.s0330",
+      "section": "the-hatter",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0340",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch11.s0350",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch11.s0360",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch11.s0370",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch11.s0380",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch11.s0390",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch11.s0400",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch11.s0410",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch11.s0420",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch11.s0430",
+      "section": "the-hatter",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0440",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch11.s0450",
+      "section": "the-hatter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch11.s0460",
+      "section": "the-guinea-pigs",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0470",
+      "section": "the-guinea-pigs",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0480",
+      "section": "the-guinea-pigs",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0490",
+      "section": "the-guinea-pigs",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch11.s0500",
+      "section": "the-guinea-pigs",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch11.s0510",
+      "section": "the-guinea-pigs",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch11.s0520",
+      "section": "the-guinea-pigs",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch11.s0530",
+      "section": "the-guinea-pigs",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch11.s0540",
+      "section": "the-guinea-pigs",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch11.s0550",
+      "section": "the-guinea-pigs",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0560",
+      "section": "the-guinea-pigs",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch11.s0570",
+      "section": "the-cook",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch11.s0580",
+      "section": "the-cook",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0590",
+      "section": "the-cook",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0600",
+      "section": "the-cook",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch11.s0610",
+      "section": "the-cook",
+      "kind": "dialogue",
+      "speaker": "cook"
+    },
+    {
+      "id": "ch11.s0620",
+      "section": "the-cook",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch11.s0630",
+      "section": "the-cook",
+      "kind": "dialogue",
+      "speaker": "cook"
+    },
+    {
+      "id": "ch11.s0640",
+      "section": "the-cook",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch11.s0650",
+      "section": "the-cook",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch11.s0660",
+      "section": "the-cook",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch11.s0670",
+      "section": "the-cook",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0680",
+      "section": "the-cook",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0690",
+      "section": "the-cook",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch11.s0700",
+      "section": "the-cook",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0710",
+      "section": "the-cook",
+      "kind": "narration"
+    },
+    {
+      "id": "ch11.s0720",
+      "section": "the-cook",
       "kind": "dialogue",
       "speaker": "white-rabbit"
     }

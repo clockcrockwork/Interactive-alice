@@ -48,8 +48,10 @@ export const DEMO_ORDER = [
   'tea-party',
   'dormouse',
   'croquet',
+  'duchess',
   'mock-turtle',
   'lobster-quadrille',
+  'witnesses',
   'trial',
 ] as const;
 
@@ -332,6 +334,8 @@ const TECH_KEY = {
   riverbank: 'demoTechRiverbank',
   'mouse-tale': 'demoTechMouseTale',
   'tea-party': 'demoTechTeaParty',
+  duchess: 'demoTechDuchess',
+  witnesses: 'demoTechWitnesses',
 } as const;
 
 function renderIndex(project: DemoProject): string {

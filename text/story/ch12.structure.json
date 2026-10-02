@@ -4,6 +4,18 @@
   "sourceFile": "text/raw/ch12-alices-evidence.txt",
   "sections": [
     {
+      "id": "the-jury-box"
+    },
+    {
+      "id": "nothing-whatever"
+    },
+    {
+      "id": "rule-forty-two"
+    },
+    {
+      "id": "the-letter"
+    },
+    {
       "id": "sentence-first"
     },
     {
@@ -17,6 +29,345 @@
     }
   ],
   "segments": [
+    {
+      "id": "ch12.s0010",
+      "section": "the-jury-box",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0020",
+      "section": "the-jury-box",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0030",
+      "section": "the-jury-box",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0040",
+      "section": "the-jury-box",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0050",
+      "section": "the-jury-box",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0060",
+      "section": "the-jury-box",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0070",
+      "section": "the-jury-box",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0080",
+      "section": "the-jury-box",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0090",
+      "section": "the-jury-box",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0100",
+      "section": "the-jury-box",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0110",
+      "section": "the-jury-box",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0120",
+      "section": "the-jury-box",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0130",
+      "section": "nothing-whatever",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0140",
+      "section": "nothing-whatever",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0150",
+      "section": "nothing-whatever",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0160",
+      "section": "nothing-whatever",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0170",
+      "section": "nothing-whatever",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0180",
+      "section": "nothing-whatever",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0190",
+      "section": "nothing-whatever",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0200",
+      "section": "nothing-whatever",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0210",
+      "section": "nothing-whatever",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0220",
+      "section": "nothing-whatever",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0230",
+      "section": "rule-forty-two",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0240",
+      "section": "rule-forty-two",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0250",
+      "section": "rule-forty-two",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0260",
+      "section": "rule-forty-two",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0270",
+      "section": "rule-forty-two",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0280",
+      "section": "rule-forty-two",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0290",
+      "section": "rule-forty-two",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch12.s0300",
+      "section": "rule-forty-two",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0310",
+      "section": "rule-forty-two",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0320",
+      "section": "rule-forty-two",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0330",
+      "section": "rule-forty-two",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0340",
+      "section": "rule-forty-two",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0350",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0360",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0370",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0380",
+      "section": "the-letter",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0390",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0400",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0410",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0420",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "knave-of-hearts"
+    },
+    {
+      "id": "ch12.s0430",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "knave-of-hearts"
+    },
+    {
+      "id": "ch12.s0440",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0450",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0460",
+      "section": "the-letter",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0470",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch12.s0480",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0490",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0500",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0510",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0520",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0530",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0540",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0550",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0560",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0570",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0580",
+      "section": "the-letter",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0590",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
     {
       "id": "ch12.s0600",
       "section": "sentence-first",

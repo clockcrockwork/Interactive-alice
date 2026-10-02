@@ -4,6 +4,15 @@
   "sourceFile": "text/raw/ch09-the-mock-turtles-story.txt",
   "sections": [
     {
+      "id": "the-duchess"
+    },
+    {
+      "id": "a-moral"
+    },
+    {
+      "id": "the-queen-again"
+    },
+    {
       "id": "the-gryphon"
     },
     {
@@ -20,6 +29,273 @@
     }
   ],
   "segments": [
+    {
+      "id": "ch09.s0010",
+      "section": "the-duchess",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch09.s0015",
+      "section": "the-duchess",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0020",
+      "section": "the-duchess",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0025",
+      "section": "the-duchess",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0030",
+      "section": "the-duchess",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0035",
+      "section": "the-duchess",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch09.s0040",
+      "section": "the-duchess",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch09.s0045",
+      "section": "the-duchess",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0050",
+      "section": "the-duchess",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch09.s0055",
+      "section": "a-moral",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0060",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0065",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch09.s0070",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0075",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch09.s0080",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch09.s0085",
+      "section": "a-moral",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0090",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch09.s0095",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch09.s0100",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0105",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch09.s0110",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch09.s0115",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0120",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0125",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch09.s0130",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch09.s0135",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0140",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch09.s0145",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch09.s0150",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0155",
+      "section": "a-moral",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch09.s0160",
+      "section": "the-queen-again",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0165",
+      "section": "the-queen-again",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0170",
+      "section": "the-queen-again",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch09.s0175",
+      "section": "the-queen-again",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch09.s0180",
+      "section": "the-queen-again",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch09.s0185",
+      "section": "the-queen-again",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0190",
+      "section": "the-queen-again",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch09.s0195",
+      "section": "the-queen-again",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0200",
+      "section": "the-queen-again",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0205",
+      "section": "the-queen-again",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch09.s0210",
+      "section": "the-queen-again",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0215",
+      "section": "the-queen-again",
+      "kind": "narration"
+    },
+    {
+      "id": "ch09.s0220",
+      "section": "the-queen-again",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch09.s0225",
+      "section": "the-queen-again",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch09.s0230",
+      "section": "the-queen-again",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch09.s0235",
+      "section": "the-queen-again",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
     {
       "id": "ch09.s0300",
       "section": "the-gryphon",

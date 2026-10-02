@@ -127,6 +127,8 @@
         "demoLookWatch",
         "demoTechMouseTale",
         "demoTechTeaParty",
+        "demoTechDuchess",
+        "demoTechWitnesses",
         "demoLookForWine",
         "demoButterWatch",
         "demoWhisperTime",
@@ -658,6 +660,16 @@
           "type": "string",
           "minLength": 1,
           "description": "Technique note on the demo index card for the Mouse's tale."
+        },
+        "demoTechWitnesses": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index card: what the witnesses demo shows."
+        },
+        "demoTechDuchess": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index card: what the Duchess demo shows."
         },
         "demoTechTeaParty": {
           "type": "string",

@@ -96,6 +96,10 @@
     {
       "id": "lory",
       "devLabel": "the Lory"
+    },
+    {
+      "id": "knave-of-hearts",
+      "devLabel": "the Knave of Hearts"
     }
   ]
 }

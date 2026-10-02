@@ -22,9 +22,11 @@ const KIND: Record<string, 'hole' | 'whirl' | 'cards'> = {
   'lobster-quadrille': 'whirl',
   'mock-turtle': 'whirl',
   croquet: 'cards',
+  duchess: 'cards',
   'rabbit-house': 'cards',
   'caucus-race': 'cards',
   trial: 'cards',
+  witnesses: 'cards',
   'pig-and-pepper': 'cards',
 };
 

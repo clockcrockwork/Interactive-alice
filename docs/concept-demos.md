@@ -1,16 +1,16 @@
 # Concept demos
 
-> Canonical document for the seventeen standalone concept demos under `/demos/`: what they are for, how they relate to the story runtime, what each one stages, and how they are checked. Product intent is in [`product-principles.md`](product-principles.md); the story runtime is in [`scene-shot-model.md`](scene-shot-model.md) and [`frontend-architecture.md`](frontend-architecture.md).
+> Canonical document for the nineteen standalone concept demos under `/demos/`: what they are for, how they relate to the story runtime, what each one stages, and how they are checked. Product intent is in [`product-principles.md`](product-principles.md); the story runtime is in [`scene-shot-model.md`](scene-shot-model.md) and [`frontend-architecture.md`](frontend-architecture.md).
 
 ## 1. What they are
 
-Seventeen ambitious, self-contained stagings of one moment of the book each, built to
+Nineteen ambitious, self-contained stagings of one moment of the book each, built to
 show how far an interactive telling can go before the story runtime is asked to carry
 it. They are demonstrations, not the product: each one chooses the technique that
 makes its moment strongest and spends its budget on that.
 
 ```text
-/demos/                  the index: seventeen cards on a table, and the choice of Alice
+/demos/                  the index: nineteen cards on a table, and the choice of Alice
 /demos/riverbank/        A Golden Afternoon: the bank, a book without pictures, a rabbit with a watch
 /demos/rabbit-hole/      Down the Rabbit-Hole: a WebGL well the camera falls down
 /demos/drink-me/         Drink Me: a first-person hall in CSS 3D that scales around her
@@ -25,9 +25,11 @@ makes its moment strongest and spends its budget on that.
 /demos/tea-party/        No Room: the table where it is always six o'clock, in CSS 3D
 /demos/dormouse/         A Mad Tea-Party: the Dormouse's tale on a treacle spiral, SVG
 /demos/croquet/          The Queen's Croquet-Ground: a garden in CSS 3D with live mallets
+/demos/duchess/          A Moral in Everything: a walk arm in arm, a moral for everything, the Queen's shadow
 /demos/mock-turtle/      The Mock Turtle's Story: school in the sea, subjects written on the waves
 /demos/lobster-quadrille/ The Lobster Quadrille: a dance on the shore the reader joins
-/demos/trial/            Who Stole the Tarts?: a paper courtroom in CSS 3D, and the pack
+/demos/witnesses/        Who Stole the Tarts?: the court, the witnesses, and Alice grown too big
+/demos/trial/            Sentence First: the pack flies, the leaves fall, her sister's dream
 ```
 
 ### Colour, and which Alice
@@ -260,7 +262,7 @@ Caterpillar, the Caterpillar and the kitchen, the Cat and the tea-party, the
 croquet-ground and the Mock Turtle) change scene through the page transition and
 nothing more.
 
-## 4. The seventeen demos
+## 4. The nineteen demos
 
 ### A Golden Afternoon: a camera that runs after the Rabbit
 

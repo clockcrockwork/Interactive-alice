@@ -386,6 +386,23 @@ export const FLAMINGO_SVG = `
   </g>
 </svg>`;
 
+/** The same flamingo tucked under her arm on a walk: body level, neck up, and a
+    head that can turn to eye whoever is leaning too close. */
+export const FLAMINGO_TUCKED_SVG = `
+<svg viewBox="0 0 200 160" focusable="false">
+  <path d="M72 134 L62 158 M102 134 L108 158" stroke="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))" stroke-width="7" stroke-linecap="round"/>
+  <path d="M40 100 q-26 -6 -34 16 q20 2 36 -4 z" fill="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))"/>
+  <ellipse cx="90" cy="110" rx="56" ry="28" fill="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))"/>
+  <path d="M60 104 q30 -12 60 0" stroke="var(--paper-warm)" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <path d="M136 100 q28 -18 14 -56" stroke="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <g class="dc__tucked-head">
+    <circle cx="150" cy="36" r="17" fill="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))"/>
+    <path d="M138 42 L104 54 L140 52 Z" fill="var(--ink-primary)"/>
+    <circle cx="154" cy="31" r="4.5" fill="var(--paper-base)"/>
+    <circle class="dc__tucked-pupil" cx="155" cy="31" r="2.2" fill="var(--ink-primary)"/>
+  </g>
+</svg>`;
+
 /** Which classes a demo hangs on the Cat's parts, so it can move them. */
 export interface CatFaceClasses {
   ears?: string;
@@ -914,11 +931,13 @@ export const HATTER_SVG = `
       <circle cx="96" cy="101" r="3" fill="var(--ink-primary)"/>
     </g>
     <path d="M70 118 q10 6 20 0" stroke="var(--ink-secondary)" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <path d="M24 78 h112 v10 h-112 z" fill="var(--sepia-deep)"/>
-    <path d="M38 80 L44 10 L116 10 L122 80 Z" fill="var(--sepia-deep)"/>
-    <path d="M42 66 h76 v10 h-76 z" fill="var(--sepia-mid)"/>
-    <path d="M90 30 l24 -6 l4 24 l-24 6 z" fill="var(--paper-base)"/>
-    <path d="M96 36 l12 -3 M98 44 l12 -3" stroke="var(--ink-primary)" stroke-width="2" stroke-linecap="round"/>
+    <g class="hatter__hat">
+      <path d="M24 78 h112 v10 h-112 z" fill="var(--sepia-deep)"/>
+      <path d="M38 80 L44 10 L116 10 L122 80 Z" fill="var(--sepia-deep)"/>
+      <path d="M42 66 h76 v10 h-76 z" fill="var(--sepia-mid)"/>
+      <path d="M90 30 l24 -6 l4 24 l-24 6 z" fill="var(--paper-base)"/>
+      <path d="M96 36 l12 -3 M98 44 l12 -3" stroke="var(--ink-primary)" stroke-width="2" stroke-linecap="round"/>
+    </g>
   </g>
 </svg>`;
 
@@ -943,4 +962,21 @@ export const MARCH_HARE_SVG = `
     <path d="M76 112 q4 4 8 0 M80 114 v6" stroke="var(--ink-primary)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
     <path d="M66 122 q14 8 28 0" stroke="var(--ink-secondary)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
   </g>
+</svg>`;
+
+/** One guinea-pig of the crowd, sitting up; its paw (`guinea-pig__paw`) can be raised to cheer. */
+export const GUINEA_PIG_FRAGMENT = `<ellipse cx="60" cy="72" rx="44" ry="30" fill="var(--sepia-light)"/>
+  <ellipse cx="34" cy="60" rx="22" ry="20" fill="var(--sepia-light)"/>
+  <ellipse cx="22" cy="42" rx="7" ry="9" fill="var(--sepia-mid)"/>
+  <ellipse cx="42" cy="40" rx="7" ry="9" fill="var(--sepia-mid)"/>
+  <ellipse cx="80" cy="52" rx="26" ry="18" fill="var(--sepia-mid)" opacity="0.5"/>
+  <circle cx="26" cy="60" r="3" fill="var(--ink-primary)"/>
+  <circle cx="14" cy="68" r="2.4" fill="color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm))"/>
+  <path d="M8 70 l-8 -3 M8 74 l-8 2" stroke="var(--ink-primary)" stroke-width="1.2"/>
+  <path class="guinea-pig__paw" d="M48 86 q-14 -2 -16 -16" stroke="var(--sepia-mid)" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <path d="M40 100 v-10 M78 100 v-10" stroke="var(--sepia-mid)" stroke-width="6" stroke-linecap="round"/>`;
+
+export const GUINEA_PIG_SVG = `
+<svg viewBox="0 0 120 104" focusable="false">
+  ${GUINEA_PIG_FRAGMENT}
 </svg>`;

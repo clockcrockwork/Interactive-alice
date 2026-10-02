@@ -56,3 +56,14 @@ export const REAL_SVG: Record<string, string> = {
   hen: `<svg viewBox="0 0 140 110" focusable="false"><ellipse cx="74" cy="70" rx="40" ry="26" fill="currentColor"/><circle cx="40" cy="50" r="16" fill="currentColor"/><path d="M26 52 l-14 4 l14 6 z" fill="currentColor"/><path d="M34 34 l4 -12 l6 10 l6 -10 l2 12" fill="currentColor"/><path d="M110 60 l22 -20 M110 68 l26 -6" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><path d="M60 96 v14 M84 96 v14" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></svg>`,
   cow: `<svg viewBox="0 0 140 110" focusable="false"><rect x="30" y="40" width="90" height="46" rx="18" fill="currentColor"/><rect x="10" y="30" width="34" height="34" rx="12" fill="currentColor"/><path d="M14 30 q-8 -14 4 -18 M40 30 q8 -14 -4 -18" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M44 86 v20 M64 86 v20 M92 86 v20 M112 86 v20" stroke="currentColor" stroke-width="8" stroke-linecap="round"/></svg>`,
 };
+
+/** The witness-box: a railed stand with a step, empty until a witness is called. */
+export const WITNESS_BOX_SVG = `
+<svg viewBox="0 0 200 180" focusable="false">
+  <rect x="20" y="150" width="160" height="30" fill="var(--sepia-deep)"/>
+  <rect x="30" y="86" width="140" height="68" rx="4" fill="var(--sepia-dark)"/>
+  <rect x="30" y="80" width="140" height="10" rx="3" fill="var(--sepia-mid)"/>
+  <path d="M44 86 v-30 M72 86 v-30 M100 86 v-30 M128 86 v-30 M156 86 v-30" stroke="var(--sepia-mid)" stroke-width="5" stroke-linecap="round"/>
+  <rect x="34" y="50" width="132" height="8" rx="3" fill="var(--sepia-mid)"/>
+  <path d="M40 120 h120" stroke="oklch(from var(--ink-primary) l c h / 0.2)" stroke-width="3"/>
+</svg>`;

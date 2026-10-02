@@ -1,0 +1,808 @@
+/* Who Stole the Tarts?: the court of court.css, entered through its doors, and
+   the witnesses in its box: the Hatter and his teacup, the guinea-pig and the
+   bag, the cook and her pepper, the jury-box tipped over, the King's note-book,
+   and the letter that unfolds into the frame. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    --tr-door: var(--sepia-dark);
+    --tr-door-deep: var(--sepia-deep);
+    --wt-speck: var(--sepia-deep);
+    --wt-hand: var(--ink-primary);
+    --wt-hand-other: var(--ink-secondary);
+  }
+}
+
+@layer scene {
+  .demo--witnesses .demo-beat {
+    inset-block-end: 10vh;
+    max-inline-size: min(40rem, 90vw);
+  }
+
+  .demo--witnesses .line[data-speaker="queen-of-hearts"] {
+    color: color-mix(in oklch, var(--wonder-red-light), var(--paper-base) 45%);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .demo--witnesses .line[data-speaker="king-of-hearts"] {
+    color: var(--tr-gold);
+  }
+
+  .demo--witnesses .line[data-speaker="alice"] {
+    color: var(--alice-dress-light);
+  }
+
+  .demo--witnesses .line[data-speaker="hatter"],
+  .demo--witnesses .line[data-speaker="march-hare"],
+  .demo--witnesses .line[data-speaker="cook"],
+  .demo--witnesses .line[data-speaker="knave-of-hearts"] {
+    color: var(--paper-aged);
+    font-style: italic;
+  }
+
+  .demo--witnesses .line[data-speaker="dormouse"] {
+    color: var(--sepia-light);
+    font-style: italic;
+  }
+
+  .demo--witnesses .line[data-speaker="white-rabbit"] {
+    display: inline-block;
+    justify-self: center;
+    padding: 0.3em 1em;
+    background: var(--paper-warm);
+    color: var(--demo-paper-ink);
+    font-style: italic;
+    text-shadow: none;
+    clip-path: inset(0 0 calc((1 - var(--unroll, 1)) * 100%) 0);
+  }
+
+  /* The court's doors, from inside: two leaves the width of the screen that
+     swing away to show the throne. The same pair the Lobster Quadrille's run
+     arrived at. Nothing under them is blocked once they are gone. */
+  .tr__doors {
+    --open: 0;
+    perspective: 900px;
+    perspective-origin: 50% 50%;
+    transform-style: preserve-3d;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .tr__door-leaf {
+    position: absolute;
+    inset-block: 0;
+    inline-size: 50%;
+    background:
+      linear-gradient(to bottom, transparent 30%, oklch(from var(--ink-primary) l c h / 0.25)),
+      repeating-linear-gradient(to bottom, var(--tr-door) 0 18%, var(--tr-door-deep) 18% 20%);
+    box-shadow:
+      inset 0 0 0 0.3vmin var(--tr-gold),
+      0 0 8vmin oklch(from var(--ink-primary) l c h / 0.6);
+    backface-visibility: visible;
+  }
+
+  .tr__door-leaf::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 52%;
+    inline-size: 8%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--tr-gold);
+  }
+
+  .tr__door-leaf--left {
+    inset-inline-start: 0;
+    transform-origin: 0 50%;
+    transform: rotateY(calc(var(--open) * 100deg));
+  }
+
+  .tr__door-leaf--left::after {
+    inset-inline-end: 8%;
+  }
+
+  .tr__door-leaf--right {
+    inset-inline-end: 0;
+    transform-origin: 100% 50%;
+    transform: rotateY(calc(var(--open) * -100deg));
+  }
+
+  .tr__door-leaf--right::after {
+    inset-inline-start: 8%;
+  }
+
+  /* --- The witness-box and who stands in it. */
+  .wt__hatter,
+  .wt__cook {
+    --w: clamp(7rem, 20vmin, 12rem);
+    --x: 110;
+    --z: -48;
+    /* Standing on the box's step, so the rail is at their waist. */
+    inset-block-end: 31%;
+  }
+
+  .wt__hatter .art,
+  .wt__cook .art,
+  .wt__pig .art,
+  .tr__herald .art {
+    transform-origin: 50% 100%;
+  }
+
+  .wt__pig--1 .art {
+    transform: translateY(calc(var(--in, 0) * 70%)) rotate(calc(var(--in, 0) * 180deg));
+  }
+
+  .wt__lizard .art {
+    transform-origin: 50% 50%;
+    transition: transform 300ms var(--demo-ease);
+  }
+
+  .wt__hatter[data-trembling="some"] .art {
+    animation: wt-tremble 0.22s ease-in-out infinite alternate;
+  }
+
+  .wt__hatter[data-trembling="hard"] .art {
+    animation: wt-tremble 0.12s ease-in-out infinite alternate;
+    --wt-tremble: 1.8;
+  }
+
+  .wt__teacup,
+  .wt__bread,
+  .wt__pepper-box {
+    position: absolute;
+    inline-size: 26%;
+  }
+
+  .wt__teacup {
+    inset-inline-start: -16%;
+    inset-block-start: 30%;
+  }
+
+  .wt__bread {
+    inset-inline-end: -14%;
+    inset-block-start: 36%;
+    transform: scaleX(calc(1 - var(--thin, 0) * 0.8));
+    transform-origin: 0 50%;
+  }
+
+  .wt__teacup svg,
+  .wt__bread svg,
+  .wt__pepper-box svg,
+  .wt__notebook svg,
+  .wt__page svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* The twinkling of the tea: little points over the cup, only while it twinkles. */
+  .wt__twinkles {
+    position: absolute;
+    inset-inline-start: -14%;
+    inset-block-start: 22%;
+    inline-size: 24%;
+    aspect-ratio: 1;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .wt__hatter[data-twinkling] .wt__twinkles {
+    opacity: 1;
+  }
+
+  .wt__twinkle {
+    position: absolute;
+    inline-size: 14%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--ix-gold);
+    opacity: 0;
+  }
+
+  .wt__twinkle:nth-child(1) {
+    inset: 10% auto auto 20%;
+  }
+
+  .wt__twinkle:nth-child(2) {
+    inset: 30% auto auto 70%;
+  }
+
+  .wt__twinkle:nth-child(3) {
+    inset: 60% auto auto 10%;
+  }
+
+  .wt__twinkle:nth-child(4) {
+    inset: 0 auto auto 50%;
+  }
+
+  .wt__hatter[data-twinkling] .wt__twinkle {
+    animation: wt-twinkle 0.9s ease-in-out infinite;
+  }
+
+  .wt__hatter[data-twinkling] .wt__twinkle:nth-child(2) {
+    animation-delay: -0.3s;
+  }
+
+  .wt__hatter[data-twinkling] .wt__twinkle:nth-child(3) {
+    animation-delay: -0.6s;
+  }
+
+  .wt__hatter[data-twinkling] .wt__twinkle:nth-child(4) {
+    animation-delay: -0.45s;
+  }
+
+  .wt__shoe {
+    --w: clamp(2rem, 5.5vmin, 3.4rem);
+    --x: 18;
+    --z: -14;
+    --r: 0;
+    opacity: 0;
+    transform: translate3d(calc(-50% + var(--x, 0) * 1vw), 0, calc(var(--z, 0) * 1px))
+      rotate(calc(var(--r, 0) * 1deg));
+  }
+
+  .wt__shoe--right {
+    --x: 30;
+  }
+
+  .wt__shoe[data-shaking] .art {
+    animation: wt-shoe 0.16s ease-in-out infinite alternate;
+  }
+
+  .wt__shoe--right[data-shaking] .art {
+    animation-delay: -0.08s;
+  }
+
+  .wt__shoe::after {
+    display: none;
+  }
+
+  .wt__cook .wt__pepper-box {
+    inline-size: 16%;
+    inset-inline-end: -4%;
+    inset-block-start: 10%;
+    transform-origin: 50% 100%;
+  }
+
+  .wt__cook[data-shaking] .wt__pepper-box {
+    animation: wt-pepper-box 0.3s ease-in-out infinite alternate;
+  }
+
+  /* --- In the crowd: the March Hare and the Dormouse, calling dates. */
+  .wt__hare,
+  .wt__dormouse {
+    --pop: 0;
+    opacity: 0;
+    transform: translate3d(
+      calc(-50% + var(--x, 0) * 1vw),
+      calc(var(--pop) * 30%),
+      calc(var(--z, 0) * 1px)
+    );
+  }
+
+  .wt__hare {
+    --w: clamp(6rem, 17vmin, 10rem);
+    --x: -42;
+    --z: -230;
+  }
+
+  .wt__dormouse {
+    --w: clamp(4rem, 12vmin, 7rem);
+    --x: -30;
+    --z: -210;
+  }
+
+  .wt__dormouse[data-collared] {
+    opacity: 0;
+  }
+
+  /* The Dormouse beside her, near the frame's edge, squeezed as she grows. */
+  .wt__near {
+    pointer-events: none;
+  }
+
+  .wt__near-dormouse {
+    position: absolute;
+    inset-inline-start: 2%;
+    inset-block-end: 2%;
+    inline-size: clamp(12rem, 36vmin, 22rem);
+    opacity: 0;
+    transform-origin: 0 100%;
+  }
+
+  .wt__near-dormouse svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* --- The guinea-pigs at the front of the crowd, and the officers' bag.
+     `--in`, on the court, is how far the cheering one has gone into the bag. */
+  .wt__pig {
+    --w: clamp(3.2rem, 9vmin, 5.6rem);
+    --z: 10;
+  }
+
+  .wt__pig--0 {
+    --x: -38;
+  }
+
+  .wt__pig--1 {
+    --x: -27;
+  }
+
+  .wt__pig--2 {
+    --x: -17;
+  }
+
+  .wt__pig .guinea-pig__paw {
+    transform-origin: 48px 86px;
+    transition: transform 200ms var(--demo-ease);
+  }
+
+  .wt__pig[data-cheering] .guinea-pig__paw {
+    transform: rotate(-70deg);
+  }
+
+  .wt__pig[data-cheering] .art {
+    animation: wt-cheer 0.4s ease-in-out infinite;
+  }
+
+  .wt__pig-button {
+    position: absolute;
+    inset: -20%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    visibility: hidden;
+  }
+
+  .wt__pig[data-cheering] .wt__pig-button {
+    visibility: visible;
+  }
+
+  .wt__pig-button:focus-visible {
+    outline: 2px solid var(--tr-gold);
+  }
+
+  .wt__bag {
+    --w: clamp(3.6rem, 10vmin, 6.4rem);
+    --x: -27;
+    --z: 16;
+    opacity: min(1, var(--in, 0) * 4);
+  }
+
+  .wt__bag::after {
+    display: none;
+  }
+
+  .wt__bag svg {
+    transform: scaleY(calc(1 - clamp(0, (var(--in, 0) - 0.75) * 4, 1) * 0.4));
+    transform-origin: 50% 100%;
+  }
+
+  .wt__bag-string {
+    stroke-dasharray: 1;
+    stroke-dashoffset: calc(1 - clamp(0, (var(--in, 0) - 0.45) * 3.4, 1));
+  }
+
+  .wt__officer {
+    --w: clamp(4rem, 11vmin, 7rem);
+    --z: 14;
+    opacity: clamp(0, (var(--in, 0) - 0.6) * 4, 1);
+    transform: translate3d(
+      calc(-50% + var(--x, 0) * 1vw),
+      calc(clamp(0, (var(--in, 0) - 0.75) * 4, 1) * 22% - 30%),
+      calc(var(--z, 0) * 1px)
+    );
+  }
+
+  .wt__officer--0 {
+    --x: -33;
+  }
+
+  .wt__officer--1 {
+    --x: -21;
+  }
+
+  /* --- Pepper in the air, and the people near the door sneezing. */
+  .wt__pepper {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--demo-calm) var(--demo-ease);
+  }
+
+  .wt__pepper[data-shown] {
+    opacity: 1;
+  }
+
+  .wt__speck {
+    position: absolute;
+    inset-inline-start: var(--x, 50%);
+    inset-block-start: var(--y, 50%);
+    inline-size: calc(var(--s, 1) * 1.1vmin);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--wt-speck);
+    opacity: 0.7;
+  }
+
+  .wt__pepper[data-shown] .wt__speck {
+    animation: wt-drift var(--d, 8s) linear infinite;
+    animation-delay: var(--i, 0s);
+  }
+
+  .tr__court[data-sneezing] .tr__card:nth-child(3n + 1) {
+    animation: wt-sneeze 0.5s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * -53ms);
+  }
+
+  .tr__herald[data-fumbling] .art {
+    animation: wt-fumble 0.3s ease-in-out infinite alternate;
+  }
+
+  /* --- The jury-box tips over with her skirt; the jurymen go sprawling. */
+  .tr__jury {
+    --tip: 0;
+    transform-origin: 0 100%;
+    transform: translate3d(calc(-50% + var(--x, 0) * 1vw), 0, calc(var(--z, 0) * 1px))
+      rotate(calc(var(--tip) * -72deg));
+  }
+
+  .wt__sprawler {
+    --w: clamp(1.8rem, 5vmin, 3.2rem);
+    --z: -168;
+    --sx: 0;
+    --sy: 0;
+    --sr: 0;
+    inset-block-end: 34%;
+    opacity: 0;
+    transform: translate3d(
+        calc(-50% + (var(--x, 0) + var(--sx)) * 1vw),
+        calc(var(--sy) * 1vh),
+        calc(var(--z, 0) * 1px)
+      )
+      rotate(calc(var(--sr) * 1deg));
+  }
+
+  .wt__sprawler::after {
+    display: none;
+  }
+
+  /* The Lizard, head downwards in the box, waving its tail about. */
+  .wt__lizard {
+    --w: clamp(2.6rem, 7vmin, 4.6rem);
+    --x: -104;
+    --z: -172;
+    inset-block-end: 36%;
+    opacity: 0;
+    transition: opacity var(--demo-calm) var(--demo-ease);
+  }
+
+  .wt__lizard::after {
+    display: none;
+  }
+
+  .wt__lizard[data-shown] {
+    opacity: 1;
+  }
+
+  .wt__lizard[data-upside-down] .art {
+    transform: rotate(180deg);
+    animation: wt-wave 0.5s ease-in-out infinite alternate;
+  }
+
+  .wt__lizard-button {
+    position: absolute;
+    inset: -30%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    visibility: hidden;
+  }
+
+  .wt__lizard[data-upside-down] .wt__lizard-button {
+    visibility: visible;
+  }
+
+  .wt__lizard-button:focus-visible {
+    outline: 2px solid var(--tr-gold);
+  }
+
+  /* The pennies the dates add up to, on the slates. */
+  .wt__penny {
+    fill: var(--world-glow);
+    stroke: var(--ink-faded);
+    stroke-width: 1;
+    opacity: 0;
+    transition: opacity 300ms var(--demo-ease);
+  }
+
+  .tr__jury[data-pennies] .wt__penny {
+    opacity: 1;
+  }
+
+  /* --- The King's note-book. */
+  .wt__notebook {
+    --word-one: 0;
+    --word-two: 0;
+    --shut: 0;
+    position: absolute;
+    inset-inline-start: 46%;
+    inset-block-start: 48%;
+    inline-size: 40%;
+    opacity: 0;
+    transform-origin: 0 50%;
+  }
+
+  .wt__notebook-cover {
+    transform: scaleX(calc(1 - var(--shut) * 0.9));
+    transform-origin: 4px 30px;
+  }
+
+  .wt__notebook-word {
+    stroke-dasharray: 1;
+  }
+
+  .wt__notebook-word--one {
+    stroke-dashoffset: calc(1 - var(--word-one));
+  }
+
+  .wt__notebook-word--two {
+    stroke-dashoffset: calc(1 - var(--word-two));
+  }
+
+  /* --- The letter, unfolded into the frame. Three panels, each a third of the
+     sheet, each folded back over the one before; `--unfold` opens them. */
+  .wt__letter {
+    pointer-events: none;
+  }
+
+  .wt__sheet {
+    --unfold: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 24%;
+    inline-size: clamp(14rem, 44vmin, 30rem);
+    margin-inline-start: calc(clamp(14rem, 44vmin, 30rem) / -2);
+    perspective: 900px;
+    transform-style: preserve-3d;
+    opacity: 0;
+  }
+
+  .wt__panel {
+    position: relative;
+    inline-size: 33.334%;
+    aspect-ratio: 220 / 480;
+    background: var(--paper-base);
+    box-shadow: 0 0.4vmin 1.6vmin oklch(from var(--ink-primary) l c h / 0.35);
+    transform-style: preserve-3d;
+  }
+
+  .wt__panel--1,
+  .wt__panel--2 {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 100%;
+    inline-size: 100%;
+    transform-origin: 0 50%;
+    transform: rotateY(calc((1 - var(--unfold)) * 180deg));
+  }
+
+  .wt__page {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: 300%;
+    translate: calc(var(--k, 0) * -33.334%) 0;
+    /* Only this panel's third of the sheet shows; the rest is the other panels'. */
+    clip-path: inset(0 calc((2 - var(--k, 0)) * 33.334%) 0 calc(var(--k, 0) * 33.334%));
+  }
+
+  .wt__hand {
+    stroke: var(--wt-hand);
+    stroke-width: 1.8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+
+  .wt__verse {
+    opacity: 0.4;
+    transition: opacity 400ms var(--demo-ease);
+  }
+
+  .wt__verse[data-read] {
+    opacity: 1;
+  }
+
+  .wt__hands {
+    transition: transform 500ms var(--demo-ease);
+  }
+
+  .wt__sheet[data-imitated] .wt__hands {
+    transform: skewX(-14deg);
+  }
+
+  .wt__sheet[data-imitated] .wt__hand {
+    stroke: var(--wt-hand-other);
+  }
+
+  /* --- The buttons. */
+  .wt__prop-hold,
+  .wt__prop-put-back {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: -50% 0;
+  }
+
+  .demo[data-paused] .wt__hatter .art,
+  .demo[data-paused] .wt__twinkle,
+  .demo[data-paused] .wt__shoe .art,
+  .demo[data-paused] .wt__pepper-box,
+  .demo[data-paused] .wt__pig .art,
+  .demo[data-paused] .wt__speck,
+  .demo[data-paused] .tr__card,
+  .demo[data-paused] .tr__herald .art,
+  .demo[data-paused] .wt__lizard .art {
+    animation-play-state: paused;
+  }
+
+  @keyframes wt-tremble {
+    from {
+      transform: translate(calc(var(--wt-tremble, 1) * -0.6%), 0)
+        rotate(calc(var(--wt-tremble, 1) * -1deg));
+    }
+    to {
+      transform: translate(calc(var(--wt-tremble, 1) * 0.6%), -0.4%)
+        rotate(calc(var(--wt-tremble, 1) * 1deg));
+    }
+  }
+
+  @keyframes wt-twinkle {
+    0%,
+    100% {
+      opacity: 0;
+      transform: scale(0.4);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes wt-shoe {
+    from {
+      transform: translate(-6%, 0) rotate(-6deg);
+    }
+    to {
+      transform: translate(6%, -8%) rotate(6deg);
+    }
+  }
+
+  @keyframes wt-pepper-box {
+    from {
+      transform: rotate(-16deg);
+    }
+    to {
+      transform: rotate(16deg) translateY(-6%);
+    }
+  }
+
+  @keyframes wt-cheer {
+    0%,
+    100% {
+      transform: translateY(0) rotate(calc(var(--in, 0) * 180deg));
+    }
+    50% {
+      transform: translateY(-22%) rotate(calc(var(--in, 0) * 180deg));
+    }
+  }
+
+  @keyframes wt-drift {
+    0% {
+      transform: translate(0, 0);
+      opacity: 0;
+    }
+    15% {
+      opacity: 0.7;
+    }
+    85% {
+      opacity: 0.7;
+    }
+    100% {
+      transform: translate(calc(var(--s, 1) * -6vmin), calc(var(--s, 1) * 14vmin));
+      opacity: 0;
+    }
+  }
+
+  @keyframes wt-sneeze {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    30% {
+      translate: 0.4vmin -1.6vmin;
+    }
+    45% {
+      translate: -0.4vmin 0.4vmin;
+    }
+  }
+
+  @keyframes wt-fumble {
+    from {
+      transform: rotate(-3deg) translateY(0);
+    }
+    to {
+      transform: rotate(3deg) translateY(-2%);
+    }
+  }
+
+  @keyframes wt-wave {
+    from {
+      transform: rotate(172deg);
+    }
+    to {
+      transform: rotate(188deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wt__hatter[data-trembling] .art,
+    .wt__hatter[data-twinkling] .wt__twinkle,
+    .wt__shoe[data-shaking] .art,
+    .wt__cook[data-shaking] .wt__pepper-box,
+    .wt__pig[data-cheering] .art,
+    .wt__pepper[data-shown] .wt__speck,
+    .tr__court[data-sneezing] .tr__card,
+    .tr__herald[data-fumbling] .art,
+    .wt__lizard[data-upside-down] .art {
+      animation: none;
+    }
+
+    /* Designed stills: a lean for the trembling, the points lit, the shoes
+       askew, the pepper-box tilted, the paw up, the pepper hanging in the air. */
+    .wt__hatter[data-trembling] .art {
+      transform: rotate(-2deg);
+    }
+
+    .wt__hatter[data-twinkling] .wt__twinkle {
+      opacity: 1;
+    }
+
+    .wt__shoe[data-shaking] .art {
+      transform: rotate(-8deg);
+    }
+
+    .wt__cook[data-shaking] .wt__pepper-box {
+      transform: rotate(-16deg);
+    }
+
+    .demo .wt__pepper[data-shown] .wt__speck {
+      opacity: 0.5;
+    }
+
+    .demo .wt__pig .guinea-pig__paw,
+    .demo .wt__lizard[data-shown] .art,
+    .demo .wt__pepper,
+    .demo .wt__lizard,
+    .demo .tr__jury .wt__penny,
+    .demo .wt__verse,
+    .demo .wt__sheet .wt__hands {
+      transition: none;
+    }
+
+    /* The doors cross-fade instead of swinging. */
+    .tr__door-leaf--left,
+    .tr__door-leaf--right {
+      transform: none;
+      opacity: calc(1 - var(--open));
+    }
+  }
+}

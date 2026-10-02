@@ -28,7 +28,7 @@ makes its moment strongest and spends its budget on that.
 /demos/duchess/          A Moral in Everything: a walk arm in arm, a moral for everything, the Queen's shadow
 /demos/mock-turtle/      The Mock Turtle's Story: school in the sea, subjects written on the waves
 /demos/lobster-quadrille/ The Lobster Quadrille: a dance on the shore the reader joins
-/demos/witnesses/        Who Stole the Tarts?: the court, the witnesses, and Alice grown too big
+/demos/witnesses/        Who Stole the Tarts?: the court through its doors, the witnesses, Alice a mile high
 /demos/trial/            Sentence First: the pack flies, the leaves fall, her sister's dream
 ```
 
@@ -248,18 +248,19 @@ per-demo `mode` (the rabbit hole reports `webgl` or `flat`).
 **Joins.** The demos are viewed in the book's order, and where two adjacent demos are
 one moment of the book they join: the end of the first is staged so that it leads
 straight into the opening of the second, and the opening picks the picture up where
-the first left it. Twelve pairs join today: the riverbank and the rabbit hole at the
+the first left it. Fourteen pairs join today: the riverbank and the rabbit hole at the
 hedge; the rabbit hole and Drink Me through the door in the floor; Drink Me and the
 pool at the roof, in tears; the pool and the race at the bank; the race and the Mouse's
 tale in the huddle; the tale and the house at the house's front; the house and Bill at
 the chimney; the kitchen and the Cat at a bough; the tea-party's first half and the
 Dormouse at the teacup; the Dormouse and the croquet-ground through the door in the
-tree and the little door; the Mock Turtle and the quadrille at his sigh; the quadrille
-and the trial at the court's doors. Each demo remains complete on its own, each join
+tree and the little door; the croquet-ground and the Duchess on the same turf, and the Duchess and the Mock
+Turtle at the shore where the Gryphon sleeps; the Mock Turtle and the quadrille at his
+sigh; the quadrille and the witnesses at the court's doors; the witnesses and the
+trial on the same high frame of the court. Each demo remains complete on its own, each join
 has a reduced-motion version of cuts and cross-fades, and each is described under its
 two demos below. The pairs with another scene of the book between them (Bill and the
-Caterpillar, the Caterpillar and the kitchen, the Cat and the tea-party, the
-croquet-ground and the Mock Turtle) change scene through the page transition and
+Caterpillar, the Caterpillar and the kitchen, the Cat and the tea-party) change scene through the page transition and
 nothing more.
 
 ## 4. The nineteen demos
@@ -764,6 +765,45 @@ events, so the roses are buttons all the while.
 flamingo does not look up, so every strike lands; the red flash without the shake.
 
 **The flamingo's mood.** From the beat she first holds it until the game breaks up, the flamingo drifts toward sulking while it is left alone, about twelve seconds from content to sulk: the head turns away from the ball a little more each second and the neck twists, until it looks straight up into her face and no blow is possible; a strike then swings wide, misses the hedgehog, and the status says so once. Draw the pointer along its neck and head, or press *Stroke the flamingo*, and it comes round with a small nod and a chime. The mood holds while the motion is paused, and the story's own looks, the escape and the catch happen at their beats as before. Under reduced motion the mood changes the pose in three cuts, content, wary and sulking, with no continuous twist and no nod.
+### A Moral in Everything: the walk is the parallax
+
+A walk arm in arm along the croquet-ground, side-on, with the camera tracking the
+two of them: the Duchess and Alice stay in the frame, big, and the ground goes by
+behind in three bands at their own rates, a hedge line at the horizon, the game in the
+middle distance (soldiers doubled up as arches, players, hedgehogs, the King), and
+the near turf with its ridges and furrows. The flamingo is tucked under Alice's arm,
+a figure of its own in the art layer, and its head turns. The Duchess leans closer
+beat by beat until her sharp chin is on Alice's shoulder and Alice winces away; the
+flamingo eyes her and, at *He might bite*, snaps. At every "the moral of that is" a
+sampler ribbon, aged paper with ink stitches, unrolls from the Duchess's mouth on the
+last line she speaks in that beat, and the ribbons pile up above her; the caption's
+words are the shell's, the ribbon only frames them. The mustard-mine is a heap and a
+signpost far off along the ground. Then the Queen's shadow falls first: the ground
+darkens from the right and a long shadow slides across the turf while the murmur of
+the game stops; then the Queen herself, and a real little thunderstorm over her head
+in ink and sepia. At *Take your choice!* the Duchess is simply not there, and her
+ribbons flutter off after her. The walk turns back to the game, where every shout
+removes a player and stands an arch up out of its double to walk off, until only the
+King, the Queen and Alice are left.
+
+**Interaction.** Every ribbon is a button: tap one, or press *Send this one off*, and
+it blows away up over the croquet-ground. Scrolling back before a moral was found
+takes the reader's fling back with it. The pointer leans the far bands a little, and
+the flamingo's eye follows it.
+
+**Reduced motion.** The walk is a sequence of cuts, one per beat; the lean, the shadow
+and the Queen's arrival are cuts placed just before each beat head, where the shell
+snaps; ribbons appear in place and a flung one is simply gone; nobody bobs, the cloud
+does not brood, and the red flash comes without a shake.
+
+The demo joins the croquet-ground before it and the Mock Turtle after it. Its first
+frame is a cut from the garden's last: the same paper sky over the leaf turf, with the
+game still going on behind at the horizon as the Duchess takes Alice's arm. Its last
+frame is the Mock Turtle's first in the same tokens: the ground runs on to the shore,
+the quadrille's sea at the horizon, the shingle and a tongue of grass where the
+Gryphon lies asleep on its back in the sun at the right edge, and the Queen walks off
+to the right with Alice toward it; the captions move up into the empty sky for it.
+
 ### The Mock Turtle's Story: the sea answers, and the picture goes under it
 
 The quadrille's shore a little earlier in the day: the same sky, the three swells that
@@ -840,15 +880,62 @@ of the court's light, and the two run into it.
 **Reduced motion.** The doors appear with a blink and open with a cross-fade; the sea holds; no advancing, no dancing, no streaming shore; the
 somersault is a blink; the lobster's arc is a short lift and a splash.
 
-### Who Stole the Tarts?: a dolly through a paper theatre, then the pack
+### Who Stole the Tarts?: the court through a slit, then the witnesses
 
-The court is a toy theatre: flat SVG cutouts standing at different `translateZ`
-depths inside one CSS `perspective`, so a sideways dolly separates them into layers.
-The camera pans as Alice looks round (throne, the Knave in chains, the tarts, the
-judge's wig, the jury box), pushes in on the herald's scroll as the accusation unrolls
-(`clip-path` on the parchment lines), pushes hard into the Queen as her temper rises
-and the court turns red and shakes at *Off with her head!*, then pulls back as Alice
-grows to her full size in the foreground.
+The court is the trial's toy theatre, now a module the two demos share
+(`src/demos/trial/court.ts`): flat SVG cutouts at different `translateZ` depths inside
+one CSS `perspective`, a crowd of two packs of cards, and a camera that is four numbers
+on the court (dolly, push, yaw, and now pitch). It opens inside the doors the Lobster
+Quadrille's run arrived at, the throne seen through the opening leaves, and the camera
+walks in and looks round as Alice does: the Knave in chains, the tarts, the judge's
+wig, the jury-box, the herald's scroll unrolling. Then the witnesses, in a witness-box
+at the court's right hand. The Hatter comes in with his teacup and bread-and-butter
+and trembles from the first question (a `translate` animation on the cutout), his
+shoes shaking at the box's foot until they lie apart; the March Hare and the Dormouse
+pop up in the crowd with their dates and the jury turn them into pennies on their
+slates; "take off your hat" lifts it and sets it back; the bread gets thin, the tea
+twinkles, and at *on one knee* the cup drops and the Hatter goes down, then hurries
+out without his shoes. The cook brings the pepper-box, pepper drifts across the frame
+and the people near the door sneeze; "Collar that Dormouse!" throws the court into
+confusion.
+
+The camera is her eyes. At *beginning to grow larger again* it rises and the Dormouse
+beside her, big in the corner of the frame, is squeezed toward the edge. At "Alice!"
+she jumps up as a silhouette in front of everything and the jury-box goes over with
+her skirt, the jurymen sprawling on the crowd; she puts them back, and the Lizard goes
+in head downwards, waving. The King writes "nothing" and "important" in his note-book,
+the jury mark important or unimportant, Rule Forty-two sends the camera a mile high,
+looking down on the court, and the White Rabbit's paper unfolds into the frame in
+three panels, its handwriting lines of scribble that darken couplet by couplet as he
+reads, and skew when it is not the prisoner's hand.
+
+**Interaction.** Each juror is a button that changes what it wrote. When the
+guinea-pig cheers, tap it or press *Hold it tight* and it goes into the officers'
+canvas bag before they get to it: head first, the strings drawn, the officers sat on
+top; the story does the same a moment later, and scrolling back undoes the reader's.
+When the Lizard is head downwards, tap him or press *Put it back* and he is the right
+way up before she gets to it. The court leans a little with the pointer. All of it
+optional: the scroll alone reaches the end.
+
+**Reduced motion.** The doors cross-fade; every camera move is a cut softened by a
+dip; the trembling, the shaking shoes, the cheering, the sneezing, the twinkling and
+the waving tail are stills (a lean, a paw up, shoes askew, points lit); the bag, the
+tipping box and the letter arrive in cuts.
+
+The joins: the court opens inside the doors the quadrille's run arrived at, the first
+frame the throne seen through the opening leaves, gone by the Knave, so the two demos
+are one arrival. The last beat, "that saves a world of trouble", holds the court from
+a mile up with Alice enormous in front, and the trial opens on that same frame, the
+same numbers on the same court, so the two demos are one trial.
+
+### Sentence First: the pack flies, the leaves fall, her sister's dream
+
+The court is the toy theatre of the witnesses, shared with that demo, and this one
+opens where it ended: Alice at her full size in the foreground, the camera a mile up,
+looking down on the throne, the jury and the crowd of cards. There is no walk in and
+no looking round; the camera pushes into the Queen as her temper rises and the court
+turns red and shakes at *Off with her head!*, then pulls back as Alice draws herself
+up taller still for "who cares for you".
 
 Then the pack. Two packs' worth of cards stand in the crowd (half that on a phone);
 at *the whole pack rose up* they leave it and hang trembling in the air (a CSS
@@ -863,7 +950,7 @@ leaves of a golden afternoon turning: aged paper toward the book's own red, each
 its own degree, so the pack's red carries into the bank rather than going green.
 
 The jury write it all down: every sentence lands as a scribble on each slate and each
-juror marks whether it thought it important; press a juror and it changes its mind.
+juror marks whether it thought it important, until the pack rises.
 
 Then her sister's dream. Alice runs off to her tea, the sun goes down over the bank,
 and the creatures of the dream come one by one as the sounds the text names: the
@@ -879,11 +966,7 @@ to clear them all. Both are optional: the leaves fall whether or not she beat th
 In the dream, *Open her eyes* is a toggle: every creature becomes its real one at
 once, and pressing again brings the dream back; a tap on a creature makes its sound.
 
-The court opens inside the doors the run arrived at: the first frame is the throne
-seen through the opening leaves, which swing away as the camera walks in and are gone
-by the Knave, so the two demos are one arrival. The doors take no pointer events.
-
-**Reduced motion.** The doors cross-fade open; the dolly cuts with a dip to black; the cards fade in at their
+**Reduced motion.** The camera cuts with a dip to black; the cards fade in at their
 places on the glass instead of flying; no tremble, no shake; the leaves change and
 fall without drifting; the dream's creatures stand still and swap without a fade.
 

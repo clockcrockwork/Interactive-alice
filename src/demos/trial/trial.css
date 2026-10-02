@@ -1,21 +1,12 @@
-/* The trial: a paper courtroom in CSS 3D that the camera dollies across, and a
-   pack of cards that rises, flies at the reader and sticks to the glass. */
+/* The trial's end: the court already established (court.css), the pack of cards
+   that rises, flies at the reader and sticks to the glass, the leaves, the bank
+   and her sister's dream. */
 
 @layer tokens, base, layout, scene, utilities;
 
 @layer tokens {
-  /* The courtroom is where Wonderland's red is strongest: the curtains and the
-     throne in it, the hearts on the cards. Everything else is paper and sepia;
-     the bank outside is the world's own sky, leaves and dusk. */
+  /* The bank outside is the world's own sky, leaves and dusk. */
   :root {
-    --tr-curtain: var(--wonder-red-dark);
-    --tr-curtain-deep: oklch(from var(--wonder-red-dark) calc(l - 0.1) c h);
-    --tr-floor: var(--sepia-dark);
-    --tr-floor-deep: var(--sepia-deep);
-    --tr-gold: var(--world-glow);
-    --tr-card: var(--paper-base);
-    --tr-card-ink: var(--ink-primary);
-    --tr-card-red: var(--wonder-red);
     /* The leaves of a golden afternoon turning: sepia toward the book's own red. */
     --tr-leaf: color-mix(in oklch, var(--paper-aged), var(--wonder-red-faded) 30%);
     --tr-leaf-deep: color-mix(in oklch, var(--sepia-mid), var(--wonder-red) 45%);
@@ -26,10 +17,6 @@
     --tr-dusk: var(--world-night);
     --tr-dusk-glow: color-mix(in oklch, var(--world-glow), var(--wonder-red-faded) 40%);
     --tr-dusk-low: var(--sepia-mid);
-    --tr-ink-shadow: oklch(from var(--ink-primary) l c h / 0.45);
-    --tr-door: var(--sepia-dark);
-    --tr-door-deep: var(--sepia-deep);
-    --tr-card-w: clamp(3.6rem, 9vmin, 6rem);
   }
 }
 
@@ -53,17 +40,6 @@
     color: var(--alice-dress-light);
   }
 
-  .demo--trial .line[data-speaker="white-rabbit"] {
-    display: inline-block;
-    justify-self: center;
-    padding: 0.3em 1em;
-    background: var(--paper-warm);
-    color: var(--demo-paper-ink);
-    font-style: italic;
-    text-shadow: none;
-    clip-path: inset(0 0 calc((1 - var(--unroll, 1)) * 100%) 0);
-  }
-
   .demo--trial .line[data-speaker="alices-sister"] {
     color: var(--sepia-dark);
     text-shadow: none;
@@ -75,14 +51,6 @@
     inset-block-start: calc(var(--demo-bar-height) + 6vh);
     color: var(--ink-secondary);
     text-shadow: none;
-  }
-
-  .tr__sky {
-    background: radial-gradient(
-      120% 80% at 50% 100%,
-      var(--tr-curtain),
-      var(--tr-curtain-deep) 70%
-    );
   }
 
   .tr__bank {
@@ -104,263 +72,16 @@
     translate: -50% 0;
   }
 
-  .tr__sister svg,
-  .tr__piece svg,
-  .tr__alice svg {
+  .tr__sister svg {
     display: block;
     inline-size: 100%;
     block-size: auto;
-  }
-
-  /* The world: a stage with depth. Pieces sit at different distances so a sideways
-     dolly separates them. Unitless camera numbers are tweened by the script. */
-  .tr__world {
-    perspective: 1200px;
-    perspective-origin: 50% 45%;
-    overflow: hidden;
-  }
-
-  /* Her head: leans sideways (a transform the script sets) when she dodges. */
-  .tr__head {
-    position: absolute;
-    inset: 0;
-    transform-style: preserve-3d;
-  }
-
-  .tr__court {
-    --dodged: 0;
-    /* Composited: the dolly and the tremble then move a texture of the paper
-       theatre instead of painting its hundred pieces again on every frame. */
-    will-change: transform;
-    --cam-x: 0;
-    --cam-z: 0;
-    --cam-ry: 0;
-    --cam-y: 0;
-    position: absolute;
-    inset: 0;
-    transform-style: preserve-3d;
-    transform: translate3d(
-        calc(var(--cam-x) * -1vw),
-        calc(var(--cam-y) * -1vh),
-        calc(var(--cam-z) * 1px)
-      )
-      rotateY(calc(var(--cam-ry) * 1deg));
-  }
-
-  .tr__piece {
-    position: absolute;
-    inset-inline-start: 50%;
-    inset-block-end: 22%;
-    inline-size: var(--w, 12rem);
-    transform: translate3d(calc(-50% + var(--x, 0) * 1vw), 0, calc(var(--z, 0) * 1px));
-  }
-
-  /* A soft pool of shadow at the feet rather than a drop-shadow filter: a filter
-     re-rasterises every piece on every frame the court trembles or the dolly
-     moves, and the pack is a hundred pieces. */
-  .tr__piece::after {
-    content: "";
-    position: absolute;
-    inset-inline: 8%;
-    inset-block-end: -3%;
-    block-size: 9%;
-    border-radius: 50%;
-    background: radial-gradient(ellipse at 50% 50%, var(--tr-ink-shadow), transparent 72%);
-    z-index: -1;
-  }
-
-  .tr__backdrop {
-    position: absolute;
-    inset-inline-start: 50%;
-    inset-block: -10% 18%;
-    inline-size: 340vw;
-    transform: translate3d(-50%, 0, -700px);
-    background:
-      repeating-linear-gradient(to right, var(--tr-curtain) 0 6vw, var(--tr-curtain-deep) 6vw 8vw),
-      var(--tr-curtain);
-  }
-
-  .tr__backdrop::after {
-    content: "";
-    position: absolute;
-    inset-inline: 0;
-    inset-block-end: -12%;
-    block-size: 14%;
-    background: linear-gradient(to bottom, var(--tr-gold), transparent);
-    opacity: 0.35;
-  }
-
-  .tr__floor {
-    position: absolute;
-    inset-inline-start: 50%;
-    inset-block-end: 0;
-    block-size: 24%;
-    inline-size: 360vw;
-    transform: translate3d(-50%, 0, -60px);
-    background:
-      repeating-linear-gradient(
-        90deg,
-        oklch(from var(--ink-primary) l c h / 0.1) 0 2px,
-        transparent 2px 9vw
-      ),
-      linear-gradient(to bottom, var(--tr-floor), var(--tr-floor-deep));
-  }
-
-  .tr__throne {
-    --w: clamp(10rem, 26vmin, 16rem);
-    --z: -320;
-  }
-
-  .tr__throne--king {
-    --x: -9;
-  }
-
-  .tr__throne--queen {
-    --x: 9;
-  }
-
-  .tr__jury {
-    --w: clamp(18rem, 52vmin, 34rem);
-    --x: -92;
-    --z: -180;
-  }
-
-  .tr__knave {
-    --w: clamp(7rem, 20vmin, 12rem);
-    --x: -46;
-    --z: -160;
-  }
-
-  .tr__soldier {
-    --w: clamp(6rem, 17vmin, 10rem);
-    --z: -140;
-  }
-
-  .tr__soldier--left {
-    --x: -60;
-  }
-
-  .tr__soldier--right {
-    --x: -32;
-  }
-
-  .tr__tarts {
-    --w: clamp(12rem, 34vmin, 22rem);
-    --x: 34;
-    --z: 40;
-  }
-
-  .tr__herald {
-    --w: clamp(7rem, 20vmin, 12rem);
-    --x: 62;
-    --z: -120;
-  }
-
-  /* The jury write it all down: a line scribbles across each slate when a
-     sentence lands, and a mark says whether this juror thought it important. */
-  .tr__scribble {
-    stroke-dasharray: 1;
-    stroke-dashoffset: calc(1 - var(--written, 0));
-  }
-
-  .tr__mark {
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    transition: stroke-dashoffset 400ms var(--demo-ease);
-  }
-
-  .tr__slate[data-verdict="yes"] .tr__mark--yes,
-  .tr__slate[data-verdict="no"] .tr__mark--no {
-    stroke-dashoffset: 0;
-  }
-
-  .tr__juror {
-    position: absolute;
-    inline-size: 8.3%;
-    block-size: 60%;
-    inset-block-start: 20%;
-    inset-inline-start: calc(var(--i) * 8.15% + 0.6%);
-    padding: 0;
-    border: 0;
-    background: none;
-    cursor: pointer;
-    pointer-events: auto;
-  }
-
-  .tr__juror:focus-visible {
-    outline: 2px solid var(--tr-gold);
-  }
-
-  .tr__jury {
-    pointer-events: none;
-  }
-
-  .tr__jury[data-listening] {
-    pointer-events: auto;
-  }
-
-  /* The pack leaps at a tap while the Queen shouts. */
-  .tr__card[data-leap] {
-    animation: tr-leap 0.5s ease-out 1;
   }
 
   .tr__glass .tr__card[data-dragging] {
     transition: none;
     cursor: grabbing;
     z-index: 2;
-  }
-
-  .tr__pack {
-    position: absolute;
-    inset: 0;
-    transform-style: preserve-3d;
-  }
-
-  .tr__card {
-    position: absolute;
-    inset-inline-start: 50%;
-    inset-block-start: 50%;
-    inline-size: var(--tr-card-w);
-    aspect-ratio: 5 / 7;
-    margin-inline-start: calc(var(--tr-card-w) / -2);
-    margin-block-start: calc(var(--tr-card-w) / 10 * -7);
-    border-radius: 0.35rem;
-    background: var(--tr-card);
-    color: var(--tr-card-ink);
-    box-shadow:
-      0 2px 4px oklch(from var(--ink-primary) l c h / 0.35),
-      inset 0 0 0 2px oklch(from var(--paper-aged) l c h / 0.7);
-    backface-visibility: hidden;
-    font-family: var(--demo-serif);
-    font-weight: 700;
-    line-height: 1;
-    cursor: pointer;
-    pointer-events: none;
-  }
-
-  .tr__card[data-suit="hearts"],
-  .tr__card[data-suit="diamonds"] {
-    color: var(--tr-card-red);
-  }
-
-  .tr__card::before,
-  .tr__card::after {
-    position: absolute;
-    font-size: calc(var(--tr-card-w) * 0.24);
-    white-space: pre;
-  }
-
-  .tr__card::before {
-    content: attr(data-rank) "\A" attr(data-pip);
-    inset-inline-start: 0.35em;
-    inset-block-start: 0.35em;
-  }
-
-  .tr__card::after {
-    content: attr(data-pip);
-    inset-inline-end: 0.35em;
-    inset-block-end: 0.35em;
-    font-size: calc(var(--tr-card-w) * 0.5);
   }
 
   /* On the glass: a card that has reached the reader. */
@@ -437,79 +158,6 @@
     animation-play-state: paused;
   }
 
-  .tr__alice {
-    position: absolute;
-    inset-inline-start: 50%;
-    inset-block-end: -4%;
-    inline-size: clamp(9rem, 26vmin, 16rem);
-    color: var(--alice-shadow);
-    translate: -50% 0;
-    transform-origin: 50% 100%;
-    scale: 0.7;
-    opacity: 0;
-  }
-
-  .tr__flash {
-    background: var(--wonder-red);
-    opacity: 0;
-    mix-blend-mode: multiply;
-  }
-
-  /* The court's doors, from inside: two leaves the width of the screen that
-     swing away to show the throne. The same pair the Lobster Quadrille's run
-     arrived at. Nothing under them is blocked once they are gone. */
-  .tr__doors {
-    --open: 0;
-    perspective: 900px;
-    perspective-origin: 50% 50%;
-    transform-style: preserve-3d;
-    overflow: hidden;
-    pointer-events: none;
-  }
-
-  .tr__door-leaf {
-    position: absolute;
-    inset-block: 0;
-    inline-size: 50%;
-    background:
-      linear-gradient(to bottom, transparent 30%, oklch(from var(--ink-primary) l c h / 0.25)),
-      repeating-linear-gradient(to bottom, var(--tr-door) 0 18%, var(--tr-door-deep) 18% 20%);
-    box-shadow:
-      inset 0 0 0 0.3vmin var(--tr-gold),
-      0 0 8vmin oklch(from var(--ink-primary) l c h / 0.6);
-    backface-visibility: visible;
-  }
-
-  .tr__door-leaf::after {
-    content: "";
-    position: absolute;
-    inset-block-start: 52%;
-    inline-size: 8%;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: var(--tr-gold);
-  }
-
-  .tr__door-leaf--left {
-    inset-inline-start: 0;
-    transform-origin: 0 50%;
-    transform: rotateY(calc(var(--open) * 100deg));
-  }
-
-  .tr__door-leaf--left::after {
-    inset-inline-end: 8%;
-  }
-
-  .tr__door-leaf--right {
-    inset-inline-end: 0;
-    transform-origin: 100% 50%;
-    transform: rotateY(calc(var(--open) * -100deg));
-  }
-
-  .tr__door-leaf--right::after {
-    inset-inline-start: 8%;
-  }
-
   .tr__prop-beat {
     inset-inline-start: 50%;
     inset-block-start: calc(var(--demo-bar-height) + 1rem);
@@ -527,10 +175,6 @@
 
   .tr__prop-dodge--right {
     inset-inline-end: 1rem;
-  }
-
-  .demo--trial[data-shake] .tr__world {
-    animation: tr-shake 0.5s linear;
   }
 
   @keyframes tr-tremble {
@@ -559,45 +203,12 @@
     }
   }
 
-  @keyframes tr-leap {
-    0% {
-      translate: 0 0;
-    }
-    40% {
-      translate: 0 -14vh;
-    }
-    100% {
-      translate: 0 0;
-    }
-  }
-
-  @keyframes tr-shake {
-    0%,
-    100% {
-      transform: translate(0, 0);
-    }
-    20% {
-      transform: translate(-1.2%, 0.8%);
-    }
-    40% {
-      transform: translate(1%, -0.6%);
-    }
-    60% {
-      transform: translate(-0.8%, 0.4%);
-    }
-    80% {
-      transform: translate(0.6%, -0.3%);
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .tr__glass .tr__card {
       transition: none;
     }
 
-    .demo--trial[data-shake] .tr__world,
     .tr__pack[data-rising] .tr__card,
-    .tr__card[data-leap],
     .tr__leaf-fall[data-falling] .tr__leaf {
       animation: none;
     }
@@ -605,17 +216,6 @@
     .tr__leaf-fall[data-falling] .tr__leaf {
       transform: translateY(calc(var(--ly, 0) * 100vh));
       opacity: 0.9;
-    }
-
-    .tr__mark {
-      transition: none;
-    }
-
-    /* The doors cross-fade instead of swinging. */
-    .tr__door-leaf--left,
-    .tr__door-leaf--right {
-      transform: none;
-      opacity: calc(1 - var(--open));
     }
   }
 }

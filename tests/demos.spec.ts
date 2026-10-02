@@ -481,13 +481,15 @@ test('every demo offers sound, off until asked, and the toggle turns it on', asy
   await expect(sound).toHaveAttribute('aria-pressed', 'false');
 });
 
-test('the trial: every juror is a button, and pressing one changes its slate', async ({ page }) => {
-  const demo = demos.find((candidate) => candidate.demo === 'trial');
-  test.skip(!demo, 'no trial demo in this build');
+test('the witnesses: every juror is a button, and pressing one changes its slate', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'witnesses');
+  test.skip(!demo, 'no witnesses demo in this build');
   await page.goto(demo?.url ?? '');
   const jurors = page.locator('.tr__juror');
   await expect(jurors).toHaveCount(12);
-  await scrollTo(page, 0.28);
+  await atCue(page, 'jury', 0.5);
   const verdict = () =>
     page.evaluate(() => document.querySelector<HTMLElement>('.tr__slate')?.dataset.verdict);
   await expect.poll(verdict, { timeout: 8000 }).toMatch(/^(yes|no)$/);
@@ -762,11 +764,11 @@ test('the lobster quadrille: the run along the shore arrives at the court doors,
     .toBeLessThan(0.05);
 });
 
-test('the trial: it opens inside the court doors the run arrived at, and they are gone by the Knave', async ({
+test('the witnesses: it opens inside the court doors the run arrived at, and they are gone by the Knave', async ({
   page,
 }) => {
-  const demo = demos.find((candidate) => candidate.demo === 'trial');
-  test.skip(!demo, 'no trial demo in this build');
+  const demo = demos.find((candidate) => candidate.demo === 'witnesses');
+  test.skip(!demo, 'no witnesses demo in this build');
   await page.goto(demo?.url ?? '');
   const doorsOpacity = () =>
     page.evaluate(() =>

@@ -1,120 +1,46 @@
 /**
- * The trial: the concept demo.
+ * The trial: the concept demo. "Sentence first": the end of the trial.
  *
- * The court is a paper theatre: flat cutouts standing at different depths inside a
- * CSS perspective, so a sideways dolly separates them into layers. It opens
- * inside the court's doors, the pair the Lobster Quadrille's run arrived at, as
- * they swing away to show the throne. The camera pans from the throne to the jury as Alice looks round, pushes into the Queen as
- * her temper rises, and pulls back as Alice grows. Then the pack rises, comes for
- * the reader, and some of the cards hit the glass and stay there, until they turn
- * to dead leaves and the riverbank is behind them.
+ * The court is the paper theatre of court.ts, shared with the witnesses, and this
+ * demo opens on the frame the witnesses end on: Alice at her full size in front,
+ * the camera high over the court. The camera pushes into the Queen as her temper
+ * rises, and pulls back as Alice stands taller still. Then the pack rises, comes
+ * for the reader, and some of the cards hit the glass and stay there, until they
+ * turn to dead leaves and the riverbank is behind them.
  */
 
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, seeded } from '../shell/shell.ts';
 import type { OneShotCue } from '../shell/sound.ts';
-import { keepsakeSvg, PIG_BABY_SVG, REAL_SVG, TARTS_SVG, TEACUPS_SVG } from './figures.ts';
+import {
+  buildCourt,
+  buildPack,
+  type CameraShot,
+  type Card,
+  HIGH_SHOT,
+  mountAlice,
+  mountCamera,
+  mountJury,
+  packSize,
+} from './court.ts';
+import { keepsakeSvg, PIG_BABY_SVG, REAL_SVG, TEACUPS_SVG } from './figures.ts';
 import './trial.css';
 
-const SUITS = [
-  ['hearts', '♥'],
-  ['diamonds', '♦'],
-  ['clubs', '♣'],
-  ['spades', '♠'],
-] as const;
-const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
-
-interface CameraShot {
-  x: number;
-  z: number;
-  ry?: number;
-  y?: number;
-}
-
-/** Where the camera looks for each cue: court x in vw, push-in z in px. */
+/**
+ * Where the camera looks for each cue; each shot holds until the next. It opens
+ * already high, where the witnesses left it, looks down into the Queen as she
+ * shouts, and rises higher still as Alice grows.
+ */
 const SHOTS: Record<string, CameraShot> = {
-  throne: { x: 0, z: 0 },
-  knave: { x: -46, z: 120, ry: 6 },
-  tarts: { x: 34, z: 260, ry: -5 },
-  judge: { x: -9, z: 420, y: -6 },
-  jury: { x: -92, z: 160, ry: 8 },
-  herald: { x: 62, z: 220, ry: -8 },
-  verdict: { x: 0, z: -80 },
-  queen: { x: 9, z: 520, y: -8 },
-  head: { x: 9, z: 760, y: -14 },
-  grow: { x: 0, z: -420, y: 6 },
+  queen: { x: 30, z: 200, y: -12, rx: -16 },
+  head: { x: 30, z: 440, y: -16, rx: -10 },
+  grow: { x: 0, z: -600, y: -26, rx: -31 },
 };
-
-function buildCourt(court: HTMLElement): void {
-  const piece = (className: string, svg: string): string =>
-    `<div class="tr__piece ${className}">${svg}</div>`;
-  court.innerHTML =
-    '<div class="tr__backdrop"></div><div class="tr__floor"></div>' +
-    piece('tr__jury', figure('jury')) +
-    piece('tr__soldier tr__soldier--left', figure('card-soldier')) +
-    piece('tr__knave', figure('knave-of-hearts')) +
-    piece('tr__soldier tr__soldier--right', figure('card-soldier')) +
-    piece('tr__throne tr__throne--king', figure('king-of-hearts')) +
-    piece('tr__throne tr__throne--queen', figure('queen-of-hearts')) +
-    piece('tr__herald', figure('white-rabbit/herald')) +
-    piece('tr__tarts', TARTS_SVG) +
-    '<div class="tr__pack"></div>';
-}
-
-interface Card {
-  el: HTMLElement;
-  /** Where it stands in the crowd, in court units. */
-  home: { x: number; y: number; z: number; rx: number; ry: number };
-  stuck: boolean;
-}
-
-function buildPack(pack: HTMLElement, count: number): Card[] {
-  const random = seeded(52);
-  const cards: Card[] = [];
-  let index = 0;
-  for (const [suit, pip] of SUITS) {
-    for (const rank of RANKS) {
-      if (index >= count) {
-        break;
-      }
-      const el = document.createElement('div');
-      el.className = 'tr__card';
-      el.dataset.suit = suit;
-      el.dataset.rank = rank;
-      el.dataset.pip = pip;
-      el.style.setProperty('--i', String(index));
-      pack.append(el);
-      // Two crowds, left and right of the throne, in loose rows.
-      const side = index % 2 === 0 ? -1 : 1;
-      const row = Math.floor(index / 2) % 6;
-      const column = Math.floor(index / 12);
-      const home = {
-        x: side * (14 + column * 7 + random() * 4) + (side < 0 ? -6 : 6),
-        y: 8 + row * 3.2 + random() * 2,
-        z: -260 + row * 40 + random() * 30,
-        rx: 0,
-        ry: side * -18 + (random() - 0.5) * 12,
-      };
-      gsap.set(el, {
-        x: `${home.x}vw`,
-        y: `${home.y}vh`,
-        z: home.z,
-        rotationY: home.ry,
-        rotationX: home.rx,
-        transformPerspective: 0,
-      });
-      cards.push({ el, home, stuck: false });
-      index += 1;
-    }
-  }
-  return cards;
-}
 
 function mount(shell: DemoShell): void {
   const { master, reducedMotion } = shell;
   const cue = shell.cue;
-  const iHerald = cue('herald');
   const iHead = cue('head');
   const iGrow = cue('grow');
   const iRise = cue('rise');
@@ -136,136 +62,28 @@ function mount(shell: DemoShell): void {
   head.className = 'tr__head';
   head.append(court);
   world.append(head);
-  const aliceLayer = shell.layer('tr__alice-layer');
-  aliceLayer.innerHTML = `<div class="tr__alice">${figure('alice/silhouette')}</div>`;
-  const alice = aliceLayer.querySelector<HTMLElement>('.tr__alice');
+  const alice = mountAlice(shell);
   const flash = shell.layer('tr__flash');
   const glass = shell.layer('tr__glass');
-  // The doors the run along the shore ended at, seen from inside as they open.
-  const doors = shell.layer('tr__doors');
-  doors.innerHTML =
-    '<div class="tr__door-leaf tr__door-leaf--left"></div>' +
-    '<div class="tr__door-leaf tr__door-leaf--right"></div>';
 
   const pack = court.querySelector<HTMLElement>('.tr__pack');
   const lite = window.innerWidth < 720;
-  const cards = pack ? buildPack(pack, lite ? 56 : 104) : [];
+  const cards = pack ? buildPack(pack, packSize()) : [];
 
-  // --- The camera, cue by cue. Each shot holds until the next cue.
-  // It starts a step behind the doorway, so the throne shot is a walk in.
-  const camera = { x: 0, z: -160, ry: 0, y: 0 };
-  const applyCamera = (): void => {
-    court.style.setProperty('--cam-x', camera.x.toFixed(2));
-    court.style.setProperty('--cam-z', camera.z.toFixed(1));
-    court.style.setProperty('--cam-ry', camera.ry.toFixed(2));
-    court.style.setProperty('--cam-y', camera.y.toFixed(2));
-  };
-  applyCamera();
+  // --- The camera, cue by cue. It starts where the witnesses ended: high over
+  // the court, Alice already grown; the first beat holds that frame.
+  court.setAttribute('data-high', '');
+  const camera = mountCamera(shell, world, court, HIGH_SHOT);
   for (const beat of shell.beats) {
     const shot = beat.cue ? SHOTS[beat.cue] : undefined;
-    if (!shot) {
-      continue;
-    }
-    const to = { x: shot.x, z: shot.z, ry: shot.ry ?? 0, y: shot.y ?? 0 };
-    if (reducedMotion) {
-      // A cut, softened by a dip to black rather than a move.
-      master.to(world, { opacity: 0.2, duration: 0.05 }, beat.index);
-      master.set(camera, { ...to, onUpdate: applyCamera }, beat.index + 0.05);
-      master.to(world, { opacity: 1, duration: 0.2 }, beat.index + 0.05);
-    } else {
-      master.to(
-        camera,
-        { ...to, duration: 0.7, ease: 'power2.inOut', onUpdate: applyCamera },
-        beat.index,
-      );
+    if (shot) {
+      camera.to(shot, beat.index);
     }
   }
 
-  // The leaves swing away from the slit the run ended on, and the frame is gone
-  // by the next beat; under reduced motion they cross-fade instead of swinging.
-  master.fromTo(
-    doors,
-    { '--open': 0.3 },
-    { '--open': 1, duration: reducedMotion ? 0.3 : 0.7, ease: 'power2.in' },
-    0,
-  );
-  master.to(doors, { opacity: 0, duration: 0.3 }, reducedMotion ? 0.3 : 0.55);
-
-  // --- The jury write it all down. Every sentence lands as a scribble on each
-  // slate, and each juror decides for itself whether it was important; press a
-  // juror and it changes its mind.
-  const juryPiece = court.querySelector<HTMLElement>('.tr__jury');
-  const slates = [...court.querySelectorAll<SVGGElement>('.tr__slate')];
-  const juryRandom = seeded(23);
-  const marks = juryRandom;
-  const jurorButtons = slates.map((slate, i) => {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'tr__juror';
-    button.style.setProperty('--i', String(i));
-    button.setAttribute('aria-label', shell.ui.demoJurorToggle ?? '');
-    button.setAttribute('aria-pressed', 'false');
-    button.addEventListener('click', () => {
-      const next = slate.dataset.verdict === 'yes' ? 'no' : 'yes';
-      slate.dataset.verdict = next;
-      button.setAttribute('aria-pressed', String(next === 'yes'));
-    });
-    juryPiece?.append(button);
-    return button;
-  });
-  const write = (): void => {
-    for (const [i, slate] of slates.entries()) {
-      gsap.fromTo(
-        slate,
-        { '--written': 0 },
-        { '--written': 1, duration: reducedMotion ? 0 : 0.5, delay: reducedMotion ? 0 : i * 0.04 },
-      );
-      const yes = marks() < 0.5;
-      slate.dataset.verdict = yes ? 'yes' : 'no';
-      jurorButtons[i]?.setAttribute('aria-pressed', String(yes));
-    }
-  };
-  for (const beat of shell.beats) {
-    if (beat.index >= iRise) {
-      continue;
-    }
-    master.call(
-      () => (master.time() >= beat.index + 0.05 ? write() : undefined),
-      [],
-      beat.index + 0.05,
-    );
-  }
-  master.call(
-    () =>
-      juryPiece?.toggleAttribute(
-        'data-listening',
-        master.time() >= cue('jury') && master.time() < iRise,
-      ),
-    [],
-    cue('jury'),
-  );
-  master.call(
-    () =>
-      juryPiece?.toggleAttribute(
-        'data-listening',
-        master.time() >= cue('jury') && master.time() < iRise,
-      ),
-    [],
-    iRise,
-  );
-
-  // --- The herald's scroll unrolls to show the accusation.
-  const heraldLines = shell.beats
-    .slice(iHerald, iHerald + 3)
-    .flatMap((beat) => beat.lines.filter((line) => line.dataset.speaker === 'white-rabbit'));
-  for (const line of heraldLines) {
-    master.fromTo(
-      line,
-      { '--unroll': 0 },
-      { '--unroll': 1, duration: 0.3, ease: 'power1.out' },
-      '<',
-    );
-  }
+  // --- The jury write it all down, every sentence a scribble on each slate,
+  // until the pack rises. The jurors took the pointer in the witnesses' demo.
+  mountJury(shell, court, { until: iRise, buttons: false });
 
   // --- Off with her head: the court turns red and shakes.
   master.fromTo(flash, { opacity: 0 }, { opacity: 0.8, duration: 0.1 }, iHead + 0.02);
@@ -310,10 +128,11 @@ function mount(shell: DemoShell): void {
     }
   });
 
-  // --- Alice grows to her full size, in front of everything.
+  // --- Alice is already at her full size, in front of everything (the frame the
+  // witnesses ended on); at "who cares for you" she draws herself up taller still.
   if (alice) {
-    master.to(alice, { opacity: 1, duration: 0.3 }, iGrow);
-    master.to(alice, { scale: 2.6, duration: 1.2, ease: 'power2.inOut' }, iGrow + 0.1);
+    gsap.set(alice, { opacity: 1, scale: 2.6 });
+    master.to(alice, { scale: 2.9, duration: 0.8, ease: 'power2.inOut' }, iGrow + 0.1);
     master.to(alice, { opacity: 0, duration: 0.3 }, iBeat + 0.6);
   }
 

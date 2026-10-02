@@ -1,0 +1,362 @@
+/* The court of Hearts: a paper courtroom in CSS 3D that the camera dollies
+   across, shared by the witnesses and the trial. The pieces, the crowd of cards,
+   the jury and their slates, Alice grown large in front, and the red flash. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  /* The courtroom is where Wonderland's red is strongest: the curtains and the
+     throne in it, the hearts on the cards. Everything else is paper and sepia. */
+  :root {
+    --tr-curtain: var(--wonder-red-dark);
+    --tr-curtain-deep: oklch(from var(--wonder-red-dark) calc(l - 0.1) c h);
+    --tr-floor: var(--sepia-dark);
+    --tr-floor-deep: var(--sepia-deep);
+    --tr-gold: var(--world-glow);
+    --tr-card: var(--paper-base);
+    --tr-card-ink: var(--ink-primary);
+    --tr-card-red: var(--wonder-red);
+    --tr-ink-shadow: oklch(from var(--ink-primary) l c h / 0.45);
+    --tr-card-w: clamp(3.6rem, 9vmin, 6rem);
+  }
+}
+
+@layer scene {
+  .tr__sky {
+    background: radial-gradient(
+      120% 80% at 50% 100%,
+      var(--tr-curtain),
+      var(--tr-curtain-deep) 70%
+    );
+  }
+
+  .tr__piece svg,
+  .tr__alice svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* The world: a stage with depth. Pieces sit at different distances so a sideways
+     dolly separates them. Unitless camera numbers are tweened by the script. */
+  .tr__world {
+    perspective: 1200px;
+    perspective-origin: 50% 45%;
+    overflow: hidden;
+  }
+
+  /* Her head: leans sideways (a transform the script sets) when she dodges. */
+  .tr__head {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+  }
+
+  .tr__court {
+    --dodged: 0;
+    /* Composited: the dolly and the tremble then move a texture of the paper
+       theatre instead of painting its hundred pieces again on every frame. */
+    will-change: transform;
+    --cam-x: 0;
+    --cam-z: 0;
+    --cam-ry: 0;
+    --cam-y: 0;
+    --cam-rx: 0;
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform-origin: 50% 60%;
+    transform: translate3d(
+        calc(var(--cam-x) * -1vw),
+        calc(var(--cam-y) * -1vh),
+        calc(var(--cam-z) * 1px)
+      )
+      rotateX(calc(var(--cam-rx) * 1deg)) rotateY(calc(var(--cam-ry) * 1deg));
+  }
+
+  .tr__piece {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 22%;
+    inline-size: var(--w, 12rem);
+    transform: translate3d(calc(-50% + var(--x, 0) * 1vw), 0, calc(var(--z, 0) * 1px));
+  }
+
+  /* A soft pool of shadow at the feet rather than a drop-shadow filter: a filter
+     re-rasterises every piece on every frame the court trembles or the dolly
+     moves, and the pack is a hundred pieces. */
+  .tr__piece::after {
+    content: "";
+    position: absolute;
+    inset-inline: 8%;
+    inset-block-end: -3%;
+    block-size: 9%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 50%, var(--tr-ink-shadow), transparent 72%);
+    z-index: -1;
+  }
+
+  .tr__backdrop {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block: -10% 18%;
+    inline-size: 340vw;
+    transform: translate3d(-50%, 0, -700px);
+    background:
+      repeating-linear-gradient(to right, var(--tr-curtain) 0 6vw, var(--tr-curtain-deep) 6vw 8vw),
+      var(--tr-curtain);
+  }
+
+  .tr__backdrop::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: -12%;
+    block-size: 14%;
+    background: linear-gradient(to bottom, var(--tr-gold), transparent);
+    opacity: 0.35;
+  }
+
+  .tr__floor {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 0;
+    block-size: 24%;
+    inline-size: 360vw;
+    transform: translate3d(-50%, 0, -60px);
+    background:
+      repeating-linear-gradient(
+        90deg,
+        oklch(from var(--ink-primary) l c h / 0.1) 0 2px,
+        transparent 2px 9vw
+      ),
+      linear-gradient(to bottom, var(--tr-floor), var(--tr-floor-deep));
+  }
+
+  .tr__throne {
+    --w: clamp(10rem, 26vmin, 16rem);
+    --z: -320;
+  }
+
+  .tr__throne--king {
+    --x: -9;
+  }
+
+  .tr__throne--queen {
+    --x: 9;
+  }
+
+  .tr__jury {
+    --w: clamp(18rem, 52vmin, 34rem);
+    --x: -92;
+    --z: -180;
+  }
+
+  .tr__knave {
+    --w: clamp(7rem, 20vmin, 12rem);
+    --x: -46;
+    --z: -160;
+  }
+
+  .tr__soldier {
+    --w: clamp(6rem, 17vmin, 10rem);
+    --z: -140;
+  }
+
+  .tr__soldier--left {
+    --x: -60;
+  }
+
+  .tr__soldier--right {
+    --x: -32;
+  }
+
+  .tr__tarts {
+    --w: clamp(12rem, 34vmin, 22rem);
+    --x: 34;
+    --z: 40;
+  }
+
+  .tr__herald {
+    --w: clamp(7rem, 20vmin, 12rem);
+    --x: 62;
+    --z: -120;
+  }
+
+  /* The witness-box, at the court's right hand: empty until a witness is called. */
+  .tr__witness-box {
+    --w: clamp(9rem, 26vmin, 16rem);
+    --x: 24;
+    --z: -40;
+  }
+
+  /* The jury write it all down: a line scribbles across each slate when a
+     sentence lands, and a mark says whether this juror thought it important. */
+  .tr__scribble {
+    stroke-dasharray: 1;
+    stroke-dashoffset: calc(1 - var(--written, 0));
+  }
+
+  .tr__mark {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 400ms var(--demo-ease);
+  }
+
+  .tr__slate[data-verdict="yes"] .tr__mark--yes,
+  .tr__slate[data-verdict="no"] .tr__mark--no {
+    stroke-dashoffset: 0;
+  }
+
+  .tr__juror {
+    position: absolute;
+    inline-size: 8.3%;
+    block-size: 60%;
+    inset-block-start: 20%;
+    inset-inline-start: calc(var(--i) * 8.15% + 0.6%);
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .tr__juror:focus-visible {
+    outline: 2px solid var(--tr-gold);
+  }
+
+  .tr__jury {
+    pointer-events: none;
+  }
+
+  .tr__jury[data-listening] {
+    pointer-events: auto;
+  }
+
+  .tr__pack {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+  }
+
+  .tr__card {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    inline-size: var(--tr-card-w);
+    aspect-ratio: 5 / 7;
+    margin-inline-start: calc(var(--tr-card-w) / -2);
+    margin-block-start: calc(var(--tr-card-w) / 10 * -7);
+    border-radius: 0.35rem;
+    background: var(--tr-card);
+    color: var(--tr-card-ink);
+    box-shadow:
+      0 2px 4px oklch(from var(--ink-primary) l c h / 0.35),
+      inset 0 0 0 2px oklch(from var(--paper-aged) l c h / 0.7);
+    backface-visibility: hidden;
+    font-family: var(--demo-serif);
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    pointer-events: none;
+  }
+
+  .tr__card[data-suit="hearts"],
+  .tr__card[data-suit="diamonds"] {
+    color: var(--tr-card-red);
+  }
+
+  .tr__card::before,
+  .tr__card::after {
+    position: absolute;
+    font-size: calc(var(--tr-card-w) * 0.24);
+    white-space: pre;
+  }
+
+  .tr__card::before {
+    content: attr(data-rank) "\A" attr(data-pip);
+    inset-inline-start: 0.35em;
+    inset-block-start: 0.35em;
+  }
+
+  .tr__card::after {
+    content: attr(data-pip);
+    inset-inline-end: 0.35em;
+    inset-block-end: 0.35em;
+    font-size: calc(var(--tr-card-w) * 0.5);
+  }
+
+  /* The crowd leaps: at a tap while the Queen shouts, or when everybody claps. */
+  .tr__card[data-leap] {
+    animation: tr-leap 0.5s ease-out 1;
+  }
+
+  .tr__alice-layer {
+    pointer-events: none;
+  }
+
+  .tr__alice {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: -4%;
+    inline-size: clamp(9rem, 26vmin, 16rem);
+    color: var(--alice-shadow);
+    translate: -50% 0;
+    transform-origin: 50% 100%;
+    scale: 0.7;
+    opacity: 0;
+  }
+
+  .tr__flash {
+    background: var(--wonder-red);
+    opacity: 0;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  .demo[data-shake] .tr__world {
+    animation: tr-shake 0.5s linear;
+  }
+
+  @keyframes tr-leap {
+    0% {
+      translate: 0 0;
+    }
+    40% {
+      translate: 0 -14vh;
+    }
+    100% {
+      translate: 0 0;
+    }
+  }
+
+  @keyframes tr-shake {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    20% {
+      transform: translate(-1.2%, 0.8%);
+    }
+    40% {
+      transform: translate(1%, -0.6%);
+    }
+    60% {
+      transform: translate(-0.8%, 0.4%);
+    }
+    80% {
+      transform: translate(0.6%, -0.3%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .demo[data-shake] .tr__world,
+    .tr__card[data-leap] {
+      animation: none;
+    }
+
+    .tr__mark {
+      transition: none;
+    }
+  }
+}

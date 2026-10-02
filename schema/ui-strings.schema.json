@@ -45,6 +45,9 @@
         "demoDodgeLeft",
         "demoDodgeRight",
         "demoDodged",
+        "demoFlingMoral",
+        "demoSuppressGuineaPig",
+        "demoRightLizard",
         "demoScrollHint",
         "demoTechRabbitHole",
         "demoTechDormouse",
@@ -245,6 +248,21 @@
           "type": "string",
           "minLength": 1,
           "description": "Trial: status when a card misses her."
+        },
+        "demoFlingMoral": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The Duchess: a button that blows the latest moral ribbon away over the croquet-ground."
+        },
+        "demoSuppressGuineaPig": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The witnesses: a button that puts the cheering guinea-pig into the officers' bag before they do."
+        },
+        "demoRightLizard": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The witnesses: a button that turns the Lizard in the jury-box the right way up before Alice does."
         },
         "demoAuto": {
           "type": "string",

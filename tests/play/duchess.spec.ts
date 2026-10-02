@@ -38,7 +38,7 @@ test.describe('duchess: the morals', () => {
     await atCue(page, 'mine', 0.8);
     const shown = await page.locator(RIBBON).count();
     expect(shown).toBeGreaterThanOrEqual(2);
-    const button = page.getByRole('button', { name: 'Send this one off' }).first();
+    const button = page.getByRole('button', { name: 'Blow this moral away' }).first();
     await expect(button).toBeVisible();
     await button.click();
     await expect(page.locator('.dc__ribbon[data-flung]')).toHaveCount(1);

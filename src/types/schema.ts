@@ -526,6 +526,18 @@ export interface LocaleUIStrings {
      */
     demoDodged: string;
     /**
+     * The Duchess: a button that blows the latest moral ribbon away over the croquet-ground.
+     */
+    demoFlingMoral: string;
+    /**
+     * The witnesses: a button that puts the cheering guinea-pig into the officers' bag before they do.
+     */
+    demoSuppressGuineaPig: string;
+    /**
+     * The witnesses: a button that turns the Lizard in the jury-box the right way up before Alice does.
+     */
+    demoRightLizard: string;
+    /**
      * Toggle at the end of a demo: when on, the page goes to the next scene by itself after a pause at the end.
      */
     demoAuto: string;

@@ -786,7 +786,7 @@ ribbons flutter off after her. The walk turns back to the game, where every shou
 removes a player and stands an arch up out of its double to walk off, until only the
 King, the Queen and Alice are left.
 
-**Interaction.** Every ribbon is a button: tap one, or press *Send this one off*, and
+**Interaction.** Every ribbon is a button: tap one, or press *Blow this moral away*, and
 it blows away up over the croquet-ground. Scrolling back before a moral was found
 takes the reader's fling back with it. The pointer leans the far bands a little, and
 the flamingo's eye follows it.
@@ -910,10 +910,10 @@ three panels, its handwriting lines of scribble that darken couplet by couplet a
 reads, and skew when it is not the prisoner's hand.
 
 **Interaction.** Each juror is a button that changes what it wrote. When the
-guinea-pig cheers, tap it or press *Hold it tight* and it goes into the officers'
+guinea-pig cheers, tap it or press *Hold the guinea-pig down* and it goes into the officers'
 canvas bag before they get to it: head first, the strings drawn, the officers sat on
 top; the story does the same a moment later, and scrolling back undoes the reader's.
-When the Lizard is head downwards, tap him or press *Put it back* and he is the right
+When the Lizard is head downwards, tap him or press *Turn the Lizard right-side up* and he is the right
 way up before she gets to it. The court leans a little with the pointer. All of it
 optional: the scroll alone reaches the end.
 

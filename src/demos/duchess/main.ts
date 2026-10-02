@@ -172,7 +172,7 @@ function mount(shell: DemoShell): void {
     const el = document.createElement('button');
     el.type = 'button';
     el.className = 'dc__ribbon';
-    el.setAttribute('aria-label', shell.ui.demoBirdLeave ?? '');
+    el.setAttribute('aria-label', shell.ui.demoFlingMoral ?? '');
     el.style.setProperty('--i', String(i));
     morals.append(el);
     const lastLine = beat.lines.map((line) => line.dataset.speaker).lastIndexOf('duchess');
@@ -187,7 +187,7 @@ function mount(shell: DemoShell): void {
     morals.style.setProperty('--morals', String(shown));
     morals.dataset.morals = String(shown);
   };
-  const flingButton = shell.prop(shell.ui.demoBirdLeave ?? '', 'dc__prop dc__prop--fling');
+  const flingButton = shell.prop(shell.ui.demoFlingMoral ?? '', 'dc__prop dc__prop--fling');
   const flingable = (ribbon: Ribbon): boolean =>
     master.time() >= ribbon.at &&
     master.time() < iChoice + 0.3 &&
@@ -206,7 +206,7 @@ function mount(shell: DemoShell): void {
     ribbon.el.setAttribute('data-flung', '');
     shell.sound.play('whoosh', 0.5);
     if (byButton) {
-      shell.status(shell.ui.demoBirdLeave ?? '');
+      shell.status(shell.ui.demoFlingMoral ?? '');
     }
     gsap.to(ribbon.play, {
       f: 1,

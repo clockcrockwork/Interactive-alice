@@ -451,9 +451,9 @@ function mount(shell: DemoShell): void {
   const holdButton = document.createElement('button');
   holdButton.type = 'button';
   holdButton.className = 'wt__pig-button';
-  holdButton.setAttribute('aria-label', shell.ui.demoHoldTight ?? '');
+  holdButton.setAttribute('aria-label', shell.ui.demoSuppressGuineaPig ?? '');
   cheerer?.append(holdButton);
-  const holdProp = shell.prop(shell.ui.demoHoldTight ?? '', 'wt__prop-hold');
+  const holdProp = shell.prop(shell.ui.demoSuppressGuineaPig ?? '', 'wt__prop-hold');
   const applySuppression = (): void => {
     const v = Math.max(story.suppressed, play.suppressed);
     const t = master.time();
@@ -501,7 +501,7 @@ function mount(shell: DemoShell): void {
     if (t < iSuppress + 0.1 || Math.max(story.suppressed, play.suppressed) >= 0.3) {
       return;
     }
-    shell.status(shell.ui.demoHoldTight ?? '');
+    shell.status(shell.ui.demoSuppressGuineaPig ?? '');
     gsap.to(play, {
       suppressed: 1,
       duration: dur(0.6),
@@ -633,9 +633,9 @@ function mount(shell: DemoShell): void {
   const lizardButton = document.createElement('button');
   lizardButton.type = 'button';
   lizardButton.className = 'wt__lizard-button';
-  lizardButton.setAttribute('aria-label', shell.ui.demoPutBack ?? '');
+  lizardButton.setAttribute('aria-label', shell.ui.demoRightLizard ?? '');
   lizard.append(lizardButton);
-  const putBackProp = shell.prop(shell.ui.demoPutBack ?? '', 'wt__prop-put-back');
+  const putBackProp = shell.prop(shell.ui.demoRightLizard ?? '', 'wt__prop-put-back');
   const righting = { story: false, play: false };
   const applyLizard = (): void => {
     const t = master.time();
@@ -674,7 +674,7 @@ function mount(shell: DemoShell): void {
       return;
     }
     righting.play = true;
-    shell.status(shell.ui.demoPutBack ?? '');
+    shell.status(shell.ui.demoRightLizard ?? '');
     shell.sound.play('paper', 0.4);
     applyLizard();
   };

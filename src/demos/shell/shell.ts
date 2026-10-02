@@ -263,13 +263,37 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     end: 'bottom bottom',
     scrub: reducedMotion ? true : 0.6,
     animation: master,
-    // Reduced motion steps from beat to beat rather than gliding: the snap is
-    // instant, so the page lands on a whole beat and stays there.
-    snap: reducedMotion ? { snapTo: 1 / beats.length, duration: 0, delay: 0 } : undefined,
     onUpdate: (self) =>
       setActive(Math.min(beats.length - 1, Math.floor(self.progress * beats.length))),
   });
   setActive(0);
+
+  // Reduced motion steps from beat to beat rather than gliding: once the scroll
+  // rests, the page is set to the nearest whole beat, with no inertia and no
+  // tween. The shell does this itself; ScrollTrigger's own snap waits on its
+  // velocity bookkeeping and does nothing in the first second of a page.
+  if (reducedMotion) {
+    let rest = 0;
+    const snapToBeat = (): void => {
+      const span = trigger.end - trigger.start;
+      if (span <= 0) {
+        return;
+      }
+      const nearest = Math.round(trigger.progress * beats.length) / beats.length;
+      if (Math.abs(nearest - trigger.progress) * beats.length > 0.001) {
+        trigger.scroll(trigger.start + nearest * span);
+        trigger.update();
+      }
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        window.clearTimeout(rest);
+        rest = window.setTimeout(snapToBeat, 120);
+      },
+      { passive: true },
+    );
+  }
 
   const frameFns = new Set<(dt: number, elapsed: number) => void>();
   gsap.ticker.add((time, deltaMs) => {

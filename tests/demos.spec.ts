@@ -1560,3 +1560,32 @@ test('going on by itself empties its ring when the reader scrolls back', async (
   expect(new URL(page.url()).pathname).toMatch(/\/demos\/mock-turtle\/?$/);
   await page.evaluate(() => localStorage.removeItem('alice-demos:auto'));
 });
+
+test('reduced motion snaps to the nearest beat, with no inertia carrying it further', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'mock-turtle');
+  test.skip(!demo, 'no Mock Turtle demo in this build');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto(demo?.url ?? '');
+  await expect(page.locator('.demo')).toHaveAttribute('data-motion', 'reduced');
+  const beats = await page.locator('.demo__stage .demo-beat').count();
+  // A jump to the middle of the fourth beat lands on a whole beat near it.
+  await page.evaluate(
+    ([n]) => window.scrollTo(0, (document.documentElement.scrollHeight - innerHeight) * (3.5 / n)),
+    [beats] as const,
+  );
+  await expect
+    .poll(
+      () =>
+        page.evaluate((n) => {
+          const p = (window.__aliceDemo?.progress() ?? -1) * n;
+          // Past the jump, and on a whole beat.
+          return p >= 2.9 ? Math.abs(p - Math.round(p)) : 1;
+        }, beats),
+      { timeout: 10_000 },
+    )
+    .toBeLessThan(0.05);
+  const beat = await page.evaluate(() => window.__aliceDemo?.beat() ?? -1);
+  expect([3, 4]).toContain(beat);
+});

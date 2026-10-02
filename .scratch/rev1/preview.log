@@ -1,0 +1,6 @@
+error when starting preview server:
+Error: Port 4321 is already in use
+    at httpServerStart (file:///home/user/Interactive-alice/node_modules/vite/dist/node/chunks/node.js:14167:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async preview (file:///home/user/Interactive-alice/node_modules/vite/dist/node/chunks/node.js:35092:2)
+    at async CAC.<anonymous> (file:///home/user/Interactive-alice/node_modules/vite/dist/node/cli.js:811:18)

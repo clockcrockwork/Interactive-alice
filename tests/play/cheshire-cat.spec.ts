@@ -103,7 +103,7 @@ test('the cheshire cat, reduced motion: head first is two cuts and the grin stay
   const context = await browser.newContext({ reducedMotion: 'reduce' });
   const page = await context.newPage();
   await page.goto(demo?.url ?? '');
-  await atCue(page, 'slowly', 0.1);
+  await atCue(page, 'slowly', 0);
   await page.locator('.cc__prop--head').click();
   await expect(page.locator('.cc__wood')).toHaveAttribute('data-vanish', 'head');
   const partOpacity = (selector: string) =>
@@ -111,10 +111,12 @@ test('the cheshire cat, reduced motion: head first is two cuts and the grin stay
       (sel) => Number(document.querySelector(sel)?.getAttribute('opacity') ?? 1),
       selector,
     );
-  await atCue(page, 'slowly', 0.42);
-  await expect.poll(() => partOpacity('.cc__cat [data-cat="ears"]'), { timeout: 8000 }).toBe(0);
+  // The page rests on beat heads under reduced motion: whole at the choice,
+  // gone by the next beat, the grin staying; the two cuts lie between.
+  await expect.poll(() => partOpacity('.cc__cat [data-cat="ears"]'), { timeout: 8000 }).toBe(1);
   await expect.poll(() => partOpacity('.cc__cat'), { timeout: 8000 }).toBe(1);
-  await atCue(page, 'grin', 0.2);
+  await atCue(page, 'grin', 0);
+  await expect.poll(() => partOpacity('.cc__cat [data-cat="ears"]'), { timeout: 8000 }).toBe(0);
   await expect.poll(() => partOpacity('.cc__cat'), { timeout: 8000 }).toBe(0);
   await expect.poll(() => grinOpacity(page), { timeout: 8000 }).toBeGreaterThan(0.5);
   await context.close();

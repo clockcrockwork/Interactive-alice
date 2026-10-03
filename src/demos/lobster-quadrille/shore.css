@@ -37,6 +37,11 @@
     --lq-paper-faint: oklch(from var(--paper-base) l c h / 0.14);
     --lq-caption-shadow: oklch(from var(--paper-base) l c h / 0.5);
     --lq-focus: var(--ix-gold);
+    /* The two speakers' inks on their slips: the Mock Turtle's sea-green and the
+       Gryphon's sepia, each a step deep enough to keep 4.5:1 on the slip over
+       the darkest thing behind it (the water, the court's doors). */
+    --lq-say-turtle: oklch(from var(--world-leaf-deep) calc(l - 0.08) c h);
+    --lq-say-gryphon: var(--sepia-deep);
     /* The court, seen at the end of the shore and from inside at the trial:
        sepia doors on a sepia floor, a dark red frame, and the court's glow. */
     --lq-court-floor: var(--sepia-dark);

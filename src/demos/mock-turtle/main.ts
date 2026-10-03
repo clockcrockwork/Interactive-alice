@@ -12,12 +12,16 @@
  * row of suns that lessen from day to day. At the last the camera settles into
  * the quadrille's opening composition and the Mock Turtle draws breath for the
  * sigh that opens it.
+ *
+ * The reader may break the long silence by clearing a throat, which startles
+ * him into louder sobs; may wake the Drawling-master, who drawls, stretches
+ * across the sea and faints in coils; and comforts him, which only makes it worse.
  */
 
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
-import { SHORE_HTML, schoolMarkup } from './figures.ts';
+import { GRYPHON_PAWS, SHORE_HTML, schoolMarkup, TURTLE_FLAPPERS } from './figures.ts';
 import '../lobster-quadrille/shore.css';
 import './mock-turtle.css';
 
@@ -117,24 +121,32 @@ function mount(shell: DemoShell): void {
   const ripples = [...shore.querySelectorAll<HTMLElement>('.mt__ripple')];
   let rippleIndex = 0;
 
+  // The figures: the Queen, the Drawling-master out in the sea (a button while he
+  // is up), the Gryphon on the shore in front of him (its shadow on the sand, and
+  // its paws to hide its face in), and the old crab.
   const figures = shell.layer('mt__figures');
   figures.innerHTML =
+    '<div class="mt__shade mt__shade--gryphon"><div class="mt__shade-blob"></div></div>' +
     `<div class="mt__queen">${figure('queen-of-hearts')}</div>` +
-    `<div class="mt__gryphon">${figure('gryphon')}</div>` +
-    `<div class="mt__eel">${figure('conger-eel')}</div>` +
+    `<button type="button" class="mt__eel" aria-label="${shell.ui.demoWakeEel ?? ''}" inert>${figure('conger-eel')}</button>` +
+    `<div class="mt__gryphon">${figure('gryphon')}${GRYPHON_PAWS}</div>` +
     `<div class="mt__crab">${figure('crab')}</div>`;
   const queen = figures.querySelector<HTMLElement>('.mt__queen') ?? figures;
   const gryphon = figures.querySelector<HTMLElement>('.mt__gryphon') ?? figures;
-  const eel = figures.querySelector<HTMLElement>('.mt__eel') ?? figures;
+  const eel = figures.querySelector<HTMLButtonElement>('.mt__eel') ?? figures;
   const crab = figures.querySelector<HTMLElement>('.mt__crab') ?? figures;
 
-  // The Mock Turtle is a real button on the stage: comfort him and he sighs harder.
+  // The Mock Turtle is pointer play on the stage: tap him and he sighs harder.
+  // The *Comfort him* button is the way for the keyboard and for assistive
+  // technology, so he takes no focus and is not announced twice.
   const turtle = document.createElement('button');
   turtle.type = 'button';
   turtle.className = 'mt__turtle';
-  turtle.setAttribute('aria-label', shell.ui.demoComfort ?? '');
+  turtle.tabIndex = -1;
+  turtle.setAttribute('aria-hidden', 'true');
   turtle.innerHTML =
     figure('mock-turtle') +
+    TURTLE_FLAPPERS +
     Array.from({ length: 4 }, (_, i) => `<div class="mt__drop" style="--d: ${i}"></div>`).join('');
   shell.stage.append(turtle);
 
@@ -167,6 +179,36 @@ function mount(shell: DemoShell): void {
   ): void => {
     master.to(cam, { ...to, duration, ease, onUpdate: applyCam }, at);
   };
+
+  // --- The day: the sun, and the shadows it throws on the sand. `hour` runs from
+  // 0 to 1 through the long silence, the sun sliding across the sky and the
+  // shadows swinging under it, and from 1 to 2 as the lessons lessen, when it
+  // goes down into the sea at the far side; `shade` brings the shadows in once
+  // the walk along the shore begins, so the first frame is untouched.
+  const day = { hour: 0, shade: 0 };
+  const applyDay = (): void => {
+    const rise = Math.min(day.hour, 1);
+    const set = Math.max(day.hour - 1, 0);
+    const sunX = -rise * 58;
+    const sunY = -Math.sin(rise * Math.PI) * 6 + set * 36;
+    const angle = 140 - rise * 95 - set * 30;
+    const length = day.hour <= 1 ? 1.1 - Math.sin(rise * Math.PI) * 0.35 : 1.1 + set * 1.2;
+    const shade = day.shade * (1 - Math.min(1, Math.max(0, day.hour - 1.7) / 0.3));
+    for (const el of [shore, figures]) {
+      el.style.setProperty('--sun-x', sunX.toFixed(2));
+      el.style.setProperty('--sun-y', sunY.toFixed(2));
+      el.style.setProperty('--shade-a', angle.toFixed(1));
+      el.style.setProperty('--shade-l', length.toFixed(3));
+      el.style.setProperty('--shade', shade.toFixed(3));
+    }
+  };
+  applyDay();
+  master.fromTo(
+    day,
+    { shade: 0 },
+    { shade: 1, duration: quick(0.8), onUpdate: applyDay, immediateRender: false },
+    iFun + 0.5,
+  );
 
   // --- The Gryphon asleep in the sun; the Queen walks off; it sits up, rubs its
   // eyes, watches her out of sight, and chuckles. Come on!: the walk along the shore.
@@ -271,13 +313,9 @@ function mount(shell: DemoShell): void {
     master.call(crying, [], at);
   }
 
-  const comfortButton = shell.prop(shell.ui.demoComfort ?? '', 'mt__prop mt__prop--comfort');
-  let comforting = 0;
-  const comfort = (): void => {
-    comforting += 1;
-    const strength = Math.min(2.2, 1.2 + comforting * 0.25);
-    shell.sound.play('whoosh', 0.4);
-    shell.status(shell.ui.demoComfort ?? '');
+  // The reader's own sighs: he heaves, the sea heaves with him, and a ripple
+  // goes out. Each on its own object, so the scroll's sighs are never undone.
+  const stir = (strength: number): void => {
     shore.dataset.stirred = '';
     gsap.fromTo(
       turtle,
@@ -312,6 +350,18 @@ function mount(shell: DemoShell): void {
     );
     ripple(strength);
   };
+
+  const comfortButton = shell.prop(shell.ui.demoComfort ?? '', 'mt__prop mt__prop--comfort');
+  let comforting = 0;
+  const comfort = (): void => {
+    if (turtle.dataset.tappable === undefined) {
+      return;
+    }
+    comforting += 1;
+    shell.sound.play('whoosh', 0.4);
+    shell.status(shell.ui.demoComfort ?? '');
+    stir(Math.min(2.2, 1.2 + comforting * 0.25));
+  };
   comfortButton.addEventListener('click', comfort);
   turtle.addEventListener('click', comfort);
   const comfortable = (): void => {
@@ -330,37 +380,110 @@ function mount(shell: DemoShell): void {
     master.call(comfortable, [], at);
   }
 
-  // --- Hjckrrh!: the Gryphon's own noise, taken from the sound line, as a big
-  // jagged word; the Gryphon bounds with it.
+  // --- So they sat down, and nobody spoke for some minutes: the sun slides
+  // across the sky and the shadows swing round under it while nobody speaks.
+  // Clear your throat, and the silence breaks: the Mock Turtle starts and sobs
+  // louder than ever, tears running, the sea heaving with him.
+  master.to(
+    day,
+    { hour: 1, duration: quick(0.6), ease: 'none', onUpdate: applyDay },
+    iSilence + 0.05,
+  );
+  const throatButton = shell.prop(shell.ui.demoClearThroat ?? '', 'mt__prop mt__prop--throat');
+  const startle = { amount: 0 };
+  const applyStartle = (): void => turtle.style.setProperty('--startle', startle.amount.toFixed(3));
+  let throatOpen = false;
+  let sobbing = 0;
+  const clearThroat = (): void => {
+    if (!throatOpen) {
+      return;
+    }
+    shell.sound.play('thud', 0.3);
+    shell.status(shell.ui.demoClearThroat ?? '');
+    if (reducedMotion) {
+      // A start held still for a moment, then settled: no bounce.
+      gsap.fromTo(
+        startle,
+        { amount: 1 },
+        { amount: 0, duration: 0.01, delay: 0.7, onUpdate: applyStartle, onStart: applyStartle },
+      );
+      applyStartle();
+    } else {
+      const jump = gsap.timeline({ onUpdate: applyStartle });
+      jump.to(startle, { amount: 1, duration: 0.12, ease: 'power2.out' });
+      jump.to(startle, { amount: 0, duration: 0.9, ease: 'elastic.out(1, 0.35)' });
+    }
+    turtle.setAttribute('data-sobbing', '');
+    window.clearTimeout(sobbing);
+    sobbing = window.setTimeout(() => turtle.removeAttribute('data-sobbing'), 2800);
+    window.setTimeout(() => {
+      shell.sound.play('whoosh', 0.5);
+      stir(1.8);
+    }, 260);
+  };
+  throatButton.addEventListener('click', clearThroat);
+  const throatWindow = (): void => {
+    const t = master.time();
+    throatOpen = t >= iSilence + 0.1 && t < iOnce;
+    if (throatOpen) {
+      throatButton.show();
+    } else {
+      throatButton.hide();
+      window.clearTimeout(sobbing);
+      turtle.removeAttribute('data-sobbing');
+    }
+  };
+  master.call(throatWindow, [], iSilence + 0.1);
+  master.call(throatWindow, [], iOnce);
+
+  // --- Hjckrrh!: the Gryphon's own noise, taken from the sound line, drawn as a
+  // big jagged word a letter at a time as its line appears, while the Gryphon
+  // shakes with it; the word holds through the beat and goes before the school.
   const cry = shell.layer('mt__cry');
-  const soundLine = shell.beats[iOnce]?.lines.find((line) => line.dataset.kind === 'sound');
+  const onceLines = shell.beats[iOnce]?.lines ?? [];
+  const soundLine = onceLines.find((line) => line.dataset.kind === 'sound');
   const cryWord = document.createElement('div');
   cryWord.className = 'mt__cry-word';
   cryWord.innerHTML = letters(soundLine?.textContent?.trim() ?? '');
   cry.append(cryWord);
+  const cryLetters = [...cryWord.querySelectorAll<HTMLElement>('.mt__letter')];
+  // The shell's own captions come in a line at a time, 0.08 of a beat apart.
+  const cryAt = iOnce + 0.05 + Math.max(0, soundLine ? onceLines.indexOf(soundLine) : 0) * 0.08;
   master.fromTo(
     cryWord,
-    { opacity: 0, scale: reducedMotion ? 1 : 0.2, rotate: reducedMotion ? 0 : -12 },
-    {
-      opacity: 1,
-      scale: 1,
-      rotate: reducedMotion ? 0 : 3,
-      duration: quick(0.12),
-      ease: 'back.out(2)',
-      immediateRender: false,
-    },
-    iOnce + 0.62,
+    { opacity: 0 },
+    { opacity: 1, duration: quick(0.04), immediateRender: false },
+    cryAt,
   );
-  master.to(cryWord, { opacity: 0, duration: 0.15 }, iOnce + 0.88);
+  master.fromTo(
+    cryLetters,
+    { '--drawn': 0 },
+    {
+      '--drawn': 1,
+      duration: quick(0.05),
+      stagger: reducedMotion ? 0 : 0.028,
+      ease: 'back.out(2.4)',
+    },
+    cryAt,
+  );
+  master.to(cryWord, { opacity: 0, duration: 0.1 }, iOnce + 0.86);
+  // Under reduced motion the shake is a held, tilted pose, there in the settled frame.
+  const shakeEnd = iOnce + (reducedMotion ? 0.86 : 0.62);
+  const shaking = (): void => {
+    const t = master.time();
+    figures.toggleAttribute('data-crying-out', t >= cryAt && t < shakeEnd);
+  };
+  master.call(shaking, [], cryAt);
+  master.call(shaking, [], shakeEnd);
   master.to(
     gryphon,
     { '--hop': 1, duration: quick(0.1), yoyo: true, repeat: 1, ease: 'power2.out' },
-    iOnce + 0.6,
+    cryAt,
   );
   master.call(
-    () => (master.time() >= iOnce + 0.62 ? shell.sound.play('thud', 0.6) : undefined),
+    () => (master.time() >= cryAt ? shell.sound.play('thud', 0.6) : undefined),
     [],
-    iOnce + 0.62,
+    cryAt,
   );
 
   // --- School in the sea: the picture goes under the water, and the school is
@@ -612,6 +735,48 @@ function mount(shell: DemoShell): void {
     iDrawling + 0.1,
   );
   master.to(eel, { '--up': 0, duration: quick(0.3) }, iGrief);
+  // Wake him, and he does what he taught: he drawls, stretches right across the
+  // sea, and faints in coils, then comes round. His own object, so the scroll
+  // that raises him and the reader's play never fight over one value.
+  const lesson = { drawl: 0, stretch: 0, faint: 0 };
+  const applyLesson = (): void => {
+    eel.style.setProperty('--drawl', lesson.drawl.toFixed(3));
+    eel.style.setProperty('--stretch', lesson.stretch.toFixed(3));
+    eel.style.setProperty('--faint', lesson.faint.toFixed(3));
+  };
+  applyLesson();
+  let teaching: gsap.core.Timeline | undefined;
+  const wake = (): void => {
+    if (eel.inert || teaching?.isActive()) {
+      return;
+    }
+    shell.status(shell.ui.demoWakeEel ?? '');
+    const play = gsap.timeline({ onUpdate: applyLesson });
+    if (reducedMotion) {
+      // Three poses, cut one to the next: drawling, stretched, fainted.
+      play.set(lesson, { drawl: 1 }, 0);
+      play.set(lesson, { drawl: 0, stretch: 1 }, 0.7);
+      play.set(lesson, { stretch: 0, faint: 1 }, 1.5);
+      play.set(lesson, { faint: 0 }, 2.7);
+    } else {
+      play.to(lesson, { drawl: 1, duration: 0.7, ease: 'sine.inOut' }, 0);
+      play.to(lesson, { drawl: 0, stretch: 1, duration: 0.9, ease: 'power1.inOut' }, 0.7);
+      play.to(lesson, { stretch: 0, duration: 0.3, ease: 'power2.in' }, 1.6);
+      play.to(lesson, { faint: 1, duration: 0.6, ease: 'bounce.out' }, 1.6);
+      play.to(lesson, { faint: 0, duration: 0.8, ease: 'power2.inOut' }, 3.1);
+    }
+    play.call(() => shell.sound.play('whoosh', 0.3), [], 0.7);
+    play.call(() => shell.sound.play('thud', 0.35), [], reducedMotion ? 1.5 : 1.7);
+    teaching = play;
+  };
+  eel.addEventListener('click', wake);
+  // He is a button only while he is up out of the sea.
+  const eelLive = (): void => {
+    const t = master.time();
+    eel.inert = !(t >= iDrawling + 0.2 && t < iGrief);
+  };
+  master.call(eelLive, [], iDrawling + 0.2);
+  master.call(eelLive, [], iGrief);
   master.fromTo(
     crab,
     { '--in': 0 },
@@ -619,7 +784,12 @@ function mount(shell: DemoShell): void {
     iGrief + 0.1,
   );
   master.to(crab, { '--in': 0, duration: quick(0.3) }, iHours);
-  master.to([gryphon, turtle], { '--hide': 1, duration: quick(0.25) }, iGrief + 0.6);
+  // They hide their faces as the line that says so appears (the shell's captions
+  // come a line at a time, 0.08 of a beat apart), and keep them hidden.
+  const griefLines = shell.beats[iGrief]?.lines ?? [];
+  const hidLine = [...griefLines].reverse().find((line) => line.dataset.kind === 'narration');
+  const hideAt = iGrief + 0.08 + Math.max(0, hidLine ? griefLines.indexOf(hidLine) : 2) * 0.08;
+  master.to([gryphon, turtle], { '--hide': 1, duration: quick(0.2) }, hideAt);
   master.to([gryphon, turtle], { '--hide': 0, duration: quick(0.25) }, iHours + 0.1);
 
   // --- Lessons: ten hours the first day, nine the next; a row of suns that lessen
@@ -660,6 +830,9 @@ function mount(shell: DemoShell): void {
     iHoliday + 0.7,
   );
   master.to(days, { '--off': 1, duration: quick(0.3), ease: 'power2.in' }, iGames + 0.05);
+  // And the sun lessens with them: it goes down into the sea at the far side
+  // before the first of the row comes up.
+  master.to(day, { hour: 2, duration: quick(0.3), ease: 'power1.in', onUpdate: applyDay }, iHours);
   master.to(gryphon, { '--hop': 1, duration: quick(0.1), yoyo: true, repeat: 1 }, iGames + 0.05);
 
   // --- The join: the camera settles into the quadrille's opening composition,

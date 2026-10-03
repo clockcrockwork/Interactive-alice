@@ -32,8 +32,6 @@
 @layer scene {
   .demo--croquet .demo-beat {
     inset-block-end: 9vh;
-    color: var(--ink-primary);
-    text-shadow: 0 1px 0 oklch(from var(--paper-base) l c h / 0.55);
   }
 
   .demo--croquet .line[data-speaker="queen-of-hearts"] {

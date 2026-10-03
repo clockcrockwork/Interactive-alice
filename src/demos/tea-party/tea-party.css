@@ -754,7 +754,7 @@
   }
 
   .demo--tea-party .line[data-kind="narration"] {
-    background: oklch(from var(--paper-base) l c h / 0.6);
+    background: var(--demo-slip);
     box-shadow: none;
     color: var(--ink-primary);
     font-style: italic;

@@ -55,6 +55,12 @@
     --demo-accent: var(--ix-gold);
     --demo-heart: var(--wonder-red);
     --demo-glass: oklch(from var(--sepia-deep) l c h / 0.72);
+    /* Every sentence is set on a slip of the book's paper, so it reads the same
+       over a night wood, a red court or a paper sky. */
+    --demo-slip: oklch(from var(--paper-base) l c h / 0.9);
+    --demo-slip-ink: var(--ink-primary);
+    --demo-say: var(--ink-secondary);
+    --demo-say-red: var(--wonder-red-dark);
     --demo-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
     --demo-bar-height: 3.25rem;
     --demo-caption-size: clamp(1.15rem, 1rem + 1.2vw, 1.75rem);
@@ -184,16 +190,22 @@
     pointer-events: none;
   }
 
+  /* A degraded mode says so at the foot of the first frame, above the scroll
+     hint, and goes with the hint once the reader is on their way: it never sits
+     on a prop. */
   .demo__note {
     position: fixed;
-    inset-block-start: calc(var(--demo-bar-height) + var(--space-1));
+    inset-block-end: calc(var(--space-2) + 1.6rem);
     inset-inline: var(--space-2);
     z-index: var(--demo-z-bar);
     margin: 0;
     font-family: system-ui, sans-serif;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--demo-ink-soft);
     text-align: center;
+    pointer-events: none;
+    opacity: var(--demo-hint-opacity, 1);
+    transition: opacity var(--demo-calm) var(--demo-ease);
   }
 
   /* The stage: pinned to the viewport for the whole scroll. Demos draw into it. */
@@ -250,14 +262,40 @@
     translate: 0 calc(-1 * var(--demo-end-lift, 4.25rem));
   }
 
+  /* The slip: ink on the book's paper, one per sentence. Speech and thought are
+     in italic and a softer ink; the court and its Rabbit speak in Wonderland red;
+     Alice's own lines carry her dress colour as a mark at the start. A demo may
+     restyle a speaker, but keeps the slip under it. */
   .line {
+    justify-self: center;
     margin: 0;
+    padding: 0.04em 0.5em 0.1em;
+    border-radius: 0.3em;
+    background: var(--demo-slip);
+    color: var(--demo-slip-ink);
+    text-shadow: none;
     opacity: var(--line-opacity, 1);
     translate: 0 var(--line-rise, 0);
   }
 
+  .line[data-kind="dialogue"],
   .line[data-kind="thought"] {
     font-style: italic;
+    color: var(--demo-say);
+  }
+
+  .line:is(
+    [data-speaker="queen-of-hearts"],
+    [data-speaker="king-of-hearts"],
+    [data-speaker="knave-of-hearts"],
+    [data-speaker="white-rabbit"]
+  ) {
+    color: var(--demo-say-red);
+  }
+
+  .line[data-speaker="alice"] {
+    border-inline-start: 0.22em solid var(--alice-dress);
+    padding-inline-start: 0.42em;
   }
 
   .line[data-kind="sound"] {
@@ -340,29 +378,40 @@
     transition-delay: 0s;
   }
 
+  /* What the reader just did, said at the foot of the frame on a slip, under the
+     captions and clear of the props at the top; above the end links on the
+     last beat. */
   .demo__status {
     position: absolute;
-    inset-inline: 0;
-    inset-block-start: calc(var(--demo-bar-height) + var(--space-2));
+    inset-block-end: var(--space-2);
+    inset-inline-start: 50%;
     z-index: calc(var(--demo-z-captions) + 1);
+    max-inline-size: min(36rem, calc(100% - 2 * var(--space-2)));
     margin: 0;
+    padding: 0.2em 0.7em;
+    border-radius: 999px;
+    background: var(--demo-slip);
+    color: var(--demo-slip-ink);
     text-align: center;
     font-family: system-ui, sans-serif;
-    font-size: 0.85rem;
-    color: var(--demo-ink-soft);
+    font-size: 0.8rem;
+    translate: -50% 0;
     pointer-events: none;
     opacity: 0;
     transition: opacity var(--demo-calm) var(--demo-ease);
   }
 
+  .demo:dir(rtl) .demo__status {
+    translate: 50% 0;
+  }
+
+  .demo[data-ending] .demo__status {
+    inset-block-end: calc(var(--demo-end-lift, 4.25rem) + var(--space-1));
+  }
+
   .demo__status[data-shown] {
     opacity: 1;
     transition-duration: var(--demo-quick);
-  }
-
-  /* With a note under the bar (reduced motion, a flat well), the status goes below it. */
-  .demo[data-noted] .demo__status {
-    inset-block-start: calc(var(--demo-bar-height) + var(--space-2) + 1.5rem);
   }
 
   /* A phone's bar stays one row: smaller type, tighter buttons, and the title
@@ -492,6 +541,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .demo__hint,
+    .demo__note,
     .demo__prop,
     .demo__status,
     .demo[data-attached] .demo__captions {

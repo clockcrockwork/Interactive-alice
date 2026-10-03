@@ -39,10 +39,6 @@
 @layer scene {
   .demo--rabbit-house .demo-beat {
     inset-block-end: 6vh;
-    padding-block: 0.4em;
-    border-radius: 1rem;
-    background: oklch(from var(--world-night-deep) l c h / 0.55);
-    backdrop-filter: blur(6px);
   }
 
   /* The tidy little room, from inside: Alice is the camera until she has grown

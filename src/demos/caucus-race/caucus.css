@@ -30,8 +30,6 @@
 @layer scene {
   .demo--caucus-race .demo-beat {
     inset-block-end: 8vh;
-    color: var(--ink-primary);
-    text-shadow: 0 1px 0 oklch(from var(--paper-base) l c h / 0.5);
   }
 
   .demo--caucus-race .line[data-speaker="dodo"] {

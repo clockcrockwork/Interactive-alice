@@ -22,29 +22,15 @@
   }
 
   .demo--witnesses .line[data-speaker="queen-of-hearts"] {
-    color: color-mix(in oklch, var(--wonder-red-light), var(--paper-base) 45%);
     font-weight: 700;
     letter-spacing: 0.04em;
-  }
-
-  .demo--witnesses .line[data-speaker="king-of-hearts"] {
-    color: var(--tr-gold);
-  }
-
-  .demo--witnesses .line[data-speaker="alice"] {
-    color: var(--alice-dress-light);
   }
 
   .demo--witnesses .line[data-speaker="hatter"],
   .demo--witnesses .line[data-speaker="march-hare"],
   .demo--witnesses .line[data-speaker="cook"],
-  .demo--witnesses .line[data-speaker="knave-of-hearts"] {
-    color: var(--paper-aged);
-    font-style: italic;
-  }
-
+  .demo--witnesses .line[data-speaker="knave-of-hearts"],
   .demo--witnesses .line[data-speaker="dormouse"] {
-    color: var(--sepia-light);
     font-style: italic;
   }
 

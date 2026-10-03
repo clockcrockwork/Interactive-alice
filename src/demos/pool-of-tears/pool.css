@@ -46,16 +46,11 @@
   .demo--pool-of-tears .demo-beat {
     inset-block-end: auto;
     inset-block-start: 54vh;
-    padding-block: 0.4em;
-    border-radius: 1rem;
-    background: oklch(from var(--pt-water-deep) calc(l - 0.15) c h / 0.45);
-    backdrop-filter: blur(4px);
     translate: 0 calc(var(--bob, 0) * 1px);
     rotate: calc(var(--tilt, 0) * 1deg);
   }
 
   .demo--pool-of-tears .line[data-speaker="mouse"] {
-    color: var(--paper-warm);
     font-style: italic;
   }
 

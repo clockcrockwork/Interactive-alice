@@ -31,8 +31,6 @@
   }
 
   .demo--cheshire-cat .line[data-speaker="cheshire-cat"] {
-    color: var(--paper-warm);
-    font-style: italic;
     letter-spacing: 0.02em;
   }
 

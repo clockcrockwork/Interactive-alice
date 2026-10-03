@@ -187,9 +187,23 @@ shell's `ambient` timeline or on a CSS animation gated by `[data-paused]`, so th
 one **Pause motion** button stops all of it; scroll-driven motion is the visitor's
 own and is never paused.
 
-Under `prefers-reduced-motion: reduce` the shell snaps the scrub to whole beats,
-shows a one-line note, and each demo substitutes a designed still version for each
-effect (§4). Nothing is merely switched off.
+Under `prefers-reduced-motion: reduce` the timeline is not scrubbed. Wherever the
+page rests within a beat, it shows that beat as it has settled, seven tenths of the
+way in (`REDUCED_SETTLE`), and the last beat as it ends; scrolling on steps to the
+next beat's settled picture. Nothing moves while the reader scrolls, a wheel notch or
+an arrow key moves on by as much as it scrolls, and an effect a demo places early in
+a beat is seen with its own sentence. The shell shows a one-line note at the foot of
+the first frame, and each demo substitutes a designed still version for each effect
+(§4). Nothing is merely switched off.
+
+**Captions are slips of paper.** Every sentence is set on its own slip of the book's
+paper (`--demo-slip`), in ink, so it reads the same over a night wood, a red court or
+a paper sky; the measured contrast no longer depends on the picture behind it.
+Speech and thought are in italic and a softer ink (`--demo-say`), the court and its
+Rabbit speak in Wonderland red (`--demo-say-red`), and Alice's own lines carry her
+dress colour as a mark at the start, so either Alice is recognised in her own words.
+A demo may restyle a speaker (the Dormouse's and the tea-table's speech bubbles), but
+keeps the slip under it.
 
 **Sound** is synthesised in the browser (`shell/sound.ts`): filtered noise for
 wind and paper, a tremolo'd sawtooth for a purr, sine plinks for drips, a few
@@ -227,12 +241,22 @@ this way, and at the very end of the trial, in the summer days, whatever was kep
 comes down with the leaves and lies on the bank beside her. Nothing kept, nothing
 shown; it is the reader's record of having played, not a score.
 
-**Status, bar and snapped beats.** The polite live region that announces what the
-reader did shows for a few seconds and then fades, keeping its text for assistive
-technology. On a phone the bar stays one row: smaller type, tighter buttons, the
-title kept for assistive technology only. Under reduced motion the page snaps to the
-head of a beat, so each beat's sentences are already there when it lands: their cut
-is placed just before the head rather than just after it.
+**Status, bar and settled beats.** The polite live region that announces what the
+reader did is a small slip at the foot of the frame, under the captions and clear of
+the props at the top; it shows for a few seconds and then fades, keeping its text for
+assistive technology, and it speaks only for what the reader did, never for what the
+story does by itself. On a phone the bar stays one row: smaller type, tighter
+buttons, the title kept for assistive technology only. Under reduced motion each
+beat's sentences are there for the whole of the beat: their cut is placed just
+before the head rather than just after it.
+
+**Controls are reachable, and only when they mean something.** A layer is
+decoration and hidden from assistive technology until a demo puts a control in it;
+then only the branches without a control stay hidden, so the control is announced by
+its own label. The link to the next scene joins the tab order only on the last beat,
+so a keyboard reader looking for a prop is never carried past the scene. A
+full-stage tap target is pointer play: it takes no keyboard focus, and the prop
+button beside it is the keyboard's way.
 
 **Sound of the place.** Besides the one-shot cues, the synthesiser has continuous
 ones a demo levels from its timeline: `wind`, `purr` and `drip` as before, and now
@@ -792,8 +816,7 @@ takes the reader's fling back with it. The pointer leans the far bands a little,
 the flamingo's eye follows it.
 
 **Reduced motion.** The walk is a sequence of cuts, one per beat; the lean, the shadow
-and the Queen's arrival are cuts placed just before each beat head, where the shell
-snaps; ribbons appear in place and a flung one is simply gone; nobody bobs, the cloud
+and the Queen's arrival are cuts placed just before each beat head; ribbons appear in place and a flung one is simply gone; nobody bobs, the cloud
 does not brood, and the red flash comes without a shake.
 
 The demo joins the croquet-ground before it and the Mock Turtle after it. Its first
@@ -995,7 +1018,7 @@ can be hidden, a strike sends the hedgehog off and the Cat's grin comes first an
 last; the quadrille's lobster can be thrown, the sea somersaulted in and the dance
 joined; the sister's dream fills the bank and opening her eyes turns it into the farm; what the reader
 kept by hand lies on the bank at the end and what the story did does not; the status
-line fades and keeps its text; a snapped beat shows its sentences;
+line fades and keeps its text; a settled beat shows its sentences, and small scrolls step on under reduced motion; the next-scene link waits for the last beat;
 the kitchen's pig turns stage by stage and a poke advances it, the pots stick to the
 glass and *Duck!* clears them; the Mock Turtle's subjects on the sand are the words of
 his own sentences, the wave takes them and comforting him heaves the sea;

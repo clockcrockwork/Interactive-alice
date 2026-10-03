@@ -50,10 +50,6 @@
 @layer scene {
   .demo--drink-me .demo-beat {
     inset-block-end: 8vh;
-    padding-block: 0.4em;
-    border-radius: 1rem;
-    background: oklch(from var(--ink-primary) l c h / 0.5);
-    backdrop-filter: blur(6px);
   }
 
   .dk__world {

@@ -157,7 +157,7 @@
   }
 
   .demo--dormouse .line[data-kind="narration"] {
-    background: oklch(from var(--paper-base) l c h / 0.55);
+    background: var(--demo-slip);
     box-shadow: none;
     color: var(--ink-secondary);
     font-style: italic;

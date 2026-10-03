@@ -34,8 +34,6 @@
 @layer scene {
   .demo--caterpillar .demo-beat {
     inset-block-end: 10vh;
-    color: var(--ink-primary);
-    text-shadow: 0 1px 0 oklch(from var(--paper-base) l c h / 0.6);
   }
 
   .demo--caterpillar .line[data-speaker="caterpillar"] {

@@ -156,9 +156,23 @@ function readUi(): Record<string, string> {
 }
 
 /**
- * When a beat's sentences come in. Under reduced motion the page snaps to the
- * head of a beat, so they must already be there: the cut lands just before it,
- * and the first beat's are set at the head. A custom caption uses the same timing.
+ * Under reduced motion the timeline is not scrubbed: wherever the page rests
+ * within a beat, it shows that beat as it has settled, this far into it, and the
+ * last beat as it ends. Effects a demo places early in a beat are therefore seen
+ * with their sentence, and nothing moves while the reader scrolls.
+ */
+export const REDUCED_SETTLE = 0.7;
+
+/** The time the timeline shows, under reduced motion, for a scroll progress. */
+export function reducedTimeFor(progress: number, beats: number): number {
+  const index = Math.min(beats - 1, Math.max(0, Math.floor(progress * beats + 1e-6)));
+  return index === beats - 1 ? beats : index + REDUCED_SETTLE;
+}
+
+/**
+ * When a beat's sentences come in. Under reduced motion they are there for the
+ * whole of their beat: the cut lands just before its head, and the first beat's
+ * are set at the head. A custom caption uses the same timing.
  */
 export function captionEntry(reduced: boolean, t: number): { at: number; duration: number } {
   if (!reduced) {
@@ -253,47 +267,43 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
       }
     }
     root.style.setProperty('--demo-hint-opacity', index > 0 ? '0' : '1');
-    // On the last beat the captions make room for the link to the next demo.
-    root.toggleAttribute('data-ending', index === beats.length - 1);
+    // On the last beat the captions make room for the link to the next demo. Until
+    // then the link is out of the tab order: focusing it would scroll the reader
+    // past the whole scene.
+    const ending = index === beats.length - 1;
+    root.toggleAttribute('data-ending', ending);
+    root.querySelector<HTMLElement>('.demo__end')?.toggleAttribute('inert', !ending);
   };
 
+  // The beat a progress falls in. The small allowance keeps a beat's own head in
+  // that beat when the division comes out a hair under the whole number.
+  const beatAt = (progress: number): number =>
+    Math.min(beats.length - 1, Math.max(0, Math.floor(progress * beats.length + 1e-6)));
+
+  // With motion, the timeline is scrubbed by the scroll, eased. Under reduced
+  // motion it steps: every scroll position shows its beat as it has settled
+  // (see reducedTimeFor), so a wheel notch or an arrow key moves on by as much
+  // as it scrolls, and no picture is ever caught halfway.
+  const showReduced = (progress: number): void => {
+    const time = reducedTimeFor(progress, beats.length);
+    if (Math.abs(master.time() - time) > 1e-6) {
+      master.time(time);
+    }
+  };
   const trigger = ScrollTrigger.create({
     trigger: root,
     start: 'top top',
     end: 'bottom bottom',
-    scrub: reducedMotion ? true : 0.6,
-    animation: master,
-    onUpdate: (self) =>
-      setActive(Math.min(beats.length - 1, Math.floor(self.progress * beats.length))),
+    scrub: reducedMotion ? false : 0.6,
+    animation: reducedMotion ? undefined : master,
+    onUpdate: (self) => {
+      setActive(beatAt(self.progress));
+      if (reducedMotion) {
+        showReduced(self.progress);
+      }
+    },
   });
   setActive(0);
-
-  // Reduced motion steps from beat to beat rather than gliding: once the scroll
-  // rests, the page is set to the nearest whole beat, with no inertia and no
-  // tween. The shell does this itself; ScrollTrigger's own snap waits on its
-  // velocity bookkeeping and does nothing in the first second of a page.
-  if (reducedMotion) {
-    let rest = 0;
-    const snapToBeat = (): void => {
-      const span = trigger.end - trigger.start;
-      if (span <= 0) {
-        return;
-      }
-      const nearest = Math.round(trigger.progress * beats.length) / beats.length;
-      if (Math.abs(nearest - trigger.progress) * beats.length > 0.001) {
-        trigger.scroll(trigger.start + nearest * span);
-        trigger.update();
-      }
-    };
-    window.addEventListener(
-      'scroll',
-      () => {
-        window.clearTimeout(rest);
-        rest = window.setTimeout(snapToBeat, 120);
-      },
-      { passive: true },
-    );
-  }
 
   const frameFns = new Set<(dt: number, elapsed: number) => void>();
   gsap.ticker.add((time, deltaMs) => {
@@ -461,8 +471,6 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     p.className = 'demo__note';
     p.textContent = text;
     root.querySelector('.demo__bar')?.after(p);
-    // The status line sits under the note, not on it.
-    root.setAttribute('data-noted', '');
   };
   if (reducedMotion && ui.demoReducedMotion) {
     note(ui.demoReducedMotion);
@@ -494,6 +502,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
       el.className = `demo__layer ${className}`;
       el.setAttribute('aria-hidden', 'true');
       captions.before(el);
+      watchControls(el);
       return el;
     },
     prop: (label, className) => {
@@ -520,6 +529,47 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     kept: readKept,
   };
 
+  // A layer is decoration, hidden from assistive technology, until a demo puts a
+  // control in it. Then only the branches without a control stay hidden, so the
+  // control is reachable and announced by its own label.
+  function exposeControls(layer: HTMLElement): void {
+    const controls = layer.querySelectorAll('button, a[href], input, select, textarea, [tabindex]');
+    if (controls.length === 0) {
+      layer.setAttribute('aria-hidden', 'true');
+      return;
+    }
+    layer.removeAttribute('aria-hidden');
+    const hideBranches = (el: Element): void => {
+      for (const child of el.children) {
+        if (child.matches('button, a[href], input, select, textarea, [tabindex]')) {
+          child.removeAttribute('aria-hidden');
+          continue;
+        }
+        const holds = child.querySelector('button, a[href], input, select, textarea, [tabindex]');
+        if (holds) {
+          child.removeAttribute('aria-hidden');
+          hideBranches(child);
+        } else {
+          child.setAttribute('aria-hidden', 'true');
+        }
+      }
+    };
+    hideBranches(layer);
+  }
+  function watchControls(layer: HTMLElement): void {
+    let queued = false;
+    new MutationObserver(() => {
+      if (queued) {
+        return;
+      }
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        exposeControls(layer);
+      });
+    }).observe(layer, { childList: true, subtree: true });
+  }
+
   window.__aliceDemo = {
     progress: () => trigger.progress,
     beat: () => activeIndex,
@@ -529,8 +579,10 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     overrun: () => master.duration() - beats.length,
     auto: () => auto,
     settled: () => {
-      // With a smoothed scrub this is the tween easing the timeline after the
-      // scroll; with an instant one (reduced motion) there is none to wait for.
+      if (reducedMotion) {
+        return Math.abs(master.time() - reducedTimeFor(trigger.progress, beats.length)) < 1e-3;
+      }
+      // With a smoothed scrub this is the tween easing the timeline after the scroll.
       const tween = trigger.getTween?.() as { isActive?: () => boolean } | undefined;
       const easing = typeof tween?.isActive === 'function' && tween.isActive();
       return !easing && Math.abs(master.progress() - trigger.progress) < 0.002;
@@ -540,6 +592,9 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   // no longer lands each beat on its own unit of time. Say so once the demo has
   // composed, where the browser tests will see it.
   requestAnimationFrame(() => {
+    if (reducedMotion) {
+      showReduced(trigger.progress);
+    }
     if (master.duration() > beats.length + 1e-6) {
       console.error(`master timeline overruns the beats: ${master.duration()} > ${beats.length}`);
     }

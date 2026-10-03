@@ -1561,7 +1561,7 @@ test('going on by itself empties its ring when the reader scrolls back', async (
   await page.evaluate(() => localStorage.removeItem('alice-demos:auto'));
 });
 
-test('reduced motion snaps to the nearest beat, with no inertia carrying it further', async ({
+test('reduced motion steps beat by beat: every scroll shows its beat settled, small scrolls count', async ({
   page,
 }) => {
   const demo = demos.find((candidate) => candidate.demo === 'mock-turtle');
@@ -1570,22 +1570,34 @@ test('reduced motion snaps to the nearest beat, with no inertia carrying it furt
   await page.goto(demo?.url ?? '');
   await expect(page.locator('.demo')).toHaveAttribute('data-motion', 'reduced');
   const beats = await page.locator('.demo__stage .demo-beat').count();
-  // A jump to the middle of the fourth beat lands on a whole beat near it.
+  // Small wheel steps are not thrown away: the page moves on and stays moved.
+  await page.mouse.move(640, 380);
+  for (let i = 0; i < 6; i += 1) {
+    await page.mouse.wheel(0, 120);
+    await page.waitForTimeout(200);
+  }
+  await page.waitForTimeout(600);
+  expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(300);
+  // Midway through the fourth beat the fourth beat is active and shown settled.
   await page.evaluate(
     ([n]) => window.scrollTo(0, (document.documentElement.scrollHeight - innerHeight) * (3.5 / n)),
     [beats] as const,
   );
-  await expect
-    .poll(
-      () =>
-        page.evaluate((n) => {
-          const p = (window.__aliceDemo?.progress() ?? -1) * n;
-          // Past the jump, and on a whole beat.
-          return p >= 2.9 ? Math.abs(p - Math.round(p)) : 1;
-        }, beats),
-      { timeout: 10_000 },
-    )
-    .toBeLessThan(0.05);
-  const beat = await page.evaluate(() => window.__aliceDemo?.beat() ?? -1);
-  expect([3, 4]).toContain(beat);
+  await expect.poll(() => page.evaluate(() => window.__aliceDemo?.beat() ?? -1)).toBe(3);
+  await expect.poll(() => page.evaluate(() => window.__aliceDemo?.settled() ?? false)).toBe(true);
+  // It stays where the reader left it.
+  await page.waitForTimeout(800);
+  const progress = await page.evaluate(() => window.__aliceDemo?.progress() ?? -1);
+  expect(progress * beats).toBeGreaterThan(3.3);
+  expect(progress * beats).toBeLessThan(3.7);
+});
+
+test('the link to the next scene joins the tab order only on the last beat', async ({ page }) => {
+  const demo = demos.find((candidate) => candidate.demo === 'caterpillar');
+  test.skip(!demo, 'no Caterpillar demo in this build');
+  await page.goto(demo?.url ?? '');
+  await expect(page.locator('.demo__end')).toHaveAttribute('inert', '');
+  await scrollTo(page, 1);
+  await expect(page.locator('.demo__end')).not.toHaveAttribute('inert', '');
+  await expect(page.locator('.demo__next')).toBeVisible();
 });

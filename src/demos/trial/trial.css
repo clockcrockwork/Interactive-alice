@@ -27,30 +27,18 @@
   }
 
   .demo--trial .line[data-speaker="queen-of-hearts"] {
-    color: color-mix(in oklch, var(--wonder-red-light), var(--paper-base) 45%);
     font-weight: 700;
     letter-spacing: 0.04em;
   }
 
-  .demo--trial .line[data-speaker="king-of-hearts"] {
-    color: var(--tr-gold);
-  }
-
-  .demo--trial .line[data-speaker="alice"] {
-    color: var(--alice-dress-light);
-  }
-
   .demo--trial .line[data-speaker="alices-sister"] {
     color: var(--sepia-dark);
-    text-shadow: none;
   }
 
   .demo--trial .demo-beat[data-cue="leaves"],
   .demo--trial .demo-beat[data-cue="wake"] {
     inset-block-end: auto;
     inset-block-start: calc(var(--demo-bar-height) + 6vh);
-    color: var(--ink-secondary);
-    text-shadow: none;
   }
 
   .tr__bank {

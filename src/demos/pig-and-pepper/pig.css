@@ -82,18 +82,18 @@
   }
 
   .demo--pig-and-pepper .line[data-speaker="duchess"] {
-    color: var(--paper-base);
+    color: var(--wonder-red-dark);
     font-style: italic;
   }
 
   .demo--pig-and-pepper .line[data-speaker="fish-footman"],
   .demo--pig-and-pepper .line[data-speaker="frog-footman"] {
-    color: color-mix(in oklch, var(--paper-base), var(--world-leaf) 40%);
+    color: var(--world-leaf-deep);
     font-style: italic;
   }
 
   .demo--pig-and-pepper .line[data-speaker="cook"] {
-    color: var(--paper-aged);
+    color: var(--ink-secondary);
   }
 
   /* The chorus: big words that bounce. */
@@ -101,8 +101,7 @@
     font-size: 2.6em;
     font-weight: 700;
     letter-spacing: 0.06em;
-    /* Gold, the interaction's own, for the beat the chorus lasts. */
-    color: var(--ix-gold);
+    color: var(--wonder-red-dark);
     animation: pp-wow 0.45s ease-in-out infinite alternate;
   }
 
@@ -987,12 +986,9 @@
       inset-block-end: 42%;
     }
 
-    /* With the baby in her hands the sentences sit over the kitchen: a scrim. */
+    /* With the baby in her hands the sentences sit higher, over the kitchen. */
     .demo--pig-and-pepper[data-holding] .demo-beat {
       inset-block-end: 36vh;
-      padding-block: 0.4em;
-      border-radius: 0.8rem;
-      background: oklch(from var(--world-night-deep) l c h / 0.5);
     }
   }
 

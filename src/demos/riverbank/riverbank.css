@@ -31,17 +31,6 @@
     --lean: 0;
   }
 
-  .demo--riverbank .demo-beat {
-    color: var(--ink-primary);
-  }
-
-  .demo--riverbank .line {
-    justify-self: center;
-    padding-inline: 0.45em;
-    border-radius: 0.3em;
-    background: oklch(from var(--paper-base) l c h / 0.78);
-  }
-
   .demo--riverbank .line[data-speaker="white-rabbit"] {
     font-style: italic;
     color: var(--wonder-red-dark);

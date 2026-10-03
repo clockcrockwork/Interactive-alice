@@ -21,8 +21,6 @@
 
   .demo--lobster-quadrille .demo-beat {
     inset-block-end: 9vh;
-    color: var(--ink-primary);
-    text-shadow: 0 1px 0 var(--lq-caption-shadow);
   }
 
   .demo--lobster-quadrille .line[data-speaker="mock-turtle"] {

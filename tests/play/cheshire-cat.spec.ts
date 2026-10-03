@@ -111,13 +111,21 @@ test('the cheshire cat, reduced motion: head first is two cuts and the grin stay
       (sel) => Number(document.querySelector(sel)?.getAttribute('opacity') ?? 1),
       selector,
     );
-  // The page rests on beat heads under reduced motion: whole at the choice,
-  // gone by the next beat, the grin staying; the two cuts lie between.
+  // Under reduced motion each beat is shown settled: whole at the choice, and by
+  // the last beat the Cat is gone and only the grin is left, risen into the moon.
   await expect.poll(() => partOpacity('.cc__cat [data-cat="ears"]'), { timeout: 8000 }).toBe(1);
   await expect.poll(() => partOpacity('.cc__cat'), { timeout: 8000 }).toBe(1);
   await atCue(page, 'grin', 0);
   await expect.poll(() => partOpacity('.cc__cat [data-cat="ears"]'), { timeout: 8000 }).toBe(0);
   await expect.poll(() => partOpacity('.cc__cat'), { timeout: 8000 }).toBe(0);
-  await expect.poll(() => grinOpacity(page), { timeout: 8000 }).toBeGreaterThan(0.5);
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() =>
+          Number(getComputedStyle(document.querySelector('.cc__moon-grin') as Element).opacity),
+        ),
+      { timeout: 8000 },
+    )
+    .toBeGreaterThan(0.5);
   await context.close();
 });

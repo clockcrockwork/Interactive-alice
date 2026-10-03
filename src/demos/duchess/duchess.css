@@ -42,8 +42,6 @@
 
   .demo--duchess .demo-beat {
     inset-block-end: 7vh;
-    color: var(--ink-primary);
-    text-shadow: 0 1px 0 oklch(from var(--paper-base) l c h / 0.55);
   }
 
   .demo--duchess[data-ending] .demo-beat {

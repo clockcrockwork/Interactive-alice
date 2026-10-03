@@ -30,16 +30,12 @@
 }
 
 @layer scene {
-  /* The sentences sit over a paper sky as often as over the shaft: a scrim. */
   .demo--bill-the-lizard .demo-beat {
     inset-block-end: 8vh;
-    padding-block: 0.4em;
-    border-radius: 1rem;
-    background: oklch(from var(--world-night-deep) l c h / 0.55);
   }
 
   .demo--bill-the-lizard .line[data-speaker="bill"] {
-    color: color-mix(in oklch, var(--paper-base), var(--world-leaf) 45%);
+    color: var(--world-leaf-deep);
     font-style: italic;
   }
 

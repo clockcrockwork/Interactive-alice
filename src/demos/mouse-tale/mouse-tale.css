@@ -30,8 +30,6 @@
     inset-block-start: calc(var(--demo-bar-height) + 1.25rem);
     inset-block-end: auto;
     font-size: calc(var(--demo-caption-size) * 0.88);
-    color: var(--ink-primary);
-    text-shadow: 0 1px 0 oklch(from var(--paper-base) l c h / 0.5);
   }
 
   .demo--mouse-tale .line[data-speaker="mouse"] {

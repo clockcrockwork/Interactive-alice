@@ -17,7 +17,7 @@
 
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
-import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
+import { attachDemo, type DemoShell, mix, REDUCED_SETTLE, seeded } from '../shell/shell.ts';
 import './cheshire.css';
 import { BARE_BOUGH_SVG, closeBough, GRIN_SVG, signSvg } from './figures.ts';
 
@@ -224,16 +224,19 @@ function mount(shell: DemoShell): void {
   master.to(presence, { grin: 0, duration: 0.15, onUpdate: apply }, iAgain - 0.15);
   show(iAgain + 0.3, 1, 0.2, 'power3.out');
   master.to(presence, { grin: 1, duration: 0.1, onUpdate: apply }, iAgain + 0.3);
-  // The slow one waits a moment for the reader's choice of end, then goes.
-  show(iSlowly + 0.25, 0, 0.7, 'sine.inOut');
+  // The slow one waits a moment for the reader's choice of end, then goes. Under
+  // reduced motion the beat is shown settled, so the vanishing waits until just
+  // after that: the choice is made over the whole Cat, and the next beat shows it gone.
+  const slowAt = iSlowly + (reducedMotion ? REDUCED_SETTLE + 0.05 : 0.25);
+  show(slowAt, 0, 0.7, 'sine.inOut');
   master.call(
     () => {
-      if (master.time() >= iSlowly + 0.25) {
+      if (master.time() >= slowAt) {
         shell.sound.play('whoosh', 0.5);
       }
     },
     [],
-    iSlowly + 0.25,
+    slowAt,
   );
   const choosing = (): boolean => master.time() >= iSlowly && master.time() < iGrin;
   const showChoice = (): void => {

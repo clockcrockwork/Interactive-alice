@@ -16,8 +16,6 @@
 @layer scene {
   .demo--mock-turtle .demo-beat {
     inset-block-end: 9vh;
-    color: var(--ink-primary);
-    text-shadow: 0 1px 0 var(--lq-caption-shadow);
   }
 
   .demo--mock-turtle .line[data-speaker="mock-turtle"] {
@@ -51,16 +49,6 @@
 
   .demo--mock-turtle[data-words] .demo-beat {
     inset-block-start: calc(var(--demo-bar-height) + 4rem);
-  }
-
-  /* Under the water the captions go pale, whoever speaks. */
-  .demo--mock-turtle[data-under] .demo-beat {
-    color: var(--paper-base);
-    text-shadow: 0 1px 10px oklch(from var(--lq-under-deep) l c h / 0.8);
-  }
-
-  .demo--mock-turtle[data-under] .line[data-speaker] {
-    color: var(--paper-base);
   }
 
   /* --- The shore in layers. `--pan` is the walk along it, each band at its own

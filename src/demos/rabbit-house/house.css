@@ -210,9 +210,14 @@
     translate: -50% 0;
     transform-origin: 50% 100%;
     opacity: 0;
-    pointer-events: auto;
+    pointer-events: none;
     cursor: pointer;
     filter: drop-shadow(0 20px 30px var(--hs-shade));
+  }
+
+  /* It takes a press only while it is in hand. */
+  .hs__hand-bottle[data-live] {
+    pointer-events: auto;
   }
 
   .hs__hand-bottle svg {
@@ -306,35 +311,79 @@
     transform-origin: 50% 100%;
   }
 
-  .hs__shards {
+  /* The cucumber-frame's glass: whole until the Rabbit goes in, then it bursts
+     up and out and comes down round the frame, where it stays. */
+  .hs__shard {
+    fill: oklch(from var(--paper-base) l c h / 0.9);
+    stroke: var(--ink-faded);
+    stroke-width: 1.2;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .hs__svg[data-crash] .hs__shard {
+    opacity: 1;
+    animation: hs-shard-burst 0.9s cubic-bezier(0.2, 0.6, 0.4, 1) forwards;
+  }
+
+  .hs__frame-hole {
     opacity: 0;
   }
 
-  .hs__shard {
-    position: absolute;
-    inset-inline-start: var(--x, 20%);
-    inset-block-start: var(--y, 70%);
-    inline-size: 1.4vmin;
-    block-size: 2vmin;
-    background: var(--hs-glass);
-    clip-path: polygon(50% 0, 100% 60%, 30% 100%, 0 40%);
-    animation: hs-shard 1.4s ease-out infinite;
-    animation-delay: var(--delay, 0s);
+  .hs__svg[data-crash] .hs__frame-hole {
+    opacity: 1;
+  }
+
+  /* Her shoe out of the chimney's top, and the soot it kicks up. */
+  .hs__puff-bit {
+    fill: oklch(from var(--hs-soot) l c h / 0.85);
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .hs__flue[data-puff] .hs__puff-bit {
+    animation: hs-puff 1.3s ease-out forwards;
+  }
+
+  /* Pointer play inside the picture: the window and the chimney's top. */
+  .hs__window-hit,
+  .hs__foot-hit {
+    cursor: pointer;
+  }
+
+  .hs__fingers {
+    opacity: var(--snatch, 0);
+  }
+
+  /* Decoration over the house never takes the pointer. */
+  .hs__garden,
+  .hs__room,
+  .hs__ceiling-shadow,
+  .hs__hands,
+  .hs__flash,
+  .hs__rim {
+    pointer-events: none;
+  }
+
+  /* The garden from the chimney's rim, through Bill's eyes: the house's last
+     frame and Bill's first. `--rz` is the dive into his eyes. */
+  .hs__rim {
+    --rz: 1;
+    opacity: 0;
+    transform-origin: 50% 92%;
+    transform: scale(var(--rz));
+  }
+
+  .hs__rim-svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
   }
 
   .hs__stage[data-shake] {
     animation: hs-shake 0.45s linear 1;
-  }
-
-  /* The Rabbit's line, from under the window, as a bubble. */
-  .demo--rabbit-house .line[data-speaker="white-rabbit"] {
-    justify-self: center;
-    padding: 0.3em 0.9em;
-    border-radius: 1.2em;
-    background: oklch(from var(--paper-base) l c h / 0.92);
-    color: var(--demo-paper-ink);
-    text-shadow: none;
-    font-style: italic;
   }
 
   .hs__prop {
@@ -350,23 +399,30 @@
     translate: 0 0;
   }
 
-  .hs__window-target {
-    position: absolute;
-    inset-inline-start: 10%;
-    inset-block-start: 30%;
-    inline-size: 26%;
-    block-size: 40%;
-    pointer-events: auto;
-    cursor: pointer;
-    opacity: 0;
-    visibility: hidden;
+  .hs__prop--wiggle {
+    inset-inline-start: var(--space-2);
+    translate: 0 0;
   }
 
-  .hs__window-target[data-shown] {
-    visibility: visible;
+  /* On a wide frame the captions step aside for the figures a beat is about:
+     left of the door while the Rabbit rattles it, right of the window and the
+     cucumber-frame for the snatch and the crash. The camera slides the other way
+     (WIDE_FRAME in figures.ts is the same query). */
+  @media (min-aspect-ratio: 1 / 1) and (min-width: 700px) {
+    .demo--rabbit-house .demo-beat[data-cue="door"] {
+      inset-inline: 3vw auto;
+      margin-inline: 0;
+      max-inline-size: min(28rem, 40vw);
+    }
+
+    .demo--rabbit-house .demo-beat:is([data-cue="snatch"], [data-cue="crash"]) {
+      inset-inline: auto 3vw;
+      margin-inline: 0;
+      max-inline-size: min(28rem, 40vw);
+    }
   }
 
-  .demo[data-paused] .hs__shard {
+  .demo[data-paused] :is(.hs__shard, .hs__puff-bit) {
     animation-play-state: paused;
   }
 
@@ -386,14 +442,32 @@
     }
   }
 
-  @keyframes hs-shard {
-    from {
-      transform: translateY(0) rotate(0deg);
-      opacity: 1;
+  @keyframes hs-shard-burst {
+    0% {
+      transform: translate(0, 0) rotate(0deg);
     }
-    to {
-      transform: translateY(18vh) rotate(160deg);
+    45% {
+      transform: translate(calc(var(--dx) * 0.7px), calc(var(--dy) * -1px))
+        rotate(calc(var(--spin) * 0.6deg));
+    }
+    100% {
+      transform: translate(calc(var(--dx) * 1px), calc(var(--land) * 1px))
+        rotate(calc(var(--spin) * 1deg));
+    }
+  }
+
+  @keyframes hs-puff {
+    0% {
+      opacity: 0.9;
+      transform: translate(0, 0) scale(0.5);
+    }
+    45% {
+      opacity: 0.75;
+      transform: translate(calc(var(--dx) * 0.6px), calc(var(--dy) * -0.6px)) scale(1.4);
+    }
+    100% {
       opacity: 0;
+      transform: translate(calc(var(--dx) * 1px), calc(var(--dy) * -1px)) scale(2.1);
     }
   }
 
@@ -402,10 +476,18 @@
       animation: none;
     }
 
-    .hs__shard {
+    /* The glass hangs in the air over the frame. */
+    .hs__svg[data-crash] .hs__shard {
       animation: none;
-      transform: translateY(calc(var(--ly, 0) * 14vh));
-      opacity: 0.8;
+      transform: translate(calc(var(--dx) * 0.7px), calc(var(--dy) * -0.8px))
+        rotate(calc(var(--spin) * 0.5deg));
+    }
+
+    /* The soot stands still over the chimney's top, then goes. */
+    .hs__flue[data-puff] .hs__puff-bit {
+      animation: none;
+      opacity: 0.55;
+      transform: translate(calc(var(--dx) * 0.6px), calc(var(--dy) * -0.6px)) scale(1.2);
     }
   }
 }

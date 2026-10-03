@@ -19,7 +19,8 @@
     --ct-mushroom-edge: var(--paper-aged);
     --ct-pigeon: var(--sepia-light);
     --ct-pigeon-wing: var(--sepia-mid);
-    --ct-smoke: oklch(from var(--paper-aged) l c h / 0.7);
+    /* Smoke in the faded ink, so a ring reads on the paper sky. */
+    --ct-smoke: oklch(from var(--ink-faded) l c h / 0.75);
     --ct-shade: oklch(from var(--ink-primary) l c h / 0.5);
     --ct-shade-soft: oklch(from var(--ink-primary) l c h / 0.4);
     /* The blink at a change of size: paper with a lilac leak, the guide's
@@ -32,8 +33,27 @@
 }
 
 @layer scene {
+  /* The last beat's captions sit at the top, over the look down at her feet. */
+  .demo--caterpillar {
+    --demo-end-lift: 0rem;
+  }
+
   .demo--caterpillar .demo-beat {
     inset-block-end: 10vh;
+  }
+
+  /* The foot under her chin, the fold, her shoulders far below at the foot of
+     the neck, her feet at the end: all low in the frame, so the captions go up. */
+  .demo--caterpillar
+  .demo-beat:is(
+    [data-cue="shrink"],
+    [data-cue="grow"],
+    [data-cue="free"],
+    [data-cue="neck"],
+    [data-cue="bend"],
+    [data-cue="back"]
+  ) {
+    inset-block: calc(var(--demo-bar-height) + 0.6rem) auto;
   }
 
   .demo--caterpillar .line[data-speaker="caterpillar"] {
@@ -86,9 +106,10 @@
     --lean: 0;
     --base: 82;
     opacity: var(--fade);
+    --toy: 0;
     transform-origin: 50% calc(var(--base) * 1%);
-    transform: translateY(calc(var(--pitch) * 0.5vh)) rotate(calc(var(--lean) * 1deg))
-      scale(var(--s));
+    transform: translateX(calc(var(--toy) * 16vw)) translateY(calc(var(--pitch) * 0.5vh))
+      rotate(calc(var(--lean) * 1deg)) scale(var(--s));
     overflow: visible;
   }
 
@@ -219,6 +240,20 @@
     animation: ct-wobble calc(1.6s + var(--strength) * 0.6s) ease-in-out infinite alternate;
   }
 
+  /* "Explain yourself!": the smoke is a question mark rather than a ring. */
+  .ct__ring--ask .ct__ring-body {
+    border: 0;
+    border-radius: 0;
+    filter: blur(0.4px);
+  }
+
+  .ct__ask {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    overflow: visible;
+  }
+
   .ct__ring[data-still] {
     animation: ct-ring-still calc(var(--seconds) * 1s) linear forwards;
     transform: translate(calc(var(--drift) * 1vmin), -20vh) scale(var(--grow));
@@ -237,12 +272,14 @@
     pointer-events: none;
   }
 
+  /* `--dip` is her head going down into the leaves, toward her shoulders. */
   .ct__canopy {
     position: absolute;
     inset: 0;
     inline-size: 100%;
     block-size: 100%;
-    transform: rotate(calc(var(--sway) * 1deg));
+    transform-origin: 50% 66%;
+    transform: rotate(calc(var(--sway) * 1deg)) scale(calc(1 + var(--dip, 0) * 0.9));
   }
 
   .ct__leaf {
@@ -416,15 +453,20 @@
     animation: ct-flap-right 0.16s ease-in-out infinite alternate;
   }
 
+  /* Under the neck's captions, at the foot of the frame, on a slip. */
   .ct__hint {
     position: absolute;
-    inset-inline: 0;
-    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    inset-inline-start: 50%;
+    inset-block-end: calc(var(--space-2) + 2.4rem);
     margin: 0;
-    text-align: center;
+    padding: 0.2em 0.7em;
+    border-radius: 999px;
+    background: var(--demo-slip);
+    translate: -50% 0;
+    white-space: nowrap;
     font-family: system-ui, sans-serif;
     font-size: 0.75rem;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.06em;
     color: var(--ink-secondary);
     opacity: 0;
     pointer-events: none;
@@ -445,11 +487,206 @@
     -webkit-user-select: none;
   }
 
+  /* The Pigeon is only there to press while it is there. */
+  .ct__pigeon:not([data-here]) {
+    visibility: hidden;
+  }
+
+  /* Dip into the leaves: the button at the foot of the frame, and the place her
+     neck leaves the frame, which a downward drag pulls into the leaves. */
+  .ct__prop--dip {
+    inset-inline-end: var(--space-2);
+    inset-block-end: calc(var(--space-2) + 2.4rem);
+  }
+
+  .ct__dip-target {
+    position: absolute;
+    inset-inline: 32%;
+    inset-block: 58% 0;
+    cursor: grab;
+    touch-action: none;
+    visibility: hidden;
+  }
+
+  .ct__dip-target[data-live] {
+    visibility: visible;
+  }
+
+  /* The tape-measure down the frame's left edge: paper, inch ticks and quarter
+     ticks in ink, the numbers sliding past a fixed mark as she changes size. */
+  .ct__tape {
+    --h: 3;
+    --frac: 0;
+    --inch: clamp(1.8rem, 6vmin, 3rem);
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block: calc(var(--demo-bar-height) + 0.5rem) 34%;
+    inline-size: clamp(1.9rem, 4.5vmin, 2.8rem);
+    z-index: calc(var(--demo-z-captions) - 1);
+    pointer-events: none;
+  }
+
+  .ct__tape-strip {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: 0 0.3rem 0.3rem 0;
+    background: var(--paper-base);
+    box-shadow: 0 0.3rem 0.8rem var(--ct-shade-soft);
+    mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+  }
+
+  .ct__tape-ticks {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: calc(50% - 20 * var(--inch));
+    block-size: calc(40 * var(--inch));
+    translate: 0 calc(var(--frac) * var(--inch));
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        var(--ink-primary) 0 1.5px,
+        transparent 1.5px var(--inch)
+      )
+      0 0 / 62% 100% no-repeat,
+      repeating-linear-gradient(
+        to bottom,
+        var(--ink-faded) 0 1px,
+        transparent 1px calc(var(--inch) / 4)
+      )
+      0 0 / 30% 100% no-repeat;
+  }
+
+  .ct__tape-num {
+    --n: 0;
+    position: absolute;
+    inset-inline-end: 0.25rem;
+    inset-block-start: 50%;
+    translate: 0 calc((var(--h) - var(--n)) * var(--inch) - 50%);
+    font-family: system-ui, sans-serif;
+    font-size: 0.62rem;
+    color: var(--ink-primary);
+  }
+
+  /* The notch at three inches: cut into the tape's edge. */
+  .ct__tape-notch {
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block-start: 50%;
+    inline-size: 0.55rem;
+    aspect-ratio: 1 / 1.4;
+    translate: 0 calc((var(--h) - 3) * var(--inch) - 50%);
+    background: var(--world-night);
+    clip-path: polygon(100% 0, 0 50%, 100% 100%);
+  }
+
+  /* The reading: a mark across the tape and the number beside it. */
+  .ct__tape-mark {
+    position: absolute;
+    inset-inline: -0.2rem auto;
+    inset-block-start: 50%;
+    inline-size: calc(100% + 0.4rem);
+    block-size: 2px;
+    background: var(--ink-primary);
+  }
+
+  .ct__tape-read {
+    position: absolute;
+    inset-inline-start: calc(100% + 0.2rem);
+    inset-block-start: 50%;
+    translate: 0 -50%;
+    padding: 0.05em 0.45em;
+    border-radius: 0.3em;
+    background: var(--demo-slip);
+    color: var(--ink-primary);
+    font-family: system-ui, sans-serif;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    transition: box-shadow var(--demo-calm) var(--demo-ease);
+  }
+
+  /* On three exactly, the notch is at the mark and the reading glows gold. */
+  .ct__tape[data-three] .ct__tape-read {
+    box-shadow: 0 0 0 2px var(--ix-gold);
+  }
+
+  /* On a narrow frame the reading sits on the tape itself, and the captions
+     keep clear of the tape's lane. */
+  @media (max-width: 700px) {
+    .demo--caterpillar .demo-beat {
+      inset-inline-start: 2rem;
+    }
+
+    .ct__tape-read {
+      inset-inline-start: 0;
+      min-inline-size: 100%;
+      padding-inline: 0.15em;
+      text-align: center;
+    }
+  }
+
+  /* The Caterpillar up out of the grass to nod at three inches. */
+  .ct__peek {
+    position: absolute;
+    inset-inline-start: 74%;
+    inset-block-start: calc(var(--base) * 1%);
+    inline-size: clamp(5rem, 15vmin, 10rem);
+    translate: -50% -100%;
+    clip-path: inset(-60% -60% 0 -60%);
+  }
+
+  .ct__peek-cat {
+    translate: 0 105%;
+    transition: translate var(--demo-calm) var(--demo-ease);
+  }
+
+  .ct__peek[data-nod] .ct__peek-cat {
+    translate: 0 18%;
+  }
+
+  .ct__peek .ct__head {
+    transform-box: fill-box;
+    transform-origin: 20% 90%;
+  }
+
+  .ct__peek[data-nod] .ct__head {
+    animation: ct-nod 0.5s ease-in-out 0.45s 2;
+  }
+
+  /* Her own feet at the end, as she looks down at them. */
+  .ct__feet {
+    --toy: 0;
+    pointer-events: none;
+  }
+
+  .ct__feet-self {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 6vmin;
+    inline-size: clamp(14rem, 50vmin, 30rem);
+    translate: -50% calc((1 - var(--toy)) * 110%);
+  }
+
+  .ct__feet-self .art {
+    inline-size: 100%;
+  }
+
   .demo[data-paused] .ct__ring,
   .demo[data-paused] .ct__ring-body,
   .demo[data-paused] .ct__body,
   .demo[data-paused] .ct__wing {
     animation-play-state: paused;
+  }
+
+  @keyframes ct-nod {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(16deg);
+    }
   }
 
   @keyframes ct-ring {
@@ -551,8 +788,16 @@
     }
 
     .ct__bit,
-    .ct__hands {
+    .ct__hands,
+    .ct__peek-cat,
+    .ct__tape-read {
       transition: none;
+    }
+
+    /* The nod is a still: up out of the grass with its head bowed. */
+    .ct__peek[data-nod] .ct__head {
+      animation: none;
+      transform: rotate(14deg);
     }
   }
 }

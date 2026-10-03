@@ -12,3 +12,10 @@ const bit = (flip: boolean): string => `
 
 export const LEFT_BIT_SVG = bit(false);
 export const RIGHT_BIT_SVG = bit(true);
+
+/** "Explain yourself!": the smoke curls into a question, and hangs over her. */
+export const ASK_SVG = `
+<svg class="ct__ask" viewBox="0 0 40 60" focusable="false">
+  <path d="M9 17 Q9 4 21 4 Q33 4 33 16 Q33 25 21 30 L21 40" stroke="var(--ct-smoke)" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <circle cx="21" cy="52" r="4" fill="var(--ct-smoke)"/>
+</svg>`;

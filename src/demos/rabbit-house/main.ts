@@ -13,7 +13,7 @@
 
 import gsap from 'gsap';
 import { attachDemo, type DemoShell, seeded } from '../shell/shell.ts';
-import { BOTTLE_IN_HAND_SVG, HOUSE_FRONT_SVG, HOUSE_SVG } from './figures.ts';
+import { BOTTLE_IN_HAND_SVG, HOUSE_FRONT_SVG, HOUSE_SVG, RIM_SVG, WIDE_FRAME } from './figures.ts';
 import './house.css';
 
 function mount(shell: DemoShell): void {
@@ -99,17 +99,21 @@ function mount(shell: DemoShell): void {
     iSip,
   );
   const drinkButton = shell.prop(shell.ui.demoDrink ?? '', 'hs__prop');
+  // The bottle's own tilt and draught are the reader's (or the story's) drink, on
+  // the drawing inside the hand; the hand itself is the timeline's to raise.
+  const bottleArt = handBottle?.querySelector<SVGSVGElement>('svg');
   let drunk = false;
   const drink = (): void => {
-    if (drunk || !handBottle) {
+    if (drunk || !handBottle || !bottleArt) {
       return;
     }
     drunk = true;
     drinkButton.hide();
     handBottle.setAttribute('data-held', '');
-    gsap.to(handBottle, {
+    gsap.to(bottleArt, {
       rotation: -55,
       y: -30,
+      transformOrigin: '50% 100%',
       duration: reducedMotion ? 0 : 0.5,
       ease: 'power2.inOut',
     });
@@ -118,6 +122,16 @@ function mount(shell: DemoShell): void {
       duration: reducedMotion ? 0 : 1,
       delay: reducedMotion ? 0 : 0.3,
     });
+  };
+  const undrink = (): void => {
+    if (!drunk || !handBottle || !bottleArt) {
+      return;
+    }
+    drunk = false;
+    gsap.killTweensOf([bottleArt, handBottle]);
+    gsap.set(bottleArt, { rotation: 0, y: 0 });
+    gsap.set(handBottle, { '--fill': 1 });
+    handBottle.removeAttribute('data-held');
   };
   handBottle?.addEventListener('click', drink);
   drinkButton.addEventListener('click', drink);
@@ -128,12 +142,22 @@ function mount(shell: DemoShell): void {
     { opacity: 1, y: 0, duration: 0.3 },
     iSip + 0.3,
   );
-  master.call(
-    () => (master.time() >= iSip + 0.35 ? drinkButton.show() : drinkButton.hide()),
-    [],
-    iSip + 0.35,
-  );
+  // The bottle in hand takes a press only while it is in hand.
+  const bottleLive = (): void => {
+    const t = master.time();
+    handBottle?.toggleAttribute('data-live', t >= iSip + 0.3 && t < iCeiling + 0.1);
+    if (t >= iSip + 0.35 && t < iSip + 0.8 && !drunk) {
+      drinkButton.show();
+    } else {
+      drinkButton.hide();
+    }
+  };
+  for (const at of [iSip + 0.3, iSip + 0.35, iSip + 0.8, iCeiling + 0.1]) {
+    master.call(bottleLive, [], at);
+  }
   master.call(() => (master.time() >= iSip + 0.8 ? drink() : undefined), [], iSip + 0.8);
+  // Scrolling back above the sip puts the bottle back, full, for another go.
+  master.call(() => (master.time() < iSip + 0.3 ? undrink() : undefined), [], iSip + 0.3);
   master.to(handBottle, { opacity: 0, y: 80, duration: 0.3 }, iCeiling + 0.1);
   // Growing: the room shrinks round her feet and her head meets the ceiling.
   master.to(
@@ -151,10 +175,11 @@ function mount(shell: DemoShell): void {
     { rise: -900, pitch: 60, grow: 0.42, duration: 0.6, ease: 'power2.in', onUpdate: applyEye },
     iKneel - 0.55,
   );
-  master.to(room, { opacity: 0, duration: 0.3 }, iKneel - 0.3);
-  master.to(ceilingShadow, { opacity: 0, duration: 0.3 }, iKneel - 0.55);
-  master.to(hands, { opacity: 0, duration: 0.2 }, iKneel - 0.55);
+  master.to(room, { autoAlpha: 0, duration: 0.3 }, iKneel - 0.3);
+  master.to(ceilingShadow, { autoAlpha: 0, duration: 0.3 }, iKneel - 0.55);
+  master.to(hands, { autoAlpha: 0, duration: 0.2 }, iKneel - 0.55);
   master.to(stage, { opacity: 1, duration: 0.3 }, iKneel - 0.35);
+  const svg = stage.querySelector<SVGSVGElement>('.hs__svg');
   const camera = stage.querySelector<SVGGElement>('.hs__camera');
   const wall = stage.querySelector<SVGGElement>('.hs__wall');
   const roof = stage.querySelector<SVGGElement>('.hs__roof');
@@ -163,25 +188,35 @@ function mount(shell: DemoShell): void {
   const filling = stage.querySelector<SVGGElement>('.hs__pose--filling');
   const hand = stage.querySelector<SVGGElement>('.hs__hand');
   const door = stage.querySelector<SVGGElement>('.hs__door');
+  const rabbitWalk = stage.querySelector<SVGGElement>('.hs__rabbit-walk');
   const rabbit = stage.querySelector<SVGGElement>('.hs__rabbit');
+  const tumble = stage.querySelector<SVGGElement>('.hs__rabbit-tumble');
   const bottle = stage.querySelector<SVGGElement>('.hs__bottle');
-  const shards = shell.layer('hs__shards');
+  const flue = stage.querySelector<SVGGElement>('.hs__flue');
+  const legLow = stage.querySelector<SVGGElement>('.hs__leg-low');
+  const legUp = stage.querySelector<SVGGElement>('.hs__leg-up');
+  const shoe = stage.querySelector<SVGGElement>('.hs__shoe');
   const random = seeded(41);
-  shards.innerHTML = Array.from(
-    { length: 16 },
-    () =>
-      `<div class="hs__shard" style="--x: ${(8 + random() * 14).toFixed(1)}%; --y: ${(72 + random() * 8).toFixed(1)}%; --delay: ${(-random() * 1.4).toFixed(2)}s; --ly: ${random().toFixed(2)}"></div>`,
-  ).join('');
 
-  // --- The camera: zoom and pan in SVG units, around a point of interest.
-  const view = { x: 320, y: 440, scale: 2.6, px: 0 };
+  // --- The camera: zoom and pan in SVG units, around a point of interest. On a
+  // wide frame `side` slides the point toward one side, so the captions can sit on
+  // the other (house.css places them by cue with the same query); on a tall one
+  // the point sits higher, above the captions, and the zoom eases off so the
+  // house fits the narrow frame.
+  const wideQuery = matchMedia(WIDE_FRAME);
+  const view = { x: 320, y: 440, scale: 2.6, side: 0, px: 0 };
   const apply = (): void => {
+    const wide = wideQuery.matches;
+    const ax = 500 + view.px + (wide ? view.side * 170 : 0);
+    const ay = wide ? 380 : 300;
+    const scale = view.scale * (wide ? 1 : 0.8);
     camera?.setAttribute(
       'transform',
-      `translate(${500 + view.px} 380) scale(${view.scale}) translate(${-view.x} ${-view.y})`,
+      `translate(${ax.toFixed(1)} ${ay}) scale(${scale.toFixed(4)}) translate(${(-view.x).toFixed(1)} ${(-view.y).toFixed(1)})`,
     );
   };
   apply();
+  wideQuery.addEventListener('change', apply);
   const look = (at: number, to: Partial<typeof view>, duration = 0.8): void => {
     master.to(
       view,
@@ -220,8 +255,7 @@ function mount(shell: DemoShell): void {
       return;
     }
     stage.removeAttribute('data-shake');
-    void stage.offsetWidth;
-    stage.setAttribute('data-shake', '');
+    requestAnimationFrame(() => stage.setAttribute('data-shake', ''));
     shell.sound.play('thud', 0.7);
     if (slates && slateCount < 8) {
       slateCount += 1;
@@ -243,11 +277,6 @@ function mount(shell: DemoShell): void {
     }
   };
   shakeButton.addEventListener('click', shake);
-  stage.addEventListener('pointerdown', (event) => {
-    if (!(event.target as HTMLElement).closest('button')) {
-      shake();
-    }
-  });
   master.call(
     () =>
       master.time() >= iKneel && master.time() < iDoor ? shakeButton.show() : shakeButton.hide(),
@@ -271,109 +300,260 @@ function mount(shell: DemoShell): void {
   master.to(filling, { scale: 1, duration: 0.6, ease: 'power2.inOut' }, iArm);
   master.to(hand, { opacity: 1, duration: 0.2 }, iArm + 0.3);
   master.to([wall, roof], { '--bulge': 1, duration: 0.6 }, iArm + 0.2);
-  look(iOutside, { x: 500, y: 360, scale: 0.72 }, 0.9);
+  // A little higher, so the chimney's top is in the frame when her foot comes out.
+  look(iArm, { x: 500, y: 340, scale: 0.85 }, 0.7);
+  look(iOutside, { x: 500, y: 350, scale: 0.72 }, 0.9);
 
-  // --- The Rabbit tries the door, then goes round to the window.
-  master.to(rabbit, { opacity: 1, duration: 0.1 }, iDoor);
-  master.fromTo(rabbit, { x: 0 }, { x: -190, duration: 0.5, ease: 'power1.inOut' }, iDoor);
-  if (!reducedMotion) {
+  // --- One foot up the chimney: her leg runs up the flue and the shoe comes out
+  // of the chimney's top. The rise is the timeline's; a wiggle is the reader's,
+  // on its own value, and the two add up.
+  const leg = { up: 0 };
+  const kickFx = { k: 0 };
+  const applyLeg = (): void => {
+    legUp?.setAttribute(
+      'transform',
+      `translate(0 ${((1 - leg.up) * 170 - kickFx.k * 34).toFixed(1)})`,
+    );
+    shoe?.setAttribute('transform', `rotate(${(-kickFx.k * 38).toFixed(1)} 662 74)`);
+  };
+  applyLeg();
+  master.fromTo(
+    [flue, legLow],
+    { opacity: 0 },
+    { opacity: 1, duration: reducedMotion ? 0.01 : 0.1, immediateRender: false },
+    iArm + 0.4,
+  );
+  master.fromTo(
+    leg,
+    { up: 0 },
+    {
+      up: 1,
+      duration: reducedMotion ? 0.01 : 0.4,
+      ease: 'power2.out',
+      onUpdate: applyLeg,
+      immediateRender: false,
+    },
+    iArm + 0.4,
+  );
+
+  // --- Wiggle her foot: it kicks out of the chimney's top in a puff of soot, the
+  // kick that will send Bill up. Hers to play with from the moment the foot is
+  // out until the Rabbit comes round to the window.
+  const wiggleButton = shell.prop(shell.ui.demoWiggleFoot ?? '', 'hs__prop hs__prop--wiggle');
+  const wiggleFrom = iArm + 0.75;
+  const wiggleLive = (): boolean => master.time() >= wiggleFrom && master.time() < iSnatch;
+  let wiggles = 0;
+  let wiggleTimeline: gsap.core.Timeline | undefined;
+  const wiggle = (): void => {
+    if (!wiggleLive() || !flue) {
+      return;
+    }
+    wiggles += 1;
+    shell.sound.play('whoosh', 0.5);
+    shell.status(shell.ui.demoWiggleFoot ?? '');
+    flue.removeAttribute('data-puff');
+    requestAnimationFrame(() => flue.setAttribute('data-puff', String(wiggles)));
+    wiggleTimeline?.kill();
+    wiggleTimeline = gsap.timeline({ onComplete: () => flue.removeAttribute('data-puff') });
+    if (reducedMotion) {
+      wiggleTimeline.set(kickFx, { k: 1, onUpdate: applyLeg }, 0);
+      wiggleTimeline.set(kickFx, { k: 0, onUpdate: applyLeg }, 1.2);
+    } else {
+      wiggleTimeline.to(kickFx, { k: 1, duration: 0.16, ease: 'power3.out', onUpdate: applyLeg });
+      wiggleTimeline.to(kickFx, {
+        k: 0.35,
+        duration: 0.14,
+        ease: 'sine.inOut',
+        onUpdate: applyLeg,
+      });
+      wiggleTimeline.to(kickFx, { k: 0.8, duration: 0.12, ease: 'sine.inOut', onUpdate: applyLeg });
+      wiggleTimeline.to(kickFx, { k: 0, duration: 0.5, ease: 'power2.inOut', onUpdate: applyLeg });
+      wiggleTimeline.to({}, { duration: 0.4 });
+    }
+  };
+  wiggleButton.addEventListener('click', wiggle);
+  const wiggleShown = (): void => {
+    if (wiggleLive()) {
+      wiggleButton.show();
+    } else {
+      wiggleButton.hide();
+    }
+  };
+  master.call(wiggleShown, [], wiggleFrom);
+  master.call(wiggleShown, [], iSnatch);
+
+  // --- The Rabbit tries the door, then goes round to the window. His walk is
+  // the timeline's (the outer group), his tumble the snatch's (the inner one).
+  const rab = { x: 900, y: 560, hop: 0 };
+  const applyRabbit = (): void => {
+    const bob = -Math.abs(Math.sin(rab.hop * Math.PI)) * 9;
+    rabbitWalk?.setAttribute(
+      'transform',
+      `translate(${rab.x.toFixed(1)} ${(rab.y + bob).toFixed(1)})`,
+    );
+  };
+  applyRabbit();
+  master.fromTo(
+    rabbit,
+    { opacity: 0 },
+    { opacity: 1, duration: 0.1, immediateRender: false },
+    iDoor,
+  );
+  master.fromTo(
+    rab,
+    { x: 900, y: 560, hop: 0 },
+    {
+      x: 712,
+      y: 556,
+      hop: 5,
+      duration: reducedMotion ? 0.01 : 0.45,
+      ease: 'power1.inOut',
+      onUpdate: applyRabbit,
+      immediateRender: false,
+    },
+    iDoor,
+  );
+  look(iDoor, { x: 560, y: 380, scale: 0.82, side: 1 }, 0.6);
+  if (reducedMotion) {
+    // The door held where her elbow stops it, rather than rattling.
+    master.set(door, { '--rattle': 0.6 }, iDoor + 0.4);
+    master.set(door, { '--rattle': 0 }, iSnatch);
+  } else {
     master.to(door, { '--rattle': 1, duration: 0.08, yoyo: true, repeat: 5 }, iDoor + 0.5);
   }
-  master.to(rabbit, { x: -640, y: 40, duration: 0.6, ease: 'power1.inOut' }, iSnatch - 0.3);
-  look(iSnatch, { x: 300, y: 400, scale: 0.95 }, 0.6);
+  master.fromTo(
+    rab,
+    { x: 712, y: 556, hop: 5 },
+    {
+      x: 300,
+      y: 585,
+      hop: 14,
+      duration: reducedMotion ? 0.01 : 0.55,
+      ease: 'power1.inOut',
+      onUpdate: applyRabbit,
+      immediateRender: false,
+    },
+    reducedMotion ? iSnatch : iDoor + 0.75,
+  );
+  look(iDoor + 0.8, { x: 250, y: 440, scale: 1, side: -1 }, 0.5);
+  look(iCrash, { x: 190, y: 480, scale: 1.2, side: -1 }, 0.5);
 
-  // --- The snatch: hers to make, or the story makes it.
+  // --- The snatch: hers to make, or the story makes it. The tumble runs from
+  // under the window into the frame, head first; scrolling back above it puts
+  // the Rabbit back under the window for another go.
+  const fall = { t: 0 };
+  const applyTumble = (): void => {
+    const t = fall.t;
+    const dx = -170 * t;
+    const dy = -5 * t - 90 * Math.sin(Math.PI * t);
+    tumble?.setAttribute(
+      'transform',
+      `translate(${dx.toFixed(1)} ${dy.toFixed(1)}) rotate(${(-180 * t).toFixed(1)} 0 -30)`,
+    );
+  };
+  applyTumble();
+  const snatchFrom = iSnatch + 0.3;
+  const snatchBy = iSnatch + 0.9;
   let snatched = false;
-  const snatchButton = shell.prop(shell.ui.demoSnatch ?? '', 'hs__prop');
-  const target = document.createElement('button');
-  target.type = 'button';
-  target.className = 'hs__window-target';
-  target.setAttribute('aria-label', shell.ui.demoSnatch ?? '');
-  shell.stage.append(target);
+  const snatchButton = shell.prop(shell.ui.demoSnatch ?? '', 'hs__prop hs__prop--snatch');
+  const snatchShown = (): void => {
+    const t = master.time();
+    if (t >= snatchFrom && t < snatchBy && !snatched) {
+      snatchButton.show();
+    } else {
+      snatchButton.hide();
+    }
+  };
+  const crash = (): void => {
+    svg?.setAttribute('data-crash', '');
+    if (master.time() < iCrash + 0.9) {
+      shell.sound.play('glass');
+    }
+  };
   const snatch = (): void => {
     if (snatched) {
       return;
     }
     snatched = true;
-    snatchButton.hide();
-    delete target.dataset.shown;
-    gsap.to(hand, { '--snatch': 1, duration: reducedMotion ? 0 : 0.35, ease: 'power3.in' });
+    snatchShown();
+    gsap.killTweensOf([hand, fall]);
+    gsap.to(hand, { '--snatch': 1, duration: reducedMotion ? 0 : 0.3, ease: 'power3.in' });
     gsap.to(hand, {
       '--snatch': 0,
       duration: reducedMotion ? 0 : 0.6,
-      delay: 0.5,
+      delay: reducedMotion ? 0 : 0.6,
       ease: 'power2.out',
     });
-    gsap.to(rabbit, {
-      y: 120,
-      rotation: reducedMotion ? 0 : -150,
-      transformOrigin: '50% 50%',
-      duration: reducedMotion ? 0 : 0.6,
-      delay: 0.2,
+    gsap.to(fall, {
+      t: 1,
+      duration: reducedMotion ? 0 : 0.7,
+      delay: reducedMotion ? 0 : 0.2,
       ease: 'power2.in',
+      onUpdate: applyTumble,
+      onComplete: crash,
     });
-    // Reached by a jump past the crash, the glass has already settled.
-    if (master.time() < iCrash + 0.7) {
-      gsap.to(shards, { opacity: 1, duration: 0.2, delay: 0.7 });
-      setTimeout(() => shell.sound.play('glass'), 700);
-    }
   };
-  snatchButton.addEventListener('click', snatch);
-  target.addEventListener('click', snatch);
+  const unsnatch = (): void => {
+    if (!snatched) {
+      return;
+    }
+    snatched = false;
+    gsap.killTweensOf([hand, fall]);
+    gsap.set(hand, { '--snatch': 0 });
+    fall.t = 0;
+    applyTumble();
+    svg?.removeAttribute('data-crash');
+    snatchShown();
+  };
+  snatchButton.addEventListener('click', () => {
+    if (master.time() >= snatchFrom) {
+      snatch();
+      shell.status(shell.ui.demoSnatch ?? '');
+    }
+  });
+  master.call(snatchShown, [], snatchFrom);
+  master.call(() => (master.time() < snatchFrom ? unsnatch() : undefined), [], snatchFrom);
   master.call(
-    () => {
-      const inside = master.time() >= iSnatch && master.time() < iSnatch + 0.9;
-      if (inside && !snatched) {
-        snatchButton.show();
-        target.dataset.shown = '';
-      } else {
-        snatchButton.hide();
-        delete target.dataset.shown;
-      }
-    },
+    () => (master.time() < snatchBy - 0.01 ? unsnatch() : undefined),
     [],
-    iSnatch,
+    snatchBy - 0.01,
   );
-  master.call(() => (master.time() >= iSnatch + 0.9 ? snatch() : undefined), [], iSnatch + 0.9);
-  // The glass settles; the shards are only ever tweened ad hoc, from here and
-  // from the snatch, so the two never fight over one value.
-  master.call(
-    () => {
-      gsap.killTweensOf(shards);
-      gsap.to(shards, {
-        opacity: master.time() >= iCrash + 0.7 || !snatched ? 0 : 1,
-        duration: reducedMotion ? 0 : 0.4,
-      });
-    },
-    [],
-    iCrash + 0.7,
-  );
+  master.call(() => (master.time() >= snatchBy ? snatch() : snatchShown()), [], snatchBy);
+
+  // --- Pointer play on the house: the window is the snatch, the chimney's top
+  // the wiggle, anywhere else a push on the wall.
+  stage.addEventListener('pointerdown', (event) => {
+    const hit = event.target as Element;
+    if (hit.closest('.hs__foot-hit') && wiggleLive()) {
+      wiggle();
+    } else if (
+      hit.closest('.hs__window-hit') &&
+      master.time() >= snatchFrom &&
+      master.time() < snatchBy
+    ) {
+      snatch();
+      shell.status(shell.ui.demoSnatch ?? '');
+    } else {
+      shake();
+    }
+  });
 
   // --- To the chimney: the camera pulls back and up from the cutaway until the
   // house is seen from above, the Rabbit and Pat looking up from the garden;
-  // Bill climbs the ladder and the roof to the chimney, and the camera comes
-  // down to its rim, where Bill the Lizard picks the story up.
+  // Bill climbs the ladder and the roof to the chimney, the camera comes down to
+  // its rim and into his eyes: the garden from the rim, the picture Bill the
+  // Lizard opens on.
   const above = stage.querySelector<SVGGElement>('.hs__above');
   const bill = stage.querySelector<SVGGElement>('.hs__bill');
   const cutaway = [frame, wall, roof, slates, rabbit];
-  // Reduced motion lands on whole beats, so its cuts sit just before the beat
-  // starts and just before it ends: the beat opens on the house from above,
-  // with a blink, and closes on the chimney's rim, with another.
-  const cutAt = reducedMotion ? iChimney - 0.1 : iChimney + 0.3;
-  const blink = (at: number): void => {
-    master.fromTo(
-      flash,
-      { opacity: 0.8 },
-      { opacity: 0, duration: 0.1, immediateRender: false },
-      at,
-    );
-  };
-  look(reducedMotion ? cutAt : iChimney, { x: 500, y: 250, scale: 0.5 }, 0.55);
+  const rim = shell.layer('hs__rim');
+  rim.innerHTML = RIM_SVG;
+  // Reduced motion shows the last beat as it ends: the garden from the rim, a cut.
+  const cutAt = iChimney + 0.3;
+  look(iChimney, { x: 500, y: 250, scale: 0.5, side: 0 }, 0.55);
   if (reducedMotion) {
     master.set(cutaway, { opacity: 0 }, cutAt);
     master.set(above, { opacity: 1 }, cutAt);
-    blink(cutAt);
-    blink(iChimney + 0.55);
   } else {
     master.to(cutaway, { opacity: 0, duration: 0.25 }, cutAt);
     master.to(above, { opacity: 1, duration: 0.25 }, cutAt);
@@ -391,7 +571,20 @@ function mount(shell: DemoShell): void {
     { x: 646, y: 122, rotation: 0, duration: reducedMotion ? 0.01 : 0.15, ease: 'power1.out' },
     iChimney + 0.65,
   );
-  look(iChimney + 0.55, { x: 665, y: 126, scale: 3.6 }, 0.45);
+  look(iChimney + 0.55, { x: 665, y: 126, scale: 3.6 }, 0.3);
+  look(iChimney + 0.85, { x: 665, y: 120, scale: 5.4 }, 0.15);
+  master.fromTo(
+    rim,
+    { opacity: 0, '--rz': 1.45 },
+    {
+      opacity: 1,
+      '--rz': 1,
+      duration: reducedMotion ? 0.01 : 0.2,
+      ease: 'power2.out',
+      immediateRender: false,
+    },
+    iChimney + 0.8,
+  );
   master.call(
     () => stage.toggleAttribute('data-at-chimney', master.time() >= iChimney + 0.8),
     [],
@@ -400,18 +593,47 @@ function mount(shell: DemoShell): void {
 
   // --- Pointer: inside, it turns her head; outside, the house sits a little in
   // front of the garden.
+  // Only when the pointer has moved them: an idle frame writes nothing.
   shell.onFrame((dt) => {
     if (reducedMotion) {
       return;
     }
     const k = Math.min(1, dt * 3);
     const target = shell.pointer.active ? shell.pointer.x * -12 : 0;
-    view.px += (target - view.px) * k;
-    apply();
-    eye.lookX += ((shell.pointer.active ? shell.pointer.x * 14 : 0) - eye.lookX) * k;
-    eye.lookY += ((shell.pointer.active ? -shell.pointer.y * 8 : 0) - eye.lookY) * k;
-    applyEye();
+    const lookX = shell.pointer.active ? shell.pointer.x * 14 : 0;
+    const lookY = shell.pointer.active ? -shell.pointer.y * 8 : 0;
+    if (Math.abs(target - view.px) > 0.01) {
+      view.px += (target - view.px) * k;
+      apply();
+    }
+    if (Math.abs(lookX - eye.lookX) > 0.01 || Math.abs(lookY - eye.lookY) > 0.01) {
+      eye.lookX += (lookX - eye.lookX) * k;
+      eye.lookY += (lookY - eye.lookY) * k;
+      applyEye();
+    }
   });
+
+  // Test seam: what the house is doing, in one serialisable snapshot.
+  window.__aliceHouse = () => ({
+    rabbit: { x: rab.x, y: rab.y, opacity: Number(getComputedStyle(rabbit as Element).opacity) },
+    snatched,
+    fall: fall.t,
+    leg: leg.up,
+    wiggles,
+  });
+}
+
+declare global {
+  interface Window {
+    /** Test seam: the house's own state. */
+    __aliceHouse?: () => {
+      rabbit: { x: number; y: number; opacity: number };
+      snatched: boolean;
+      fall: number;
+      leg: number;
+      wiggles: number;
+    };
+  }
 }
 
 const shell = attachDemo();

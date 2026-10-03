@@ -21,7 +21,7 @@ import {
   seeded,
 } from '../shell/shell.ts';
 import './caterpillar.css';
-import { LEFT_BIT_SVG, RIGHT_BIT_SVG } from './figures.ts';
+import { ASK_SVG, LEFT_BIT_SVG, RIGHT_BIT_SVG } from './figures.ts';
 
 /** Her height in inches: three on the mushroom, one with her chin on her foot,
  * a few hundred above the trees, and thirty-six is her usual height. */
@@ -32,6 +32,8 @@ const USUAL = 36;
 /** Where the meadow gives way to the tree tops, in inches. */
 const TREE_LINE_LOW = 40;
 const TREE_LINE_HIGH = 140;
+
+const clamp = (v: number, lo: number, hi: number): number => Math.max(lo, Math.min(hi, v));
 
 const smoothstep = (a: number, b: number, x: number): number => {
   const t = Math.max(0, Math.min(1, (x - a) / (b - a)));
@@ -90,6 +92,10 @@ function mount(shell: DemoShell): void {
   const iGirl = cue('girl');
   const iOff = cue('off');
   const iBack = cue('back');
+  // Up she goes after the other bit. Under reduced motion the grow beat rests on
+  // her chin on her foot, and the cut above the trees comes with the next beat.
+  const shootUp = reducedMotion ? iGrow + 0.95 : iGrow + 0.6;
+  const unfold = reducedMotion ? iGrow + 0.95 : iGrow + 0.3;
   const lite = matchMedia('(max-width: 700px)').matches;
   const random = seeded(5);
 
@@ -106,10 +112,14 @@ function mount(shell: DemoShell): void {
   meadow.innerHTML =
     `<div class="ct__grass ct__grass--far">${blades(lite ? 14 : 26, 'ct__blade--far')}</div>` +
     `<div class="ct__mushroom">${figure('mushroom')}<div class="ct__caterpillar">${figure('caterpillar')}</div></div>` +
+    // The Caterpillar again, up out of the grass to nod when she lands on three.
+    `<div class="ct__peek"><div class="ct__peek-cat">${figure('caterpillar')}</div></div>` +
     `<div class="ct__grass ct__grass--near">${blades(lite ? 8 : 14, 'ct__blade--near')}</div>`;
   const mushroom = meadow.querySelector<HTMLElement>('.ct__mushroom');
   const caterpillar = meadow.querySelector<HTMLElement>('.ct__caterpillar');
-  const catBody = caterpillar?.querySelector<SVGGElement>('.ct__body') ?? caterpillar;
+  // Its head is a group of its own; the body breathes by a CSS animation.
+  const catHead = caterpillar?.querySelector<SVGGElement>('.ct__head') ?? caterpillar;
+  const peek = meadow.querySelector<HTMLElement>('.ct__peek');
 
   // --- Above the trees: a sea of leaves far below and her neck running down into it.
   const treetops = shell.layer('ct__treetops');
@@ -163,8 +173,10 @@ function mount(shell: DemoShell): void {
   const puff = (strength = 0.15): void => {
     const s = Math.max(0, Math.min(1, strength));
     const ring = document.createElement('div');
-    ring.className = 'ct__ring';
-    ring.innerHTML = '<span class="ct__ring-body"></span>';
+    // While it asks her to explain herself, its smoke comes out as questions.
+    const asking = master.time() >= iExplain && master.time() < iExplain + 1;
+    ring.className = asking ? 'ct__ring ct__ring--ask' : 'ct__ring';
+    ring.innerHTML = `<span class="ct__ring-body">${asking ? ASK_SVG : ''}</span>`;
     const stage = shell.stage.getBoundingClientRect();
     const head = caterpillar?.getBoundingClientRect();
     if (head) {
@@ -302,25 +314,86 @@ function mount(shell: DemoShell): void {
     iPuff + 0.1,
   );
 
-  // --- Her height, and everything that hangs off it.
+  // --- Her height, and everything that hangs off it. The story's height is
+  // `size.h`; the reader's nibbles are a factor on it of their own (`nib.l`, its
+  // log), which the story takes back at its next change of size. `toy` is the
+  // last look down, at her feet, where the mushroom is a toy.
   const size = { h: THREE };
+  const nib = { l: 0 };
+  const toy = { t: 0 };
+  const shownHeight = (): number => clamp(size.h * Math.exp(nib.l), 0.6, ABOVE_THE_TREES * 1.5);
   const look = { pitch: 0 };
   const flash = shell.layer('ct__flash');
   const irisBottom = shell.layer('ct__iris');
+  // Her own feet, seen as she looks down at them at the end.
+  const feet = shell.layer('ct__feet');
+  feet.innerHTML = `<div class="ct__feet-self">${figure('alice/looking-down')}</div>`;
+
+  // --- The tape-measure down the frame's edge: her height in inches, read live
+  // at a mark, with a notch at three. A meter, for assistive technology.
+  const tapeEl = document.createElement('div');
+  tapeEl.className = 'ct__tape';
+  tapeEl.setAttribute('role', 'meter');
+  tapeEl.setAttribute('aria-label', shell.ui.demoHeightInches ?? '');
+  tapeEl.setAttribute('aria-valuemin', '0');
+  tapeEl.setAttribute('aria-valuemax', String(ABOVE_THE_TREES * 1.5));
+  const NUMBERS = 15;
+  tapeEl.innerHTML =
+    '<div class="ct__tape-strip" aria-hidden="true"><div class="ct__tape-ticks"></div>' +
+    Array.from({ length: NUMBERS }, () => '<span class="ct__tape-num"></span>').join('') +
+    '<span class="ct__tape-notch"></span></div>' +
+    '<div class="ct__tape-mark" aria-hidden="true"><span class="ct__tape-read"></span></div>';
+  shell.stage.append(tapeEl);
+  const tapeNumbers = [...tapeEl.querySelectorAll<HTMLElement>('.ct__tape-num')];
+  const tapeRead = tapeEl.querySelector<HTMLElement>('.ct__tape-read');
+  const lang = document.documentElement.lang || undefined;
+  const fine = new Intl.NumberFormat(lang, { maximumFractionDigits: 1 });
+  const whole = new Intl.NumberFormat(lang, { maximumFractionDigits: 0 });
+  let tapeFloor = Number.NaN;
+  let tapeText = '';
+  const tape = (h: number): void => {
+    tapeEl.style.setProperty('--h', h.toFixed(3));
+    tapeEl.style.setProperty('--frac', (h - Math.floor(h)).toFixed(3));
+    tapeEl.toggleAttribute('data-three', Math.abs(h - THREE) < 0.01);
+    const floor = Math.floor(h);
+    if (floor !== tapeFloor) {
+      tapeFloor = floor;
+      tapeNumbers.forEach((el, i) => {
+        const n = floor - Math.floor(NUMBERS / 2) + i;
+        el.style.setProperty('--n', String(n));
+        el.textContent = n >= 0 ? whole.format(n) : '';
+      });
+    }
+    const text = (h < 10 ? fine : whole).format(h);
+    if (text !== tapeText) {
+      tapeText = text;
+      if (tapeRead) {
+        tapeRead.textContent = text;
+      }
+      tapeEl.setAttribute('aria-valuenow', h.toFixed(1));
+      tapeEl.setAttribute('aria-valuetext', text);
+    }
+  };
+
   const footLayer = shell.layer('ct__foot-layer');
   footLayer.innerHTML = `<div class="ct__foot">${figure('alice/foot')}</div>`;
   const foot = footLayer.querySelector<HTMLElement>('.ct__foot') ?? footLayer;
   const apply = (): void => {
-    const h = size.h;
+    const h = shownHeight();
     // The meadow scales about the ground under her feet: at three inches it is
     // one to one; smaller, the grass towers; larger, the mushroom is at her feet.
-    const scale = Math.max(0.02, THREE / h);
+    // At the very end she looks down at her feet, and the mushroom by her shoe is
+    // nearer than the horizon: a toy, not a speck.
+    const scale = mix(Math.max(0.02, THREE / h), 0.27, toy.t);
     meadow.style.setProperty('--s', scale.toFixed(4));
+    meadow.style.setProperty('--toy', toy.t.toFixed(3));
+    feet.style.setProperty('--toy', toy.t.toFixed(3));
     // The horizon is at eye level, so it climbs the frame as she does, and the
     // ground under the mushroom drops below it the taller she is.
     const tall = smoothstep(THREE, USUAL, h);
-    sky.style.setProperty('--horizon', mix(82, 44, tall).toFixed(2));
-    meadow.style.setProperty('--base', mix(82, 80, tall).toFixed(2));
+    sky.style.setProperty('--horizon', mix(mix(82, 44, tall), 10, toy.t).toFixed(2));
+    meadow.style.setProperty('--base', mix(mix(82, 80, tall), 82, toy.t).toFixed(2));
+    tape(h);
     // Looking up from the grass at three inches; looking down from higher.
     meadow.style.setProperty('--pitch', look.pitch.toFixed(2));
     const above = smoothstep(TREE_LINE_LOW, TREE_LINE_HIGH, h);
@@ -349,6 +422,8 @@ function mount(shell: DemoShell): void {
     } else {
       master.fromTo(size, { h: from }, { ...vars, immediateRender: false }, at);
     }
+    // The story keeps its own course: its change of size takes back her nibbles.
+    master.call(unnibble, [], at);
     if (reducedMotion) {
       master.fromTo(
         flash,
@@ -357,6 +432,32 @@ function mount(shell: DemoShell): void {
         at,
       );
     }
+  };
+  // How far the reader's nibbles have gone (as a log factor), and the nod when
+  // she lands on exactly three inches again.
+  let nibTo = 0;
+  let nodTimer = 0;
+  const nod = (): void => {
+    if (!peek) {
+      return;
+    }
+    shell.sound.play('chime', 0.3);
+    peek.removeAttribute('data-nod');
+    requestAnimationFrame(() => peek.setAttribute('data-nod', ''));
+    window.clearTimeout(nodTimer);
+    nodTimer = window.setTimeout(() => peek.removeAttribute('data-nod'), 1800);
+  };
+  const unnibble = (): void => {
+    if (nibTo === 0 && nib.l === 0) {
+      return;
+    }
+    nibTo = 0;
+    gsap.to(nib, {
+      l: 0,
+      duration: reducedMotion ? 0 : 0.3,
+      onUpdate: apply,
+      overwrite: true,
+    });
   };
   const tilt = (at: number, pitch: number, duration = 0.8): void => {
     master.to(
@@ -369,18 +470,41 @@ function mount(shell: DemoShell): void {
   // --- On the mushroom: a slow look up at the Caterpillar, the hookah, the smoke.
   tilt(0, 8, 1.2);
   tilt(iWho, 12);
-  master.to(catBody, { y: -6, duration: 0.3, yoyo: true, repeat: 1 }, iWho + 0.1);
+  master.to(catHead, { y: -6, duration: 0.3, yoyo: true, repeat: 1 }, iWho + 0.1);
   tilt(iExplain, 4);
-  master.to(catBody, { x: 4, duration: 0.08, yoyo: true, repeat: 5 }, iExplain + 0.1);
+  // "Explain yourself!": it leans right in at her, its smoke a question.
+  master.to(catHead, { x: 4, duration: 0.08, yoyo: true, repeat: 3 }, iExplain + 0.05);
+  master.to(
+    catHead,
+    {
+      scale: 1.3,
+      x: -6,
+      y: 8,
+      transformOrigin: '30% 80%',
+      duration: reducedMotion ? 0.01 : 0.2,
+      ease: 'back.out(2)',
+    },
+    iExplain + 0.15,
+  );
+  master.to(
+    catHead,
+    { scale: 1, x: 0, y: 0, duration: reducedMotion ? 0.01 : 0.2 },
+    iExplain + 0.82,
+  );
   tilt(iTemper, 10, 0.5);
-  master.to(catBody, { y: -6, duration: 0.3, yoyo: true, repeat: 1 }, iTemper + 0.1);
+  master.to(catHead, { y: -6, duration: 0.3, yoyo: true, repeat: 1 }, iTemper + 0.1);
   // It rears itself upright: exactly three inches high.
   master.to(
     caterpillar,
     { rotation: -18, y: -14, duration: reducedMotion ? 0.01 : 0.3, ease: 'back.out(2)' },
     iRear + 0.15,
   );
-  master.to(caterpillar, { rotation: 0, y: 0, duration: reducedMotion ? 0.01 : 0.4 }, iRear + 0.7);
+  // Back down after the settle, so reduced motion rests on it upright.
+  master.to(
+    caterpillar,
+    { rotation: 0, y: 0, duration: reducedMotion ? 0.01 : 0.12 },
+    iRear + 0.85,
+  );
   // Then down off the mushroom and away in the grass.
   master.to(
     caterpillar,
@@ -428,7 +552,37 @@ function mount(shell: DemoShell): void {
     hands.toggleAttribute('data-shown', shown);
   };
   master.fromTo(hands, { y: 120 }, { y: 0, duration: 0.4, ease: 'power2.out' }, iSides + 0.5);
-  master.call(() => showBits(master.time() >= iSides + 0.5), [], iSides + 0.5);
+  // Above the trees her hands are far below with her shoulders: they go down out
+  // of the frame as she shoots up, and come back when she remembers the pieces.
+  master.fromTo(
+    hands,
+    { yPercent: 0 },
+    {
+      yPercent: 110,
+      duration: reducedMotion ? 0.01 : 0.4,
+      ease: 'power2.in',
+      immediateRender: false,
+    },
+    shootUp,
+  );
+  master.fromTo(
+    hands,
+    { yPercent: 110 },
+    {
+      yPercent: 0,
+      duration: reducedMotion ? 0.01 : 0.4,
+      ease: 'power2.out',
+      immediateRender: false,
+    },
+    iOff + 0.45,
+  );
+  const bitsLive = (): boolean => {
+    const t = master.time();
+    return (t >= iSides + 0.5 && t < shootUp) || t >= iOff + 0.45;
+  };
+  for (const at of [iSides + 0.5, shootUp, iOff + 0.45]) {
+    master.call(() => showBits(bitsLive()), [], at);
+  }
   // A nibble: the bit loses a bite and her size follows; the story keeps its own
   // course at the next beat, so play never strands her.
   const nibble = (side: 'left' | 'right'): void => {
@@ -438,13 +592,23 @@ function mount(shell: DemoShell): void {
     bit?.removeAttribute('data-bitten');
     void bit?.offsetWidth;
     bit?.setAttribute('data-bitten', '');
-    const factor = side === 'left' ? 1.7 : 1 / 1.7;
-    gsap.to(size, {
-      h: Math.max(0.6, Math.min(ABOVE_THE_TREES * 1.5, size.h * factor)),
-      duration: reducedMotion ? 0.01 : 0.7,
+    // A bite is a factor of 1.7 either way, on the reader's own value; one of
+    // each lands her back on exactly the height she had.
+    const step = Math.log(1.7) * (side === 'left' ? 1 : -1);
+    nibTo = clamp(nibTo + step, Math.log(0.6 / size.h), Math.log((ABOVE_THE_TREES * 1.5) / size.h));
+    gsap.to(nib, {
+      l: nibTo,
+      duration: reducedMotion ? 0 : 0.7,
       ease: 'power2.out',
       onUpdate: apply,
-      overwrite: 'auto',
+      onComplete: () => {
+        apply();
+        // "It is a very good height indeed!": three inches, exactly.
+        if (Math.abs(shownHeight() - THREE) < 0.01) {
+          nod();
+        }
+      },
+      overwrite: true,
     });
     shell.sound.play(side === 'left' ? 'chime' : 'paper', 0.6);
     shell.status(
@@ -485,16 +649,14 @@ function mount(shell: DemoShell): void {
     iShrink + 0.6,
   );
   // The other bit, swallowed with hardly room to open her mouth: up she goes.
-  master.to(irisBottom, { '--fold': 0, duration: reducedMotion ? 0.01 : 0.3 }, iGrow + 0.3);
-  master.to(
-    foot,
-    { y: '70vh', duration: reducedMotion ? 0.01 : 0.4, ease: 'power2.in' },
-    iGrow + 0.3,
-  );
-  master.fromTo(flash, { opacity: 0 }, { opacity: 0.9, duration: 0.05 }, iGrow + 0.6);
-  master.to(flash, { opacity: 0, duration: 0.5 }, iGrow + 0.65);
-  resize(iGrow + 0.6, ABOVE_THE_TREES, iFree - iGrow + 0.3, 'power2.inOut', CHIN_ON_FOOT);
-  tilt(iGrow + 0.6, 30, 1.2);
+  master.to(irisBottom, { '--fold': 0, duration: reducedMotion ? 0.01 : 0.3 }, unfold);
+  master.to(foot, { y: '70vh', duration: reducedMotion ? 0.01 : 0.4, ease: 'power2.in' }, unfold);
+  if (!reducedMotion) {
+    master.fromTo(flash, { opacity: 0 }, { opacity: 0.9, duration: 0.05 }, shootUp);
+    master.to(flash, { opacity: 0, duration: 0.5 }, shootUp + 0.05);
+  }
+  resize(shootUp, ABOVE_THE_TREES, iFree - iGrow + 0.3, 'power2.inOut', CHIN_ON_FOOT);
+  tilt(shootUp, 30, 1.2);
 
   // --- Above the trees: sky, then the look down at the neck; it bends with the pointer.
   tilt(iFree, 26, 0.6);
@@ -514,62 +676,97 @@ function mount(shell: DemoShell): void {
     iPigeon,
   );
 
-  // --- The Pigeon: it flies into her face and beats her with its wings.
+  // --- The Pigeon: it flies into her face and beats her with its wings. Where
+  // it is, is the timeline's (`bird`); a shoo and the burst out of the leaves are
+  // the reader's, on values of their own, mixed over it.
   const birdLayer = shell.layer('ct__bird-layer');
   birdLayer.innerHTML = `<button type="button" class="ct__pigeon" aria-label="${shell.ui.demoShoo ?? ''}">${figure('pigeon')}</button>`;
   const pigeon = birdLayer.querySelector<HTMLButtonElement>('.ct__pigeon');
   const bird = { x: 120, y: -40, scale: 0.4, near: 0 };
+  const shooFx = { x: 0, y: 0, scale: 1, k: 0 };
+  const dipBird = { y: 45, scale: 0.15, k: 0 };
+  let shooed = 0;
+  let birdNear = 0;
   const applyBird = (): void => {
-    pigeon?.style.setProperty('--bx', bird.x.toFixed(1));
-    pigeon?.style.setProperty('--by', bird.y.toFixed(1));
-    pigeon?.style.setProperty('--bs', bird.scale.toFixed(3));
-    pigeon?.toggleAttribute('data-beating', bird.near > 0.5 && !shell.paused);
+    let x = mix(bird.x, 0, dipBird.k);
+    let y = mix(bird.y, dipBird.y, dipBird.k);
+    let scale = mix(bird.scale, dipBird.scale, dipBird.k);
+    birdNear = Math.max(bird.near, dipBird.k * clamp((dipBird.scale - 0.3) / 0.6, 0, 1));
+    // Each shoo, it comes back a little worse.
+    scale *= 1 + 0.06 * Math.min(shooed, 4) * bird.near;
+    x = mix(x, shooFx.x, shooFx.k);
+    y = mix(y, shooFx.y, shooFx.k);
+    scale = mix(scale, shooFx.scale, shooFx.k);
+    pigeon?.style.setProperty('--bx', x.toFixed(1));
+    pigeon?.style.setProperty('--by', y.toFixed(1));
+    pigeon?.style.setProperty('--bs', scale.toFixed(3));
+    pigeon?.toggleAttribute('data-beating', birdNear > 0.5 && !shell.paused);
+    // Not in its moment, it is not there to be pressed or tabbed to.
+    pigeon?.toggleAttribute('data-here', bird.near > 0.02 || dipBird.k > 0);
   };
   applyBird();
-  let shooed = 0;
+  let shooTimeline: gsap.core.Timeline | undefined;
   const shoo = (): void => {
-    if (bird.near < 0.5) {
+    if (birdNear < 0.5) {
       return;
     }
     shooed += 1;
     shell.sound.play('whoosh', 0.7);
     shell.status(shell.ui.demoShoo ?? '');
     const away = shooed % 2 === 0 ? -1 : 1;
-    gsap.to(bird, {
-      x: 45 * away,
-      y: -30,
-      scale: 0.7,
-      duration: reducedMotion ? 0.01 : 0.35,
-      ease: 'power3.out',
-      onUpdate: applyBird,
-      overwrite: 'auto',
-    });
+    shooTimeline?.kill();
+    const timeline = gsap.timeline();
+    shooTimeline = timeline;
+    timeline.fromTo(
+      shooFx,
+      { x: bird.x, y: bird.y, scale: bird.scale, k: 0 },
+      {
+        x: 45 * away,
+        y: -30,
+        scale: 0.7,
+        k: 1,
+        duration: reducedMotion ? 0 : 0.35,
+        ease: 'power3.out',
+        onUpdate: applyBird,
+      },
+    );
     // And back it comes, worse than before.
-    gsap.to(bird, {
-      x: 0,
-      y: 0,
-      scale: 1.1,
+    timeline.to(shooFx, {
+      k: 0,
       delay: reducedMotion ? 0.3 : 0.9,
-      duration: reducedMotion ? 0.01 : 0.5,
+      duration: reducedMotion ? 0 : 0.5,
       ease: 'power2.in',
       onUpdate: applyBird,
+      onComplete: applyBird,
     });
   };
   pigeon?.addEventListener('click', shoo);
   const flyIn = (
     at: number,
-    to: Partial<typeof bird>,
+    from: typeof bird,
+    to: typeof bird,
     duration = 0.6,
     ease = 'power2.out',
   ): void => {
-    master.to(
+    master.fromTo(
       bird,
-      { ...to, duration: reducedMotion ? 0.01 : duration, ease, onUpdate: applyBird },
+      from,
+      {
+        ...to,
+        duration: reducedMotion ? 0.01 : duration,
+        ease,
+        onUpdate: applyBird,
+        immediateRender: false,
+      },
       at,
     );
   };
-  master.set(bird, { x: 120, y: -40, scale: 0.4, near: 0, onUpdate: applyBird }, iPigeon - 0.01);
-  flyIn(iPigeon + 0.1, { x: 0, y: 0, scale: 1, near: 1 }, 0.5, 'power3.out');
+  const away = { x: 120, y: -40, scale: 0.4, near: 0 };
+  const atFace = { x: 0, y: 0, scale: 1, near: 1 };
+  const atLeft = { x: -30, y: -10, scale: 0.85, near: 1 };
+  const atRight = { x: 20, y: 5, scale: 1, near: 1 };
+  const inNest = { x: -60, y: 55, scale: 0.35, near: 0 };
+  flyIn(iPigeon + 0.1, away, atFace, 0.5, 'power3.out');
   master.call(
     () => {
       if (Math.abs(master.time() - (iPigeon + 0.6)) < 0.3 && !reducedMotion) {
@@ -584,21 +781,136 @@ function mount(shell: DemoShell): void {
     [],
     iPigeon + 0.6,
   );
-  flyIn(iTried, { x: -30, y: -10, scale: 0.85 });
-  flyIn(iGirl, { x: 20, y: 5, scale: 1 });
+  flyIn(iTried, atFace, atLeft);
+  flyIn(iGirl, atLeft, atRight);
   // Be off, then: it settles down again into its nest among the leaves.
-  flyIn(iOff + 0.1, { x: -60, y: 55, scale: 0.35, near: 0 }, 0.8, 'power2.inOut');
+  flyIn(iOff + 0.1, atRight, inNest, 0.8, 'power2.inOut');
+
+  // --- Dip into the leaves: she was going to dive in among them when a sharp
+  // hiss made her draw back. Drag her head down (from where her neck leaves the
+  // frame), or press the button: the head goes down into the leaves, and the
+  // Pigeon bursts up out of them into her face. A drag down only; the rest of
+  // the frame still scrolls.
+  const dipButton = shell.prop(shell.ui.demoDipLeaves ?? '', 'ct__prop ct__prop--dip');
+  const dipTarget = document.createElement('div');
+  dipTarget.className = 'ct__dip-target';
+  dipTarget.setAttribute('aria-hidden', 'true');
+  shell.stage.append(dipTarget);
+  const dip = { d: 0 };
+  const applyDip = (): void => {
+    treetops.style.setProperty('--dip', dip.d.toFixed(3));
+    applyBird();
+  };
+  const dipLive = (): boolean => master.time() >= iBend && master.time() < iPigeon;
+  const dipShown = (): void => {
+    const live = dipLive();
+    if (live) {
+      dipButton.show();
+    } else {
+      dipButton.hide();
+    }
+    dipTarget.toggleAttribute('data-live', live);
+  };
+  let dips = 0;
+  let dipTimeline: gsap.core.Timeline | undefined;
+  const burstUp = (): void => {
+    dips += 1;
+    shell.sound.play('whoosh', 0.8);
+    dipTimeline?.kill();
+    const timeline = gsap.timeline();
+    dipTimeline = timeline;
+    if (reducedMotion) {
+      // A still: her head among the leaves and the Pigeon at her face, then back.
+      timeline.set(dip, { d: 1 }, 0);
+      timeline.set(dipBird, { k: 1, y: 14, scale: 1.05, onComplete: applyDip }, 0);
+      timeline.set(dip, { d: 0 }, 1.6);
+      timeline.set(dipBird, { k: 0, y: 45, scale: 0.15, onComplete: applyDip }, 1.6);
+      return;
+    }
+    timeline.to(dip, { d: 1, duration: 0.25, ease: 'power2.in', onUpdate: applyDip }, 0);
+    timeline.fromTo(
+      dipBird,
+      { k: 1, y: 45, scale: 0.15 },
+      { y: 14, scale: 1.15, duration: 0.35, ease: 'power3.out', onUpdate: applyDip },
+      0.18,
+    );
+    // She draws back in a hurry.
+    timeline.to(dip, { d: 0, duration: 0.5, ease: 'power2.out', onUpdate: applyDip }, 0.35);
+    timeline.to(
+      dipBird,
+      { y: 50, scale: 0.2, duration: 0.6, ease: 'power2.in', onUpdate: applyDip },
+      1.6,
+    );
+    timeline.set(dipBird, { k: 0, onComplete: applyDip });
+  };
+  dipButton.addEventListener('click', () => {
+    if (dipLive()) {
+      burstUp();
+      shell.status(shell.ui.demoDipLeaves ?? '');
+    }
+  });
+  let dragFrom: number | undefined;
+  dipTarget.addEventListener('pointerdown', (event) => {
+    if (!dipLive() || event.button > 0) {
+      return;
+    }
+    dragFrom = event.clientY;
+    dipTarget.setPointerCapture(event.pointerId);
+    dipTimeline?.kill();
+  });
+  dipTarget.addEventListener('pointermove', (event) => {
+    if (dragFrom === undefined) {
+      return;
+    }
+    dip.d = clamp((event.clientY - dragFrom) / 160, 0, 1);
+    applyDip();
+    if (dip.d >= 1) {
+      dragFrom = undefined;
+      burstUp();
+      shell.status(shell.ui.demoDipLeaves ?? '');
+    }
+  });
+  const letGo = (): void => {
+    if (dragFrom === undefined) {
+      return;
+    }
+    dragFrom = undefined;
+    gsap.to(dip, { d: 0, duration: reducedMotion ? 0 : 0.35, onUpdate: applyDip });
+  };
+  dipTarget.addEventListener('pointerup', letGo);
+  dipTarget.addEventListener('pointercancel', letGo);
+  master.call(dipShown, [], iBend);
+  master.call(dipShown, [], iPigeon);
 
   // --- Back to her usual height, nibbling first at one and then at the other.
-  resize(iBack + 0.05, 14, 0.3, 'power2.inOut');
-  resize(iBack + 0.4, 90, 0.25);
-  resize(iBack + 0.7, USUAL, 0.28, 'power2.out');
+  resize(iBack + 0.05, 14, 0.3, 'power2.inOut', ABOVE_THE_TREES);
+  resize(iBack + 0.4, 90, 0.25, 'power2.inOut', 14);
+  resize(iBack + 0.7, USUAL, 0.28, 'power2.out', 90);
   tilt(iBack, -12, 1);
+  // And she looks down at her feet: the mushroom by her shoe, a toy.
+  master.fromTo(
+    toy,
+    { t: 0 },
+    {
+      t: 1,
+      duration: reducedMotion ? 0.01 : 0.24,
+      ease: 'power2.inOut',
+      onUpdate: apply,
+      immediateRender: false,
+    },
+    iBack + 0.75,
+  );
 
   // --- Every frame: the neck follows the pointer, the leaves and grass lean with it.
   let bendX = 0;
   let bendY = 0;
+  let neckDrawn = false;
   shell.onFrame((dt) => {
+    // The neck is only drawn while it can be seen.
+    if (Number(treetops.style.getPropertyValue('--fade') || 0) < 0.01 && neckDrawn) {
+      return;
+    }
+    neckDrawn = true;
     const k = 1 - Math.exp(-dt * 4);
     const targetX = shell.pointer.active && !reducedMotion ? shell.pointer.x : 0;
     const targetY = shell.pointer.active && !reducedMotion ? shell.pointer.y : 0;
@@ -623,6 +935,34 @@ function mount(shell: DemoShell): void {
       canopy.style.setProperty('--sway', (bendX * 2).toFixed(2));
     }
   });
+
+  // Test seam: the Caterpillar's own state, in one serialisable snapshot.
+  window.__aliceCaterpillar = () => ({
+    height: shownHeight(),
+    story: size.h,
+    toy: toy.t,
+    dip: dip.d,
+    dips,
+    shooed,
+    bitsShown,
+    nodding: peek?.hasAttribute('data-nod') ?? false,
+  });
+}
+
+declare global {
+  interface Window {
+    /** Test seam: the Caterpillar's own state. */
+    __aliceCaterpillar?: () => {
+      height: number;
+      story: number;
+      toy: number;
+      dip: number;
+      dips: number;
+      shooed: number;
+      bitsShown: boolean;
+      nodding: boolean;
+    };
+  }
 }
 
 const shell = attachDemo({

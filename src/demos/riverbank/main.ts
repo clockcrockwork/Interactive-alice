@@ -6,12 +6,14 @@
  * turn, and there is nothing in them. The heat shimmers and her eyes droop. Then
  * the White Rabbit runs past from right to left, stops for his watch, and the
  * camera runs after him across the field until the hedge comes up with the hole
- * under it: the frame the rabbit hole demo opens on.
+ * under it, the Rabbit nose-down in it and Alice from behind running after him:
+ * the frame the rabbit hole demo opens on, drawn once in `field.ts`.
  */
 
 import gsap from 'gsap';
 import { figure, svgFigure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
+import { createStride, fieldHtml } from './field.ts';
 import { BOOK_HTML, DAISY_SVG, WATCH_SVG } from './figures.ts';
 import './riverbank.css';
 
@@ -48,9 +50,10 @@ function mount(shell: DemoShell): void {
     `<div class="rb__chain">${Array.from({ length: CHAIN_MAX }, (_, i) => `<span class="rb__link" style="--i: ${i}">${DAISY_SVG}</span>`).join('')}</div></div>` +
     `<div class="rb__daisies">${daisies}</div>`;
   shell.layer('rb__river');
+  // The field: the rabbit hole's first frame, fading into the bank at its leading
+  // edge as the camera runs, so the two never meet at a seam.
   const field = shell.layer('rb__field');
-  field.innerHTML =
-    '<div class="rb__field-tree"></div><div class="rb__hedge"></div><div class="rb__hole"></div>';
+  field.innerHTML = fieldHtml();
   const runway = shell.layer('rb__runway');
   runway.innerHTML = `<div class="rb__rabbit">${figure('white-rabbit/running')}<button type="button" class="rb__watch" aria-label="${shell.ui.demoLookWatch ?? ''}">${WATCH_SVG}</button></div>`;
   shell.layer('rb__near');
@@ -65,6 +68,8 @@ function mount(shell: DemoShell): void {
   const daisyEls = [...bank.querySelectorAll<HTMLButtonElement>('.rb__daisy')];
   const rabbit = runway.querySelector<HTMLElement>('.rb__rabbit');
   const watch = runway.querySelector<HTMLButtonElement>('.rb__watch');
+  const runnerBox = field.querySelector<HTMLElement>('.field__alice');
+  const runner = field.querySelector<HTMLElement>('.field__runner');
   const root = shell.root;
 
   // Under reduced motion the shell lands the scroll on whole beats, so a moment
@@ -89,7 +94,7 @@ function mount(shell: DemoShell): void {
   // at "what is the good of a book like that".
   let pages = 0;
   let storyTurned = false;
-  const turnPage = (byReader = true): void => {
+  const turnPage = (): void => {
     if (!book || !leaf) {
       return;
     }
@@ -100,21 +105,23 @@ function mount(shell: DemoShell): void {
     void leaf.offsetWidth;
     leaf.setAttribute('data-turning', '');
     shell.sound.play('paper', 0.6);
-    if (byReader) {
-      shell.status(shell.ui.demoTurnPage ?? '');
-    }
   };
   leaf?.addEventListener('animationend', () => leaf.removeAttribute('data-turning'));
   const turnButton = shell.prop(shell.ui.demoTurnPage ?? '', 'rb__prop rb__prop--turn');
-  turnButton.addEventListener('click', () => turnPage());
-  book?.addEventListener('click', () => turnPage());
+  // What the reader did is said; the story's own turn is not.
+  const turnByReader = (): void => {
+    turnPage();
+    shell.status(shell.ui.demoPageEmpty ?? '');
+  };
+  turnButton.addEventListener('click', turnByReader);
+  book?.addEventListener('click', turnByReader);
   const storyTurn = when(iGood + 0.35);
   master.call(
     () => {
       const past = master.time() >= storyTurn;
       if (past && !storyTurned) {
         storyTurned = true;
-        turnPage(false);
+        turnPage();
       } else if (!past) {
         storyTurned = false;
       }
@@ -142,11 +149,17 @@ function mount(shell: DemoShell): void {
     chain?.setAttribute('data-chain', String(picked));
     links[picked - 1]?.setAttribute('data-shown', '');
     shell.sound.play('chime', 0.4);
-    shell.status(shell.ui.demoPickDaisy ?? '');
   };
-  pickButton.addEventListener('click', () => pick());
+  const pickByReader = (daisy?: HTMLButtonElement): void => {
+    const before = picked;
+    pick(daisy);
+    if (picked > before) {
+      shell.status(shell.ui.demoChainLonger ?? '');
+    }
+  };
+  pickButton.addEventListener('click', () => pickByReader());
   for (const daisy of daisyEls) {
-    daisy.addEventListener('click', () => pick(daisy));
+    daisy.addEventListener('click', () => pickByReader(daisy));
   }
   const tooMuchWork = when(iSleepy + 0.75);
   const showPlay = (): void => {
@@ -239,17 +252,30 @@ function mount(shell: DemoShell): void {
       iWatch + 0.3,
     );
     // Then on across the bank, and at the field the camera runs after him: he makes
-    // for the hole under the hedge and is nose-down in it, tail out, at the end.
+    // for the hole under the hedge, and at the end he is nose-down in it with his
+    // tail out (the field's own figure, the one the rabbit hole opens on).
     run(iUp + 0.3, '18vw', 0.65, 'power1.in');
     master.to(
       rabbit,
-      { x: '50vw', y: '6.4vh', scale: 0.35, duration: dur(0.75), ease: 'power1.inOut' },
+      {
+        x: '50vw',
+        y: '-5vh',
+        scale: 0.55,
+        transformOrigin: '50% 100%',
+        duration: dur(0.72),
+        ease: 'power1.inOut',
+      },
       when(iField + 0.05),
     );
-    master.to(
-      rabbit,
-      { rotation: -70, duration: dur(0.12), ease: 'power2.in' },
-      when(iField + 0.8),
+    const diving = when(iField + 0.8);
+    master.call(
+      () => {
+        const down = master.time() >= diving;
+        field.toggleAttribute('data-diving', down);
+        rabbit.toggleAttribute('data-gone', down);
+      },
+      [],
+      diving,
     );
     blink(iField + 0.8);
     master.call(
@@ -275,7 +301,7 @@ function mount(shell: DemoShell): void {
       reducedMotion ? 900 : 1600,
     );
     shell.sound.play('chime', 0.7);
-    shell.status(shell.ui.demoLookWatch ?? '');
+    shell.status(shell.ui.demoWatchSpins ?? '');
   };
   watchButton.addEventListener('click', lookAtWatch);
   watch?.addEventListener('click', lookAtWatch);
@@ -314,6 +340,24 @@ function mount(shell: DemoShell): void {
   blink(iField + 0.05);
   const atHedge = when(iField + 0.82);
   master.call(() => root.toggleAttribute('data-at-hedge', master.time() >= atHedge), [], atHedge);
+
+  // --- Alice ran after him: at the field she is seen from behind, running into the
+  // frame from beside the camera to where the rabbit hole will find her. The bank's
+  // Alice is gone from the bank at the same cut.
+  const runIn = when(iField + 0.08);
+  if (alice) {
+    master.set(alice, { opacity: 0 }, runIn);
+  }
+  if (runner) {
+    gsap.set(runner, { opacity: 0 });
+    master.set(runner, { opacity: 1 }, runIn);
+    master.fromTo(
+      runner,
+      { x: '26vw', y: '34vh', scale: 1.8 },
+      { x: 0, y: 0, scale: 1, duration: dur(0.72), ease: 'power2.out', immediateRender: false },
+      runIn,
+    );
+  }
   const wind = (): void =>
     shell.sound.level(
       'wind',
@@ -333,12 +377,35 @@ function mount(shell: DemoShell): void {
     ambient.to(sisterArt, { y: 3, duration: 2.6, yoyo: true, repeat: -1, ease: 'sine.inOut' }, 0);
   }
 
-  // --- Every frame: the pointer leans the bank a little.
+  // --- Every frame: the pointer leans the bank a little; across the field the
+  // reader's scroll is Alice's stride; and a fast scroll makes the running Rabbit
+  // glance back over his shoulder at whoever is coming.
   let lean = 0;
-  shell.onFrame((dt) => {
+  const stride = runnerBox ? createStride(runnerBox, reducedMotion) : undefined;
+  let lastProgress = shell.progress();
+  let glanceUntil = 0;
+  let glanceRest = 0;
+  shell.onFrame((dt, elapsed) => {
     const target = shell.pointer.active && !reducedMotion ? shell.pointer.x : 0;
     lean = mix(lean, target, 1 - Math.exp(-dt * 3));
     root.style.setProperty('--lean', lean.toFixed(3));
+    const progress = shell.progress();
+    const moved = (progress - lastProgress) * shell.beats.length;
+    lastProgress = progress;
+    if (master.time() >= runIn) {
+      stride?.step(moved, dt);
+    }
+    if (!rabbit || reducedMotion) {
+      return;
+    }
+    const pace = Math.abs(moved) / Math.max(dt, 0.001);
+    if (pace > 2.2 && rabbit.hasAttribute('data-running') && elapsed > glanceRest) {
+      glanceUntil = elapsed + 0.55;
+      glanceRest = elapsed + 1.6;
+      rabbit.setAttribute('data-glance', '');
+    } else if (elapsed > glanceUntil && rabbit.hasAttribute('data-glance')) {
+      rabbit.removeAttribute('data-glance');
+    }
   });
 }
 

@@ -36,9 +36,6 @@
     --rh-book-4: var(--sepia-light);
     --rh-book-5: var(--ink-faded);
     --rh-book-6: var(--paper-aged);
-    /* The hall's doors, as Drink Me draws them, since the tunnel ends in its hall. */
-    --rh-door: var(--sepia-dark);
-    --rh-door-frame: var(--sepia-deep);
     --rh-shadow: oklch(from var(--ink-primary) l c h / 0.6);
   }
 }
@@ -64,6 +61,16 @@
     transform-style: preserve-3d;
   }
 
+  /* Overlays over the shelves let the pointer through to the jar, the wall and
+     the well; only their own controls take it back. */
+  .rh__bats,
+  .rh__chase,
+  .rh__flash,
+  .rh__dark,
+  .rh__blink {
+    pointer-events: none;
+  }
+
   .rh__canvas {
     display: block;
     inline-size: 100%;
@@ -71,28 +78,10 @@
     opacity: 0;
   }
 
-  /* Above ground: the field, the hedge, and the hole the rabbit went down. */
+  /* Above ground: the sky and the sun over the field (field.css, shared with the
+     riverbank's last frame): the hedge, the hole the Rabbit goes down, and Alice. */
   .rh__surface {
-    background: linear-gradient(
-      to bottom,
-      var(--world-sky) 0%,
-      var(--paper-base) 55%,
-      var(--world-leaf) 56%,
-      var(--world-leaf-deep) 100%
-    );
-  }
-
-  .rh__hole {
-    position: absolute;
-    inset-inline-start: 50%;
-    inset-block-start: 68%;
-    inline-size: min(60vw, 44vh);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: radial-gradient(circle at 45% 40%, var(--sepia-deep), var(--rh-well-deep) 70%);
-    box-shadow: inset 0 12px 30px var(--rh-shadow);
-    translate: -50% -50%;
-    scale: var(--hole, 0.2);
+    background: linear-gradient(to bottom, var(--world-sky) 0%, var(--paper-base) 55%);
   }
 
   .rh__sun {
@@ -106,52 +95,14 @@
     box-shadow: 0 0 60px 20px oklch(from var(--world-glow) l c h / 0.35);
   }
 
-  .rh__tree {
-    position: absolute;
-    inset-inline-start: 12%;
-    inset-block-start: 50%;
-    inline-size: 18vmin;
-    aspect-ratio: 1 / 1.3;
-    translate: 0 -92%;
-    background:
-      radial-gradient(circle at 50% 35%, var(--world-leaf-deep) 38%, transparent 39%),
-      radial-gradient(
-        circle at 25% 55%,
-        oklch(from var(--world-leaf-deep) calc(l - 0.04) c h) 30%,
-        transparent 31%
-      ),
-      radial-gradient(
-        circle at 75% 55%,
-        oklch(from var(--world-leaf-deep) calc(l - 0.02) c h) 30%,
-        transparent 31%
-      ),
-      linear-gradient(to right, transparent 44%, var(--sepia-dark) 44% 56%, transparent 56%);
+  /* Above ground the sentences are in the sky, off Alice, the hole and the hedge;
+     at the end they are over the door in the floor, which sits low for them. */
+  .demo--rabbit-hole {
+    --demo-end-lift: 0rem;
   }
 
-  .rh__hedge {
-    position: absolute;
-    inset-inline: 0;
-    inset-block-start: 50%;
-    block-size: 12vh;
-    background:
-      radial-gradient(circle at 20% 60%, var(--world-leaf-deep) 20%, transparent 21%),
-      radial-gradient(
-        circle at 45% 40%,
-        oklch(from var(--world-leaf-deep) calc(l - 0.04) c h) 26%,
-        transparent 27%
-      ),
-      radial-gradient(
-        circle at 70% 55%,
-        oklch(from var(--world-leaf-deep) calc(l + 0.02) c h) 22%,
-        transparent 23%
-      ),
-      radial-gradient(
-        circle at 90% 45%,
-        oklch(from var(--world-leaf-deep) calc(l - 0.02) c h) 24%,
-        transparent 25%
-      );
-    background-size: 30vw 12vh;
-    translate: 0 -60%;
+  .demo--rabbit-hole .demo-beat:is([data-cue="surface"], [data-cue="tunnel"], [data-cue="end"]) {
+    inset-block-start: calc(var(--demo-bar-height) + 1.5rem);
   }
 
   .rh__flat {
@@ -274,10 +225,23 @@
     transform: rotateY(calc(var(--door, 0) * -110deg));
   }
 
+  /* Take the jar on the left, Look at the map on the right: never on each other,
+     however narrow the frame. */
   .rh__prop-jar {
-    inset-inline-start: 50%;
+    inset-inline-start: 4%;
     inset-block-start: 22vh;
+  }
+
+  /* Bow and Call Dinah have their beats to themselves, at the top, over her head. */
+  .rh__prop-bow,
+  .rh__prop-call {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
     translate: -50% 0;
+  }
+
+  .demo[data-motion="reduced"] :is(.rh__prop-bow, .rh__prop-call) {
+    inset-block-start: calc(var(--demo-bar-height) + 2.6rem);
   }
 
   /* Something taken off a passing shelf, and the cupboard it goes back into. */
@@ -437,40 +401,122 @@
     opacity: 0;
   }
 
+  .rh__blink {
+    background: var(--paper-base);
+    opacity: 0;
+  }
+
+  /* The chase round the well: a bat and a ghost of Dinah, in the dream's lilac.
+     Placed from the middle of the frame by the script; a tap on either is play. */
+  .rh__chase {
+    opacity: 0;
+  }
+
+  .rh__chaser {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 38%;
+    margin-inline-start: -3rem;
+    margin-block-start: -1.5rem;
+    inline-size: 6rem;
+  }
+
+  .rh__chaser--cat {
+    inline-size: 9rem;
+    margin-inline-start: -4.5rem;
+    margin-block-start: -2.25rem;
+    color: color-mix(in oklch, var(--paper-aged), var(--ix-lilac) 55%);
+    filter: drop-shadow(0 0 16px oklch(from var(--ix-lilac) l c h / 0.7));
+    opacity: 0.9;
+  }
+
+  /* A real bat among the ghosts: ink, lit at the edge so it shows on the dark. */
+  .rh__chaser--bat {
+    color: var(--ink-secondary);
+    filter: drop-shadow(0 0 3px var(--paper-aged)) drop-shadow(0 0 10px var(--sepia-mid));
+  }
+
+  .rh__chaser svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .rh__chase[data-play] .rh__chaser {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  /* The curtsey, hers or the reader's: head bowed, knees bent under a spread
+     skirt, hands out to hold it. */
+  .rh__alice [data-part="head"],
+  .rh__alice [data-part="legs"] {
+    transform-box: fill-box;
+    transition: transform 0.25s var(--demo-ease);
+  }
+
+  .rh__alice [data-part="head"] {
+    transform-origin: 50% 100%;
+  }
+
+  .rh__alice [data-part="legs"] {
+    transform-origin: 50% 0;
+  }
+
+  .rh__alice [data-part^="arm"] {
+    transform-box: view-box;
+    transition: transform 0.25s var(--demo-ease);
+  }
+
+  .rh__alice [data-part="arm-left"] {
+    transform-origin: 40px 74px;
+  }
+
+  .rh__alice [data-part="arm-right"] {
+    transform-origin: 80px 74px;
+  }
+
+  .rh__alice .rh__skirt {
+    transition: scale 0.25s var(--demo-ease);
+  }
+
+  .rh__alice:is([data-bow], [data-bowing]) [data-part="head"] {
+    transform: translateY(10px) rotate(14deg);
+  }
+
+  .rh__alice:is([data-bow], [data-bowing]) [data-part="legs"] {
+    transform: translateY(-16px) scale(1.35, 0.5);
+  }
+
+  .rh__alice:is([data-bow], [data-bowing]) [data-part="arm-left"] {
+    transform: rotate(-40deg);
+  }
+
+  .rh__alice:is([data-bow], [data-bowing]) [data-part="arm-right"] {
+    transform: rotate(38deg);
+  }
+
+  .rh__alice:is([data-bow], [data-bowing]) .rh__skirt {
+    scale: 1.26 0.86;
+  }
+
   .rh__dark {
     background: var(--rh-well-deep);
     opacity: 0;
   }
 
-  /* The doors: the strange door in the floor, and beyond it another, and another.
-     A perspective the doors come up through as she falls; each is the hall's own
-     trapdoor seen from above, so the next page opens on the same door from below. */
+  /* The doors: the strange door in the floor, and beyond it another, and another
+     (trapdoor.css draws each). They come up through the shaft's perspective as she
+     falls; each is the hall's own trapdoor seen from above, so the next page opens
+     on the same door, open, from above, and goes through it. */
   .rh__doors {
     --fall: 0;
     opacity: 0;
-    perspective: 700px;
-    perspective-origin: 50% 56%;
-    background: radial-gradient(circle at 50% 56%, var(--sepia-deep), var(--rh-well-deep) 70%);
-    pointer-events: none;
-    overflow: hidden;
   }
 
   .rh__door {
-    --i: 0;
-    --turn: 0;
-    position: absolute;
-    inset-inline-start: 50%;
-    inset-block-start: 56%;
-    inline-size: clamp(12rem, 40vmin, 24rem);
-    aspect-ratio: 1;
-    margin: calc(clamp(12rem, 40vmin, 24rem) / -2) 0 0 calc(clamp(12rem, 40vmin, 24rem) / -2);
-    border: 0.6rem solid var(--rh-door-frame);
-    border-radius: 50% 50% 10% 10%;
-    background: var(--world-night-deep);
-    transform-style: preserve-3d;
     transform: translateZ(calc((var(--fall) - var(--i) * 700) * 1px))
       rotate(calc(var(--turn) * 1deg));
-    box-shadow: 0 0 60px var(--rh-shadow);
     transition: opacity var(--demo-quick) var(--demo-ease);
   }
 
@@ -478,52 +524,12 @@
     opacity: 0;
   }
 
-  .rh__door-light {
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: radial-gradient(
-      circle at 50% 60%,
-      var(--world-glow),
-      var(--paper-aged) 55%,
-      var(--sepia-deep)
-    );
-    opacity: 0;
+  .rh__door .trapdoor__light {
     transition: opacity var(--demo-calm) var(--demo-ease);
   }
 
-  .rh__door[data-open] .rh__door-light {
-    opacity: 1;
-  }
-
-  /* Through the last door: the hall's own checkered floor, far below. */
-  .rh__hall-floor {
-    position: absolute;
-    inset: 18%;
-    border-radius: 50%;
-    background:
-      radial-gradient(circle, transparent 60%, var(--rh-door-frame) 62%),
-      repeating-conic-gradient(from 0deg, var(--ink-primary) 0 15deg, var(--paper-base) 15deg 30deg);
-    opacity: 0.9;
-    filter: blur(0.5px);
-  }
-
-  .rh__door-leaf {
-    position: absolute;
-    inset: -0.6rem;
-    border-radius: inherit;
-    border: 0.6rem solid var(--rh-door-frame);
-    background:
-      radial-gradient(circle at 50% 70%, var(--ix-gold) 5%, transparent 6%),
-      repeating-linear-gradient(to right, var(--rh-door) 0 12%, var(--rh-door-frame) 12% 13.5%);
-    transform-origin: 50% 0;
-    transform: rotateX(0deg);
+  .rh__door .trapdoor__leaf {
     transition: transform var(--demo-calm) var(--demo-ease);
-    backface-visibility: visible;
-  }
-
-  .rh__door[data-open] .rh__door-leaf {
-    transform: rotateX(-105deg);
   }
 
   .rh__rabbit {
@@ -585,8 +591,13 @@
 
   @media (prefers-reduced-motion: reduce) {
     .rh__door,
-    .rh__door-light,
-    .rh__door-leaf {
+    .rh__door .trapdoor__light,
+    .rh__door .trapdoor__leaf {
+      transition: none;
+    }
+
+    /* The curtsey is a still: she is in it, or not. */
+    .rh__alice [data-part] {
       transition: none;
     }
 
@@ -596,9 +607,13 @@
 
     /* Alice hangs still in the shaft; the wings hold a mid-beat pose. */
     .rh__alice-figure,
-    .rh__hair,
-    .rh__skirt {
+    .rh__hair {
       animation: none;
+    }
+
+    .rh__alice .rh__skirt {
+      animation: none;
+      transition: none;
     }
 
     .rh__wing {

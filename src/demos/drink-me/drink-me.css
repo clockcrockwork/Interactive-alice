@@ -167,7 +167,8 @@
       radial-gradient(circle at 50% 70%, var(--dk-brass) 9px, transparent 10px),
       repeating-linear-gradient(to right, var(--dk-door) 0 30px, var(--dk-door-frame) 30px 34px);
     transform-origin: 50% 0;
-    transform: rotateX(calc(var(--open, 0) * 110deg));
+    /* Open, it hangs down into the hall at a slant, its planks to the floor. */
+    transform: rotateX(calc(var(--open, 0) * -72deg));
     backface-visibility: visible;
   }
 
@@ -381,6 +382,16 @@
   }
 
   /* Alice, falling in through the strange door, before she is the camera. */
+  /* The rabbit hole's last frame, over everything at first (trapdoor.css draws
+     it): the page falls through it toward the hall's floor. */
+  .dk__arrival {
+    transform-origin: 50% var(--trapdoor-y);
+  }
+
+  .dk__arrival-door {
+    transform: rotate(calc(var(--turn) * 1deg));
+  }
+
   .dk__falling {
     position: absolute;
     inset-inline-start: 50%;
@@ -553,7 +564,8 @@
     block-size: auto;
   }
 
-  /* The bottle and the cake stand on or under the table until they come forward. */
+  /* The bottle and the cake stand on or under the table until they come forward.
+     They are only pictures here, so a tap goes through them to the key. */
   .dk__bottle {
     position: absolute;
     inset-inline-start: -26px;
@@ -561,6 +573,7 @@
     inline-size: 52px;
     opacity: 0;
     transform-origin: 50% 100%;
+    pointer-events: none;
   }
 
   .dk__cake {
@@ -569,6 +582,7 @@
     inset-block-start: -70px;
     inline-size: 80px;
     opacity: 0;
+    pointer-events: none;
   }
 
   .dk__label-text {
@@ -600,9 +614,57 @@
     filter: drop-shadow(0 20px 30px oklch(from var(--ink-primary) l c h / 0.5));
   }
 
-  /* In reach once the bottle has come to hand; before that the hall behind gets the taps. */
-  .dk__hands[data-reach] .dk__hand {
+  /* In reach only while it is in her hand; otherwise the hall behind gets the taps. */
+  .dk__hand[data-live] {
     pointer-events: auto;
+  }
+
+  /* The bottle in her hand turns about its own axis: the glass is round and stays
+     put, the paper label goes round, four sides of it, every one the same words. */
+  .dk__hand--bottle {
+    --dk-hand-w: clamp(9rem, 30vmin, 18rem);
+    touch-action: pan-y;
+  }
+
+  .dk__turn {
+    --turn: 0;
+    position: relative;
+    perspective: calc(var(--dk-hand-w) * 2.4);
+  }
+
+  .dk__label-ring {
+    position: absolute;
+    inset-inline: 16%;
+    inset-block: 37% 44.4%;
+    transform-style: preserve-3d;
+    transform: rotateY(calc(var(--turn) * 1deg));
+  }
+
+  .dk__label-face {
+    position: absolute;
+    inset-block: 0;
+    inset-inline: 4%;
+    backface-visibility: hidden;
+    transform: rotateY(calc(var(--k) * 90deg)) translateZ(calc(var(--dk-hand-w) * 0.31));
+  }
+
+  .dk__label-face svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  /* The key in her hand rises into the frame while she holds it, and goes when she
+     leaves it on the table; the table's key is there whenever hers is not. */
+  .dk__key {
+    pointer-events: auto;
+    cursor: pointer;
+    transition: opacity var(--demo-quick) var(--demo-ease);
+  }
+
+  .dk__hall[data-key-taken] .dk__key {
+    opacity: 0;
+    pointer-events: none;
   }
 
   .dk__hand svg {
@@ -621,15 +683,22 @@
     inset-block-end: 4%;
     color: var(--dk-gold);
     filter: drop-shadow(0 6px 10px oklch(from var(--ink-primary) l c h / 0.5));
+    translate: -50% 120px;
+    rotate: -30deg;
+    transition:
+      opacity 0.3s var(--demo-ease),
+      translate 0.5s var(--demo-ease),
+      rotate 0.5s var(--demo-ease);
+  }
+
+  .dk__hands[data-key] .dk__hand--key {
+    opacity: 1;
+    translate: -50% 0;
+    rotate: -12deg;
   }
 
   .dk__prop--key {
     inset-block-start: calc(var(--demo-bar-height) + 3.4rem);
-  }
-
-  .dk__key {
-    pointer-events: auto;
-    cursor: pointer;
   }
 
   .dk__little-door {
@@ -785,6 +854,12 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    /* The key is in her hand or on the table: a cut. */
+    .dk__key,
+    .dk__hand--key {
+      transition: none;
+    }
+
     .dk__door {
       padding: 0;
       color: inherit;

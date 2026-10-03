@@ -1,0 +1,97 @@
+/* The strange door from above, shared by the rabbit hole's tunnel and the frame
+   Drink Me opens on: a round-topped trapdoor of planks with a brass ring, the
+   light under it, and, through the last, the hall's checkered floor far below. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    --trapdoor-size: clamp(12rem, 36vmin, 22rem);
+    --trapdoor-plank: var(--sepia-dark);
+    --trapdoor-frame: var(--sepia-deep);
+    --trapdoor-dark: oklch(from var(--world-night-deep) calc(l - 0.05) c h);
+    --trapdoor-shadow: oklch(from var(--ink-primary) l c h / 0.6);
+    /* Where the door sits in the frame: low, under the sentences. */
+    --trapdoor-y: 62%;
+  }
+}
+
+@layer scene {
+  /* The shaft the doors come up through: the camera's perspective and the dark. */
+  .trapdoor-shaft {
+    perspective: 700px;
+    perspective-origin: 50% var(--trapdoor-y);
+    background: radial-gradient(
+      circle at 50% var(--trapdoor-y),
+      var(--sepia-deep),
+      var(--trapdoor-dark) 70%
+    );
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .trapdoor {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: var(--trapdoor-y);
+    inline-size: var(--trapdoor-size);
+    aspect-ratio: 1;
+    margin: calc(var(--trapdoor-size) / -2) 0 0 calc(var(--trapdoor-size) / -2);
+    border: 0.6rem solid var(--trapdoor-frame);
+    border-radius: 50% 50% 10% 10%;
+    background: var(--world-night-deep);
+    transform-style: preserve-3d;
+    box-shadow: 0 0 60px var(--trapdoor-shadow);
+  }
+
+  .trapdoor__light {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      circle at 50% 60%,
+      var(--world-glow),
+      var(--paper-aged) 55%,
+      var(--sepia-deep)
+    );
+    opacity: 0;
+  }
+
+  .trapdoor[data-open] .trapdoor__light {
+    opacity: 1;
+  }
+
+  /* Through the last door: the hall's own checkered floor, far below. */
+  .trapdoor__floor {
+    position: absolute;
+    inset: 18%;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, transparent 60%, var(--trapdoor-frame) 62%),
+      repeating-conic-gradient(from 0deg, var(--ink-primary) 0 15deg, var(--paper-base) 15deg 30deg);
+    opacity: 0.9;
+    filter: blur(0.5px);
+  }
+
+  .trapdoor__leaf {
+    position: absolute;
+    inset: -0.6rem;
+    border-radius: inherit;
+    border: 0.6rem solid var(--trapdoor-frame);
+    background:
+      radial-gradient(circle at 50% 70%, var(--ix-gold) 5%, transparent 6%),
+      repeating-linear-gradient(
+        to right,
+        var(--trapdoor-plank) 0 12%,
+        var(--trapdoor-frame) 12% 13.5%
+      );
+    transform-origin: 50% 0;
+    transform: rotateX(0deg);
+    backface-visibility: visible;
+  }
+
+  /* Open: the leaf swings down, away from the eye above, into the hall. */
+  .trapdoor[data-open] .trapdoor__leaf {
+    transform: rotateX(-105deg);
+  }
+}

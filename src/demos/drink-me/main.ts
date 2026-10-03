@@ -9,19 +9,27 @@
  * floor under her feet until the table is a building, and when she eats the cake it
  * scales down until the roof arrives. Scale is the parallax. Drinking and eating are
  * hers to do, or the story does them for her.
+ *
+ * It opens on the rabbit hole's last frame, the strange door from above, open on
+ * this hall's floor (drawn once in `../rabbit-hole/trapdoor.ts`), and falls through.
  */
 
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
+import { TUNNEL_DOORS, trapdoorHtml } from '../rabbit-hole/trapdoor.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import './drink-me.css';
-import { bottleSvg, cakeSvg, KEY_SVG } from './figures.ts';
+import { BOTTLE_GLASS_SVG, bottleSvg, cakeSvg, KEY_SVG, labelFaceSvg } from './figures.ts';
+import { labelIn } from './label.ts';
 
 const EYE = 240;
 const TABLE_Z = -600;
 /** The wall ring's radius round the table; the curtain panel is straight ahead. */
 const RADIUS = 1100;
 const CURTAIN_Z = TABLE_Z - RADIUS;
+/** Under the table, ten inches tall: how far from its middle she stands, how far
+ *  up she looks, how high she gets up a leg, and how low she sits to cry. */
+const KEY_LOST = { distance: 520, pitch: 40, climb: 240, sit: -70 };
 
 interface Camera {
   /** Scale of the hall around the floor point under the camera. */
@@ -42,17 +50,6 @@ interface Camera {
   peekY: number;
   peekDistance: number;
   peekPitch: number;
-}
-
-/** Words on a label: the capitals a sentence quotes, taken from the text itself. */
-function labelIn(lines: HTMLElement[]): string {
-  for (const line of lines) {
-    const found = /\b([A-Z]{2,}(?: [A-Z]{2,})+)\b/.exec(line.textContent ?? '');
-    if (found?.[1]) {
-      return found[1];
-    }
-  }
-  return '';
 }
 
 const DOORS = [
@@ -153,14 +150,26 @@ function mount(shell: DemoShell): void {
   // Her first tears once she has grown: a few, big, falling past her own skirt.
   const giantTears = shell.layer('dk__tears dk__tears--giant');
   const hands = shell.layer('dk__hands');
+  // The bottle in her hand: the glass is round, so it looks the same from every
+  // side; only the paper label round its neck turns, and every side of it says
+  // the same words.
+  const labelFaces = Array.from(
+    { length: 4 },
+    (_, i) => `<span class="dk__label-face" style="--k: ${i}">${labelFaceSvg(bottleLabel)}</span>`,
+  ).join('');
   hands.innerHTML =
-    `<div class="dk__hand dk__hand--bottle">${bottleSvg(bottleLabel)}</div>` +
-    `<div class="dk__hand dk__hand--cake">${cakeSvg(cakeLabel)}</div>`;
+    `<div class="dk__hand dk__hand--bottle"><div class="dk__turn">${BOTTLE_GLASS_SVG}<div class="dk__label-ring">${labelFaces}</div></div></div>` +
+    `<div class="dk__hand dk__hand--cake"><div class="dk__bite-wrap">${cakeSvg(cakeLabel)}</div></div>`;
   const flash = shell.layer('dk__flash');
   const fallingLayer = shell.layer('dk__falling-layer');
   fallingLayer.innerHTML = `<div class="dk__falling">${figure('alice/falling')}</div>`;
   const falling = fallingLayer.querySelector<HTMLElement>('.dk__falling');
   const trapdoor = hall.querySelector<HTMLElement>('.dk__trapdoor-leaf');
+  // Over everything, at first: the rabbit hole's last frame, the strange door from
+  // above, open on this hall's floor. The page falls through it.
+  const arrival = shell.layer('dk__arrival trapdoor-shaft');
+  arrival.innerHTML = trapdoorHtml(TUNNEL_DOORS - 1, 'dk__arrival-door');
+  arrival.querySelector('.trapdoor')?.setAttribute('data-open', '');
 
   const random = seeded(19);
   tears.innerHTML = Array.from(
@@ -206,6 +215,9 @@ function mount(shell: DemoShell): void {
     peekDistance: 0,
     peekPitch: 0,
   };
+  // Her climb up the table leg when the reader tries it: hers, never the story's,
+  // and its own object, so the story's camera tweens and hers never meet.
+  const climbCam = { y: 0, pitch: 0 };
   const apply = (): void => {
     world.style.setProperty('--persp', camera.persp.toFixed(1));
     hall.style.setProperty('--room', camera.room.toFixed(4));
@@ -216,8 +228,11 @@ function mount(shell: DemoShell): void {
       '--cam-z',
       ((camera.persp - camera.z) * camera.room - camera.distance - camera.peekDistance).toFixed(1),
     );
-    hall.style.setProperty('--cam-y', (camera.y + camera.peekY).toFixed(1));
-    hall.style.setProperty('--cam-pitch', (camera.pitch + camera.peekPitch).toFixed(2));
+    hall.style.setProperty('--cam-y', (camera.y + camera.peekY + climbCam.y).toFixed(1));
+    hall.style.setProperty(
+      '--cam-pitch',
+      (camera.pitch + camera.peekPitch + climbCam.pitch).toFixed(2),
+    );
     hall.style.setProperty('--yaw', camera.yaw.toFixed(2));
     hall.style.setProperty('--look-x', camera.lookX.toFixed(2));
     hall.style.setProperty('--look-y', camera.lookY.toFixed(2));
@@ -235,19 +250,49 @@ function mount(shell: DemoShell): void {
     }
   };
 
-  // --- She falls in through the strange door in the ceiling. We watch from the
-  // floor, looking up; she lands on us, and from then on we are Alice.
-  master.to(trapdoor, { '--open': 1, duration: 0.35, ease: 'back.out(1.6)' }, iFall + 0.05);
+  // --- The page opens on the rabbit hole's last frame: the strange door from
+  // above, open on this floor. We fall through it and turn to look up at it, open,
+  // as she tumbles out of it; she lands on us, and from then on we are Alice.
+  gsap.set(trapdoor, { '--open': 1 });
   master.fromTo(
-    falling,
-    { opacity: 0, scale: 0.15, rotation: -20, y: '-10vh' },
-    { opacity: 1, scale: 3.2, rotation: 400, y: '30vh', duration: 0.6, ease: 'power2.in' },
-    iFall + 0.2,
+    arrival,
+    { scale: 1, opacity: 1 },
+    {
+      scale: reducedMotion ? 1 : 4.5,
+      opacity: 0,
+      duration: reducedMotion ? 0.01 : 0.24,
+      ease: 'power2.in',
+      immediateRender: false,
+    },
+    iFall + 0.02,
   );
+  if (reducedMotion) {
+    // A still: she is through the door and half way down, held in mid-tumble.
+    master.set(falling, { opacity: 1, scale: 1.3, rotation: 24, y: '12vh' }, iFall + 0.2);
+  } else {
+    // Out of the open door's dark, tumbling, larger and larger until she lands on us.
+    master.fromTo(
+      falling,
+      { opacity: 0 },
+      { opacity: 1, duration: 0.06, immediateRender: false },
+      iFall + 0.2,
+    );
+    master.fromTo(
+      falling,
+      { scale: 0.2, rotation: -20, y: '14vh' },
+      { scale: 3.2, rotation: 400, y: '36vh', duration: 0.6, ease: 'power2.in' },
+      iFall + 0.2,
+    );
+  }
   master.fromTo(flash, { opacity: 0 }, { opacity: 1, duration: 0.05 }, iFall + 0.8);
   master.set(falling, { opacity: 0 }, iFall + 0.82);
   master.to(flash, { opacity: 0, duration: 0.5 }, iFall + 0.85);
-  master.to(trapdoor, { '--open': 0.1, duration: 0.3 }, iFall + 0.9);
+  master.fromTo(
+    trapdoor,
+    { '--open': 1 },
+    { '--open': 0.1, duration: 0.3, immediateRender: false },
+    iFall + 0.9,
+  );
   move(iFall + 0.85, { pitch: 0 }, 0.5);
   // Doors all round: a slow turn on the spot to see every one, then every one locked.
   move(iDoors, { yaw: 360, z: TABLE_Z + 150, distance: 0 }, 1.9, 'sine.inOut');
@@ -258,7 +303,7 @@ function mount(shell: DemoShell): void {
   );
   master.call(() => hall.toggleAttribute('data-locked', master.time() < iHall), [], iHall);
   move(iHall, { yaw: 360, z: TABLE_Z - 200, distance: 0 }, 0.8);
-  move(iKey, { z: TABLE_Z, distance: 330, pitch: -18 }, 0.7);
+  move(iKey, { z: TABLE_Z, distance: 330, pitch: -18 }, 0.45);
   // The low curtain hides the little door until the story finds it with the key.
   // The story's lift and the reader's peek are two objects; `applyCurtain`
   // combines them, and the story's wins.
@@ -292,45 +337,174 @@ function mount(shell: DemoShell): void {
   }
   move(iBottle, { z: TABLE_Z, distance: 300, y: 0, pitch: -12 });
   master.fromTo(bottle, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.4 }, iBottle + 0.3);
-  if (!reducedMotion) {
-    master.to(bottle, { rotation: 8, duration: 0.15, yoyo: true, repeat: 3 }, iPoison + 0.2);
-  }
 
-  // --- Drinking. The bottle comes to hand; press it or the button, and it drains.
-  // The story drinks it anyway before the beat is out.
-  const drinkButton = shell.prop(shell.ui.demoDrink ?? '', 'dk__prop');
+  // --- She picks the bottle up to look it over for the word poison. The story
+  // turns it once round in her hand; Turn the bottle round, a tap on it or a drag
+  // across it turns it more. Every side has the same label, and nothing else.
+  // The story's turn and the reader's are two objects, added, so neither ever
+  // stops or undoes the other.
+  const handTurn = handBottle?.querySelector<HTMLElement>('.dk__turn');
+  const storyTurn = { turn: 0 };
+  const readerTurn = { turn: 0 };
+  const applyTurn = (): void => {
+    handTurn?.style.setProperty('--turn', (storyTurn.turn + readerTurn.turn).toFixed(1));
+  };
+  applyTurn();
+  master.to(bottle, { opacity: 0, duration: 0.1 }, iPoison);
+  // Held up to the light to be looked over, above the sentences; lowered to drink.
+  master.fromTo(
+    handBottle,
+    { opacity: 0, y: 120 },
+    { opacity: 1, y: '-22vh', duration: 0.3, immediateRender: false },
+    iPoison,
+  );
+  master.to(handBottle, { y: 0, duration: 0.25, ease: 'power1.inOut' }, iTaste);
+  // Under reduced motion the story's look round is a still: caught between two
+  // sides, both of them saying the same thing.
+  master.to(
+    storyTurn,
+    {
+      turn: reducedMotion ? 45 : 360,
+      duration: reducedMotion ? 0.01 : 0.5,
+      ease: 'sine.inOut',
+      onUpdate: applyTurn,
+    },
+    iPoison + 0.2,
+  );
+  // The drink's button first, so it leads the props in the document as before.
+  const drinkButton = shell.prop(shell.ui.demoDrink ?? '', 'dk__prop dk__prop--drink');
+  const turnButton = shell.prop(shell.ui.demoTurnBottle ?? '', 'dk__prop dk__prop--turn');
+  const inPoison = (): boolean => master.time() >= iPoison && master.time() < iTaste;
+  const turnBottle = (by = reducedMotion ? 90 : 360): void => {
+    if (!inPoison()) {
+      return;
+    }
+    shell.sound.play('glass', 0.3);
+    gsap.to(readerTurn, {
+      turn: readerTurn.turn + by,
+      duration: reducedMotion ? 0 : 1.2,
+      ease: 'power2.inOut',
+      overwrite: 'auto',
+      onUpdate: applyTurn,
+    });
+  };
+  turnButton.addEventListener('click', () => turnBottle());
+  // A drag across the bottle turns it by hand, as far as the finger goes.
+  let dragFrom: number | undefined;
+  let dragged = false;
+  handBottle?.addEventListener('pointerdown', (event) => {
+    if (!inPoison()) {
+      return;
+    }
+    dragFrom = event.clientX;
+    dragged = false;
+    handBottle.setPointerCapture(event.pointerId);
+  });
+  handBottle?.addEventListener('pointermove', (event) => {
+    if (dragFrom === undefined) {
+      return;
+    }
+    const dx = event.clientX - dragFrom;
+    if (Math.abs(dx) > 6) {
+      dragged = true;
+      dragFrom = event.clientX;
+      gsap.killTweensOf(readerTurn);
+      readerTurn.turn += dx * (reducedMotion ? 0 : 0.9);
+      applyTurn();
+    }
+  });
+  const dragEnd = (): void => {
+    dragFrom = undefined;
+  };
+  handBottle?.addEventListener('pointerup', dragEnd);
+  handBottle?.addEventListener('pointercancel', dragEnd);
+  const showTurn = (): void => {
+    inPoison() ? turnButton.show() : turnButton.hide();
+  };
+  master.call(showTurn, [], iPoison);
+  master.call(showTurn, [], iTaste);
+  // Scrolled back above the bottle, the turns are forgotten.
+  master.call(
+    () => {
+      if (master.time() < iPoison) {
+        gsap.killTweensOf(readerTurn);
+        readerTurn.turn = 0;
+        applyTurn();
+      }
+    },
+    [],
+    iPoison,
+  );
+
+  // --- Drinking. Press it or the button, and it drains; the story drinks it anyway
+  // before the beat is out. The tilt and the level are on the bottle's inside, so
+  // the story's coming and going of the bottle never fights them, and scrolling
+  // back above the taste puts the bottle back full.
   let drunk = false;
   const drink = (): void => {
-    if (drunk || !handBottle) {
+    if (drunk || !handBottle || !handTurn) {
       return;
     }
     drunk = true;
     handBottle.setAttribute('data-held', '');
     drinkButton.hide();
-    gsap.to(handBottle, {
+    gsap.to(handTurn, {
       rotation: -60,
       y: -40,
       duration: reducedMotion ? 0 : 0.6,
       ease: 'power2.inOut',
     });
-    gsap.to(handBottle, {
+    gsap.to(handTurn, {
       '--fill': 0,
       duration: reducedMotion ? 0 : 1.1,
       delay: reducedMotion ? 0 : 0.4,
     });
     gsap.to(flavours, { '--show': 1, duration: 0.3 });
   };
-  handBottle?.addEventListener('click', drink);
+  const undrink = (): void => {
+    if (!drunk || !handTurn) {
+      return;
+    }
+    drunk = false;
+    handBottle?.removeAttribute('data-held');
+    gsap.killTweensOf(handTurn);
+    gsap.killTweensOf(flavours, '--show');
+    gsap.set(handTurn, { rotation: 0, y: 0, '--fill': 1 });
+    gsap.set(flavours, { '--show': 0 });
+  };
+  handBottle?.addEventListener('click', () => {
+    if (dragged) {
+      dragged = false;
+      return;
+    }
+    if (inPoison()) {
+      turnBottle();
+    } else if (master.time() >= iTaste) {
+      drink();
+    }
+  });
   drinkButton.addEventListener('click', drink);
-  master.to(bottle, { opacity: 0, duration: 0.1 }, iTaste);
-  master.fromTo(handBottle, { opacity: 0, y: 120 }, { opacity: 1, y: 0, duration: 0.3 }, iTaste);
-  master.call(() => hands.toggleAttribute('data-reach', master.time() >= iTaste), [], iTaste);
-  master.call(
-    () => (master.time() >= iTaste + 0.05 ? drinkButton.show() : drinkButton.hide()),
-    [],
-    iTaste + 0.05,
-  );
-  master.call(() => (master.time() >= iTaste + 0.7 ? drink() : undefined), [], iTaste + 0.7);
+  // A hand takes taps only while what it holds is there to be tapped.
+  const live = (el: HTMLElement | null, from: number, to: number): void => {
+    const fn = (): void => {
+      el?.toggleAttribute('data-live', master.time() >= from && master.time() < to);
+    };
+    master.call(fn, [], from);
+    master.call(fn, [], to);
+  };
+  live(handBottle, iPoison, iShrink);
+  // The story drinks at its moment; going back past it, the bottle is full again.
+  const settleDrink = (): void => {
+    const t = master.time();
+    if (t >= iTaste + 0.7) {
+      drink();
+    } else {
+      undrink();
+    }
+    t >= iTaste + 0.05 && !drunk ? drinkButton.show() : drinkButton.hide();
+  };
+  master.call(settleDrink, [], iTaste + 0.05);
+  master.call(settleDrink, [], iTaste + 0.7);
   // The drink shows them and the story fades them, on two properties, so neither
   // tween undoes the other.
   master.to(flavours, { '--fade': 0, duration: 0.3 }, iShrink + 0.3);
@@ -364,30 +538,124 @@ function mount(shell: DemoShell): void {
     );
   }
   move(iSmall, { z: CURTAIN_Z, distance: 80 * 5.5, y: 0, pitch: 6 }, 0.9);
-  move(iKeyLost, { z: TABLE_Z, distance: 60 * 5.5, pitch: 26 }, 0.8);
+  // --- "She had left the little golden key on the table. She could see it through
+  // the glass top." She walks back under the table and looks straight up through
+  // the glass at the key, the legs towering round her. "She tried to climb a table
+  // leg": the story makes her try once, up and sliding back; Climb the table leg
+  // lets the reader try again, with the same end.
+  move(iKeyLost, { z: TABLE_Z, distance: KEY_LOST.distance, y: 0, pitch: KEY_LOST.pitch }, 0.45);
+  const climbUp = KEY_LOST.climb;
+  if (reducedMotion) {
+    // A still: half way up the leg, looking at the key; she is down again, sitting,
+    // at the next beat.
+    master.to(
+      camera,
+      { y: climbUp * 0.6, pitch: KEY_LOST.pitch - 7, duration: 0.01, onUpdate: apply },
+      iKeyLost + 0.5,
+    );
+  } else {
+    // Up the leg, looking a little less steeply as she nears the glass, so the key
+    // stays in sight above her; then down again, all at once.
+    master.to(
+      camera,
+      {
+        y: climbUp,
+        pitch: KEY_LOST.pitch - 12,
+        duration: 0.18,
+        ease: 'power1.out',
+        onUpdate: apply,
+      },
+      iKeyLost + 0.55,
+    );
+    master.to(
+      camera,
+      { y: 0, pitch: KEY_LOST.pitch, duration: 0.14, ease: 'power3.in', onUpdate: apply },
+      iKeyLost + 0.76,
+    );
+  }
+  const climbButton = shell.prop(shell.ui.demoClimbLeg ?? '', 'dk__prop dk__prop--climb');
+  // Offered once she is under the table, looking up at the key.
+  const climbFrom = iKeyLost + 0.45;
+  const inKeyLost = (): boolean => master.time() >= climbFrom && master.time() < iCry;
+  let climbing = false;
+  let slideTimer = 0;
+  const climb = (): void => {
+    if (climbing || !inKeyLost()) {
+      return;
+    }
+    climbing = true;
+    const slide = (): void => {
+      shell.sound.play('thud', 0.35);
+      gsap.to(climbCam, {
+        y: 0,
+        pitch: 0,
+        duration: reducedMotion ? 0 : 0.45,
+        ease: 'power3.in',
+        overwrite: 'auto',
+        onUpdate: apply,
+        onComplete: () => {
+          climbing = false;
+        },
+      });
+    };
+    gsap.to(climbCam, {
+      y: climbUp * 0.8,
+      pitch: -10,
+      duration: reducedMotion ? 0 : 1.1,
+      ease: 'power1.out',
+      overwrite: 'auto',
+      onUpdate: apply,
+      onComplete: () => {
+        slideTimer = window.setTimeout(slide, reducedMotion ? 800 : 250);
+      },
+    });
+  };
+  climbButton.addEventListener('click', climb);
+  const showClimb = (): void => {
+    if (inKeyLost()) {
+      climbButton.show();
+    } else {
+      climbButton.hide();
+      window.clearTimeout(slideTimer);
+      gsap.killTweensOf(climbCam);
+      climbCam.y = 0;
+      climbCam.pitch = 0;
+      climbing = false;
+      apply();
+    }
+  };
+  master.call(showClimb, [], climbFrom);
+  master.call(showClimb, [], iCry);
+
+  // --- She sat down and cried: the eye drops to sitting, the floor and the
+  // table's foot before her, and her tears fall.
+  move(iCry, { y: KEY_LOST.sit, pitch: -4, distance: KEY_LOST.distance + 260 }, 0.6);
   master.to(tears, { opacity: 1, duration: 0.4 }, iCry);
   master.to(tears, { opacity: 0, duration: 0.4 }, iCake);
-  move(iCake, { pitch: 8, distance: 20 * 5.5 }, 0.6);
+  move(iCake, { y: 0, pitch: 8, distance: 20 * 5.5 }, 0.6);
   master.fromTo(cake, { opacity: 0 }, { opacity: 1, duration: 0.3 }, iCake + 0.2);
 
-  // --- Eating: one bite, then the whole cake.
+  // --- Eating: one bite, then the whole cake. The bites are on the cake's inside,
+  // so the story's coming and going of it never fights them, and scrolling back
+  // above the bite puts the cake back whole.
   const eatButton = shell.prop(shell.ui.demoEat ?? '', 'dk__prop');
+  const cakeInside = handCake?.querySelector<HTMLElement>('.dk__bite-wrap');
   let bites = 0;
   const eat = (): void => {
-    if (!handCake || bites >= 2) {
+    if (!handCake || !cakeInside || bites >= 2) {
       return;
     }
     bites += 1;
     handCake.setAttribute('data-held', '');
-    gsap.to(handCake, { '--bites': 1, duration: reducedMotion ? 0 : 0.3 });
+    gsap.to(cakeInside, { '--bites': 1, duration: reducedMotion ? 0 : 0.3 });
     gsap.fromTo(
-      handCake,
+      cakeInside,
       { y: 0 },
-      { y: -30, duration: reducedMotion ? 0 : 0.2, yoyo: true, repeat: 1 },
+      { y: -30, duration: reducedMotion ? 0 : 0.2, yoyo: true, repeat: reducedMotion ? 0 : 1 },
     );
     if (bites === 2) {
       eatButton.hide();
-      gsap.to(handCake, {
+      gsap.to(cakeInside, {
         scale: 0.2,
         opacity: 0,
         duration: reducedMotion ? 0 : 0.5,
@@ -395,26 +663,36 @@ function mount(shell: DemoShell): void {
       });
     }
   };
+  // The story's bites, as a function of where the page is: none before her first,
+  // one through "nothing happened", the whole cake at the roof. Going forward she
+  // eats up to them; going back the cake is put back to them, still.
+  const storyBites = (): number => {
+    const t = master.time();
+    return t >= iRoof + 0.05 ? 2 : t >= iBite + 0.7 ? 1 : 0;
+  };
+  const settleBites = (): void => {
+    const want = storyBites();
+    if (want > bites) {
+      while (bites < want) {
+        eat();
+      }
+    } else if (want < bites && cakeInside) {
+      bites = want;
+      handCake?.toggleAttribute('data-held', want > 0);
+      gsap.killTweensOf(cakeInside);
+      gsap.set(cakeInside, { '--bites': want > 0 ? 1 : 0, y: 0, scale: 1, opacity: 1 });
+    }
+    const t = master.time();
+    t >= iBite + 0.05 && t < iRoof + 0.05 && bites < 2 ? eatButton.show() : eatButton.hide();
+  };
   handCake?.addEventListener('click', eat);
   eatButton.addEventListener('click', eat);
   master.to(cake, { opacity: 0, duration: 0.1 }, iBite);
   master.fromTo(handCake, { opacity: 0, y: 120 }, { opacity: 1, y: 0, duration: 0.3 }, iBite);
-  master.call(
-    () => (master.time() >= iBite + 0.05 ? eatButton.show() : eatButton.hide()),
-    [],
-    iBite + 0.05,
-  );
-  master.call(() => (master.time() >= iBite + 0.7 ? eat() : undefined), [], iBite + 0.7);
-  master.call(
-    () => {
-      if (master.time() >= iRoof + 0.05) {
-        eat();
-        eat();
-      }
-    },
-    [],
-    iRoof + 0.05,
-  );
+  live(handCake, iBite, iRoof + 0.4);
+  for (const at of [iBite + 0.05, iBite + 0.7, iRoof + 0.05]) {
+    master.call(settleBites, [], at);
+  }
 
   // --- Growing: nothing happens for a beat, as the text says; then she finishes
   // the cake, and the hall comes down to a normal size and then keeps coming.
@@ -668,56 +946,65 @@ function mount(shell: DemoShell): void {
     }
   });
 
-  // --- The key. Take it off the table and it hangs in her hand; try it in any
-  // door and the door will not have it, until the little one, which opens.
+  // --- The key. It lies on the glass table until the key beat; Take the key, or a
+  // tap on it, and it hangs in her hand, and the story takes it anyway at the end
+  // of the beat. She has it in her hand until she goes back to the table for the
+  // bottle and leaves it there, where it stays, so at "She could see it through
+  // the glass top" it is on the table. Where it is is a function of the scroll and
+  // of whether the reader took it in this pass; scrolling back above the key beat
+  // puts it back on the table, to be taken again.
   const keyOnTable = hall.querySelector<HTMLElement>('.dk__key');
   const keyInHand = document.createElement('div');
   keyInHand.className = 'dk__hand dk__hand--key';
-  keyInHand.innerHTML = KEY_SVG;
+  keyInHand.innerHTML = `<div class="dk__key-turn">${KEY_SVG}</div>`;
   hands.append(keyInHand);
+  const keyTurn = keyInHand.querySelector<HTMLElement>('.dk__key-turn');
   const keyButton = shell.prop(shell.ui.demoTakeKey ?? '', 'dk__prop dk__prop--key');
-  let hasKey = false;
-  const takeKey = (byReader = false): void => {
-    if (hasKey) {
+  const KEY_STORY = iKey + 0.8;
+  let readerTook = false;
+  const hasKey = (): boolean => {
+    const t = master.time();
+    return t >= iKey && t < iBottle && (readerTook || t >= KEY_STORY);
+  };
+  const applyKey = (): void => {
+    const t = master.time();
+    if (t < iKey) {
+      readerTook = false;
+    }
+    const held = hasKey();
+    hall.toggleAttribute('data-key-taken', held);
+    hands.toggleAttribute('data-key', held);
+    t >= iKey && t < KEY_STORY && !held ? keyButton.show() : keyButton.hide();
+  };
+  const takeKey = (): void => {
+    const t = master.time();
+    if (readerTook || t < iKey || t >= KEY_STORY) {
       return;
     }
-    hasKey = true;
-    if (byReader) {
-      shell.keep('key');
-    }
-    keyButton.hide();
-    gsap.to(keyOnTable, { opacity: 0, duration: 0.2 });
-    gsap.fromTo(
-      keyInHand,
-      { opacity: 0, y: 120, rotation: -30 },
-      { opacity: 1, y: 0, rotation: -12, duration: reducedMotion ? 0 : 0.5, ease: 'power3.out' },
-    );
+    readerTook = true;
+    shell.keep('key');
+    shell.sound.play('chime', 0.4);
+    applyKey();
   };
-  keyButton.addEventListener('click', () => takeKey(true));
-  keyOnTable?.addEventListener('click', () => takeKey(true));
-  master.call(
-    () =>
-      master.time() >= iKey && master.time() < iKey + 0.8 && !hasKey
-        ? keyButton.show()
-        : keyButton.hide(),
-    [],
-    iKey,
-  );
-  master.call(() => (master.time() >= iKey + 0.8 ? takeKey() : keyButton.hide()), [], iKey + 0.8);
-  master.to(keyInHand, { opacity: 0, y: 80, duration: 0.3 }, iBottle);
+  keyButton.addEventListener('click', takeKey);
+  keyOnTable?.addEventListener('click', takeKey);
+  for (const at of [iKey, KEY_STORY, iBottle]) {
+    master.call(applyKey, [], at);
+  }
+  applyKey();
   const keyOpens = (): void => {
     shell.sound.play('chime');
     gsap.fromTo(
-      keyInHand,
-      { rotation: -12 },
-      { rotation: 60, duration: reducedMotion ? 0 : 0.35, yoyo: true, repeat: 1 },
+      keyTurn,
+      { rotation: 0 },
+      { rotation: 72, duration: reducedMotion ? 0 : 0.35, yoyo: true, repeat: 1 },
     );
     gsap.to(doorLeaf, { '--open': 1, duration: reducedMotion ? 0 : 0.5, delay: 0.3 });
     gsap.to(garden, { opacity: 1, duration: reducedMotion ? 0 : 0.5, delay: 0.3 });
   };
   const littleDoor = hall.querySelector<HTMLElement>('.dk__little-door');
   littleDoor?.addEventListener('click', () => {
-    if (hasKey) {
+    if (hasKey()) {
       keyOpens();
     }
   });
@@ -727,11 +1014,11 @@ function mount(shell: DemoShell): void {
   for (const door of hall.querySelectorAll<HTMLElement>('.dk__door')) {
     door.addEventListener('click', () => {
       shell.sound.play('thud', 0.5);
-      if (hasKey) {
+      if (hasKey()) {
         gsap.fromTo(
-          keyInHand,
-          { rotation: -12 },
-          { rotation: 20, duration: reducedMotion ? 0 : 0.15, yoyo: true, repeat: 3 },
+          keyTurn,
+          { rotation: 0 },
+          { rotation: 32, duration: reducedMotion ? 0 : 0.15, yoyo: true, repeat: 3 },
         );
       }
       door.removeAttribute('data-tried');

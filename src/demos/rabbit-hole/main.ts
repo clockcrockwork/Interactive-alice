@@ -5,14 +5,20 @@
  * scroll, the camera descends through it, and the story's sentences rise out of
  * the depth, pass the reader and vanish overhead. Around the well, DOM layers carry
  * Alice, the jar she takes from a shelf, a map off the wall she may look at, the
- * bats she wonders about, Dinah in the dream, and the ground that finally arrives.
+ * bats she wonders about, a bat and a ghost of Dinah chasing each other round the
+ * well, Dinah in the dream, and the ground that finally arrives.
+ *
+ * It opens on the riverbank's last frame, drawn once in `../riverbank/field.ts`:
+ * the hedge, the Rabbit nose-down in the hole under it, and Alice from behind.
  */
 
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
+import { createStride, fieldHtml } from '../riverbank/field.ts';
 import { attachDemo, type Beat, type DemoShell, mix } from '../shell/shell.ts';
 import { heldSvg, JAR_SVG, MAP_SVG } from './figures.ts';
 import './rabbit-hole.css';
+import { TUNNEL_DOORS, trapdoorHtml } from './trapdoor.ts';
 import { createWell, type Well } from './well.ts';
 
 const UNITS_PER_BEAT = 16;
@@ -45,10 +51,13 @@ function depthCaption(
 }
 
 function mount(shell: DemoShell): void {
+  const iTunnel = shell.cue('tunnel');
   const iDrop = shell.cue('drop');
   const iJar = shell.cue('jar');
   const iFlip = shell.cue('flip');
+  const iCurtsey = shell.cue('curtsey');
   const iBats = shell.cue('bats');
+  const iCats = shell.cue('cats');
   const iDream = shell.cue('dream');
   const iThump = shell.cue('ground');
   const iEnd = shell.cue('end');
@@ -67,8 +76,7 @@ function mount(shell: DemoShell): void {
   const canvasLayer = shell.layer('rh__well');
   canvasLayer.append(canvas);
   const surface = shell.layer('rh__surface');
-  surface.innerHTML =
-    '<div class="rh__sun"></div><div class="rh__tree"></div><div class="rh__hedge"></div><div class="rh__hole"></div>';
+  surface.innerHTML = `<div class="rh__sun"></div>${fieldHtml()}`;
   const props = shell.layer('rh__props');
   props.innerHTML =
     `<div class="rh__cupboard"></div>` +
@@ -80,10 +88,31 @@ function mount(shell: DemoShell): void {
   bats.innerHTML = [0.22, 0.4, 0.58]
     .map((y) => `<div class="rh__bat" style="--bat-y: ${y * 100}%">${figure('bat')}</div>`)
     .join('');
+  // The stage's size, kept by an observer so nothing per frame has to measure it.
+  const stageSize = { w: shell.stage.clientWidth, h: shell.stage.clientHeight };
+  new ResizeObserver(() => {
+    stageSize.w = shell.stage.clientWidth;
+    stageSize.h = shell.stage.clientHeight;
+  }).observe(shell.stage);
+  const chase = shell.layer('rh__chase');
+  chase.innerHTML =
+    `<div class="rh__chaser rh__chaser--cat">${figure('dinah-cat/pouncing')}</div>` +
+    `<div class="rh__chaser rh__chaser--bat">${figure('bat')}</div>`;
   const mapLayer = shell.layer('rh__map');
   mapLayer.innerHTML = `<div class="rh__map-sheet">${MAP_SVG}</div>`;
   const flash = shell.layer('rh__flash');
   const dark = shell.layer('rh__dark');
+  // Under reduced motion a cut is a blink of paper, on crossing it either way.
+  const blinkLayer = shell.layer('rh__blink');
+  const blink = (at: number): void => {
+    if (reducedMotion) {
+      master.call(
+        () => gsap.fromTo(blinkLayer, { opacity: 0.4 }, { opacity: 0, duration: 0.3 }),
+        [],
+        at,
+      );
+    }
+  };
 
   const quality = window.innerWidth < 720 || navigator.hardwareConcurrency <= 4 ? 'lite' : 'full';
   const well: Well | undefined = createWell(canvas, depthTotal, floorDepth, quality);
@@ -97,7 +126,10 @@ function mount(shell: DemoShell): void {
     flat.remove();
   }
 
-  const hole = surface.querySelector<HTMLElement>('.rh__hole');
+  const land = surface.querySelector<HTMLElement>('.field__land');
+  const fieldRabbit = surface.querySelector<HTMLElement>('.field__rabbit');
+  const runnerBox = surface.querySelector<HTMLElement>('.field__alice');
+  const runner = surface.querySelector<HTMLElement>('.field__runner');
   const alice = props.querySelector<HTMLElement>('.rh__alice');
   const hand = props.querySelector<HTMLElement>('.rh__hand');
   const jarTrack = props.querySelector<HTMLElement>('.rh__jar-track');
@@ -106,18 +138,60 @@ function mount(shell: DemoShell): void {
   const dinah = props.querySelector<HTMLElement>('.rh__dinah');
   const rabbit = props.querySelector<HTMLElement>('.rh__rabbit');
 
-  // --- The surface, then the drop.
-  master.fromTo(
-    surface,
-    { '--hole': 0.15 },
-    { '--hole': 1.35, duration: iDrop, ease: 'power2.in' },
-    0,
-  );
+  // --- The surface: the riverbank's last frame. The Rabbit pops down the hole;
+  // Alice runs on after him, the reader's scroll her stride, and the camera runs
+  // with her until the hole is at her feet. She ducks into it, the camera follows
+  // her into the dark, and the tunnel drops away under them both.
+  if (fieldRabbit) {
+    master.fromTo(
+      fieldRabbit,
+      { yPercent: 0 },
+      { yPercent: 115, duration: 0.25, ease: 'power2.in', immediateRender: false },
+      0.08,
+    );
+  }
+  if (land) {
+    master.fromTo(
+      land,
+      { scale: 1 },
+      { scale: 2.4, duration: 0.85, ease: 'sine.inOut', immediateRender: false },
+      0.15,
+    );
+    master.to(land, { scale: 9, duration: 0.55, ease: 'power2.in' }, iTunnel + 0.05);
+    // "Then it dropped away under her feet": the camera tips over the lip.
+    master.to(land, { scale: 26, yPercent: -18, duration: 0.35, ease: 'power3.in' }, iTunnel + 0.6);
+  }
+  if (runner) {
+    master.fromTo(
+      runner,
+      { x: 0, y: 0, scale: 1 },
+      {
+        x: '-11vw',
+        y: '-10vh',
+        scale: 0.92,
+        duration: 0.85,
+        ease: 'power1.inOut',
+        immediateRender: false,
+      },
+      0.15,
+    );
+    // She ducks in: down and away into the dark of the hole.
+    master.to(
+      runner,
+      {
+        x: '-14vw',
+        y: '-17vh',
+        scaleX: 0.5,
+        scaleY: 0.38,
+        opacity: 0,
+        duration: 0.4,
+        ease: 'power2.in',
+      },
+      iTunnel + 0.05,
+    );
+  }
   master.to(surface, { opacity: 0, duration: 0.7 }, iDrop);
   master.to(well ? canvas : flat, { opacity: 1, duration: 0.6 }, iDrop + 0.05);
-  if (hole) {
-    master.to(hole, { scale: 6, duration: 0.7, ease: 'power3.in' }, iDrop);
-  }
 
   const camera = well?.camera ?? {
     depth: 0,
@@ -145,21 +219,58 @@ function mount(shell: DemoShell): void {
   // --- Alice.
   if (alice) {
     master.to(alice, { opacity: 1, duration: 0.5 }, iDrop + 0.4);
-    if (!reducedMotion) {
-      master.to(alice, { rotation: 180, duration: 0.8, ease: 'power2.inOut' }, iFlip + 0.1);
-      master.to(camera, { roll: Math.PI, duration: 0.8, ease: 'power2.inOut' }, iFlip + 0.1);
-      master.to(alice, { rotation: 360, duration: 0.8, ease: 'power2.inOut' }, iFlip + 1.2);
-      master.to(camera, { roll: Math.PI * 2, duration: 0.8, ease: 'power2.inOut' }, iFlip + 1.2);
-      // The curtsey: a small bob at the end of the turn.
-      master.to(
-        alice,
-        { y: 24, duration: 0.15, yoyo: true, repeat: 1, ease: 'sine.inOut' },
-        iFlip + 1.55,
-      );
-    }
+    // "Where people walk upside down": the whole view rolls over, she curtseys to
+    // the people there while she is the wrong way up, and it rolls back. Under
+    // reduced motion each roll is a cut with a blink, placed so the settled
+    // pictures are hers: upside down with her sentence, curtseying with hers.
+    const over = reducedMotion ? iFlip + 0.1 : iFlip + 0.12;
+    const back = reducedMotion ? iCurtsey + 0.9 : iCurtsey + 0.62;
+    const roll = reducedMotion ? 0.01 : 0.75;
+    master.to(alice, { rotation: 180, duration: roll, ease: 'power2.inOut' }, over);
+    master.to(camera, { roll: Math.PI, duration: roll, ease: 'power2.inOut' }, over);
+    master.to(alice, { rotation: 360, duration: roll * 0.5, ease: 'power2.inOut' }, back);
+    master.to(camera, { roll: Math.PI * 2, duration: roll * 0.5, ease: 'power2.inOut' }, back);
+    blink(over);
+    blink(back);
+    // The story's own curtsey, while she is upside down.
+    const bowFrom = iCurtsey + 0.15;
+    const bowTo = reducedMotion ? iCurtsey + 0.85 : iCurtsey + 0.58;
+    const storyBow = (): void => {
+      const t = master.time();
+      alice.toggleAttribute('data-bow', t >= bowFrom && t < bowTo);
+    };
+    master.call(storyBow, [], bowFrom);
+    master.call(storyBow, [], bowTo);
     master.to(alice, { y: 60, scale: 0.9, duration: 0.5, ease: 'power3.out' }, iThump);
     master.to(alice, { opacity: 0, duration: 0.5 }, iEnd + 0.2);
   }
+
+  // --- Bow: the reader may make her curtsey again, as often as she likes, while
+  // the curtsey beat is on. Her own attribute, so the story's never fights it.
+  const bowButton = shell.prop(shell.ui.demoBow ?? '', 'rh__prop-bow');
+  let bowTimer = 0;
+  const curtsey = (): void => {
+    if (!alice || master.time() < iCurtsey || master.time() >= iCurtsey + 1) {
+      return;
+    }
+    alice.setAttribute('data-bowing', '');
+    shell.sound.play('paper', 0.4);
+    window.clearTimeout(bowTimer);
+    bowTimer = window.setTimeout(() => alice.removeAttribute('data-bowing'), 900);
+  };
+  bowButton.addEventListener('click', curtsey);
+  const showBow = (): void => {
+    const t = master.time();
+    if (t >= iCurtsey && t < iCurtsey + 0.95) {
+      bowButton.show();
+    } else {
+      bowButton.hide();
+      window.clearTimeout(bowTimer);
+      alice?.removeAttribute('data-bowing');
+    }
+  };
+  master.call(showBow, [], iCurtsey);
+  master.call(showBow, [], iCurtsey + 0.95);
 
   // --- The jar: a shelf passes; the reader may take the jar off it.
   let jarState: 'shelf' | 'hand' | 'cupboard' = 'shelf';
@@ -195,20 +306,32 @@ function mount(shell: DemoShell): void {
     gsap.to(cupboard, { '--door': 1, duration: reducedMotion ? 0 : 0.4 });
     moveInto(cupboard, { scale: 0.7, rotation: 0, delay: 0.1 });
     gsap.to(cupboard, { '--door': 0, duration: reducedMotion ? 0 : 0.4, delay: 0.8 });
-    if (shell.ui.demoJarTucked) {
-      shell.status(shell.ui.demoJarTucked);
+  };
+  // Scrolled back above the shelf, the jar is on it again, to be taken or not.
+  const unshelve = (): void => {
+    if (jarState === 'shelf' || !jar || !jarTrack) {
+      return;
     }
+    jarState = 'shelf';
+    jar.removeAttribute('data-hot');
+    jarTrack.append(jar);
+    gsap.set(jar, { x: 0, y: 0, rotation: 0, scale: 1 });
   };
   takeButton.addEventListener('click', take);
   jar?.addEventListener('click', take);
   if (jarTrack) {
     master.fromTo(jarTrack, { y: '70vh' }, { y: '-75vh', duration: 1.6 }, iJar - 0.2);
-    master.call(
-      () => (master.time() >= iJar - 0.1 ? takeButton.show() : takeButton.hide()),
-      [],
-      iJar - 0.1,
-    );
-    master.call(() => takeButton.hide(), [], iJar + 1.1);
+    const jarButton = (): void => {
+      const t = master.time();
+      if (t < iJar - 0.1) {
+        unshelve();
+      }
+      t >= iJar - 0.1 && t < iJar + 1.1 && jarState === 'shelf'
+        ? takeButton.show()
+        : takeButton.hide();
+    };
+    master.call(jarButton, [], iJar - 0.1);
+    master.call(jarButton, [], iJar + 1.1);
     master.call(() => (master.time() >= iJar + 1.25 ? tuck() : undefined), [], iJar + 1.25);
   }
   if (cupboard) {
@@ -221,29 +344,132 @@ function mount(shell: DemoShell): void {
     master.to(cupboard, { y: '-90vh', opacity: 0, duration: 1.2 }, iJar + 2);
   }
 
-  // --- Bats, only while she wonders about them.
+  // --- Bats, only while she wonders about them. Under reduced motion they hang
+  // still across the well, wings held.
   master.to(bats, { opacity: 1, duration: 0.3 }, iBats);
-  master.to(bats, { opacity: 0, duration: 0.3 }, iBats + 1.8);
+  master.to(bats, { opacity: 0, duration: 0.2 }, iCats);
   const batEls = bats.querySelectorAll<HTMLElement>('.rh__bat');
   batEls.forEach((bat, index) => {
+    if (reducedMotion) {
+      gsap.set(bat, { x: `${20 + index * 25}vw`, y: `${(index % 2 === 0 ? -1 : 1) * 4}vh` });
+      return;
+    }
     ambient.fromTo(
       bat,
       { x: '-20vw', y: 0 },
       {
         x: '110vw',
         y: `${(index % 2 === 0 ? -1 : 1) * 12}vh`,
-        duration: reducedMotion ? 0.001 : 6 + index * 1.7,
+        duration: 6 + index * 1.7,
         ease: 'none',
         repeat: -1,
       },
       index * 1.2,
     );
   });
-  if (reducedMotion) {
-    batEls.forEach((bat, index) => {
-      gsap.set(bat, { x: `${20 + index * 25}vw` });
-    });
+
+  // --- "Do cats eat bats? Do bats eat cats?" A bat chases a ghost of Dinah once
+  // round the well, then Dinah turns and chases the bat round the other way: the
+  // dream cannot answer either. The laps are the scroll's; a tap on either of them,
+  // or Call Dinah, makes Dinah pounce, and the bat jinks out of reach.
+  const chaseCat = chase.querySelector<HTMLElement>('.rh__chaser--cat');
+  const chaseBat = chase.querySelector<HTMLElement>('.rh__chaser--bat');
+  const laps = { turn: 0 };
+  const pounce = { lunge: 0 };
+  const applyChase = (): void => {
+    if (!chaseCat || !chaseBat) {
+      return;
+    }
+    const rx = Math.min(stageSize.w * 0.36, stageSize.h * 0.44);
+    const ry = Math.min(stageSize.h * 0.2, rx * 0.8);
+    // First lap anticlockwise with the bat behind; second clockwise, Dinah behind.
+    const first = laps.turn <= 1;
+    const dir = first ? -1 : 1;
+    const lap = first ? laps.turn : laps.turn - 1;
+    const lead = Math.PI / 2 + dir * lap * Math.PI * 2;
+    const gap = 0.62 - pounce.lunge * 0.42;
+    const place = (el: HTMLElement, angle: number, runner: boolean): void => {
+      // The near side of the well is lower and nearer: larger.
+      const near = 0.78 + 0.3 * Math.sin(angle);
+      const heading = Math.atan2(Math.cos(angle) * ry * dir, -Math.sin(angle) * rx * dir);
+      // Dinah is drawn facing right: she points along the way she runs, turned
+      // over when it is leftward so she stays upright. The bat only banks.
+      const upright = Math.cos(heading) < 0 ? -1 : 1;
+      gsap.set(el, {
+        x: Math.cos(angle) * rx,
+        y: Math.sin(angle) * ry,
+        rotation: runner ? (heading * 180) / Math.PI : -dir * 20 * Math.cos(angle),
+        scaleX: near,
+        scaleY: runner ? near * upright : near,
+      });
+    };
+    const behind = lead - dir * gap;
+    const catAngle = first ? lead : behind;
+    const batAngle = first ? behind : lead + Math.sin(pounce.lunge * Math.PI) * 0.35 * dir;
+    place(chaseCat, catAngle, true);
+    place(chaseBat, batAngle, false);
+  };
+  master.fromTo(chase, { opacity: 0 }, { opacity: 1, duration: 0.12 }, iCats + 0.02);
+  master.to(chase, { opacity: 0, duration: 0.1 }, iCats + 0.9);
+  master.fromTo(
+    laps,
+    { turn: 0 },
+    { turn: 1, duration: 0.42, ease: 'sine.inOut', onUpdate: applyChase, immediateRender: false },
+    iCats + 0.05,
+  );
+  master.to(
+    laps,
+    { turn: 2, duration: 0.4, ease: 'sine.inOut', onUpdate: applyChase },
+    iCats + 0.48,
+  );
+  applyChase();
+  const callButton = shell.prop(shell.ui.demoCallDinah ?? '', 'rh__prop-call');
+  const inChase = (): boolean => master.time() >= iCats && master.time() < iCats + 0.9;
+  let pounceTimer = 0;
+  const pounceNow = (): void => {
+    if (!inChase()) {
+      return;
+    }
+    shell.sound.play('whoosh', 0.35);
+    gsap.fromTo(
+      pounce,
+      { lunge: 0 },
+      {
+        lunge: 1,
+        duration: reducedMotion ? 0 : 0.28,
+        ease: 'power2.out',
+        yoyo: !reducedMotion,
+        repeat: reducedMotion ? 0 : 1,
+        onUpdate: applyChase,
+        onComplete: () => {
+          if (reducedMotion) {
+            // A still: caught mid-pounce for a moment, then back.
+            window.clearTimeout(pounceTimer);
+            pounceTimer = window.setTimeout(() => {
+              pounce.lunge = 0;
+              applyChase();
+            }, 700);
+          }
+        },
+      },
+    );
+  };
+  callButton.addEventListener('click', pounceNow);
+  for (const chaser of [chaseCat, chaseBat]) {
+    chaser?.addEventListener('click', pounceNow);
   }
+  const showCall = (): void => {
+    const here = inChase();
+    here ? callButton.show() : callButton.hide();
+    chase.toggleAttribute('data-play', here);
+    if (!here) {
+      window.clearTimeout(pounceTimer);
+      gsap.killTweensOf(pounce);
+      pounce.lunge = 0;
+    }
+  };
+  master.call(showCall, [], iCats);
+  master.call(showCall, [], iCats + 0.9);
 
   // --- The dream.
   master.to(camera, { mood: 1, duration: 1 }, iDream);
@@ -281,29 +507,17 @@ function mount(shell: DemoShell): void {
   // door, and another, until the last one opens on the hall itself, far below.
   master.to(dark, { opacity: 0.7, duration: 0.8 }, iEnd);
   if (rabbit) {
-    // Above ground the page opens where the riverbank demo ends: he is nose-down
-    // in the hole under the hedge with his tail out, and pops in; below, he runs
-    // for the door.
-    master.fromTo(
-      rabbit,
-      { x: '50vw', xPercent: -50, y: '-13.5vh', scaleX: -0.35, scaleY: 0.35, rotation: -70 },
-      {
-        y: '-9vh',
-        scaleX: -0.2,
-        scaleY: 0.2,
-        opacity: 0,
-        duration: reducedMotion ? 0.01 : 0.3,
-        ease: 'power2.in',
-      },
-      0.04,
-    );
-    master.set(rabbit, { opacity: 1, x: '110vw', y: '0vh', scale: 1 }, iEnd);
+    // Above ground he is the field's, nose-down in the hole; below, he runs on
+    // down the passage for the door, facing the way he goes.
+    gsap.set(rabbit, { opacity: 0, xPercent: -50, x: '110vw', y: '0vh' });
+    master.set(rabbit, { opacity: 1, x: '110vw', y: '0vh', scaleX: -1, scaleY: 1 }, iEnd);
     master.to(rabbit, { x: '47vw', y: '-24vh', duration: 0.35, ease: 'power1.in' }, iEnd + 0.05);
     master.to(
       rabbit,
       {
         y: '-16vh',
-        scale: 0.15,
+        scaleX: -0.15,
+        scaleY: 0.15,
         opacity: 0,
         duration: reducedMotion ? 0.01 : 0.15,
         ease: 'power2.in',
@@ -311,14 +525,11 @@ function mount(shell: DemoShell): void {
       iEnd + 0.4,
     );
   }
-  const DOORS = 6;
+  // The doors are drawn by trapdoor.ts, which Drink Me draws its first frame with.
+  const DOORS = TUNNEL_DOORS;
   const DOOR_GAP = 700;
-  const doors = shell.layer('rh__doors');
-  doors.innerHTML = Array.from(
-    { length: DOORS },
-    (_, i) =>
-      `<div class="rh__door" style="--i: ${i}; --turn: ${((i % 2 ? 1 : -1) * (4 + i * 3)).toFixed(0)}"><div class="rh__door-light"></div>${i === DOORS - 1 ? '<div class="rh__hall-floor"></div>' : ''}<div class="rh__door-leaf"></div></div>`,
-  ).join('');
+  const doors = shell.layer('rh__doors trapdoor-shaft');
+  doors.innerHTML = Array.from({ length: DOORS }, (_, i) => trapdoorHtml(i, 'rh__door')).join('');
   const doorEls = [...doors.querySelectorAll<HTMLElement>('.rh__door')];
   const tunnel = { fall: 0 };
   const applyTunnel = (): void => {
@@ -509,7 +720,7 @@ function mount(shell: DemoShell): void {
   let dragging = false;
   let lastX = 0;
   shell.stage.addEventListener('pointerdown', (event) => {
-    if ((event.target as HTMLElement).closest('button, .rh__jar, .rh__map-sheet')) {
+    if ((event.target as HTMLElement).closest('button, .rh__jar, .rh__map-sheet, .rh__chaser')) {
       return;
     }
     dragging = true;
@@ -542,11 +753,16 @@ function mount(shell: DemoShell): void {
   // --- Per frame: pointer drift into the camera, and the well's own life.
   let elapsedSeen = 0;
   let lastProgress = shell.progress();
+  const stride = runnerBox ? createStride(runnerBox, reducedMotion) : undefined;
   shell.onFrame((dt, elapsed) => {
     elapsedSeen = elapsed;
     // Scrolling fast is falling fast: the dust streaks and she tumbles a little.
     const progress = shell.progress();
     const velocity = Math.abs(progress - lastProgress) / Math.max(dt, 0.001);
+    // Above ground the scroll is her stride, as it was on the bank.
+    if (master.time() < iTunnel + 0.3) {
+      stride?.step((progress - lastProgress) * shell.beats.length, dt);
+    }
     lastProgress = progress;
     camera.rush = mix(camera.rush, Math.min(1, velocity * 6), Math.min(1, dt * 4));
     const falling = master.time() > iDrop + 0.5 && master.time() < iThump;

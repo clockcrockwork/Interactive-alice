@@ -8,6 +8,7 @@ const crown = (x: number, y: number, fill: string): string =>
 
 export const ALICE_SVG = `
 <svg class="rh__alice-figure" viewBox="0 0 120 200" focusable="false">
+  <g data-part="head">
   <g class="rh__hair">
     <path d="M32 44 C22 60 20 90 30 104 L44 96 L40 60 Z" fill="var(--alice-hair-deep)"/>
     <path d="M88 44 C98 60 100 90 90 104 L76 96 L80 60 Z" fill="var(--alice-hair-deep)"/>
@@ -20,18 +21,21 @@ export const ALICE_SVG = `
   <circle cx="51" cy="48" r="2.4" fill="var(--ink-primary)"/>
   <circle cx="69" cy="48" r="2.4" fill="var(--ink-primary)"/>
   <path d="M54 58 Q60 63 66 58" stroke="var(--ink-secondary)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  </g>
   <g class="rh__skirt">
     <path d="M40 74 C28 90 22 130 20 156 L100 156 C98 130 92 90 80 74 Z" fill="var(--alice-dress)"/>
     <path d="M48 76 C42 100 40 130 40 150 L80 150 C80 130 78 100 72 76 Z" fill="var(--alice-apron)"/>
     <path d="M40 74 L80 74 L76 96 L44 96 Z" fill="var(--alice-dress)"/>
     <path d="M44 96 L76 96 L77 104 L43 104 Z" fill="var(--alice-dress-shadow)"/>
   </g>
-  <path d="M40 74 L18 110" stroke="var(--alice-skin)" stroke-width="8" stroke-linecap="round"/>
-  <path d="M80 74 L104 106" stroke="var(--alice-skin)" stroke-width="8" stroke-linecap="round"/>
+  <path data-part="arm-left" d="M40 74 L18 110" stroke="var(--alice-skin)" stroke-width="8" stroke-linecap="round"/>
+  <path data-part="arm-right" d="M80 74 L104 106" stroke="var(--alice-skin)" stroke-width="8" stroke-linecap="round"/>
+  <g data-part="legs">
   <path d="M44 156 L40 188" stroke="var(--alice-apron)" stroke-width="9" stroke-linecap="round"/>
   <path d="M76 156 L80 188" stroke="var(--alice-apron)" stroke-width="9" stroke-linecap="round"/>
   <ellipse cx="39" cy="192" rx="9" ry="5" fill="var(--alice-shoes)"/>
   <ellipse cx="81" cy="192" rx="9" ry="5" fill="var(--alice-shoes)"/>
+  </g>
 </svg>`;
 
 export const DINAH_SVG = `
@@ -40,6 +44,80 @@ export const DINAH_SVG = `
   <path d="M100 80 C118 74 118 50 104 46" stroke="currentColor" stroke-width="8" fill="none" stroke-linecap="round"/>
   <circle cx="48" cy="52" r="4" fill="var(--paper-base)"/>
   <circle cx="72" cy="52" r="4" fill="var(--paper-base)"/>
+</svg>`;
+
+/** Alice from behind, running away from the reader: hair down her back under the
+ * band, the apron's bow at her waist. Her legs, soles and arms are parts a demo
+ * can move (`leg-left`, `sole-left`, `arm-left`, and the right ones) for a stride. */
+export const ALICE_RUNNING_AWAY_SVG = `
+<svg viewBox="0 0 120 220" focusable="false">
+  <g data-part="leg-left">
+    <path d="M50 150 L48 204" stroke="var(--alice-apron)" stroke-width="9" stroke-linecap="round"/>
+    <ellipse cx="48" cy="208" rx="8" ry="5" fill="var(--alice-shoes)"/>
+    <ellipse data-part="sole-left" cx="48" cy="204" rx="7" ry="9" fill="var(--alice-shoes)"/>
+  </g>
+  <g data-part="leg-right">
+    <path d="M70 150 L72 204" stroke="var(--alice-apron)" stroke-width="9" stroke-linecap="round"/>
+    <ellipse cx="72" cy="208" rx="8" ry="5" fill="var(--alice-shoes)"/>
+    <ellipse data-part="sole-right" cx="72" cy="204" rx="7" ry="9" fill="var(--alice-shoes)"/>
+  </g>
+  <g data-part="arm-left">
+    <path d="M40 68 C32 80 28 94 27 106" stroke="var(--alice-skin)" stroke-width="7" stroke-linecap="round" fill="none"/>
+    <ellipse cx="40" cy="70" rx="9" ry="8" fill="var(--alice-dress-light)"/>
+  </g>
+  <g data-part="arm-right">
+    <path d="M80 68 C88 80 92 94 93 106" stroke="var(--alice-skin)" stroke-width="7" stroke-linecap="round" fill="none"/>
+    <ellipse cx="80" cy="70" rx="9" ry="8" fill="var(--alice-dress-light)"/>
+  </g>
+  <path d="M40 92 C32 112 24 140 18 160 Q60 172 102 160 C96 140 88 112 80 92 Z" fill="var(--alice-dress)"/>
+  <path d="M22 150 C26 130 32 112 38 98 L43 98 C37 116 31 136 28 156 Z M98 150 C94 130 88 112 82 98 L77 98 C83 116 89 136 92 156 Z" fill="var(--alice-apron)"/>
+  <path d="M48 100 C44 120 40 142 38 166 M72 100 C76 120 80 142 82 166 M60 104 V169" stroke="var(--alice-dress-deep)" stroke-width="2" fill="none" opacity="0.6"/>
+  <path d="M18 160 Q60 172 102 160 L102 165 Q60 178 18 165 Z" fill="var(--alice-dress-shadow)"/>
+  <path d="M43 62 Q60 56 77 62 L81 96 L39 96 Z" fill="var(--alice-dress)"/>
+  <path d="M47 62 L58 94 M73 62 L62 94" stroke="var(--alice-apron)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M58 98 L51 126 M62 98 L69 124" stroke="var(--alice-apron)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M60 96 C50 85 41 89 43 98 C45 105 54 102 60 98 Z M60 96 C70 85 79 89 77 98 C75 105 66 102 60 98 Z" fill="var(--alice-apron)" stroke="var(--alice-apron-shadow)" stroke-width="1.2"/>
+  <circle cx="60" cy="97" r="3.2" fill="var(--alice-apron-shadow)"/>
+  <g data-part="hair">
+    <ellipse cx="40" cy="42" rx="3.5" ry="5" fill="var(--alice-skin)"/>
+    <ellipse cx="80" cy="42" rx="3.5" ry="5" fill="var(--alice-skin)"/>
+    <path d="M40 36 C36 54 38 74 42 90 Q51 96 60 91 Q69 96 78 90 C82 74 84 54 80 36 Z" fill="var(--alice-hair)"/>
+    <ellipse cx="60" cy="36" rx="21" ry="21" fill="var(--alice-hair)"/>
+    <path d="M50 32 C46 52 47 72 50 88 M60 30 V90 M70 32 C74 52 73 72 70 88" stroke="var(--alice-hair-deep)" stroke-width="2" fill="none" opacity="0.7"/>
+    <path d="M47 24 C53 19 67 19 73 24" stroke="var(--alice-hair-light)" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M39 33 Q60 13 81 33" stroke="var(--alice-band)" stroke-width="4" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>`;
+
+/** The White Rabbit nose-down in a hole with his tail out, seen from behind as
+ * he goes: the round rump, the white tail on top, and both hind feet scrabbling
+ * with their soles to us (`foot-left`, `foot-right`, parts a demo can kick). The
+ * bottom edge is the hole's lip; the rest of him has gone down. */
+export const RABBIT_DIVING_SVG = `
+<svg viewBox="0 0 100 100" focusable="false">
+  <g data-part="foot-left">
+    <ellipse cx="22" cy="80" rx="9" ry="17" transform="rotate(-34 22 80)" fill="currentColor" stroke="var(--ink-faded)" stroke-width="1.4"/>
+    <ellipse cx="19" cy="75" rx="4.5" ry="10" transform="rotate(-34 19 75)" fill="var(--paper-warm)"/>
+  </g>
+  <g data-part="foot-right">
+    <ellipse cx="78" cy="80" rx="9" ry="17" transform="rotate(34 78 80)" fill="currentColor" stroke="var(--ink-faded)" stroke-width="1.4"/>
+    <ellipse cx="81" cy="75" rx="4.5" ry="10" transform="rotate(34 81 75)" fill="var(--paper-warm)"/>
+  </g>
+  <ellipse cx="50" cy="74" rx="28" ry="30" fill="currentColor" stroke="var(--ink-faded)" stroke-width="1.5"/>
+  <path d="M36 92 C34 80 38 70 46 66 M64 92 C66 80 62 70 54 66" stroke="var(--ink-ghost)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+  <path d="M50 30 a5 5 0 0 1 8 3 a5 5 0 0 1 4 8 a5 5 0 0 1 -2 8 a5 5 0 0 1 -7 4 a5 5 0 0 1 -8 0 a5 5 0 0 1 -7 -4 a5 5 0 0 1 -2 -8 a5 5 0 0 1 4 -8 a5 5 0 0 1 8 -3 Z" fill="currentColor" stroke="var(--ink-faded)" stroke-width="1.4" stroke-linejoin="round"/>
+</svg>`;
+
+/** Dinah at full stretch, mid-pounce: a cat in one long leap, facing right. */
+export const DINAH_POUNCING_SVG = `
+<svg viewBox="0 0 160 80" focusable="false">
+  <path d="M34 36 C22 30 12 18 6 6" stroke="currentColor" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <path d="M40 44 L8 60 M50 46 L22 70" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+  <ellipse cx="78" cy="40" rx="46" ry="15" fill="currentColor"/>
+  <path d="M112 44 L152 54 M106 48 L144 66" stroke="currentColor" stroke-width="6.5" stroke-linecap="round"/>
+  <circle cx="126" cy="32" r="15" fill="currentColor"/>
+  <path d="M116 22 L118 6 L127 19 Z M128 18 L138 5 L139 22 Z" fill="currentColor"/>
+  <path d="M126 31 l6 -1.5 M135 30 l5 0.5" stroke="var(--paper-base)" stroke-width="2.6" stroke-linecap="round"/>
 </svg>`;
 
 export const RABBIT_SVG = `
@@ -174,6 +252,38 @@ export const ALICE_SILHOUETTE_SVG = `
   <circle cx="60" cy="50" r="30" fill="currentColor"/>
   <path d="M30 60 C22 90 28 120 32 130 L40 92 Z M90 60 C98 90 92 120 88 130 L80 92 Z" fill="currentColor"/>
   <path d="M44 86 L14 120 M76 86 L106 118" stroke="currentColor" stroke-width="10" stroke-linecap="round"/>
+</svg>`;
+
+/**
+ * Alice seen from behind, at her full size in the court: her hair down her back
+ * with its band, the puffed sleeves, the apron's straps and the bow at her waist,
+ * her arms at her sides. Whichever Alice the reader chose, from her own tokens.
+ */
+export const ALICE_FROM_BEHIND_SVG = `
+<svg viewBox="0 0 120 220" focusable="false">
+  <path d="M31 124 C22 150 12 188 4 220 L116 220 C108 188 98 150 89 124 Z" fill="var(--alice-dress)" stroke="oklch(from var(--ink-primary) l c h / 0.35)" stroke-width="1"/>
+  <path d="M31 124 C22 150 12 188 4 220 L18 220 C24 188 32 152 38 126 Z" fill="var(--alice-dress-deep)" opacity="0.55"/>
+  <path d="M89 124 C98 150 108 188 116 220 L104 220 C98 188 90 152 84 126 Z" fill="var(--alice-dress-shadow)" opacity="0.45"/>
+  <path d="M46 132 C42 160 38 192 34 220 M60 134 V220 M74 132 C78 160 82 192 86 220" stroke="var(--alice-dress-deep)" stroke-width="1.6" fill="none" opacity="0.7"/>
+  <path d="M27 96 C21 118 20 138 23 156 M93 96 C99 118 100 138 97 156" stroke="var(--alice-skin)" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <path d="M24 130 C23 140 23 148 24 156 M96 130 C97 140 97 148 96 156" stroke="var(--alice-skin-shadow)" stroke-width="2" fill="none" opacity="0.6"/>
+  <path d="M36 78 Q60 70 84 78 L89 126 L31 126 Z" fill="var(--alice-dress)" stroke="oklch(from var(--ink-primary) l c h / 0.35)" stroke-width="1"/>
+  <ellipse cx="31" cy="88" rx="13" ry="12" fill="var(--alice-dress)"/>
+  <ellipse cx="89" cy="88" rx="13" ry="12" fill="var(--alice-dress)"/>
+  <path d="M22 84 Q30 76 40 82 M80 82 Q90 76 98 84" stroke="var(--alice-dress-light)" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M20 94 Q31 102 42 96 M78 96 Q89 102 100 94" stroke="var(--alice-dress-shadow)" stroke-width="1.6" fill="none" opacity="0.6"/>
+  <path d="M44 76 L48 124 M76 76 L72 124" stroke="var(--alice-apron)" stroke-width="7" stroke-linecap="round"/>
+  <path d="M41 78 L45 124 M79 78 L75 124" stroke="var(--alice-apron-shadow)" stroke-width="1.2"/>
+  <rect x="30" y="119" width="60" height="8" rx="2" fill="var(--alice-apron)"/>
+  <path d="M30 127 h60" stroke="var(--alice-apron-shadow)" stroke-width="1.4"/>
+  <path d="M31 42 C25 70 28 98 36 116 Q44 108 52 116 Q60 108 68 116 Q76 108 84 116 C92 98 95 70 89 42 Z" fill="var(--alice-hair)"/>
+  <ellipse cx="60" cy="42" rx="30" ry="30" fill="var(--alice-hair)"/>
+  <path d="M46 20 C40 50 40 84 44 112 M60 14 V114 M74 20 C80 50 80 84 76 112 M38 34 C34 60 34 86 38 108 M82 34 C86 60 86 86 82 108" stroke="var(--alice-hair-deep)" stroke-width="1.6" fill="none" opacity="0.65" stroke-linecap="round"/>
+  <path d="M40 22 C50 13 70 13 80 22" stroke="var(--alice-hair-light)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.8"/>
+  <path d="M52 40 C50 60 50 80 52 98 M68 40 C70 60 70 80 68 98" stroke="var(--alice-hair-light)" stroke-width="2" fill="none" opacity="0.5" stroke-linecap="round"/>
+  <path d="M31 36 Q60 22 89 36" stroke="var(--alice-band)" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M60 123 C48 108 34 112 36 122 C37 132 50 130 60 123 Z M60 123 C72 108 86 112 84 122 C83 132 70 130 60 123 Z M57 126 L49 152 L55 149 L60 128 Z M63 126 L71 152 L65 149 L60 128 Z" fill="var(--alice-apron)" stroke="var(--alice-apron-shadow)" stroke-width="1.2" stroke-linejoin="round"/>
+  <ellipse cx="60" cy="123" rx="5" ry="4.5" fill="var(--alice-apron-shadow)"/>
 </svg>`;
 
 export const SISTER_SVG = `
@@ -394,12 +504,15 @@ export const FLAMINGO_TUCKED_SVG = `
   <path d="M40 100 q-26 -6 -34 16 q20 2 36 -4 z" fill="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))"/>
   <ellipse cx="90" cy="110" rx="56" ry="28" fill="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))"/>
   <path d="M60 104 q30 -12 60 0" stroke="var(--paper-warm)" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.6"/>
-  <path d="M136 100 q28 -18 14 -56" stroke="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <g class="dc__tucked-reach">
+  <path class="dc__tucked-neck" d="M136 100 q28 -18 14 -56" stroke="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))" stroke-width="14" fill="none" stroke-linecap="round"/>
   <g class="dc__tucked-head">
     <circle cx="150" cy="36" r="17" fill="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))"/>
-    <path d="M138 42 L104 54 L140 52 Z" fill="var(--ink-primary)"/>
+    <path d="M138 42 L104 50 L140 48 Z" fill="var(--ink-primary)"/>
+    <path class="dc__tucked-jaw" d="M140 48 L106 52 L140 53 Z" fill="var(--ink-primary)"/>
     <circle cx="154" cy="31" r="4.5" fill="var(--paper-base)"/>
     <circle class="dc__tucked-pupil" cx="155" cy="31" r="2.2" fill="var(--ink-primary)"/>
+  </g>
   </g>
 </svg>`;
 
@@ -508,15 +621,33 @@ export const MOCK_TURTLE_SVG = `
   <path class="lq__tear" d="M136 68 q6 14 0 20 q-6 -6 0 -20 z" fill="var(--world-water)"/>
 </svg>`;
 
-/** A lobster, to be carried as a partner and thrown as far out to sea as you can. */
+/** A lobster, to be carried as a partner and thrown as far out to sea as you can:
+    side on, facing right, a long jointed tail ending in a fan, a carapace with a
+    beak, long antennae swept back over it, two great claws, and walking legs with
+    its feet on the bottom edge. */
 export const LOBSTER_SVG = `
 <svg viewBox="0 0 160 120" focusable="false">
-  <ellipse cx="80" cy="70" rx="50" ry="26" fill="var(--lq-lobster, var(--wonder-red))"/>
-  <path d="M40 60 l-24 -24 M46 78 l-30 6 M120 60 l24 -24 M114 78 l30 6" stroke="var(--lq-lobster, var(--wonder-red))" stroke-width="8" stroke-linecap="round"/>
-  <path d="M8 26 q-8 14 8 16 q10 -6 4 -18 z M152 26 q8 14 -8 16 q-10 -6 -4 -18 z" fill="var(--lq-lobster, var(--wonder-red))"/>
-  <path d="M80 44 l-10 -30 M84 44 l14 -28" stroke="var(--lq-lobster, var(--wonder-red))" stroke-width="4" stroke-linecap="round"/>
-  <path d="M60 96 q20 20 40 0" fill="var(--lq-lobster, var(--wonder-red))"/>
-  <circle cx="66" cy="52" r="3" fill="var(--ink-primary)"/><circle cx="94" cy="52" r="3" fill="var(--ink-primary)"/>
+  <path d="M132 64 Q150 38 128 20 Q110 6 82 6 M134 62 Q160 30 118 12 Q88 0 52 12" stroke="var(--wonder-red-dark)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M86 88 Q82 104 78 118 M96 90 Q94 104 92 118 M106 90 Q108 104 108 118 M116 86 Q120 102 124 118" stroke="var(--wonder-red-dark)" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <g transform="translate(-4 -14)">
+    <path d="M108 86 Q122 98 136 92" stroke="var(--wonder-red-dark)" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M132 92 Q132 80 144 80 L158 76 Q156 85 148 88 L158 94 Q152 104 140 103 Q130 101 132 92 Z" fill="var(--wonder-red-dark)"/>
+  </g>
+  <path d="M30 66 Q14 52 6 58 Q0 68 4 76 Q0 86 8 92 Q16 96 30 82 Z" fill="var(--lq-lobster, var(--wonder-red))"/>
+  <path d="M28 70 L8 62 M28 74 L4 76 M28 78 L9 88" stroke="var(--wonder-red-dark)" stroke-width="2" stroke-linecap="round"/>
+  <path d="M28 64 Q50 52 82 54 L84 88 Q54 90 28 82 Z" fill="var(--lq-lobster, var(--wonder-red))"/>
+  <path d="M40 58 Q44 70 40 84 M52 56 Q56 70 52 87 M64 55 Q68 71 64 88 M75 54 Q79 71 75 88" stroke="var(--wonder-red-dark)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M44 86 l-3 8 M56 88 l-3 8 M68 89 l-3 7" stroke="var(--wonder-red-dark)" stroke-width="2" stroke-linecap="round"/>
+  <path d="M80 54 Q100 44 120 52 Q132 58 136 64 Q128 72 122 80 Q102 94 80 88 Z" fill="var(--lq-lobster, var(--wonder-red))"/>
+  <path d="M128 60 L148 58 L132 67 Z" fill="var(--lq-lobster, var(--wonder-red))"/>
+  <path d="M97 50 Q103 70 97 90" stroke="var(--wonder-red-dark)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M86 57 Q104 49 118 56" stroke="var(--wonder-red-light)" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M136 64 l16 -4 M136 66 l15 3" stroke="var(--wonder-red-dark)" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M124 58 l4 -6" stroke="var(--wonder-red-dark)" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="128.5" cy="51" r="3.2" fill="var(--ink-primary)"/>
+  <path d="M108 86 Q122 98 136 92" stroke="var(--lq-lobster, var(--wonder-red))" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <path d="M132 92 Q132 80 144 80 L158 76 Q156 85 148 88 L158 94 Q152 104 140 103 Q130 101 132 92 Z" fill="var(--lq-lobster, var(--wonder-red))"/>
+  <path d="M136 90 Q140 84 146 83" stroke="var(--wonder-red-light)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
 </svg>`;
 
 export type DancerKind = 'seal' | 'turtle' | 'salmon' | 'whiting' | 'snail' | 'porpoise';
@@ -563,8 +694,9 @@ export function dancerSvg(kind: DancerKind): string {
 
 /** Bill in a 0..120 by 0..100 box, drawn once, for HTML and for other SVGs. */
 export const BILL_FRAGMENT = `  <path d="M10 70 Q40 30 80 50 Q110 66 100 84 Q60 96 20 84 Z" fill="var(--bl-lizard, color-mix(in oklab, var(--world-leaf) 70%, var(--sepia-mid)))"/>
-  <circle cx="92" cy="46" r="16" fill="var(--bl-lizard, color-mix(in oklab, var(--world-leaf) 70%, var(--sepia-mid)))"/>
+  <g class="bill__head"><circle cx="92" cy="46" r="16" fill="var(--bl-lizard, color-mix(in oklab, var(--world-leaf) 70%, var(--sepia-mid)))"/>
   <circle cx="98" cy="42" r="4" fill="var(--paper-base)"/><circle cx="99" cy="42" r="2" fill="var(--ink-primary)"/>
+  <path class="bill__mouth" d="M96 54 q6 2 10 -2" stroke="var(--ink-primary)" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>
   <path d="M10 70 Q-10 60 4 40" stroke="var(--bl-lizard, color-mix(in oklab, var(--world-leaf) 70%, var(--sepia-mid)))" stroke-width="8" fill="none" stroke-linecap="round"/>
   <path d="M30 84 l-6 12 M60 90 l0 10 M84 84 l6 12" stroke="var(--bl-lizard, color-mix(in oklab, var(--world-leaf) 70%, var(--sepia-mid)))" stroke-width="6" stroke-linecap="round"/>`;
 
@@ -729,9 +861,8 @@ export const HOUSE_FILLING =
   '<path d="M-320 -240 q-28 70 -8 130" stroke="var(--alice-hair)" stroke-width="30" stroke-linecap="round" fill="none"/>' +
   '<circle cx="-270" cy="-236" r="8" fill="var(--ink-primary)"/><circle cx="-228" cy="-236" r="8" fill="var(--ink-primary)"/>' +
   '<path d="M-262 -206 q12 8 24 0" stroke="var(--ink-secondary)" stroke-width="4" fill="none" stroke-linecap="round"/>' +
-  '<path d="M-200 -190 L-330 -120" stroke="var(--alice-skin)" stroke-width="28" stroke-linecap="round"/>' +
-  '<path d="M260 -190 L330 -260 L330 -300" stroke="var(--alice-apron)" stroke-width="30" stroke-linecap="round" fill="none"/>' +
-  '<circle cx="330" cy="-300" r="24" fill="var(--alice-shoes)"/>';
+  // Her leg up the chimney is the house's own drawing: it runs out of the room.
+  '<path d="M-200 -190 L-330 -120" stroke="var(--alice-skin)" stroke-width="28" stroke-linecap="round"/>';
 
 /** The Rabbit as seen from the garden, a fragment in house units (52 wide, 80 tall, feet at 0,0). */
 export const HOUSE_RABBIT = `<ellipse cx="0" cy="-22" rx="24" ry="16" fill="var(--hs-rabbit, var(--paper-base))"/>
@@ -857,6 +988,35 @@ export const PIG_BABY_SVG = `
   </g>
 </svg>`;
 
+/** The pig the baby became, side on and trotting, facing left, in the same
+    sepia-pink as the baby's last stage. Its pairs of legs (`legs-fore`,
+    `legs-hind`) and its `tail` are parts a demo can move for a trot. */
+export const PIG_TROTTING_SVG = `
+<svg viewBox="0 0 200 140" focusable="false">
+  <g data-part="legs-hind">
+    <path d="M150 100 L158 130" stroke="color-mix(in oklab, var(--wonder-red-faded) 55%, var(--paper-warm))" stroke-width="13" stroke-linecap="round"/>
+    <path d="M154 130 h9" stroke="var(--ink-secondary)" stroke-width="5" stroke-linecap="round"/>
+    <path d="M134 102 L128 130" stroke="color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm))" stroke-width="13" stroke-linecap="round"/>
+    <path d="M124 130 h9" stroke="var(--ink-secondary)" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <g data-part="legs-fore">
+    <path d="M74 102 L66 130" stroke="color-mix(in oklab, var(--wonder-red-faded) 55%, var(--paper-warm))" stroke-width="13" stroke-linecap="round"/>
+    <path d="M62 130 h9" stroke="var(--ink-secondary)" stroke-width="5" stroke-linecap="round"/>
+    <path d="M92 102 L98 130" stroke="color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm))" stroke-width="13" stroke-linecap="round"/>
+    <path d="M94 130 h9" stroke="var(--ink-secondary)" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <path data-part="tail" d="M172 74 q16 -4 13 -17 q-3 -9 -10 -3 q-5 6 3 9" stroke="color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm))" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+  <ellipse cx="116" cy="80" rx="60" ry="34" fill="color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm))"/>
+  <path d="M74 62 Q112 46 160 60" stroke="oklch(from var(--paper-base) l c h / 0.4)" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <circle cx="60" cy="70" r="30" fill="color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm))"/>
+  <path d="M62 46 L50 20 L80 40 Z" fill="color-mix(in oklab, var(--wonder-red-faded) 55%, var(--paper-warm))"/>
+  <ellipse cx="32" cy="76" rx="9" ry="13" fill="color-mix(in oklab, var(--wonder-red-faded) 55%, var(--paper-warm))"/>
+  <ellipse cx="30" cy="71" rx="2" ry="3" fill="var(--ink-secondary)"/>
+  <ellipse cx="30" cy="81" rx="2" ry="3" fill="var(--ink-secondary)"/>
+  <circle cx="50" cy="62" r="3.4" fill="var(--ink-primary)"/>
+  <path d="M42 90 q8 6 16 2" stroke="var(--ink-secondary)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>`;
+
 /** The Cheshire Cat on the hearth, grinning from ear to ear: the same grin the
     bough and the croquet-ground draw. */
 export const CAT_HEARTH_SVG = `
@@ -889,12 +1049,13 @@ export const TORTOISE_MASTER_SVG = `
   </g>
 </svg>`;
 
-/** The Drawling-master: an old conger-eel, fainting in coils. */
+/** The Drawling-master: an old conger-eel, fainting in coils. Dark-edged, so he
+    reads against the sea he rises out of. */
 export const CONGER_EEL_SVG = `
 <svg viewBox="0 0 300 200" focusable="false">
-  <path d="M20 170 q30 -90 90 -60 q60 30 20 70 q-40 30 -20 -30 q30 -70 90 -50 q60 20 40 70 q-20 40 -30 10 q-6 -40 40 -60" stroke="var(--world-water-deep)" stroke-width="22" fill="none" stroke-linecap="round"/>
-  <path d="M20 170 q30 -90 90 -60 q60 30 20 70 q-40 30 -20 -30 q30 -70 90 -50 q60 20 40 70 q-20 40 -30 10 q-6 -40 40 -60" stroke="var(--world-water)" stroke-width="10" fill="none" stroke-linecap="round"/>
-  <ellipse cx="256" cy="120" rx="30" ry="20" fill="var(--world-water-deep)"/>
+  <path d="M20 170 q30 -90 90 -60 q60 30 20 70 q-40 30 -20 -30 q30 -70 90 -50 q60 20 40 70 q-20 40 -30 10 q-6 -40 40 -60" stroke="var(--world-night)" stroke-width="22" fill="none" stroke-linecap="round"/>
+  <path d="M20 170 q30 -90 90 -60 q60 30 20 70 q-40 30 -20 -30 q30 -70 90 -50 q60 20 40 70 q-20 40 -30 10 q-6 -40 40 -60" stroke="var(--world-water-deep)" stroke-width="11" fill="none" stroke-linecap="round"/>
+  <ellipse cx="256" cy="120" rx="30" ry="20" fill="var(--world-night)"/>
   <circle cx="264" cy="114" r="5" fill="var(--paper-base)"/><circle cx="265" cy="114" r="2.5" fill="var(--ink-primary)"/>
   <path d="M276 128 q10 4 14 -2" stroke="var(--ink-primary)" stroke-width="3" fill="none" stroke-linecap="round"/>
 </svg>`;

@@ -48,6 +48,35 @@
         "demoFlingMoral",
         "demoSuppressGuineaPig",
         "demoRightLizard",
+        "demoTurnBottle",
+        "demoClimbLeg",
+        "demoCryTear",
+        "demoFan",
+        "demoGiveComfit",
+        "demoReadTail",
+        "demoWiggleFoot",
+        "demoHoldHead",
+        "demoCatchBill",
+        "demoDipLeaves",
+        "demoHeightInches",
+        "demoOpenLetter",
+        "demoLookCat",
+        "demoCallPig",
+        "demoPig",
+        "demoFig",
+        "demoSingAlong",
+        "demoAnswerRiddle",
+        "demoStirTreacle",
+        "demoDrawTreacle",
+        "demoDrawM",
+        "demoStirQuarrel",
+        "demoTurnCard",
+        "demoShrug",
+        "demoClearThroat",
+        "demoWakeEel",
+        "demoKingsNotebook",
+        "demoCloseEyes",
+        "demoGiveChildren",
         "demoScrollHint",
         "demoTechRabbitHole",
         "demoTechDormouse",
@@ -263,6 +292,151 @@
           "type": "string",
           "minLength": 1,
           "description": "The witnesses: a button that turns the Lizard in the jury-box the right way up before Alice does."
+        },
+        "demoTurnBottle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Drink Me: turn the bottle to look for a poison label (there is none)."
+        },
+        "demoClimbLeg": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Drink Me: try to climb the glass table's leg to the key; she slides down."
+        },
+        "demoCryTear": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Pool of tears: shed one giant tear; the pool rises a notch."
+        },
+        "demoFan": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Pool of tears: wave the Rabbit's fan; each wave shrinks her."
+        },
+        "demoGiveComfit": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Caucus-race: give the focused runner a comfit (the keyboard's way to feed)."
+        },
+        "demoReadTail": {
+          "type": "string",
+          "minLength": 1,
+          "description": "A Long Tale: magnify the words of the tail where the reader is."
+        },
+        "demoWiggleFoot": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Growing in the House: her foot up the chimney kicks in a puff of soot."
+        },
+        "demoHoldHead": {
+          "type": "string",
+          "minLength": 1,
+          "description": "There Goes Bill: a guinea-pig holds up Bill's head for the brandy."
+        },
+        "demoCatchBill": {
+          "type": "string",
+          "minLength": 1,
+          "description": "There Goes Bill: move the crowd by the hedge under the falling Bill."
+        },
+        "demoDipLeaves": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Caterpillar: dip her long neck down into the tree tops."
+        },
+        "demoHeightInches": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Caterpillar: accessible name of the tape-measure that reads her height."
+        },
+        "demoOpenLetter": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Pig and Pepper: unfold the Queen's invitation, as large as the Footman."
+        },
+        "demoLookCat": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Pig and Pepper: look at the grinning cat on the hearth."
+        },
+        "demoCallPig": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Cheshire Cat: the pig from the kitchen trots across the wood."
+        },
+        "demoPig": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Cheshire Cat: answer \"pig\" to the Cat's \"pig, or fig?\"."
+        },
+        "demoFig": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Cheshire Cat: answer \"fig\" to the Cat's \"pig, or fig?\"."
+        },
+        "demoSingAlong": {
+          "type": "string",
+          "minLength": 1,
+          "description": "No Room: tap along with the Hatter's song; bats flap across the sky."
+        },
+        "demoAnswerRiddle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "No Room: try the raven against the writing-desk; they never match."
+        },
+        "demoStirTreacle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Dormouse: first-touch hint that the treacle can be stirred."
+        },
+        "demoDrawTreacle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Dormouse: pull a little bucket of treacle up the spiral."
+        },
+        "demoDrawM": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Dormouse: turn a floating M into a thing that begins with M."
+        },
+        "demoStirQuarrel": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Croquet: during the quarrel, a tap makes the players quarrel louder."
+        },
+        "demoTurnCard": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Croquet: turn over a gardener lying face down to see which card it is."
+        },
+        "demoShrug": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The Duchess: Alice shrugs the Duchess's sharp chin off her shoulder."
+        },
+        "demoClearThroat": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Mock Turtle: break the long silence; the Mock Turtle sobs louder."
+        },
+        "demoWakeEel": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Mock Turtle: the conger-eel drawls, stretches and faints in coils."
+        },
+        "demoKingsNotebook": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The witnesses: catch the King writing Rule Forty-two on the spot."
+        },
+        "demoCloseEyes": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Sentence First: the dream comes back (the other half of Open her eyes)."
+        },
+        "demoGiveChildren": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Sentence First: hand a keepsake to the little children of the after-time."
         },
         "demoAuto": {
           "type": "string",

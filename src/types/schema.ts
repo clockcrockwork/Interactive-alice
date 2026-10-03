@@ -538,6 +538,122 @@ export interface LocaleUIStrings {
      */
     demoRightLizard: string;
     /**
+     * Drink Me: turn the bottle to look for a poison label (there is none).
+     */
+    demoTurnBottle: string;
+    /**
+     * Drink Me: try to climb the glass table's leg to the key; she slides down.
+     */
+    demoClimbLeg: string;
+    /**
+     * Pool of tears: shed one giant tear; the pool rises a notch.
+     */
+    demoCryTear: string;
+    /**
+     * Pool of tears: wave the Rabbit's fan; each wave shrinks her.
+     */
+    demoFan: string;
+    /**
+     * Caucus-race: give the focused runner a comfit (the keyboard's way to feed).
+     */
+    demoGiveComfit: string;
+    /**
+     * A Long Tale: magnify the words of the tail where the reader is.
+     */
+    demoReadTail: string;
+    /**
+     * Growing in the House: her foot up the chimney kicks in a puff of soot.
+     */
+    demoWiggleFoot: string;
+    /**
+     * There Goes Bill: a guinea-pig holds up Bill's head for the brandy.
+     */
+    demoHoldHead: string;
+    /**
+     * There Goes Bill: move the crowd by the hedge under the falling Bill.
+     */
+    demoCatchBill: string;
+    /**
+     * Caterpillar: dip her long neck down into the tree tops.
+     */
+    demoDipLeaves: string;
+    /**
+     * Caterpillar: accessible name of the tape-measure that reads her height.
+     */
+    demoHeightInches: string;
+    /**
+     * Pig and Pepper: unfold the Queen's invitation, as large as the Footman.
+     */
+    demoOpenLetter: string;
+    /**
+     * Pig and Pepper: look at the grinning cat on the hearth.
+     */
+    demoLookCat: string;
+    /**
+     * Cheshire Cat: the pig from the kitchen trots across the wood.
+     */
+    demoCallPig: string;
+    /**
+     * Cheshire Cat: answer "pig" to the Cat's "pig, or fig?".
+     */
+    demoPig: string;
+    /**
+     * Cheshire Cat: answer "fig" to the Cat's "pig, or fig?".
+     */
+    demoFig: string;
+    /**
+     * No Room: tap along with the Hatter's song; bats flap across the sky.
+     */
+    demoSingAlong: string;
+    /**
+     * No Room: try the raven against the writing-desk; they never match.
+     */
+    demoAnswerRiddle: string;
+    /**
+     * Dormouse: first-touch hint that the treacle can be stirred.
+     */
+    demoStirTreacle: string;
+    /**
+     * Dormouse: pull a little bucket of treacle up the spiral.
+     */
+    demoDrawTreacle: string;
+    /**
+     * Dormouse: turn a floating M into a thing that begins with M.
+     */
+    demoDrawM: string;
+    /**
+     * Croquet: during the quarrel, a tap makes the players quarrel louder.
+     */
+    demoStirQuarrel: string;
+    /**
+     * Croquet: turn over a gardener lying face down to see which card it is.
+     */
+    demoTurnCard: string;
+    /**
+     * The Duchess: Alice shrugs the Duchess's sharp chin off her shoulder.
+     */
+    demoShrug: string;
+    /**
+     * Mock Turtle: break the long silence; the Mock Turtle sobs louder.
+     */
+    demoClearThroat: string;
+    /**
+     * Mock Turtle: the conger-eel drawls, stretches and faints in coils.
+     */
+    demoWakeEel: string;
+    /**
+     * The witnesses: catch the King writing Rule Forty-two on the spot.
+     */
+    demoKingsNotebook: string;
+    /**
+     * Sentence First: the dream comes back (the other half of Open her eyes).
+     */
+    demoCloseEyes: string;
+    /**
+     * Sentence First: hand a keepsake to the little children of the after-time.
+     */
+    demoGiveChildren: string;
+    /**
      * Toggle at the end of a demo: when on, the page goes to the next scene by itself after a pause at the end.
      */
     demoAuto: string;

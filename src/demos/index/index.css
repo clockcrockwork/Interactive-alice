@@ -1,4 +1,7 @@
-/* The demo index: three playing cards fanned on the table, each a door. */
+/* The demo index: nineteen playing cards dealt on the table, each a door. Each
+   lies at its own small tilt (written per card by the build), and a card whose
+   scene picks up where the one before it ended lies over that card's edge, a
+   dealt run. On a phone, two columns of smaller cards. */
 
 @layer scene {
   /* The table the cards lie on: deep sepia, not the demos' night. */
@@ -134,14 +137,17 @@
   }
 
   .demos__cards {
+    /* How far a joined card lies over the one before it. */
+    --demos-run: 1.4rem;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: var(--space-2);
+    gap: var(--space-3) var(--space-2);
+    margin: 0;
     padding: 0;
     list-style: none;
     transform-style: preserve-3d;
-    max-inline-size: 60rem;
+    max-inline-size: 62rem;
   }
 
   .demos__card {
@@ -149,11 +155,11 @@
     --tilt-x: 0;
     --tilt-y: 0;
     --lift: 0;
-    inline-size: min(13.5rem, 78vw);
+    inline-size: min(12.75rem, 78vw);
     aspect-ratio: 5 / 7;
     transform-style: preserve-3d;
     transform: translateZ(calc(var(--lift) * 1px)) rotateX(calc(var(--tilt-x) * 1deg))
-      rotateY(calc(var(--tilt-y) * 1deg)) rotate(calc((var(--i) - 2.5) * 2.5deg));
+      rotateY(calc(var(--tilt-y) * 1deg)) rotate(var(--tilt, 0deg));
     transition: transform var(--demo-calm) var(--demo-ease);
   }
 
@@ -226,14 +232,72 @@
     outline-offset: 4px;
   }
 
+  /* A dealt run: the card lies over the edge of the one before, and that card
+     keeps its words clear of the overlap. */
+  .demos__card[data-joined] {
+    margin-inline-start: calc(-1 * (var(--space-2) + var(--demos-run)));
+  }
+
+  .demos__card:has(+ .demos__card[data-joined]) .demos__link {
+    padding-inline-end: calc(var(--space-2) + var(--demos-run));
+  }
+
+  /* A phone: two columns of smaller cards, still each at its tilt, side by
+     side rather than dealt over one another. */
+  @media (max-width: 600px) {
+    .demos {
+      padding-inline: var(--space-1);
+    }
+
+    .demos__cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-2) var(--space-1);
+      inline-size: 100%;
+    }
+
+    .demos__card {
+      inline-size: auto;
+      transform: translateZ(calc(var(--lift) * 1px)) rotate(calc(var(--tilt, 0deg) * 0.6));
+    }
+
+    .demos__card[data-joined] {
+      margin-inline-start: 0;
+    }
+
+    .demos__link,
+    .demos__card:has(+ .demos__card[data-joined]) .demos__link {
+      gap: 0.3rem;
+      padding: var(--space-1);
+      border-radius: 0.7rem;
+    }
+
+    .demos__pip {
+      inset-block-start: var(--space-1);
+      inset-inline-start: var(--space-1);
+      scale: 0.7;
+      transform-origin: 0 0;
+    }
+
+    .demos__name {
+      font-size: 1.05rem;
+    }
+
+    .demos__tech {
+      font-size: 0.7rem;
+      line-height: 1.3;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .demos__alice-choice {
       transition: none;
     }
 
+    /* The cards lie still at their tilts; nothing leans or lifts. */
     .demos__card {
       transition: none;
-      transform: none;
+      transform: rotate(var(--tilt, 0deg));
     }
   }
 }

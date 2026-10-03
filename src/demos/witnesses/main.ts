@@ -18,6 +18,7 @@ import {
   HIGH_SHOT,
   mountAlice,
   mountCamera,
+  mountHeight,
   mountJury,
   packSize,
 } from '../trial/court.ts';
@@ -25,6 +26,7 @@ import {
   BAG_SVG,
   BREAD_SVG,
   LETTER_SVG,
+  NOTEBOOK_OPEN_SVG,
   NOTEBOOK_SVG,
   PEPPER_BOX_SVG,
   SHOE_SVG,
@@ -110,7 +112,6 @@ function mount(shell: DemoShell): void {
   const iPaper = cue('paper');
   const iHandwriting = cue('handwriting');
   const iClever = cue('clever');
-  const iRead = cue('read');
   const iVerses = cue('verses');
   const iMeaning = cue('meaning');
   const end = shell.beats.length;
@@ -146,6 +147,7 @@ function mount(shell: DemoShell): void {
     () =>
       `<div class="wt__speck" style="--x: ${(specks() * 100).toFixed(1)}%; --y: ${(specks() * 100).toFixed(1)}%; --s: ${(0.6 + specks() * 1.4).toFixed(2)}; --d: ${(4 + specks() * 5).toFixed(2)}s; --i: ${(-specks() * 6).toFixed(2)}s"></div>`,
   ).join('');
+  const height = mountHeight(shell);
   const alice = mountAlice(shell);
   const flash = shell.layer('tr__flash');
   const letterLayer = shell.layer('wt__letter');
@@ -209,18 +211,21 @@ function mount(shell: DemoShell): void {
     iDates + 0.75,
   );
 
-  // --- The herald's scroll unrolls to show the accusation.
-  const heraldLines = shell.beats
-    .slice(iHerald, iHerald + 3)
-    .flatMap((beat) => beat.lines.filter((line) => line.dataset.speaker === 'white-rabbit'));
-  for (const line of heraldLines) {
+  // --- The herald's scroll unrolls to show the accusation: each line of it is a
+  // scroll that opens downward as it is read, the first as the beat comes in and
+  // the second after it. Under reduced motion they are open from the cut.
+  const iAccusation = cue('accusation');
+  const accusation =
+    shell.beats[iAccusation]?.lines.filter((line) => line.dataset.speaker === 'white-rabbit') ?? [];
+  accusation.forEach((line, n) => {
+    line.setAttribute('data-scroll', '');
     master.fromTo(
       line,
       { '--unroll': 0 },
-      { '--unroll': 1, duration: 0.3, ease: 'power1.out' },
-      '<',
+      { '--unroll': 1, duration: dur(0.3), ease: 'power1.out' },
+      reducedMotion ? iAccusation - 0.02 : iAccusation + 0.08 + n * 0.22,
     );
-  }
+  });
   const trumpet = (at: number): void => {
     master.call(
       () => {
@@ -451,6 +456,8 @@ function mount(shell: DemoShell): void {
   const holdButton = document.createElement('button');
   holdButton.type = 'button';
   holdButton.className = 'wt__pig-button';
+  // Pointer play: the prop is the keyboard's way to the same thing.
+  holdButton.tabIndex = -1;
   holdButton.setAttribute('aria-label', shell.ui.demoSuppressGuineaPig ?? '');
   cheerer?.append(holdButton);
   const holdProp = shell.prop(shell.ui.demoSuppressGuineaPig ?? '', 'wt__prop-hold');
@@ -578,9 +585,17 @@ function mount(shell: DemoShell): void {
       },
       iHere + 0.1,
     );
-    // Nearly two miles high.
+    // Nearly two miles high: her head goes out of the top of the frame, and
+    // the court is far below, through the clouds.
     master.to(alice, { scale: 2.6, duration: dur(0.8), ease: 'power2.inOut' }, iMile + 0.1);
   }
+  master.fromTo(
+    height,
+    { opacity: 0 },
+    { opacity: 1, duration: dur(0.8), ease: 'power1.inOut', immediateRender: false },
+    iMile + 0.1,
+  );
+  master.call(() => height.toggleAttribute('data-shown', master.time() >= iMile), [], iMile);
   const juryPiece = jury.piece;
   if (juryPiece) {
     master.fromTo(
@@ -633,6 +648,7 @@ function mount(shell: DemoShell): void {
   const lizardButton = document.createElement('button');
   lizardButton.type = 'button';
   lizardButton.className = 'wt__lizard-button';
+  lizardButton.tabIndex = -1;
   lizardButton.setAttribute('aria-label', shell.ui.demoRightLizard ?? '');
   lizard.append(lizardButton);
   const putBackProp = shell.prop(shell.ui.demoRightLizard ?? '', 'wt__prop-put-back');
@@ -691,14 +707,14 @@ function mount(shell: DemoShell): void {
   king?.append(notebook);
   master.fromTo(
     notebook,
-    { opacity: 0, '--word-one': 0, '--word-two': 0, '--shut': 0, scale: 1 },
+    { opacity: 0, '--word-one': 0, '--word-two': 0, scale: 1 },
     { opacity: 1, duration: dur(0.2), immediateRender: false },
     iNothing + 0.1,
   );
   master.to(notebook, { '--word-one': 1, duration: dur(0.3), ease: 'none' }, iNothing + 0.6);
   master.to(notebook, { '--word-two': 1, duration: dur(0.3), ease: 'none' }, iImportant + 0.15);
   moment(iImportant + 0.5, () => jury.write());
-  // Rule Forty-two: "Silence!", the book held up; then shut hastily.
+  // Rule Forty-two: "Silence!", the book held up.
   master.fromTo(
     flash,
     { opacity: 0 },
@@ -708,15 +724,140 @@ function mount(shell: DemoShell): void {
   master.to(flash, { opacity: 0, duration: dur(0.3) }, iRule + 0.2);
   moment(iRule + 0.12, () => shell.sound.play('thud', 0.5));
   master.to(notebook, { scale: 1.5, duration: dur(0.25), ease: 'power2.out' }, iRule + 0.1);
-  master.to(
-    notebook,
-    { '--shut': 1, scale: 1, duration: dur(0.2), ease: 'power2.in' },
-    iOldest + 0.55,
+
+  // The rule is still being written while everybody looks at Alice: the King's
+  // pen goes on through "you invented it just now", the ink wet, until he turns
+  // pale and shuts the book. The reader may look in the book while it is wet and
+  // catch him at it: he finishes in a hurry, blots it, and shuts it early.
+  // Two objects for each: the story's, scrubbed, and the reader's, ad hoc.
+  const iWet = iRule + 0.3;
+  const iShut = iOldest + 0.55;
+  const pen = { story: 0, play: 0 };
+  const shut = { story: 0, play: 0 };
+  const view = { peek: 0, leaf: 0 };
+  let caught = false;
+  let peekPlay: gsap.core.Timeline | undefined;
+  const peek = shell.layer('wt__peek');
+  peek.innerHTML = `<div class="wt__peek-book">${NOTEBOOK_OPEN_SVG}</div>`;
+  const peekBook = peek.querySelector<HTMLElement>('.wt__peek-book') ?? peek;
+  const notebookTap = document.createElement('button');
+  notebookTap.type = 'button';
+  notebookTap.className = 'wt__notebook-tap';
+  // Pointer play: the prop beside it is the keyboard's way.
+  notebookTap.tabIndex = -1;
+  notebookTap.setAttribute('aria-label', shell.ui.demoKingsNotebook ?? '');
+  notebook.append(notebookTap);
+  const lookProp = shell.prop(shell.ui.demoKingsNotebook ?? '', 'wt__prop-look');
+  const applyNotebook = (): void => {
+    const written = Math.max(pen.story, pen.play);
+    const closed = Math.max(shut.story, shut.play);
+    notebook.style.setProperty('--word-rule', written.toFixed(3));
+    notebook.style.setProperty('--shut', closed.toFixed(3));
+    peekBook.style.setProperty('--write', written.toFixed(3));
+    peekBook.style.setProperty('--peek', view.peek.toFixed(3));
+    peekBook.style.setProperty('--leaf', view.leaf.toFixed(3));
+    // The wet ink glistens only while the book is held up to be seen.
+    peekBook.toggleAttribute('data-open', view.peek > 0.01);
+    const wet = master.time() >= iWet && closed < 0.5;
+    notebook.toggleAttribute('data-wet', wet);
+    const lookable = wet && !caught;
+    notebook.toggleAttribute('data-lookable', lookable);
+    if (lookable) {
+      lookProp.show();
+    } else {
+      lookProp.hide();
+    }
+  };
+  const resetLook = (): void => {
+    peekPlay?.kill();
+    peekPlay = undefined;
+    caught = false;
+    pen.play = 0;
+    shut.play = 0;
+    view.peek = 0;
+    view.leaf = 0;
+    peekBook.removeAttribute('data-writing');
+    peekBook.removeAttribute('data-caught');
+    king?.removeAttribute('data-startled');
+  };
+  master.fromTo(
+    pen,
+    { story: 0 },
+    { story: 0.5, duration: dur(0.6), immediateRender: false, onUpdate: applyNotebook },
+    iWet,
   );
+  master.fromTo(
+    pen,
+    { story: 0.5 },
+    { story: 0.85, duration: dur(0.9), immediateRender: false, onUpdate: applyNotebook },
+    iMile + 0.05,
+  );
+  master.fromTo(
+    shut,
+    { story: 0 },
+    {
+      story: 1,
+      duration: dur(0.2),
+      ease: 'power2.in',
+      immediateRender: false,
+      onUpdate: applyNotebook,
+    },
+    iShut,
+  );
+  master.call(
+    () => {
+      if (master.time() < iWet) {
+        // Scrolled back before the pen started: the reader's look is undone.
+        resetLook();
+      }
+      applyNotebook();
+    },
+    [],
+    iWet,
+  );
+  master.call(applyNotebook, [], iShut + 0.21);
+  master.to(notebook, { scale: 1, duration: dur(0.2), ease: 'power2.in' }, iShut);
   master.to(notebook, { opacity: 0, duration: dur(0.2) }, iPaper + 0.1);
+  const look = (): void => {
+    if (caught || !notebook.hasAttribute('data-lookable')) {
+      return;
+    }
+    caught = true;
+    shell.status(shell.ui.demoKingsNotebook ?? '');
+    shell.sound.play('paper', 0.4);
+    pen.play = Math.max(pen.story, pen.play);
+    // Under reduced motion each step is a cut, held as long as with motion.
+    peekPlay = gsap
+      .timeline({ onUpdate: applyNotebook, onComplete: applyNotebook })
+      .to(view, { peek: 1, duration: dur(0.3), ease: 'power2.out' }, 0)
+      .call(() => peekBook.setAttribute('data-writing', ''), [], 0.1)
+      .to(pen, { play: 1, duration: dur(1), ease: 'none' }, 0.1)
+      .call(
+        () => {
+          peekBook.removeAttribute('data-writing');
+          peekBook.setAttribute('data-caught', '');
+          king?.setAttribute('data-startled', '');
+          shell.sound.play('thud', 0.3);
+        },
+        [],
+        1.15,
+      )
+      .to(view, { leaf: 1, duration: dur(0.3), ease: 'power2.in' }, 1.6)
+      .to(shut, { play: 1, duration: dur(0.2), ease: 'power2.in' }, 1.6)
+      .call(() => shell.sound.play('paper', 0.5), [], 1.75)
+      .to(view, { peek: 0, duration: dur(0.4), ease: 'power1.in' }, 2.6);
+    applyNotebook();
+  };
+  notebookTap.addEventListener('click', look);
+  lookProp.addEventListener('click', look);
+  applyNotebook();
 
   // --- The letter: the White Rabbit unfolds a paper into the frame, handwriting
   // as lines of scribble; it is a set of verses, read out as four couplets.
+  // While it is up, its captions stand beside it rather than under it.
+  for (const beat of shell.beats) {
+    beat.el.toggleAttribute('data-letter', beat.index >= iPaper);
+  }
   const sheet = document.createElement('div');
   sheet.className = 'wt__sheet';
   // Three panels, each a third of the sheet, each folded inside the one before.
@@ -726,7 +867,7 @@ function mount(shell: DemoShell): void {
   letterLayer.append(sheet);
   master.fromTo(
     sheet,
-    { opacity: 0, y: '70vh', '--unfold': 0, scale: 1 },
+    { opacity: 0, y: '70vh', '--unfold': 0 },
     { opacity: 1, y: '0vh', duration: dur(0.3), ease: 'power2.out', immediateRender: false },
     iPaper + 0.2,
   );
@@ -741,7 +882,6 @@ function mount(shell: DemoShell): void {
     commotion(0.6);
     shell.sound.play('chime', 0.4);
   });
-  master.to(sheet, { scale: 1.12, duration: dur(0.3), ease: 'power1.out' }, iRead + 0.2);
   // Each couplet is read in its turn; all copies of the sheet's panels read along.
   const allVerses = [...sheet.querySelectorAll<SVGGElement>('.wt__verse')];
   for (const n of [0, 1, 2, 3]) {
@@ -762,7 +902,7 @@ function mount(shell: DemoShell): void {
   // it, with Alice enormous in front.
   master.to(
     sheet,
-    { y: '70vh', opacity: 0, scale: 1, duration: dur(0.3), ease: 'power2.in' },
+    { y: '70vh', opacity: 0, duration: dur(0.3), ease: 'power2.in' },
     iMeaning + 0.3,
   );
 

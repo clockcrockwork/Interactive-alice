@@ -62,6 +62,7 @@
         },
         {
           "id": "verses",
+          "cue": "accusation",
           "segments": [
             "ch11.s0140",
             "ch11.s0150"

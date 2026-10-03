@@ -35,10 +35,26 @@
     color: var(--sepia-dark);
   }
 
-  .demo--trial .demo-beat[data-cue="leaves"],
-  .demo--trial .demo-beat[data-cue="wake"] {
+  /* On the bank the captions are up in the sky, under the prop at the top, so
+     the grass is clear for the sister and whatever comes to her. On the last
+     beat they hold their place while the shell lifts the captions for the next
+     link: the two translations cancel. */
+  /* On a phone the next link at the foot of the last frame spans most of the
+     width: the children and the keepsakes stand a little higher on the bank. */
+  @media (max-width: 600px) {
+    .demo--trial {
+      --tr-bank-lift: 7%;
+    }
+  }
+
+  .demo--trial .demo-beat[data-sky] {
     inset-block-end: auto;
-    inset-block-start: calc(var(--demo-bar-height) + 6vh);
+    inset-block-start: calc(var(--demo-bar-height) + 3.4rem);
+    transition: translate 0.45s ease-out;
+  }
+
+  .demo--trial[data-ending] .demo-beat[data-sky] {
+    translate: 0 var(--demo-end-lift, 4.25rem);
   }
 
   .tr__bank {
@@ -248,7 +264,6 @@
     inset-inline-start: 34%;
     inset-block-end: 20%;
     inline-size: clamp(3rem, 9vmin, 6rem);
-    color: var(--alice-shadow);
     opacity: 0;
   }
 
@@ -264,11 +279,15 @@
     pointer-events: none;
   }
 
+  /* The dream's creatures stand about the bank either side of her sister, never
+     on her: the Rabbit, the Mouse by the pool and the pig-baby to her left; the
+     teacups, the Queen, the Gryphon in the air and the Mock Turtle to her right. */
   .tr__ghost {
     position: absolute;
-    inset-inline-start: var(--gx, 50%);
-    inset-block-end: 22%;
+    inset-inline-start: var(--gx, 10%);
+    inset-block-end: var(--gy, 18%);
     inline-size: clamp(3.5rem, 11vmin, 7rem);
+    translate: -50% 0;
     color: var(--sepia-dark);
     opacity: 0;
     transform: translateY(20%);
@@ -277,6 +296,80 @@
       transform var(--demo-calm) var(--demo-ease);
     pointer-events: auto;
     cursor: pointer;
+  }
+
+  .tr__ghost[data-kind="rabbit"] {
+    --gx: 8%;
+    --gy: 18%;
+  }
+
+  .tr__ghost[data-kind="mouse"] {
+    --gx: 24%;
+    --gy: 8%;
+  }
+
+  .tr__ghost[data-kind="pig"] {
+    --gx: 30%;
+    --gy: 30%;
+  }
+
+  .tr__ghost[data-kind="teacups"] {
+    --gx: 70%;
+    --gy: 8%;
+  }
+
+  .tr__ghost[data-kind="queen"] {
+    --gx: 82%;
+    --gy: 22%;
+  }
+
+  .tr__ghost[data-kind="gryphon"] {
+    --gx: 72%;
+    --gy: 40%;
+  }
+
+  .tr__ghost[data-kind="turtle"] {
+    --gx: 92%;
+    --gy: 8%;
+  }
+
+  /* On a phone the sister fills the middle: two at each side low down, three
+     a little higher, all under the captions in the sky. */
+  @media (max-width: 600px) {
+    .tr__ghost[data-kind="rabbit"] {
+      --gx: 10%;
+      --gy: 16%;
+    }
+
+    .tr__ghost[data-kind="mouse"] {
+      --gx: 27%;
+      --gy: 6%;
+    }
+
+    .tr__ghost[data-kind="pig"] {
+      --gx: 16%;
+      --gy: 31%;
+    }
+
+    .tr__ghost[data-kind="teacups"] {
+      --gx: 73%;
+      --gy: 6%;
+    }
+
+    .tr__ghost[data-kind="queen"] {
+      --gx: 90%;
+      --gy: 16%;
+    }
+
+    .tr__ghost[data-kind="gryphon"] {
+      --gx: 76%;
+      --gy: 31%;
+    }
+
+    .tr__ghost[data-kind="turtle"] {
+      --gx: 91%;
+      --gy: 42%;
+    }
   }
 
   .tr__ghost[data-shown] {
@@ -329,13 +422,14 @@
     animation: tr-bell 1.1s ease-in-out infinite alternate;
   }
 
-  .tr__prop-eyes {
+  .tr__prop-eyes,
+  .tr__prop-give {
     inset-inline-start: 50%;
     inset-block-start: calc(var(--demo-bar-height) + 1rem);
     translate: -50% 0;
   }
 
-  .tr__prop-eyes[aria-pressed="true"] {
+  .tr__prop-eyes[data-open] {
     background: var(--demo-ink);
     color: var(--demo-ground);
   }
@@ -345,13 +439,25 @@
     pointer-events: none;
   }
 
+  /* The keepsakes lie in a little heap on the grass at her left, clear of the
+     next link at the foot of the last frame. Givable ones take the pointer.
+     Centred by a margin, not a translate: GSAP owns this element's transform. */
   .tr__keepsake {
+    --tr-keepsake-w: clamp(2rem, 6vmin, 3.5rem);
     position: absolute;
-    inset-inline-start: calc(50% + (var(--i, 0) - (var(--n, 1) - 1) / 2) * 8vmin);
-    inset-block-end: 9%;
-    inline-size: clamp(2rem, 6vmin, 3.5rem);
-    translate: -50% 0;
+    inset-inline-start: var(--kx, 30%);
+    inset-block-end: calc(var(--ky, 8%) + var(--tr-bank-lift, 0%));
+    inline-size: var(--tr-keepsake-w);
+    margin-inline-start: calc(var(--tr-keepsake-w) / -2);
+  }
+
+  .tr__keepsake-fall svg {
     rotate: calc((var(--i, 0) - 2) * 9deg);
+  }
+
+  .tr__keepsake[data-givable] {
+    pointer-events: auto;
+    cursor: pointer;
   }
 
   .tr__keepsake svg {
@@ -365,13 +471,25 @@
     pointer-events: none;
   }
 
+  /* The other little children, about her on the bank: one at her left, two at
+     her right. They skip while they run with a keepsake. */
   .tr__child {
+    --tr-child-w: clamp(2.5rem, 8vmin, 5rem);
     position: absolute;
-    inset-inline-start: calc(28% + var(--i, 0) * 20%);
-    inset-block-end: 14%;
-    inline-size: clamp(2.5rem, 8vmin, 5rem);
-    color: var(--ink-secondary);
-    transform: scale(calc(0.8 + var(--i, 0) * 0.1));
+    inset-inline-start: var(--cx, 50%);
+    inset-block-end: calc(12% + var(--tr-bank-lift, 0%));
+    inline-size: var(--tr-child-w);
+    margin-inline-start: calc(var(--tr-child-w) / -2);
+    color: var(--sepia-dark);
+  }
+
+  .tr__child-body {
+    transform-origin: 50% 100%;
+    scale: calc(0.8 + var(--i, 0) * 0.1);
+  }
+
+  .tr__child[data-running] .tr__child-body {
+    animation: tr-skip 0.28s ease-in-out infinite alternate;
   }
 
   .tr__leaf-fall[data-slow] .tr__leaf {
@@ -383,8 +501,19 @@
   }
 
   .demo[data-paused] .tr__ghost-dream,
-  .demo[data-paused] .tr__bell {
+  .demo[data-paused] .tr__bell,
+  .demo[data-paused] .tr__child-body {
     animation-play-state: paused;
+  }
+
+  @keyframes tr-skip {
+    from {
+      transform: translateY(0) rotate(-3deg);
+    }
+
+    to {
+      transform: translateY(-14%) rotate(3deg);
+    }
   }
 
   @keyframes tr-drift {
@@ -424,8 +553,13 @@
   @media (prefers-reduced-motion: reduce) {
     .tr__ghost[data-nudged],
     .tr__dream[data-alive] .tr__ghost-dream,
-    .demo .tr__ghost-real .tr__bell {
+    .demo .tr__ghost-real .tr__bell,
+    .tr__child[data-running] .tr__child-body {
       animation: none;
+    }
+
+    .demo--trial .demo-beat[data-sky] {
+      transition: none;
     }
 
     .tr__ghost,

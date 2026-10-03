@@ -231,6 +231,10 @@ const UI_FOR_SCRIPT = [
   'demoKingsNotebook',
   'demoCloseEyes',
   'demoGiveChildren',
+  'demoCallDinah',
+  'demoPageEmpty',
+  'demoChainLonger',
+  'demoWatchSpins',
   'demoGrabJar',
   'demoJarTucked',
   'demoPinch',
@@ -370,14 +374,42 @@ const TECH_KEY = {
   witnesses: 'demoTechWitnesses',
 } as const;
 
+/**
+ * The demos whose opening picks up the frame the one before it ended on (the
+ * joins of docs/concept-demos.md §3). On the index their cards lie a little
+ * over the card before, like a dealt run.
+ */
+const JOINED: ReadonlySet<string> = new Set([
+  'rabbit-hole',
+  'drink-me',
+  'pool-of-tears',
+  'caucus-race',
+  'mouse-tale',
+  'rabbit-house',
+  'bill-the-lizard',
+  'cheshire-cat',
+  'dormouse',
+  'croquet',
+  'duchess',
+  'mock-turtle',
+  'lobster-quadrille',
+  'witnesses',
+  'trial',
+]);
+
+/** A small tilt per card, alternating, so nineteen cards on the table all read. */
+const CARD_TILT = [-4, 2, -1, 3, -2.5, 1, -3, 2.5, -1.5];
+
 function renderIndex(project: DemoProject): string {
   const root = '../../';
   const ui = project.ui;
   const cards = project.demos
     .map((demo, index) => {
       const id = demo.id as (typeof DEMO_ORDER)[number];
+      const tilt = CARD_TILT[index % CARD_TILT.length] ?? 0;
+      const joined = JOINED.has(demo.id) ? ' data-joined' : '';
       return (
-        `        <li class="demos__card" data-demo="${demo.id}" style="--i: ${index}">\n` +
+        `        <li class="demos__card" data-demo="${demo.id}"${joined} style="--i: ${index}; --tilt: ${tilt}deg">\n` +
         `          <a class="demos__link" href="./${demo.id}/">\n` +
         `            <span class="demos__pip" aria-hidden="true"></span>\n` +
         `            <span class="demos__name">${escapeHtml(titleOf(project, demo))}</span>\n` +

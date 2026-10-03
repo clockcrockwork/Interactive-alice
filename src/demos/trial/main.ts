@@ -21,6 +21,7 @@ import {
   HIGH_SHOT,
   mountAlice,
   mountCamera,
+  mountHeight,
   mountJury,
   packSize,
 } from './court.ts';
@@ -35,12 +36,13 @@ import './trial.css';
 const SHOTS: Record<string, CameraShot> = {
   queen: { x: 30, z: 200, y: -12, rx: -16 },
   head: { x: 30, z: 440, y: -16, rx: -10 },
-  grow: { x: 0, z: -600, y: -26, rx: -31 },
+  grow: { x: 0, z: -1150, y: -44, rx: -26 },
 };
 
 function mount(shell: DemoShell): void {
   const { master, reducedMotion } = shell;
   const cue = shell.cue;
+  const iQueen = cue('queen');
   const iHead = cue('head');
   const iGrow = cue('grow');
   const iRise = cue('rise');
@@ -48,6 +50,13 @@ function mount(shell: DemoShell): void {
   const iBeat = cue('beat');
   const iLeaves = cue('leaves');
   const iWake = cue('wake');
+  const iTea = cue('tea');
+
+  // On the bank the captions go up into the sky, so the sister, the dream's
+  // creatures, the children and the keepsakes have the grass to themselves.
+  for (const beat of shell.beats) {
+    beat.el.toggleAttribute('data-sky', beat.index >= iLeaves);
+  }
 
   // --- Layers, back to front.
   const sky = shell.layer('tr__sky');
@@ -62,6 +71,7 @@ function mount(shell: DemoShell): void {
   head.className = 'tr__head';
   head.append(court);
   world.append(head);
+  const height = mountHeight(shell);
   const alice = mountAlice(shell);
   const flash = shell.layer('tr__flash');
   const glass = shell.layer('tr__glass');
@@ -128,13 +138,55 @@ function mount(shell: DemoShell): void {
     }
   });
 
-  // --- Alice is already at her full size, in front of everything (the frame the
-  // witnesses ended on); at "who cares for you" she draws herself up taller still.
+  // --- Alice is already at her full size, in front of everything, the clouds
+  // below her shoulders (the frame the witnesses ended on). The push into the
+  // Queen goes down past her shoulder and through the clouds: she slides out
+  // of the frame's right, so nothing stands between the reader and the Queen;
+  // at "who cares for you" the camera pulls back up and she is there again,
+  // drawn up taller still. Under reduced motion each of these is a cut.
+  const cut = (seconds: number): number => (reducedMotion ? 0.01 : seconds);
   if (alice) {
-    gsap.set(alice, { opacity: 1, scale: 2.6 });
-    master.to(alice, { scale: 2.9, duration: 0.8, ease: 'power2.inOut' }, iGrow + 0.1);
+    gsap.set(alice, { opacity: 1, scale: 2.6, x: '0%' });
+    master.fromTo(
+      alice,
+      { x: '0%', scale: 2.6 },
+      { x: '40%', scale: 3, duration: cut(0.7), ease: 'power2.inOut', immediateRender: false },
+      iQueen,
+    );
+    master.fromTo(
+      alice,
+      { x: '40%', scale: 3 },
+      { x: '80%', scale: 3.4, duration: cut(0.7), ease: 'power2.inOut', immediateRender: false },
+      iHead,
+    );
+    master.fromTo(
+      alice,
+      { x: '80%', scale: 3.4 },
+      { x: '0%', scale: 2.9, duration: cut(0.8), ease: 'power2.inOut', immediateRender: false },
+      iGrow + 0.1,
+    );
     master.to(alice, { opacity: 0, duration: 0.3 }, iBeat + 0.6);
   }
+  gsap.set(height, { opacity: 1 });
+  // The clouds drift while they are up: from the first frame until the push
+  // has gone through them, and again from "who cares for you" until the bank.
+  const heightShown = (): void => {
+    const t = master.time();
+    height.toggleAttribute('data-shown', t < iQueen + 0.5 || (t >= iGrow && t < iLeaves + 0.8));
+  };
+  heightShown();
+  master.fromTo(
+    height,
+    { opacity: 1 },
+    { opacity: 0, duration: cut(0.5), immediateRender: false },
+    iQueen,
+  );
+  master.fromTo(
+    height,
+    { opacity: 0 },
+    { opacity: 1, duration: cut(0.7), immediateRender: false },
+    iGrow + 0.1,
+  );
 
   // --- The pack rises: every card leaves the crowd and hangs in the air, shaking.
   const random = seeded(7);
@@ -251,6 +303,7 @@ function mount(shell: DemoShell): void {
     });
   };
   let leavesNow = false;
+  let phase: 'crowd' | 'flight' | 'gone' = 'crowd';
   // Once she starts beating them off, a card that lands afterwards is beaten off too.
   let beatingOff = false;
   const turnToLeaf = (card: Card, index: number): void => {
@@ -261,7 +314,8 @@ function mount(shell: DemoShell): void {
       x: `+=${(pick() - 0.5) * 30}vw`,
       rotationZ: `+=${(pick() - 0.5) * 240}`,
       duration: reducedMotion ? 0 : 3.5 + pick() * 2.5,
-      delay: reducedMotion ? 0 : 0.9 + index * 0.1,
+      // A shower, not a queue: the last leaf is down a few seconds after the first.
+      delay: reducedMotion ? 0 : 0.6 + Math.min(index, 18) * 0.07 + pick() * 0.4,
       ease: 'sine.in',
     });
   };
@@ -302,40 +356,56 @@ function mount(shell: DemoShell): void {
       },
     );
   };
-  const attack = gsap.timeline({ paused: true });
-  cards.forEach((card, index) => {
-    const stuck = stuckIndices.has(index);
-    const at = index * 0.035 + (stuck ? 0.3 : 0);
-    const x = (pick() - 0.5) * 60;
-    const lane = x < 0 ? -1 : 1;
-    const arrive = (): void => (dodged(lane) ? miss(card, lane) : placeOnGlass(card, index));
-    if (reducedMotion) {
-      if (stuck) {
-        attack.call(arrive, [], at);
-      } else {
-        attack.to(card.el, { opacity: 0, duration: 0.2 }, at);
+  // Built afresh for every flight: the glass, the leaves and a flick each kill a
+  // card's own tweens, and a timeline kept from the last flight would have lost
+  // them, so a reader back in the flight would see half a pack.
+  const buildAttack = (): gsap.core.Timeline => {
+    const attack = gsap.timeline({ paused: true });
+    cards.forEach((card, index) => {
+      const stuck = stuckIndices.has(index);
+      const at = index * 0.035 + (stuck ? 0.3 : 0);
+      const x = (pick() - 0.5) * 60;
+      const lane = x < 0 ? -1 : 1;
+      const arrive = (): void => {
+        if (phase === 'gone') {
+          return;
+        }
+        if (dodged(lane)) {
+          miss(card, lane);
+        } else {
+          placeOnGlass(card, index);
+        }
+      };
+      if (reducedMotion) {
+        if (stuck) {
+          attack.call(arrive, [], at);
+        } else {
+          attack.to(card.el, { opacity: 0, duration: 0.2 }, at);
+        }
+        return;
       }
-      return;
-    }
-    attack.to(
-      card.el,
-      {
-        x: `${x}vw`,
-        y: `${(pick() - 0.5) * 40}vh`,
-        z: stuck ? 640 : 1180,
-        rotationX: (pick() - 0.5) * 720,
-        rotationY: (pick() - 0.5) * 720,
-        rotationZ: (pick() - 0.5) * 360,
-        duration: stuck ? 0.7 : 0.9,
-        ease: 'power2.in',
-        onComplete: stuck ? arrive : undefined,
-      },
-      at,
-    );
-    if (!stuck) {
-      attack.to(card.el, { opacity: 0, duration: 0.05 }, at + 0.88);
-    }
-  });
+      attack.to(
+        card.el,
+        {
+          x: `${x}vw`,
+          y: `${(pick() - 0.5) * 40}vh`,
+          z: stuck ? 640 : 1180,
+          rotationX: (pick() - 0.5) * 720,
+          rotationY: (pick() - 0.5) * 720,
+          rotationZ: (pick() - 0.5) * 360,
+          duration: stuck ? 0.7 : 0.9,
+          ease: 'power2.in',
+          onComplete: stuck ? arrive : undefined,
+        },
+        at,
+      );
+      if (!stuck) {
+        attack.to(card.el, { opacity: 0, duration: 0.05 }, at + 0.88);
+      }
+    });
+    return attack;
+  };
+  let attack = buildAttack();
   const resetPack = (): void => {
     beatingOff = false;
     dodge.count = 0;
@@ -362,21 +432,56 @@ function mount(shell: DemoShell): void {
         transformPerspective: 0,
       });
     }
-    // The rise is scrubbed, so the master re-applies it wherever the reader is.
-    master.invalidate();
+    // The rise is scrubbed: its tweens take the cards from home again, wherever
+    // the reader is, and nothing else on the master is touched.
+    for (const rise of master.getTweensOf(cards.map((card) => card.el))) {
+      rise.invalidate();
+    }
+  };
+  // The burst is a moment to arrive at, not a place to pass through: a reader who
+  // jumps past it (End, the scrollbar) finds the pack already gone, rather than
+  // the cards and their leaves replaying over the bank and the dream.
+  const fly = (): void => {
+    phase = 'flight';
+    attack.kill();
+    attack = buildAttack();
+    attack.play(0);
+    if (!reducedMotion) {
+      shell.root.removeAttribute('data-shake');
+      void shell.root.offsetWidth;
+      shell.root.setAttribute('data-shake', '');
+    }
+  };
+  const settleGone = (): void => {
+    phase = 'gone';
+    attack.pause();
+    for (const card of cards) {
+      gsap.killTweensOf(card.el);
+      card.stuck = false;
+      gsap.to(card.el, {
+        opacity: 0,
+        duration: reducedMotion ? 0 : 0.25,
+        onComplete: () => {
+          // Back in the crowd, unseen: nothing on the glass takes the pointer.
+          if (pack && card.el.parentElement !== pack) {
+            pack.append(card.el);
+            card.el.removeAttribute('data-leaf');
+          }
+        },
+      });
+    }
   };
   master.call(
     () => {
-      if (master.time() >= iAttack + 0.05) {
-        attack.play(0);
-        if (!reducedMotion) {
-          shell.root.removeAttribute('data-shake');
-          void shell.root.offsetWidth;
-          shell.root.setAttribute('data-shake', '');
-        }
-      } else {
+      const t = master.time();
+      if (t < iAttack + 0.05) {
+        phase = 'crowd';
         attack.pause(0);
         resetPack();
+      } else if (t < iLeaves) {
+        fly();
+      } else {
+        settleGone();
       }
     },
     [],
@@ -478,12 +583,24 @@ function mount(shell: DemoShell): void {
 
   // --- Dead leaves: what is still on the glass turns to leaves and drifts down
   // as the court gives way to the bank.
-  master.to(world, { opacity: 0, duration: 0.8 }, iLeaves);
-  master.to(sky, { opacity: 0, duration: 0.8 }, iLeaves);
-  master.to(bank, { opacity: 1, duration: 0.8 }, iLeaves + 0.1);
+  // Under reduced motion the cross-fade is over by the time the beat settles.
+  const fade = reducedMotion ? 0.4 : 0.8;
+  master.to([world, sky, height], { opacity: 0, duration: fade }, iLeaves);
+  master.to(bank, { opacity: 1, duration: fade }, iLeaves + 0.1);
   master.call(
     () => {
-      leavesNow = master.time() >= iLeaves + 0.1;
+      const t = master.time();
+      leavesNow = t >= iLeaves + 0.1;
+      if (t >= iTea) {
+        settleGone();
+        return;
+      }
+      if (!leavesNow && phase === 'gone') {
+        // Back from the bank into the flight: the pack comes at her again.
+        resetPack();
+        fly();
+        return;
+      }
       cards
         .filter((card) => card.stuck)
         .forEach((card, index) => {
@@ -499,6 +616,12 @@ function mount(shell: DemoShell): void {
     [],
     iLeaves + 0.1,
   );
+  // By her tea the leaves that were cards have fallen: whatever is still on the
+  // glass goes, so the dream and the summer are never under them.
+  master.call(() => (master.time() >= iTea ? settleGone() : undefined), [], iTea);
+  for (const at of [iQueen + 0.5, iGrow, iLeaves + 0.8]) {
+    master.call(heightShown, [], at);
+  }
   // And more leaves than there were cards: the trees let go of their own.
   const leafFall = shell.layer('tr__leaf-fall');
   leafFall.innerHTML = Array.from(
@@ -517,7 +640,6 @@ function mount(shell: DemoShell): void {
   // --- Her sister's dream. Alice runs in to her tea; the sun goes down; and the
   // bank fills with the creatures of the dream, each a sound, until her sister
   // knows she has only to open her eyes for every one to turn into the farm.
-  const iTea = cue('tea');
   const iAlive = cue('alive');
   const iSoundsOne = cue('sounds-one');
   const iSoundsTwo = cue('sounds-two');
@@ -531,7 +653,7 @@ function mount(shell: DemoShell): void {
   const dusk = shell.layer('tr__dusk');
   dusk.innerHTML = '<div class="tr__sun"></div>';
   const runner = shell.layer('tr__runner');
-  runner.innerHTML = `<div class="tr__alice-off">${figure('alice/silhouette')}</div>`;
+  runner.innerHTML = `<div class="tr__alice-off">${figure('alice/falling')}</div>`;
   const aliceOff = runner.querySelector<HTMLElement>('.tr__alice-off') ?? runner;
   master.fromTo(
     aliceOff,
@@ -562,7 +684,6 @@ function mount(shell: DemoShell): void {
     const el = document.createElement('div');
     el.className = 'tr__ghost';
     el.dataset.kind = kind;
-    el.style.setProperty('--gx', `${8 + index * 13}%`);
     el.style.setProperty('--i', String(index));
     el.innerHTML = `<div class="tr__ghost-dream">${dreamMarkup}</div><div class="tr__ghost-real">${realMarkup}</div>`;
     dream.append(el);
@@ -602,11 +723,12 @@ function mount(shell: DemoShell): void {
 
   // Opening her eyes: every creature becomes what it really is. The story does it
   // one by one from "dull reality" on; the button does it all at once, and back.
+  // Its label says what a press will do, so it carries no pressed state.
   let eyesOpen = false;
   const eyesButton = shell.prop(shell.ui.demoOpenEyes ?? '', 'tr__prop-eyes');
-  eyesButton.setAttribute('aria-pressed', 'false');
   const applyEyes = (): void => {
-    eyesButton.setAttribute('aria-pressed', String(eyesOpen));
+    eyesButton.textContent = (eyesOpen ? shell.ui.demoCloseEyes : shell.ui.demoOpenEyes) ?? '';
+    eyesButton.toggleAttribute('data-open', eyesOpen);
     dream.toggleAttribute('data-real', eyesOpen);
     dusk.toggleAttribute('data-real', eyesOpen);
     shell.sound.level('wind', eyesOpen ? 0.25 : 0);
@@ -615,7 +737,8 @@ function mount(shell: DemoShell): void {
     eyesOpen = !eyesOpen;
     applyEyes();
     shell.sound.play(eyesOpen ? 'chime' : 'glass', 0.5);
-    shell.status(shell.ui.demoOpenEyes ?? '');
+    // What the reader just did: opened her eyes, or closed them again.
+    shell.status((eyesOpen ? shell.ui.demoOpenEyes : shell.ui.demoCloseEyes) ?? '');
   });
   const turnReal = (at: number, kinds: string[]): void => {
     master.call(
@@ -683,10 +806,17 @@ function mount(shell: DemoShell): void {
   crowd();
 
   // The after-time: other little children gather about her, and the summer days.
+  // Each child stands at its place on the bank (a share of the frame's width).
+  const CHILD_AT = [14, 70, 82];
   const children = shell.layer('tr__children');
-  children.innerHTML = [0, 1, 2]
-    .map((i) => `<div class="tr__child" style="--i: ${i}">${figure('alice/silhouette')}</div>`)
-    .join('');
+  children.innerHTML = CHILD_AT.map(
+    (at, i) =>
+      `<div class="tr__child" style="--cx: ${at}%; --i: ${i}"><div class="tr__child-body">${figure('alice/silhouette')}</div></div>`,
+  ).join('');
+  const kids = [...children.querySelectorAll<HTMLElement>('.tr__child')].map((el) => ({
+    el,
+    busy: false,
+  }));
   master.to(dream, { opacity: 0, duration: 0.6 }, iAfter);
   master.fromTo(
     children,
@@ -696,38 +826,149 @@ function mount(shell: DemoShell): void {
   );
   master.call(() => leafFall.toggleAttribute('data-slow', master.time() >= iSummer), [], iSummer);
 
-  // What the reader kept along the way comes down with the leaves and lies on
-  // the bank beside her: the daisy chain, the jar, the key, a comfit, a rose,
-  // the lobster. Nothing kept, nothing shown.
+  // What the reader kept along the way comes down with the leaves as her sister
+  // thinks of her keeping "the loving heart of her childhood", and lies on the
+  // bank beside her: the daisy chain, the jar, the key, a comfit, a rose, the
+  // lobster. Nothing kept, nothing shown, and nothing to give.
   const kept = shell.kept().filter((kind) => keepsakeSvg(kind) !== '');
-  if (kept.length > 0) {
-    const keptLayer = shell.layer('tr__kept');
-    keptLayer.innerHTML = kept
-      .map(
-        (kind, i) =>
-          `<div class="tr__keepsake" data-kind="${kind}" style="--i: ${i}; --n: ${kept.length}">${keepsakeSvg(kind)}</div>`,
-      )
-      .join('');
-    master.fromTo(
-      keptLayer,
-      { opacity: 0 },
-      { opacity: 1, duration: 0.2, immediateRender: false },
-      iSummer + 0.1,
-    );
-    master.fromTo(
-      keptLayer.querySelectorAll('.tr__keepsake'),
-      { y: '-60vh', rotation: -40 },
-      {
-        y: 0,
-        rotation: 0,
-        duration: reducedMotion ? 0.01 : 0.45,
-        stagger: reducedMotion ? 0 : 0.06,
-        ease: 'bounce.out',
-        immediateRender: false,
-      },
-      iSummer + 0.12,
-    );
+  if (kept.length === 0) {
+    return;
   }
+  const iDown = iAfter + 0.35;
+  const keptLayer = shell.layer('tr__kept');
+  keptLayer.innerHTML = kept
+    .map((kind, i) => {
+      const x = 20 + (i % 4) * 4.2 + (i >= 4 ? 2.1 : 0);
+      const y = i >= 4 ? 15 : 7;
+      return `<div class="tr__keepsake" data-kind="${kind}" style="--kx: ${x.toFixed(1)}%; --ky: ${y}%; --i: ${i}"><div class="tr__keepsake-fall">${keepsakeSvg(kind)}</div></div>`;
+    })
+    .join('');
+  master.fromTo(
+    keptLayer,
+    { opacity: 0 },
+    { opacity: 1, duration: 0.2, immediateRender: false },
+    iDown - 0.02,
+  );
+  master.fromTo(
+    keptLayer.querySelectorAll('.tr__keepsake-fall'),
+    { y: '-60vh', rotation: -40 },
+    {
+      y: 0,
+      rotation: 0,
+      duration: reducedMotion ? 0.01 : 0.45,
+      stagger: reducedMotion ? 0 : 0.06,
+      ease: 'bounce.out',
+      immediateRender: false,
+    },
+    iDown,
+  );
+
+  // Give it to the children: a press (or a tap on a keepsake) sends the nearest
+  // child running over, it takes the thing up in both hands and carries it off
+  // out of the frame, and comes back without it. The story never does this; it
+  // is the reader's, and scrolling back before the keepsakes come down undoes it.
+  // Under reduced motion each step is a cut, held as long as with motion.
+  const sakes = [...keptLayer.querySelectorAll<HTMLElement>('.tr__keepsake')].map((el) => ({
+    el,
+    given: false,
+    busy: false,
+  }));
+  const giveProp = shell.prop(shell.ui.demoGiveChildren ?? '', 'tr__prop-give');
+  const plays = new Set<gsap.core.Timeline>();
+  const giving = (): boolean => master.time() >= iDown + 0.05;
+  const applyGive = (): void => {
+    const open = giving() && sakes.some((sake) => !sake.given && !sake.busy);
+    if (open) {
+      giveProp.show();
+    } else {
+      giveProp.hide();
+    }
+    for (const sake of sakes) {
+      sake.el.toggleAttribute('data-givable', giving() && !sake.given && !sake.busy);
+      sake.el.toggleAttribute('data-given', sake.given);
+    }
+  };
+  const resetGive = (): void => {
+    for (const play of plays) {
+      play.kill();
+    }
+    plays.clear();
+    for (const kid of kids) {
+      kid.busy = false;
+      kid.el.removeAttribute('data-running');
+      gsap.set(kid.el, { x: 0, opacity: 1 });
+    }
+    for (const sake of sakes) {
+      sake.given = false;
+      sake.busy = false;
+      gsap.set(sake.el, { x: 0, y: 0, opacity: 1 });
+    }
+  };
+  const give = (chosen?: (typeof sakes)[number]): void => {
+    const sake = chosen ?? sakes.find((candidate) => !candidate.given && !candidate.busy);
+    if (!giving() || !sake || sake.given || sake.busy) {
+      return;
+    }
+    // Read once, on the press: where the keepsake lies and where each child stands.
+    const box = sake.el.getBoundingClientRect();
+    const sx = box.left + box.width / 2;
+    const free = kids
+      .filter((candidate) => !candidate.busy)
+      .map((candidate) => ({ kid: candidate, box: candidate.el.getBoundingClientRect() }))
+      .sort(
+        (a, b) =>
+          Math.abs(a.box.left + a.box.width / 2 - sx) - Math.abs(b.box.left + b.box.width / 2 - sx),
+      )[0];
+    if (!free) {
+      return;
+    }
+    const { kid } = free;
+    const kx = free.box.left + free.box.width / 2;
+    const width = shell.stage.clientWidth;
+    const reach = sx - kx;
+    const lift = free.box.top + free.box.height * 0.42 - (box.top + box.height / 2);
+    const off = kx < width / 2 ? -kx - free.box.width : width - kx + free.box.width;
+    sake.busy = true;
+    kid.busy = true;
+    applyGive();
+    shell.status(shell.ui.demoGiveChildren ?? '');
+    const play = gsap.timeline({
+      onComplete: () => {
+        plays.delete(play);
+        kid.busy = false;
+        sake.busy = false;
+        sake.given = true;
+        applyGive();
+      },
+    });
+    plays.add(play);
+    play
+      .call(() => kid.el.setAttribute('data-running', ''), [], 0)
+      .to(kid.el, { x: reach, duration: cut(0.6), ease: 'power1.inOut' }, 0)
+      .call(() => shell.sound.play('chime', 0.4), [], 0.6)
+      .to(sake.el, { y: lift, duration: cut(0.22), ease: 'power2.out' }, 0.6)
+      .to(kid.el, { x: off, duration: cut(0.9), ease: 'power1.in' }, 0.9)
+      .to(sake.el, { x: off - reach, duration: cut(0.9), ease: 'power1.in' }, 0.9)
+      .set(sake.el, { opacity: 0 }, 1.8)
+      .call(() => kid.el.removeAttribute('data-running'), [], 1.8)
+      .set(kid.el, { x: 0, opacity: 0 }, 1.85)
+      .to(kid.el, { opacity: 1, duration: cut(0.4) }, 2.3);
+  };
+  giveProp.addEventListener('click', () => give());
+  for (const sake of sakes) {
+    sake.el.addEventListener('click', () => give(sake));
+  }
+  master.call(
+    () => {
+      if (master.time() < iDown + 0.05) {
+        resetGive();
+      }
+      applyGive();
+    },
+    [],
+    iDown + 0.05,
+  );
+  applyGive();
 }
 
 const shell = attachDemo();

@@ -45,11 +45,15 @@
     overflow: hidden;
   }
 
-  /* Her head: leans sideways (a transform the script sets) when she dodges. */
+  /* Her head: leans sideways (a transform the script sets) when she dodges.
+     Neither it nor the court takes the pointer: in 3D their own planes lie in
+     front of every piece once the camera stands back, so only the controls in
+     the court (a juror, the guinea-pig, the Lizard, the book) opt back in. */
   .tr__head {
     position: absolute;
     inset: 0;
     transform-style: preserve-3d;
+    pointer-events: none;
   }
 
   .tr__court {
@@ -64,6 +68,7 @@
     --cam-rx: 0;
     position: absolute;
     inset: 0;
+    pointer-events: none;
     transform-style: preserve-3d;
     transform-origin: 50% 60%;
     transform: translate3d(
@@ -225,6 +230,11 @@
     outline: 2px solid var(--tr-gold);
   }
 
+  /* Only while the jury listens: a juror out of its moment takes no focus. */
+  .tr__jury:not([data-listening]) .tr__juror {
+    visibility: hidden;
+  }
+
   .tr__jury {
     pointer-events: none;
   }
@@ -233,10 +243,13 @@
     pointer-events: auto;
   }
 
+  /* The crowd is scenery the size of the whole court: it must never stand
+     between the pointer and a juror, the guinea-pig, the Lizard or the book. */
   .tr__pack {
     position: absolute;
     inset: 0;
     transform-style: preserve-3d;
+    pointer-events: none;
   }
 
   .tr__card {
@@ -295,16 +308,56 @@
     pointer-events: none;
   }
 
+  /* Over her shoulder: she stands at the right of the frame, so the throne and
+     the jury-box are seen past her, and grows from her feet. */
   .tr__alice {
     position: absolute;
-    inset-inline-start: 50%;
+    inset-inline-start: 80%;
     inset-block-end: -4%;
-    inline-size: clamp(9rem, 26vmin, 16rem);
-    color: var(--alice-shadow);
+    inline-size: clamp(8rem, 26vmin, 16rem);
     translate: -50% 0;
     transform-origin: 50% 100%;
-    scale: 0.7;
     opacity: 0;
+  }
+
+  /* A phone's frame is narrow: she stands further over, so the court is seen
+     past her shoulder at the left. */
+  @media (max-width: 600px) {
+    .tr__alice {
+      inset-inline-start: 88%;
+    }
+  }
+
+  /* A mile up: wisps of cloud between her and the court, drifting across. */
+  .tr__height {
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .tr__wisp {
+    position: absolute;
+    inset-block-start: var(--y, 40%);
+    inset-inline-start: calc(50% - var(--w, 40) * 0.5vw);
+    inline-size: calc(var(--w, 40) * 1vw);
+    aspect-ratio: 6 / 1;
+    border-radius: 50%;
+    background: radial-gradient(
+      closest-side,
+      oklch(from var(--paper-warm) l c h / var(--o, 0.4)),
+      oklch(from var(--paper-warm) l c h / calc(var(--o, 0.4) * 0.4)) 60%,
+      transparent
+    );
+  }
+
+  /* They drift only while they are there to be seen. */
+  .tr__height[data-shown] .tr__wisp {
+    animation: tr-wisp var(--d, 40s) linear infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  .demo[data-paused] .tr__wisp {
+    animation-play-state: paused;
   }
 
   .tr__flash {
@@ -316,6 +369,15 @@
 
   .demo[data-shake] .tr__world {
     animation: tr-shake 0.5s linear;
+  }
+
+  @keyframes tr-wisp {
+    from {
+      transform: translateX(-80vw);
+    }
+    to {
+      transform: translateX(80vw);
+    }
   }
 
   @keyframes tr-leap {
@@ -351,8 +413,18 @@
 
   @media (prefers-reduced-motion: reduce) {
     .demo[data-shake] .tr__world,
-    .tr__card[data-leap] {
+    .tr__card[data-leap],
+    .tr__height[data-shown] .tr__wisp {
       animation: none;
+    }
+
+    /* The clouds stand still, spread across the frame. */
+    .tr__wisp:nth-child(2n) {
+      translate: -22vw 0;
+    }
+
+    .tr__wisp:nth-child(3n) {
+      translate: 24vw 0;
     }
 
     .tr__mark {

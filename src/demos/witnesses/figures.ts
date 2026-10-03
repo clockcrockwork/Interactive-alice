@@ -46,16 +46,58 @@ export const PEPPER_BOX_SVG = `
   <circle cx="12" cy="8" r="1.2" fill="var(--paper-aged)"/><circle cx="18" cy="8" r="1.2" fill="var(--paper-aged)"/><circle cx="15" cy="12" r="1.2" fill="var(--paper-aged)"/>
 </svg>`;
 
-/** The King's note-book: two scribbles (`--word-one`, `--word-two`) write in, and it shuts. */
+/**
+ * The King's note-book, held in his hand: two scribbles (`--word-one`,
+ * `--word-two`) write in, then the rule (`--word-rule`), still wet; and it shuts.
+ */
 export const NOTEBOOK_SVG = `
 <svg viewBox="0 0 80 60" focusable="false">
   <g class="wt__notebook-cover">
     <rect x="4" y="4" width="72" height="52" rx="4" fill="var(--sepia-dark)"/>
     <rect x="8" y="8" width="64" height="44" rx="2" fill="var(--paper-warm)"/>
-    <path class="wt__notebook-word wt__notebook-word--one" d="M14 20 q6 -6 10 0 t10 0 t10 0 t10 0 t8 0" stroke="var(--ink-primary)" stroke-width="2" fill="none" stroke-linecap="round" pathLength="1"/>
-    <path class="wt__notebook-word wt__notebook-word--two" d="M14 34 q6 -6 10 0 t10 0 t10 0 t10 0 t12 0" stroke="var(--ink-primary)" stroke-width="2" fill="none" stroke-linecap="round" pathLength="1"/>
-    <path d="M14 46 h40" stroke="var(--ink-ghost)" stroke-width="2" stroke-linecap="round"/>
+    <path class="wt__notebook-word wt__notebook-word--one" d="M14 18 q6 -6 10 0 t10 0 t10 0 t10 0 t8 0" stroke="var(--ink-secondary)" stroke-width="2" fill="none" stroke-linecap="round" pathLength="1"/>
+    <path class="wt__notebook-word wt__notebook-word--two" d="M14 30 q6 -6 10 0 t10 0 t10 0 t10 0 t12 0" stroke="var(--ink-secondary)" stroke-width="2" fill="none" stroke-linecap="round" pathLength="1"/>
+    <path class="wt__notebook-word wt__notebook-word--rule" d="M14 43 q5 -7 9 0 t9 0 t9 0 t9 0 t9 0 t9 0" stroke="var(--ink-primary)" stroke-width="2.8" fill="none" stroke-linecap="round" pathLength="1"/>
   </g>
+</svg>`;
+
+/** A glint of wet ink on the rule, lit once the pen has passed `--at`. */
+const glint = (x: number): string =>
+  `<ellipse class="wt__glint" style="--at: ${((x - 142) / 99).toFixed(2)}" cx="${x}" cy="47.6" rx="3.6" ry="1.3" fill="var(--paper-base)"/>`;
+
+/**
+ * The note-book seen close, over the King's shoulder: the older entries dry on
+ * the left page, and on the right Rule Forty-two, a line of scribble still wet
+ * and still being written (`--write`), the quill at its end. Caught at it, a blot
+ * drops (`data-caught`) and the right-hand leaf swings shut (`--shut`).
+ */
+export const NOTEBOOK_OPEN_SVG = `
+<svg viewBox="0 0 260 170" focusable="false">
+  <rect x="2" y="6" width="256" height="160" rx="8" fill="var(--sepia-dark)"/>
+  <path d="M10 12 Q70 4 128 14 L128 160 Q70 150 10 158 Z" fill="var(--paper-warm)"/>
+  <g stroke="var(--ink-faded)" stroke-width="2" fill="none" stroke-linecap="round">
+    <path d="M22 34 q5 -5 9 0 t9 0 t9 0 t9 0 t9 0 t9 0 t9 0 t9 0 t9 0"/>
+    <path d="M22 52 q5 -5 9 0 t9 0 t9 0 t9 0 t9 0 t9 0"/>
+    <path d="M22 70 q5 -5 9 0 t9 0 t9 0 t9 0 t9 0 t9 0 t9 0 t9 0"/>
+    <path d="M22 88 q5 -5 9 0 t9 0 t9 0 t9 0"/>
+  </g>
+  <g stroke="var(--ink-secondary)" stroke-width="2.4" fill="none" stroke-linecap="round">
+    <path d="M22 112 q5 -6 9 0 t9 0 t9 0 t9 0 t9 0"/>
+    <path d="M22 132 q5 -6 9 0 t9 0 t9 0 t9 0 t9 0 t9 0 t9 0"/>
+  </g>
+  <g class="wt__peek-leaf">
+    <path d="M132 14 Q190 4 250 12 L250 158 Q190 150 132 160 Z" fill="var(--paper-base)"/>
+    <path class="wt__peek-rule" d="M142 52 q6 -9 11 0 t11 0 t11 0 t11 0 t11 0 t11 0 t11 0 t11 0 t11 0" stroke="var(--ink-primary)" stroke-width="3.6" fill="none" stroke-linecap="round" pathLength="1"/>
+    <g class="wt__glints">${[147.5, 169.5, 191.5, 213.5, 235.5].map(glint).join('')}</g>
+    <ellipse class="wt__peek-blot" cx="238" cy="64" rx="8.5" ry="6" fill="var(--ink-primary)"/>
+    <path class="wt__peek-back" d="M132 14 Q190 4 250 12 L250 158 Q190 150 132 160 Z" fill="var(--sepia-dark)"/>
+  </g>
+  <path d="M130 12 V162" stroke="var(--sepia-deep)" stroke-width="3"/>
+  <g class="wt__quill"><g class="wt__quill-hand"><g transform="translate(-4 0)">
+    <path d="M146 52 L190 -6" stroke="var(--sepia-deep)" stroke-width="2"/>
+    <path d="M152 42 C164 18 184 -2 198 -10 C190 10 176 30 156 46 Z" fill="var(--paper-aged)" stroke="var(--ink-faded)" stroke-width="1"/>
+    <path d="M146 52 l3 -6 l3 2 z" fill="var(--ink-primary)"/>
+  </g></g></g>
 </svg>`;
 
 /**

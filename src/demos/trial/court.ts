@@ -36,11 +36,12 @@ export interface CameraShot {
 }
 
 /**
- * Where the camera is once Alice has grown to her full size: very high, looking
- * down on the court. The witnesses end on it and the trial opens on it, so the
- * two demos are one frame at the join.
+ * Where the camera is once Alice has grown to her full size: a mile up, the
+ * court small and far below, the dark of the hall's height above it, and her
+ * head out of the top of the frame. The witnesses end on it and the trial opens
+ * on it, so the two demos are one frame at the join.
  */
-export const HIGH_SHOT: CameraShot = { x: 0, z: -520, y: -22, rx: -28 };
+export const HIGH_SHOT: CameraShot = { x: 10, z: -1050, y: -40, rx: -24 };
 
 /** The crowd of cards: two packs' worth on a desktop, half that on a phone. */
 export const packSize = (): number => (window.innerWidth < 720 ? 56 : 104);
@@ -223,9 +224,32 @@ export function mountJury(
   };
 }
 
-/** Alice at her full size, in front of everything: a silhouette layer. */
+/**
+ * The air between her and the court once she is a mile high: wisps of cloud
+ * drifting across below her shoulders, the court far down through them. Each
+ * demo sets the layer's opacity, and `data-shown` while it is up; the drift is
+ * a CSS animation that runs only then, the motion pause holds, and is a still
+ * under reduced motion.
+ */
+export function mountHeight(shell: DemoShell): HTMLElement {
+  const layer = shell.layer('tr__height');
+  const random = seeded(42);
+  layer.innerHTML = Array.from({ length: 7 }, (_, i) => {
+    const y = 14 + i * 9 + random() * 6;
+    const w = 34 + random() * 30;
+    const d = 38 + random() * 26;
+    return `<div class="tr__wisp" style="--y: ${y.toFixed(1)}%; --w: ${w.toFixed(1)}; --d: ${d.toFixed(1)}s; --delay: ${(-random() * d).toFixed(1)}s; --o: ${(0.28 + random() * 0.3).toFixed(2)}"></div>`;
+  }).join('');
+  return layer;
+}
+
+/**
+ * Alice at her full size, in front of everything, seen from behind: over her
+ * shoulder at the court's right, so the throne and the Queen stay clear of her.
+ * The witnesses grow her into this frame and the trial opens on it.
+ */
 export function mountAlice(shell: DemoShell): HTMLElement | null {
   const layer = shell.layer('tr__alice-layer');
-  layer.innerHTML = `<div class="tr__alice">${figure('alice/silhouette')}</div>`;
+  layer.innerHTML = `<div class="tr__alice">${figure('alice/from-behind')}</div>`;
   return layer.querySelector<HTMLElement>('.tr__alice');
 }

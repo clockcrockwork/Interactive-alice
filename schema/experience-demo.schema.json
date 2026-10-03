@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/clockcrockwork/Interactive-alice/schema/experience-demo.schema.json",
+  "title": "Experience concept-demo file",
+  "description": "Composition plan for one standalone concept demo under /demos/: its shots, their beats, and the narrative segment ids each beat carries, in reading order. Holds no visible text. A demo is not a story Scene: it has no pacing plan, no part, and its page is built by build/demos.ts rather than the story runtime. See docs/concept-demos.md.",
+  "type": "object",
+  "required": [
+    "id",
+    "titleChapter",
+    "shots"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional editor hint; not part of the data."
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Demo id; also the directory of its page and of its code under src/demos/."
+    },
+    "titleChapter": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 12,
+      "description": "The chapter whose localized title names this demo."
+    },
+    "shots": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "beats"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "beats": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "segments"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9-]+$"
+                },
+                "cue": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9-]+$",
+                  "description": "Optional staging cue the demo's code may look up, so code addresses a moment by what happens in it rather than by a beat id or an index."
+                },
+                "segments": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^ch[0-9]{2}\\.s[0-9]{4}$"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "titleSection": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Optional: a story section of titleChapter whose localized title names this demo instead of the chapter's, for a second demo drawn from the same chapter."
+    }
+  }
+}

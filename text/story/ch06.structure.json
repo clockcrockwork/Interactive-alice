@@ -1,0 +1,599 @@
+{
+  "$schema": "../../schema/chapter-structure.schema.json",
+  "chapter": 6,
+  "sourceFile": "text/raw/ch06-pig-and-pepper.txt",
+  "sections": [
+    {
+      "id": "the-footmen"
+    },
+    {
+      "id": "the-kitchen"
+    },
+    {
+      "id": "pots-and-pans"
+    },
+    {
+      "id": "the-lullaby"
+    },
+    {
+      "id": "the-baby"
+    },
+    {
+      "id": "cheshire-puss"
+    },
+    {
+      "id": "all-mad-here"
+    },
+    {
+      "id": "vanishing"
+    }
+  ],
+  "segments": [
+    {
+      "id": "ch06.s0010",
+      "section": "the-footmen",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0015",
+      "section": "the-footmen",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0020",
+      "section": "the-footmen",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0025",
+      "section": "the-footmen",
+      "kind": "dialogue",
+      "speaker": "fish-footman"
+    },
+    {
+      "id": "ch06.s0030",
+      "section": "the-footmen",
+      "kind": "dialogue",
+      "speaker": "frog-footman"
+    },
+    {
+      "id": "ch06.s0035",
+      "section": "the-footmen",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0040",
+      "section": "the-footmen",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0045",
+      "section": "the-footmen",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0050",
+      "section": "the-footmen",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0055",
+      "section": "the-footmen",
+      "kind": "dialogue",
+      "speaker": "frog-footman"
+    },
+    {
+      "id": "ch06.s0060",
+      "section": "the-footmen",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0065",
+      "section": "the-footmen",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0070",
+      "section": "the-footmen",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0075",
+      "section": "the-kitchen",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0080",
+      "section": "the-kitchen",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0085",
+      "section": "the-kitchen",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0090",
+      "section": "the-kitchen",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0095",
+      "section": "the-kitchen",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0100",
+      "section": "the-kitchen",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0105",
+      "section": "the-kitchen",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0110",
+      "section": "the-kitchen",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0115",
+      "section": "the-kitchen",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch06.s0120",
+      "section": "the-kitchen",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0125",
+      "section": "the-kitchen",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0130",
+      "section": "the-kitchen",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch06.s0135",
+      "section": "the-kitchen",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch06.s0140",
+      "section": "pots-and-pans",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0145",
+      "section": "pots-and-pans",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0150",
+      "section": "pots-and-pans",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0155",
+      "section": "pots-and-pans",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0160",
+      "section": "pots-and-pans",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0165",
+      "section": "pots-and-pans",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch06.s0170",
+      "section": "pots-and-pans",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0175",
+      "section": "pots-and-pans",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch06.s0180",
+      "section": "pots-and-pans",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0185",
+      "section": "the-lullaby",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0190",
+      "section": "the-lullaby",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch06.s0195",
+      "section": "the-lullaby",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch06.s0200",
+      "section": "the-lullaby",
+      "kind": "sound"
+    },
+    {
+      "id": "ch06.s0205",
+      "section": "the-lullaby",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0210",
+      "section": "the-lullaby",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch06.s0215",
+      "section": "the-lullaby",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0220",
+      "section": "the-lullaby",
+      "kind": "dialogue",
+      "speaker": "duchess"
+    },
+    {
+      "id": "ch06.s0225",
+      "section": "the-lullaby",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0230",
+      "section": "the-baby",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0235",
+      "section": "the-baby",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0240",
+      "section": "the-baby",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0245",
+      "section": "the-baby",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0250",
+      "section": "the-baby",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0255",
+      "section": "the-baby",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0260",
+      "section": "the-baby",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0265",
+      "section": "the-baby",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0270",
+      "section": "the-baby",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0275",
+      "section": "the-baby",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0280",
+      "section": "the-baby",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0285",
+      "section": "the-baby",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0290",
+      "section": "the-baby",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0295",
+      "section": "the-baby",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0300",
+      "section": "the-baby",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0400",
+      "section": "cheshire-puss",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0410",
+      "section": "cheshire-puss",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0420",
+      "section": "cheshire-puss",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0430",
+      "section": "cheshire-puss",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0440",
+      "section": "cheshire-puss",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0450",
+      "section": "cheshire-puss",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0460",
+      "section": "cheshire-puss",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0470",
+      "section": "cheshire-puss",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0480",
+      "section": "cheshire-puss",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0490",
+      "section": "cheshire-puss",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0500",
+      "section": "cheshire-puss",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0510",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0520",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0530",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0540",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0550",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0560",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0570",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0580",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0590",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0600",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0610",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0620",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0630",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0640",
+      "section": "all-mad-here",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0650",
+      "section": "vanishing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0660",
+      "section": "vanishing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0670",
+      "section": "vanishing",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0680",
+      "section": "vanishing",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0690",
+      "section": "vanishing",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0700",
+      "section": "vanishing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0710",
+      "section": "vanishing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0720",
+      "section": "vanishing",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0730",
+      "section": "vanishing",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0740",
+      "section": "vanishing",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0750",
+      "section": "vanishing",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0760",
+      "section": "vanishing",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch06.s0770",
+      "section": "vanishing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0780",
+      "section": "vanishing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0790",
+      "section": "vanishing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch06.s0800",
+      "section": "vanishing",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0810",
+      "section": "vanishing",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch06.s0820",
+      "section": "vanishing",
+      "kind": "thought",
+      "speaker": "alice"
+    }
+  ]
+}

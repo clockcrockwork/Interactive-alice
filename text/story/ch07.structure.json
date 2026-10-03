@@ -1,0 +1,698 @@
+{
+  "$schema": "../../schema/chapter-structure.schema.json",
+  "chapter": 7,
+  "sourceFile": "text/raw/ch07-a-mad-tea-party.txt",
+  "sections": [
+    {
+      "id": "no-room"
+    },
+    {
+      "id": "the-riddle"
+    },
+    {
+      "id": "the-watch"
+    },
+    {
+      "id": "time-himself"
+    },
+    {
+      "id": "wake-up-dormouse"
+    },
+    {
+      "id": "three-sisters"
+    },
+    {
+      "id": "treacle-well"
+    },
+    {
+      "id": "learning-to-draw"
+    },
+    {
+      "id": "into-the-teapot"
+    }
+  ],
+  "segments": [
+    {
+      "id": "ch07.s0010",
+      "section": "no-room",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0015",
+      "section": "no-room",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0020",
+      "section": "no-room",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0025",
+      "section": "no-room",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0030",
+      "section": "no-room",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0035",
+      "section": "no-room",
+      "kind": "dialogue",
+      "speaker": "march-hare"
+    },
+    {
+      "id": "ch07.s0040",
+      "section": "no-room",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0045",
+      "section": "no-room",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0050",
+      "section": "no-room",
+      "kind": "dialogue",
+      "speaker": "march-hare"
+    },
+    {
+      "id": "ch07.s0055",
+      "section": "no-room",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0060",
+      "section": "no-room",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0065",
+      "section": "no-room",
+      "kind": "dialogue",
+      "speaker": "march-hare"
+    },
+    {
+      "id": "ch07.s0070",
+      "section": "no-room",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0075",
+      "section": "no-room",
+      "kind": "dialogue",
+      "speaker": "march-hare"
+    },
+    {
+      "id": "ch07.s0080",
+      "section": "the-riddle",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0085",
+      "section": "the-riddle",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0090",
+      "section": "the-riddle",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0095",
+      "section": "the-riddle",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0100",
+      "section": "the-riddle",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0105",
+      "section": "the-riddle",
+      "kind": "dialogue",
+      "speaker": "march-hare"
+    },
+    {
+      "id": "ch07.s0110",
+      "section": "the-riddle",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0115",
+      "section": "the-riddle",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0120",
+      "section": "the-riddle",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0125",
+      "section": "the-riddle",
+      "kind": "dialogue",
+      "speaker": "march-hare"
+    },
+    {
+      "id": "ch07.s0130",
+      "section": "the-riddle",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0135",
+      "section": "the-riddle",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0140",
+      "section": "the-riddle",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0145",
+      "section": "the-watch",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0150",
+      "section": "the-watch",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0155",
+      "section": "the-watch",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0160",
+      "section": "the-watch",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0165",
+      "section": "the-watch",
+      "kind": "dialogue",
+      "speaker": "march-hare"
+    },
+    {
+      "id": "ch07.s0170",
+      "section": "the-watch",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0175",
+      "section": "the-watch",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0180",
+      "section": "the-watch",
+      "kind": "dialogue",
+      "speaker": "march-hare"
+    },
+    {
+      "id": "ch07.s0185",
+      "section": "the-watch",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0190",
+      "section": "the-watch",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0195",
+      "section": "the-watch",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0200",
+      "section": "the-watch",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0205",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0210",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0215",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0220",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "march-hare"
+    },
+    {
+      "id": "ch07.s0225",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0230",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0235",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0240",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0245",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0250",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0255",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0260",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0265",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0270",
+      "section": "time-himself",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0275",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0280",
+      "section": "time-himself",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0285",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0290",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch07.s0295",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0300",
+      "section": "time-himself",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0305",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0310",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0315",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0320",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0325",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "march-hare"
+    },
+    {
+      "id": "ch07.s0330",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0335",
+      "section": "time-himself",
+      "kind": "dialogue",
+      "speaker": "march-hare"
+    },
+    {
+      "id": "ch07.s0400",
+      "section": "wake-up-dormouse",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0410",
+      "section": "wake-up-dormouse",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0420",
+      "section": "wake-up-dormouse",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0430",
+      "section": "wake-up-dormouse",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0440",
+      "section": "wake-up-dormouse",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0450",
+      "section": "wake-up-dormouse",
+      "kind": "dialogue",
+      "speaker": "march-hare"
+    },
+    {
+      "id": "ch07.s0460",
+      "section": "wake-up-dormouse",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0470",
+      "section": "wake-up-dormouse",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0480",
+      "section": "three-sisters",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0490",
+      "section": "three-sisters",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0500",
+      "section": "three-sisters",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0510",
+      "section": "three-sisters",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0520",
+      "section": "three-sisters",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0530",
+      "section": "three-sisters",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0540",
+      "section": "three-sisters",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0550",
+      "section": "three-sisters",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0560",
+      "section": "three-sisters",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0570",
+      "section": "three-sisters",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0580",
+      "section": "treacle-well",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0590",
+      "section": "treacle-well",
+      "kind": "dialogue",
+      "speaker": "march-hare"
+    },
+    {
+      "id": "ch07.s0600",
+      "section": "treacle-well",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0610",
+      "section": "treacle-well",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0620",
+      "section": "treacle-well",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0630",
+      "section": "treacle-well",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0640",
+      "section": "treacle-well",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0650",
+      "section": "treacle-well",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0660",
+      "section": "treacle-well",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0670",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0680",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0690",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0700",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0710",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0720",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "hatter"
+    },
+    {
+      "id": "ch07.s0730",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0740",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0750",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0760",
+      "section": "learning-to-draw",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0770",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0780",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0790",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0800",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "march-hare"
+    },
+    {
+      "id": "ch07.s0810",
+      "section": "learning-to-draw",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0820",
+      "section": "learning-to-draw",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0830",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0840",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0850",
+      "section": "into-the-teapot",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0860",
+      "section": "into-the-teapot",
+      "kind": "narration"
+    },
+    {
+      "id": "ch07.s0870",
+      "section": "into-the-teapot",
+      "kind": "narration"
+    }
+  ]
+}

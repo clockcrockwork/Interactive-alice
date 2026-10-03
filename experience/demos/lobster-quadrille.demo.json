@@ -1,0 +1,44 @@
+{
+  "id": "lobster-quadrille",
+  "titleChapter": 10,
+  "shots": [
+    {
+      "id": "on-the-shore",
+      "beats": [
+        { "id": "sighed-deeply", "cue": "sigh", "segments": ["ch10.s0010", "ch10.s0020", "ch10.s0030", "ch10.s0040"] },
+        { "id": "what-dance", "cue": "what", "segments": ["ch10.s0050", "ch10.s0060"] },
+        { "id": "two-lines", "cue": "lines", "segments": ["ch10.s0070", "ch10.s0080", "ch10.s0090"] },
+        { "id": "advance-twice", "cue": "advance", "segments": ["ch10.s0100", "ch10.s0110", "ch10.s0120", "ch10.s0130"] },
+        { "id": "throw-the-lobsters", "cue": "throw", "segments": ["ch10.s0140", "ch10.s0150"] },
+        { "id": "swim-after-them", "cue": "swim", "segments": ["ch10.s0160", "ch10.s0170", "ch10.s0180"] },
+        { "id": "back-to-land", "cue": "land", "segments": ["ch10.s0190", "ch10.s0200"] }
+      ]
+    },
+    {
+      "id": "the-first-figure",
+      "beats": [
+        { "id": "would-you-like", "cue": "try", "segments": ["ch10.s0210", "ch10.s0220", "ch10.s0230", "ch10.s0240"] },
+        { "id": "round-and-round", "cue": "round", "segments": ["ch10.s0250", "ch10.s0260", "ch10.s0270"] }
+      ]
+    },
+    {
+      "id": "the-song",
+      "beats": [
+        { "id": "whiting-and-snail", "cue": "verse-one", "segments": ["ch10.s0280", "ch10.s0290", "ch10.s0300", "ch10.s0310", "ch10.s0320"] },
+        { "id": "too-far", "cue": "verse-two", "segments": ["ch10.s0330", "ch10.s0340", "ch10.s0350", "ch10.s0360", "ch10.s0370"] },
+        { "id": "another-shore", "cue": "verse-three", "segments": ["ch10.s0380", "ch10.s0390", "ch10.s0400", "ch10.s0410"] },
+        { "id": "over-at-last", "cue": "over", "segments": ["ch10.s0420", "ch10.s0430", "ch10.s0440"] }
+      ]
+    },
+    {
+      "id": "the-trial-begins",
+      "beats": [
+        { "id": "a-song-please", "cue": "song", "segments": ["ch10.s0450", "ch10.s0460", "ch10.s0470", "ch10.s0480"] },
+        { "id": "beautiful-soup", "cue": "soup", "segments": ["ch10.s0490", "ch10.s0500"] },
+        { "id": "a-cry", "cue": "cry", "segments": ["ch10.s0510", "ch10.s0520", "ch10.s0530"] },
+        { "id": "come-on", "cue": "run", "segments": ["ch10.s0540", "ch10.s0550", "ch10.s0560", "ch10.s0570"] },
+        { "id": "faintly", "cue": "faint", "segments": ["ch10.s0580"] }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "id": "caterpillar",
+  "titleChapter": 5,
+  "shots": [
+    {
+      "id": "on-the-mushroom",
+      "beats": [
+        { "id": "silence", "cue": "silence", "segments": ["ch05.s0010", "ch05.s0020"] },
+        { "id": "who-are-you", "cue": "who", "segments": ["ch05.s0030", "ch05.s0040"] },
+        { "id": "hardly-know", "cue": "changed", "segments": ["ch05.s0050", "ch05.s0060", "ch05.s0070"] },
+        { "id": "explain-yourself", "cue": "explain", "segments": ["ch05.s0080", "ch05.s0090", "ch05.s0100"] },
+        { "id": "confusing", "cue": "confusing", "segments": ["ch05.s0110", "ch05.s0120", "ch05.s0130"] },
+        { "id": "puffing", "cue": "puff", "segments": ["ch05.s0140", "ch05.s0150", "ch05.s0160", "ch05.s0170"] },
+        { "id": "keep-your-temper", "cue": "temper", "segments": ["ch05.s0180"] }
+      ]
+    },
+    {
+      "id": "what-size",
+      "beats": [
+        { "id": "what-size", "cue": "size", "segments": ["ch05.s0190", "ch05.s0200", "ch05.s0210", "ch05.s0220", "ch05.s0230"] },
+        { "id": "three-inches", "cue": "rear", "segments": ["ch05.s0240", "ch05.s0250"] },
+        { "id": "crawls-away", "cue": "crawl", "segments": ["ch05.s0260", "ch05.s0270", "ch05.s0280"] },
+        { "id": "of-what", "cue": "of-what", "segments": ["ch05.s0290", "ch05.s0300", "ch05.s0310", "ch05.s0320"] },
+        { "id": "two-sides", "cue": "sides", "segments": ["ch05.s0330", "ch05.s0340", "ch05.s0350"] }
+      ]
+    },
+    {
+      "id": "nibbling",
+      "beats": [
+        { "id": "which-is-which", "cue": "nibble", "segments": ["ch05.s0360", "ch05.s0370"] },
+        { "id": "chin", "cue": "shrink", "segments": ["ch05.s0380", "ch05.s0390", "ch05.s0400"] },
+        { "id": "the-other-bit", "cue": "grow", "segments": ["ch05.s0410", "ch05.s0420"] }
+      ]
+    },
+    {
+      "id": "serpent",
+      "beats": [
+        { "id": "head-free", "cue": "free", "segments": ["ch05.s0430", "ch05.s0440", "ch05.s0450"] },
+        { "id": "a-length-of-neck", "cue": "neck", "segments": ["ch05.s0460", "ch05.s0470", "ch05.s0480", "ch05.s0490"] },
+        { "id": "like-a-serpent", "cue": "bend", "segments": ["ch05.s0500", "ch05.s0510", "ch05.s0520"] },
+        { "id": "the-pigeon", "cue": "pigeon", "segments": ["ch05.s0530", "ch05.s0540", "ch05.s0550", "ch05.s0560"] },
+        { "id": "no-pleasing-them", "cue": "tried", "segments": ["ch05.s0570", "ch05.s0580", "ch05.s0590", "ch05.s0600", "ch05.s0610"] },
+        { "id": "a-little-girl", "cue": "girl", "segments": ["ch05.s0620", "ch05.s0630", "ch05.s0640", "ch05.s0650", "ch05.s0660", "ch05.s0670"] },
+        { "id": "be-off", "cue": "off", "segments": ["ch05.s0680", "ch05.s0690"] },
+        { "id": "the-right-size", "cue": "back", "segments": ["ch05.s0700", "ch05.s0710", "ch05.s0720"] }
+      ]
+    }
+  ]
+}

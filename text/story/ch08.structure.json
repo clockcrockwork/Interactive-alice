@@ -1,0 +1,468 @@
+{
+  "$schema": "../../schema/chapter-structure.schema.json",
+  "chapter": 8,
+  "sourceFile": "text/raw/ch08-the-queens-croquet-ground.txt",
+  "sections": [
+    {
+      "id": "painting-the-roses"
+    },
+    {
+      "id": "the-procession"
+    },
+    {
+      "id": "the-game"
+    },
+    {
+      "id": "a-head-in-the-air"
+    }
+  ],
+  "segments": [
+    {
+      "id": "ch08.s0010",
+      "section": "painting-the-roses",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0020",
+      "section": "painting-the-roses",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0030",
+      "section": "painting-the-roses",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0040",
+      "section": "painting-the-roses",
+      "kind": "dialogue",
+      "speaker": "two"
+    },
+    {
+      "id": "ch08.s0050",
+      "section": "painting-the-roses",
+      "kind": "dialogue",
+      "speaker": "two"
+    },
+    {
+      "id": "ch08.s0060",
+      "section": "painting-the-roses",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch08.s0070",
+      "section": "painting-the-roses",
+      "kind": "dialogue",
+      "speaker": "two"
+    },
+    {
+      "id": "ch08.s0080",
+      "section": "painting-the-roses",
+      "kind": "dialogue",
+      "speaker": "two"
+    },
+    {
+      "id": "ch08.s0090",
+      "section": "painting-the-roses",
+      "kind": "dialogue",
+      "speaker": "two"
+    },
+    {
+      "id": "ch08.s0100",
+      "section": "painting-the-roses",
+      "kind": "dialogue",
+      "speaker": "five"
+    },
+    {
+      "id": "ch08.s0110",
+      "section": "painting-the-roses",
+      "kind": "dialogue",
+      "speaker": "five"
+    },
+    {
+      "id": "ch08.s0120",
+      "section": "painting-the-roses",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0130",
+      "section": "the-procession",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0140",
+      "section": "the-procession",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0150",
+      "section": "the-procession",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0160",
+      "section": "the-procession",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0170",
+      "section": "the-procession",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0180",
+      "section": "the-procession",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0190",
+      "section": "the-procession",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0200",
+      "section": "the-procession",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0210",
+      "section": "the-procession",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch08.s0220",
+      "section": "the-procession",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch08.s0230",
+      "section": "the-procession",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch08.s0240",
+      "section": "the-procession",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch08.s0250",
+      "section": "the-procession",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch08.s0260",
+      "section": "the-procession",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch08.s0270",
+      "section": "the-procession",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch08.s0280",
+      "section": "the-procession",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch08.s0290",
+      "section": "the-procession",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0300",
+      "section": "the-procession",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch08.s0310",
+      "section": "the-procession",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch08.s0320",
+      "section": "the-procession",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0330",
+      "section": "the-procession",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch08.s0340",
+      "section": "the-procession",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch08.s0350",
+      "section": "the-procession",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0360",
+      "section": "the-procession",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch08.s0370",
+      "section": "the-procession",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0380",
+      "section": "the-procession",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch08.s0390",
+      "section": "the-procession",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch08.s0400",
+      "section": "the-procession",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch08.s0410",
+      "section": "the-game",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch08.s0420",
+      "section": "the-game",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0430",
+      "section": "the-game",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0440",
+      "section": "the-game",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0450",
+      "section": "the-game",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0460",
+      "section": "the-game",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0470",
+      "section": "the-game",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0480",
+      "section": "the-game",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0490",
+      "section": "the-game",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0500",
+      "section": "the-game",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0510",
+      "section": "the-game",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0520",
+      "section": "the-game",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0530",
+      "section": "the-game",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0540",
+      "section": "the-game",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0550",
+      "section": "the-game",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0560",
+      "section": "the-game",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch08.s0570",
+      "section": "the-game",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch08.s0580",
+      "section": "the-game",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0590",
+      "section": "a-head-in-the-air",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0600",
+      "section": "a-head-in-the-air",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0610",
+      "section": "a-head-in-the-air",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch08.s0620",
+      "section": "a-head-in-the-air",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch08.s0630",
+      "section": "a-head-in-the-air",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0640",
+      "section": "a-head-in-the-air",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0650",
+      "section": "a-head-in-the-air",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch08.s0660",
+      "section": "a-head-in-the-air",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch08.s0670",
+      "section": "a-head-in-the-air",
+      "kind": "dialogue",
+      "speaker": "cheshire-cat"
+    },
+    {
+      "id": "ch08.s0680",
+      "section": "a-head-in-the-air",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch08.s0690",
+      "section": "a-head-in-the-air",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch08.s0700",
+      "section": "a-head-in-the-air",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch08.s0710",
+      "section": "a-head-in-the-air",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch08.s0720",
+      "section": "a-head-in-the-air",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch08.s0730",
+      "section": "a-head-in-the-air",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch08.s0740",
+      "section": "a-head-in-the-air",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch08.s0750",
+      "section": "a-head-in-the-air",
+      "kind": "dialogue",
+      "speaker": "executioner"
+    },
+    {
+      "id": "ch08.s0760",
+      "section": "a-head-in-the-air",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch08.s0770",
+      "section": "a-head-in-the-air",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch08.s0780",
+      "section": "a-head-in-the-air",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0790",
+      "section": "a-head-in-the-air",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0800",
+      "section": "a-head-in-the-air",
+      "kind": "narration"
+    },
+    {
+      "id": "ch08.s0810",
+      "section": "a-head-in-the-air",
+      "kind": "narration"
+    }
+  ]
+}

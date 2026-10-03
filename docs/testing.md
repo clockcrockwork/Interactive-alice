@@ -349,6 +349,14 @@ the review question on issue #8 and it belongs to a person looking at it.
 Still to come with the scenes they belong to: audio, and back-navigation restore
 across a document boundary.
 
+### The concept demos
+
+The demos under `/demos/` are outside the story runtime, so the pacing fixture and the
+scene probe do not cover them. They have their own layer: `build/demos.test.ts` for
+the page generator, and `tests/demos.spec.ts` in the browser, driven through
+`window.__aliceDemo`. What each proves is listed in
+[`concept-demos.md`](concept-demos.md) §5.
+
 ## 6. Ownership
 
 The `test-engineer` agent owns the design and maintenance of these suites. Anyone

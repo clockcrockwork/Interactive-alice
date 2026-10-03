@@ -36,6 +36,43 @@ one scene page. Shared chunks count once.
 | audio per scene | ≤ 700 KB | BGM loop, fetched after the first interaction |
 | fonts | ≤ 100 KB | subset, `font-display: swap` |
 
+The concept demos under `/demos/` are outside these budgets by design; see
+[`concept-demos.md`](concept-demos.md) §2. For the record, gzip, on the build that
+introduced them: the shared demo shell (GSAP, ScrollTrigger and the shell) is 46 KB of
+JS; Drink Me, the pool, the Caucus-race, the Rabbit's house, Bill, the Dormouse, the
+Cheshire Cat, the Caterpillar, the kitchen, the croquet-ground, the Mock Turtle, the
+Lobster Quadrille, the trial, the riverbank, the Mouse's tale and the tea-party add between 2 and 7 KB each to that; the rabbit hole adds 136 KB for Three.js and the
+well. Story pages are unaffected: they share none of these
+chunks, and their own sizes did not move.
+
+Frame time was also measured for the demos, on the software renderer this project
+tests on (Chromium with SwiftShader, no GPU, 1280×760), holding each beat and taking
+the mean of a dozen frames; the numbers are large because there is no GPU, and their
+ranking is what matters. Before and after the pass that followed:
+
+```text
+                         worst beat, before → after   what changed
+trial                    330 ms → 74 ms                the pieces' drop-shadow filter became a
+                                                       shadow at the feet; the court is composited
+Pig and Pepper           1291 ms → 179 ms              the outside world is composited and hidden
+                                                       while the kitchen is on, as is the pepper;
+                                                       the room and its smoke are composited
+pool of tears            271 ms → 189 ms               the sea is drawn at 0.6 of the screen's
+                                                       pixels and scaled by the browser
+croquet                  136 ms → 97 ms                the pieces' drop-shadow filter became a
+                                                       shadow at the feet
+rabbit hole (WebGL)      mean 115 ms                   drawn only while the well is on screen,
+                                                       and only when the camera moved if paused
+```
+
+The WebGL well was not the heaviest demo even without a GPU (its flat CSS fallback
+measured 63 ms mean against the well's 115 ms on the same renderer, which is not the
+gap that would justify losing the well on a phone with a GPU), so it stays; the cost
+that did move was in CSS filters on many pieces and in layers painted at a scale
+or an opacity that made them invisible anyway. The scripts that took these numbers
+are not in the repository; the method is a `requestAnimationFrame` sampler run in
+the page while the test harness scrolls, beat by beat.
+
 These are starting budgets for the PoC, chosen to keep a scene loadable on a
 mid-range phone over mobile data. They may be raised deliberately, in a pull
 request that says which budget moved and what the scene gained. They may not be

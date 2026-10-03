@@ -1,0 +1,375 @@
+{
+  "$schema": "../../schema/chapter-structure.schema.json",
+  "chapter": 3,
+  "sourceFile": "text/raw/ch03-a-caucus-race-and-a-long-tale.txt",
+  "sections": [
+    {
+      "id": "getting-dry"
+    },
+    {
+      "id": "the-race"
+    },
+    {
+      "id": "prizes"
+    },
+    {
+      "id": "the-long-tale"
+    },
+    {
+      "id": "fury-and-the-mouse"
+    },
+    {
+      "id": "a-knot"
+    },
+    {
+      "id": "alone-again"
+    }
+  ],
+  "segments": [
+    {
+      "id": "ch03.s0300",
+      "section": "getting-dry",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0310",
+      "section": "getting-dry",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0320",
+      "section": "getting-dry",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0330",
+      "section": "getting-dry",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0340",
+      "section": "getting-dry",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0350",
+      "section": "getting-dry",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0360",
+      "section": "the-race",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0370",
+      "section": "the-race",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0380",
+      "section": "the-race",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0390",
+      "section": "the-race",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0400",
+      "section": "the-race",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0410",
+      "section": "the-race",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0420",
+      "section": "the-race",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0430",
+      "section": "the-race",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0440",
+      "section": "the-race",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0450",
+      "section": "the-race",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0460",
+      "section": "the-race",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0470",
+      "section": "prizes",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0480",
+      "section": "prizes",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0490",
+      "section": "prizes",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0500",
+      "section": "prizes",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0510",
+      "section": "prizes",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0520",
+      "section": "prizes",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0530",
+      "section": "prizes",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0540",
+      "section": "prizes",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0550",
+      "section": "prizes",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0560",
+      "section": "prizes",
+      "kind": "dialogue",
+      "speaker": "dodo"
+    },
+    {
+      "id": "ch03.s0570",
+      "section": "prizes",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0580",
+      "section": "the-long-tale",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0590",
+      "section": "the-long-tale",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0600",
+      "section": "the-long-tale",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0610",
+      "section": "the-long-tale",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0620",
+      "section": "the-long-tale",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0630",
+      "section": "the-long-tale",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0640",
+      "section": "the-long-tale",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0650",
+      "section": "the-long-tale",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0660",
+      "section": "fury-and-the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0670",
+      "section": "fury-and-the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0680",
+      "section": "fury-and-the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0690",
+      "section": "fury-and-the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0700",
+      "section": "fury-and-the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0710",
+      "section": "fury-and-the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0720",
+      "section": "fury-and-the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0730",
+      "section": "fury-and-the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0740",
+      "section": "a-knot",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0750",
+      "section": "a-knot",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0760",
+      "section": "a-knot",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0770",
+      "section": "a-knot",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0780",
+      "section": "a-knot",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch03.s0790",
+      "section": "a-knot",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0800",
+      "section": "a-knot",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0810",
+      "section": "a-knot",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0820",
+      "section": "alone-again",
+      "kind": "dialogue",
+      "speaker": "lory"
+    },
+    {
+      "id": "ch03.s0830",
+      "section": "alone-again",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0840",
+      "section": "alone-again",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0850",
+      "section": "alone-again",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0860",
+      "section": "alone-again",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0870",
+      "section": "alone-again",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0880",
+      "section": "alone-again",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0890",
+      "section": "alone-again",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch03.s0900",
+      "section": "alone-again",
+      "kind": "narration"
+    },
+    {
+      "id": "ch03.s0910",
+      "section": "alone-again",
+      "kind": "narration"
+    }
+  ]
+}

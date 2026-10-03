@@ -305,6 +305,12 @@ function renderHome(
 ): string {
   // One directory up from the generated root to the shared stylesheet.
   const root = up(1);
+  // The concept demos are staged in the base locale, so their link is worded in it.
+  const base = project.locales[project.baseLocale];
+  const baseStrings = project.ui.get(project.baseLocale);
+  if (!base || !baseStrings) {
+    throw new Error(`no UI strings for the base locale ${project.baseLocale}`);
+  }
   const links = entries
     .map(({ locale, available }) => {
       const settings = project.locales[locale];
@@ -346,6 +352,7 @@ function renderHome(
       <ul class="home__locales">
 ${links}
       </ul>
+      <p class="home__demos"><a href="./demos/" lang="${project.baseLocale}" dir="${base.dir}">${escapeHtml(baseStrings.demosTitle)}</a></p>
     </main>
   </body>
 </html>

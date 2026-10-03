@@ -4,17 +4,172 @@
   "title": "Locale UI strings",
   "description": "The words the site itself says in one language, as opposed to the words of the story. Every locale in text/locales.json must have this file in full: a language may be behind on chapters, but the chrome around the story cannot be half translated. Keys are added only when something on screen needs them; see docs/text-pipeline.md.",
   "type": "object",
-  "required": ["locale", "strings"],
+  "required": [
+    "locale",
+    "strings"
+  ],
   "additionalProperties": false,
   "properties": {
-    "$schema": { "type": "string", "description": "Optional editor hint; not part of the data." },
+    "$schema": {
+      "type": "string",
+      "description": "Optional editor hint; not part of the data."
+    },
     "locale": {
       "type": "string",
       "description": "Must equal the directory name, so a copied file cannot silently claim another language."
     },
     "strings": {
       "type": "object",
-      "required": ["partPending", "localePartial", "localeNone"],
+      "required": [
+        "partPending",
+        "localePartial",
+        "localeNone",
+        "demosTitle",
+        "demosIntro",
+        "demoBack",
+        "demoNext",
+        "demoPause",
+        "demoResume",
+        "demoAuto",
+        "demoLookMap",
+        "demoLookAway",
+        "demoPeekCurtain",
+        "demoLeanLeft",
+        "demoLeanRight",
+        "demoPuffHold",
+        "demoVanishTail",
+        "demoVanishHead",
+        "demoDirtySeat",
+        "demoStrokeFlamingo",
+        "demoFlamingoSulks",
+        "demoDodgeLeft",
+        "demoDodgeRight",
+        "demoDodged",
+        "demoFlingMoral",
+        "demoSuppressGuineaPig",
+        "demoRightLizard",
+        "demoTurnBottle",
+        "demoClimbLeg",
+        "demoCryTear",
+        "demoFan",
+        "demoGiveComfit",
+        "demoReadTail",
+        "demoWiggleFoot",
+        "demoHoldHead",
+        "demoCatchBill",
+        "demoDipLeaves",
+        "demoHeightInches",
+        "demoOpenLetter",
+        "demoLookCat",
+        "demoCallPig",
+        "demoPig",
+        "demoFig",
+        "demoSingAlong",
+        "demoAnswerRiddle",
+        "demoStirTreacle",
+        "demoDrawTreacle",
+        "demoDrawM",
+        "demoStirQuarrel",
+        "demoTurnCard",
+        "demoShrug",
+        "demoClearThroat",
+        "demoWakeEel",
+        "demoKingsNotebook",
+        "demoCloseEyes",
+        "demoGiveChildren",
+        "demoCallDinah",
+        "demoPageEmpty",
+        "demoChainLonger",
+        "demoWatchSpins",
+        "demoScrollHint",
+        "demoTechRabbitHole",
+        "demoTechDormouse",
+        "demoTechTrial",
+        "demoGrabJar",
+        "demoJarTucked",
+        "demoPinch",
+        "demoBeatOff",
+        "demoFlatWell",
+        "demoReducedMotion",
+        "demoTechDrinkMe",
+        "demoTechPool",
+        "demoTechCaucus",
+        "demoDrink",
+        "demoEat",
+        "demoRipple",
+        "demoRunToggle",
+        "demoRaceStart",
+        "demoTechRabbitHouse",
+        "demoTechBill",
+        "demoTechCheshire",
+        "demoSnatch",
+        "demoKick",
+        "demoVanish",
+        "demoAliceTitle",
+        "demoAliceBlue",
+        "demoAliceBlueNote",
+        "demoAliceYellow",
+        "demoAliceYellowNote",
+        "demoWayHatter",
+        "demoWayHare",
+        "demoCallCat",
+        "demoTryDoor",
+        "demoTeleportHint",
+        "demoPutBack",
+        "demoJurorToggle",
+        "demoSoundOn",
+        "demoSoundOff",
+        "demoTilt",
+        "demoTiltOn",
+        "demoTakeKey",
+        "demoMyRunner",
+        "demoFeed",
+        "demoShakeHouse",
+        "demoTechCaterpillar",
+        "demoTechCroquet",
+        "demoTechQuadrille",
+        "demoPuff",
+        "demoNibbleLeft",
+        "demoNibbleRight",
+        "demoBendNeck",
+        "demoShoo",
+        "demoPaintRose",
+        "demoStrike",
+        "demoCatchFlamingo",
+        "demoHideGardeners",
+        "demoThrowLobster",
+        "demoJoinDance",
+        "demoSomersault",
+        "demoOpenEyes",
+        "demoSnail",
+        "demoTechPig",
+        "demoTechMockTurtle",
+        "demoBow",
+        "demoPepper",
+        "demoDuck",
+        "demoBatPan",
+        "demoHoldTight",
+        "demoPokeBaby",
+        "demoComfort",
+        "demoWash",
+        "demoUglify",
+        "demoPullTail",
+        "demoUndoKnot",
+        "demoKnotHolds",
+        "demoBirdLeave",
+        "demoTechRiverbank",
+        "demoTurnPage",
+        "demoPickDaisy",
+        "demoLookWatch",
+        "demoTechMouseTale",
+        "demoTechTeaParty",
+        "demoTechDuchess",
+        "demoTechWitnesses",
+        "demoLookForWine",
+        "demoButterWatch",
+        "demoWhisperTime",
+        "demoMoveRound"
+      ],
       "additionalProperties": false,
       "properties": {
         "partPending": {
@@ -31,6 +186,731 @@
           "type": "string",
           "minLength": 1,
           "description": "Shown beside a language on the home page when none of its parts can be read yet."
+        },
+        "demosTitle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Shown as the heading of the concept-demo index."
+        },
+        "demosIntro": {
+          "type": "string",
+          "minLength": 1,
+          "description": "One line under the demo index heading."
+        },
+        "demoBack": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Link from a demo back to the demo index."
+        },
+        "demoNext": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Link from a demo to the next demo."
+        },
+        "demoPause": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Label of the motion toggle while ambient motion is playing."
+        },
+        "demoLookMap": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Rabbit hole: a button to look closely at a map on the well wall while falling."
+        },
+        "demoLookAway": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Rabbit hole: close the map and look down the well again."
+        },
+        "demoPeekCurtain": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Drink Me: a button to lift the low curtain before the little door is found."
+        },
+        "demoLeanLeft": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Pool of tears: tilt the water to the left (the button form of tilting the phone)."
+        },
+        "demoLeanRight": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Pool of tears: tilt the water to the right."
+        },
+        "demoPuffHold": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Caterpillar: hint that holding the puff button blows a bigger smoke ring."
+        },
+        "demoVanishTail": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Cheshire Cat: the reader chooses the Cat goes tail first; the grin always last."
+        },
+        "demoVanishHead": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Cheshire Cat: the reader chooses the Cat goes head first; the grin always last."
+        },
+        "demoDirtySeat": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Tea-party: status when the reader moves round into a used place."
+        },
+        "demoStrokeFlamingo": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Croquet: a button to settle the flamingo before it sulks and twists away."
+        },
+        "demoFlamingoSulks": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Croquet: status when the flamingo has been left alone too long."
+        },
+        "demoDodgeLeft": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Trial: lean out of the way of the flying cards, to the left."
+        },
+        "demoDodgeRight": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Trial: lean out of the way of the flying cards, to the right."
+        },
+        "demoDodged": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Trial: status when a card misses her."
+        },
+        "demoFlingMoral": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The Duchess: a button that blows the latest moral ribbon away over the croquet-ground."
+        },
+        "demoSuppressGuineaPig": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The witnesses: a button that puts the cheering guinea-pig into the officers' bag before they do."
+        },
+        "demoRightLizard": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The witnesses: a button that turns the Lizard in the jury-box the right way up before Alice does."
+        },
+        "demoTurnBottle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Drink Me: turn the bottle to look for a poison label (there is none)."
+        },
+        "demoClimbLeg": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Drink Me: try to climb the glass table's leg to the key; she slides down."
+        },
+        "demoCryTear": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Pool of tears: shed one giant tear; the pool rises a notch."
+        },
+        "demoFan": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Pool of tears: wave the Rabbit's fan; each wave shrinks her."
+        },
+        "demoGiveComfit": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Caucus-race: give the focused runner a comfit (the keyboard's way to feed)."
+        },
+        "demoReadTail": {
+          "type": "string",
+          "minLength": 1,
+          "description": "A Long Tale: magnify the words of the tail where the reader is."
+        },
+        "demoWiggleFoot": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Growing in the House: her foot up the chimney kicks in a puff of soot."
+        },
+        "demoHoldHead": {
+          "type": "string",
+          "minLength": 1,
+          "description": "There Goes Bill: a guinea-pig holds up Bill's head for the brandy."
+        },
+        "demoCatchBill": {
+          "type": "string",
+          "minLength": 1,
+          "description": "There Goes Bill: move the crowd by the hedge under the falling Bill."
+        },
+        "demoDipLeaves": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Caterpillar: dip her long neck down into the tree tops."
+        },
+        "demoHeightInches": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Caterpillar: accessible name of the tape-measure that reads her height."
+        },
+        "demoOpenLetter": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Pig and Pepper: unfold the Queen's invitation, as large as the Footman."
+        },
+        "demoLookCat": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Pig and Pepper: look at the grinning cat on the hearth."
+        },
+        "demoCallPig": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Cheshire Cat: the pig from the kitchen trots across the wood."
+        },
+        "demoPig": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Cheshire Cat: answer \"pig\" to the Cat's \"pig, or fig?\"."
+        },
+        "demoFig": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Cheshire Cat: answer \"fig\" to the Cat's \"pig, or fig?\"."
+        },
+        "demoSingAlong": {
+          "type": "string",
+          "minLength": 1,
+          "description": "No Room: tap along with the Hatter's song; bats flap across the sky."
+        },
+        "demoAnswerRiddle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "No Room: try the raven against the writing-desk; they never match."
+        },
+        "demoStirTreacle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Dormouse: first-touch hint that the treacle can be stirred."
+        },
+        "demoDrawTreacle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Dormouse: pull a little bucket of treacle up the spiral."
+        },
+        "demoDrawM": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Dormouse: turn a floating M into a thing that begins with M."
+        },
+        "demoStirQuarrel": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Croquet: during the quarrel, a tap makes the players quarrel louder."
+        },
+        "demoTurnCard": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Croquet: turn over a gardener lying face down to see which card it is."
+        },
+        "demoShrug": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The Duchess: Alice shrugs the Duchess's sharp chin off her shoulder."
+        },
+        "demoClearThroat": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Mock Turtle: break the long silence; the Mock Turtle sobs louder."
+        },
+        "demoWakeEel": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Mock Turtle: the conger-eel drawls, stretches and faints in coils."
+        },
+        "demoKingsNotebook": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The witnesses: catch the King writing Rule Forty-two on the spot."
+        },
+        "demoCloseEyes": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Sentence First: the dream comes back (the other half of Open her eyes)."
+        },
+        "demoGiveChildren": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Sentence First: hand a keepsake to the little children of the after-time."
+        },
+        "demoCallDinah": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Rabbit hole: Dinah, in the dream of cats and bats, pounces at the bat."
+        },
+        "demoPageEmpty": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Riverbank: status after the reader turns a page of her sister's book."
+        },
+        "demoChainLonger": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Riverbank: status after the reader picks a daisy."
+        },
+        "demoWatchSpins": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Riverbank: status after the reader looks at the Rabbit's watch."
+        },
+        "demoAuto": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Toggle at the end of a demo: when on, the page goes to the next scene by itself after a pause at the end."
+        },
+        "demoResume": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Label of the motion toggle while ambient motion is paused."
+        },
+        "demoScrollHint": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Hint at the top of a demo that scrolling moves the story on."
+        },
+        "demoTechRabbitHole": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the rabbit hole."
+        },
+        "demoTechDormouse": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the Dormouse's tale."
+        },
+        "demoTechTrial": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the trial."
+        },
+        "demoGrabJar": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that takes the marmalade jar off its shelf."
+        },
+        "demoJarTucked": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status once the jar is tucked into a cupboard."
+        },
+        "demoPinch": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that pinches the Dormouse awake."
+        },
+        "demoBeatOff": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that brushes the cards off the screen."
+        },
+        "demoFlatWell": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Note shown when the well cannot be drawn with WebGL and is drawn flat instead."
+        },
+        "demoReducedMotion": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Note shown when the visitor prefers reduced motion."
+        },
+        "demoTechDrinkMe": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for Drink Me."
+        },
+        "demoTechPool": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the pool of tears."
+        },
+        "demoTechCaucus": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the Caucus-race."
+        },
+        "demoDrink": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that drinks from the bottle."
+        },
+        "demoEat": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that eats the cake."
+        },
+        "demoRipple": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that stirs the water."
+        },
+        "demoRunToggle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Accessible name of a runner in the Caucus-race; pressing it stops or starts that runner."
+        },
+        "demoRaceStart": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that sets every runner running."
+        },
+        "demoTechRabbitHouse": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the White Rabbit's house."
+        },
+        "demoTechBill": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for Bill the Lizard."
+        },
+        "demoTechCheshire": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the Cheshire Cat."
+        },
+        "demoSnatch": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that makes the snatch out of the window."
+        },
+        "demoKick": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that gives the sharp kick up the chimney."
+        },
+        "demoVanish": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that makes the Cat vanish or appear."
+        },
+        "demoAliceTitle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Heading of the Alice picker on the demo index."
+        },
+        "demoAliceBlue": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Name of the blue Alice."
+        },
+        "demoAliceBlueNote": {
+          "type": "string",
+          "minLength": 1,
+          "description": "One line under the blue Alice: the look everyone knows."
+        },
+        "demoAliceYellow": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Name of the yellow Alice."
+        },
+        "demoAliceYellowNote": {
+          "type": "string",
+          "minLength": 1,
+          "description": "One line under the yellow Alice: the earlier look, for those who remember it."
+        },
+        "demoWayHatter": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Signpost button toward the Hatter's house."
+        },
+        "demoWayHare": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Signpost button toward the March Hare's house."
+        },
+        "demoCallCat": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that calls the Cat to another bough."
+        },
+        "demoTryDoor": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Accessible name of a door in the hall; pressing it tries the lock."
+        },
+        "demoTeleportHint": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Hint under the Cheshire Cat: tap the wood to move the Cat there."
+        },
+        "demoPutBack": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that puts a thing taken from a shelf back into a cupboard."
+        },
+        "demoJurorToggle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Accessible name of a juror; pressing one flips what it writes on its slate."
+        },
+        "demoSoundOn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Label of the sound toggle while sound is off."
+        },
+        "demoSoundOff": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Label of the sound toggle while sound is on."
+        },
+        "demoTilt": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that asks to steer the view with the phone's tilt."
+        },
+        "demoTiltOn": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status once tilt steering is on."
+        },
+        "demoTakeKey": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that picks up the little golden key."
+        },
+        "demoMyRunner": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Accessible-name suffix for the runner the reader chose."
+        },
+        "demoFeed": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Hint that a comfit can be dragged to a runner."
+        },
+        "demoShakeHouse": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that shakes the house."
+        },
+        "demoTechCaterpillar": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index card: what the Caterpillar demo shows."
+        },
+        "demoTechCroquet": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index card: what the croquet demo shows."
+        },
+        "demoTechQuadrille": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index card: what the Lobster Quadrille demo shows."
+        },
+        "demoTurnPage": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that turns a page of the sister's book on the riverbank."
+        },
+        "demoPickDaisy": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that picks a daisy for Alice's chain on the riverbank."
+        },
+        "demoLookWatch": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that looks at the White Rabbit's watch; its hands spin for a moment."
+        },
+        "demoPuff": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that makes the Caterpillar blow a smoke ring."
+        },
+        "demoNibbleLeft": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button on the left bit of mushroom: nibbling it makes her taller."
+        },
+        "demoNibbleRight": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button on the right bit of mushroom: nibbling it makes her shorter."
+        },
+        "demoBendNeck": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Hint that the pointer bends her neck."
+        },
+        "demoShoo": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button on the Pigeon: shoo it away for a moment."
+        },
+        "demoPaintRose": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Hint that a drag over a white rose paints it red."
+        },
+        "demoStrike": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that swings the flamingo at the hedgehog."
+        },
+        "demoCatchFlamingo": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that brings the flamingo back."
+        },
+        "demoHideGardeners": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that puts the gardeners into the flower-pot."
+        },
+        "demoThrowLobster": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that throws the lobster out to sea."
+        },
+        "demoJoinDance": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that puts the reader into the line of dancers."
+        },
+        "demoSomersault": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that turns a somersault in the sea."
+        },
+        "demoOpenEyes": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that wakes the sister from her dream."
+        },
+        "demoSnail": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button on the snail in the song: it draws into its shell."
+        },
+        "demoTechPig": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for Pig and Pepper."
+        },
+        "demoTechMockTurtle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the Mock Turtle's story."
+        },
+        "demoBow": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that makes the two footmen bow again, tangling their curls."
+        },
+        "demoPepper": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button, and the cauldron's label: more pepper, and a sneeze."
+        },
+        "demoDuck": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that ducks the reader under the flying pots and pans."
+        },
+        "demoBatPan": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Label on a pan stuck to the glass: a tap bats it away."
+        },
+        "demoHoldTight": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that knots the baby into a bundle in her arms."
+        },
+        "demoPokeBaby": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Label on the baby in her arms: a tap makes it grunt and turn a little more pig."
+        },
+        "demoComfort": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button on the Mock Turtle: comforting him makes him sigh harder and the sea heave."
+        },
+        "demoWash": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that sends a wave over the subject words written on the sand."
+        },
+        "demoUglify": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button that makes one of the subject words writhe; tapping a word does the same."
+        },
+        "demoPullTail": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button in the Mouse's tale that slides the tail-text along its curve; a drag on the tail does the same."
+        },
+        "demoUndoKnot": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button at the knot in the Mouse's tale: trying to undo it only offends the Mouse."
+        },
+        "demoKnotHolds": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status line after a failed undo of the knot: it holds, and the Mouse takes offence."
+        },
+        "demoBirdLeave": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Label on each member of the party once the sensation starts: a tap sends it off at once."
+        },
+        "demoTechRiverbank": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the riverbank."
+        },
+        "demoTechMouseTale": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the Mouse's tale."
+        },
+        "demoTechWitnesses": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index card: what the witnesses demo shows."
+        },
+        "demoTechDuchess": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index card: what the Duchess demo shows."
+        },
+        "demoTechTeaParty": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Technique note on the demo index card for the tea-party."
+        },
+        "demoLookForWine": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button at the tea-party that lifts the pot-lids: there is nothing but tea."
+        },
+        "demoButterWatch": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button at the tea-party that spreads the best butter on the Hatter's watch."
+        },
+        "demoWhisperTime": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button at the tea-party that whispers a hint to Time: round goes the clock."
+        },
+        "demoMoveRound": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Button at the tea-party that moves everyone one seat along the table."
         }
       }
     }

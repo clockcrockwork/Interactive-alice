@@ -1,0 +1,41 @@
+{
+  "id": "dormouse",
+  "titleChapter": 7,
+  "shots": [
+    {
+      "id": "pinched-awake",
+      "beats": [
+        { "id": "asleep", "cue": "asleep", "segments": ["ch07.s0400", "ch07.s0410", "ch07.s0420"] },
+        { "id": "every-word", "segments": ["ch07.s0430", "ch07.s0440"] },
+        { "id": "a-story", "segments": ["ch07.s0450", "ch07.s0460", "ch07.s0470"] }
+      ]
+    },
+    {
+      "id": "the-tale",
+      "beats": [
+        { "id": "once-upon", "cue": "spiral", "segments": ["ch07.s0480", "ch07.s0490", "ch07.s0500"] },
+        { "id": "live-on", "segments": ["ch07.s0510", "ch07.s0520", "ch07.s0530"] },
+        { "id": "very-ill", "segments": ["ch07.s0540", "ch07.s0550", "ch07.s0560", "ch07.s0570"] },
+        { "id": "why-a-well", "segments": ["ch07.s0580", "ch07.s0590", "ch07.s0600", "ch07.s0610"] },
+        { "id": "no-such-thing", "segments": ["ch07.s0620", "ch07.s0630", "ch07.s0640", "ch07.s0650", "ch07.s0660"] },
+        { "id": "draw", "cue": "draw", "segments": ["ch07.s0670", "ch07.s0680", "ch07.s0690", "ch07.s0700"] },
+        { "id": "well-in", "segments": ["ch07.s0710", "ch07.s0720", "ch07.s0730", "ch07.s0740", "ch07.s0750"] }
+      ]
+    },
+    {
+      "id": "dozing-off",
+      "beats": [
+        { "id": "yawn", "cue": "doze", "segments": ["ch07.s0760", "ch07.s0770", "ch07.s0780", "ch07.s0790", "ch07.s0800"] },
+        { "id": "shriek", "cue": "shriek", "segments": ["ch07.s0810", "ch07.s0820"] },
+        { "id": "muchness", "cue": "muchness", "segments": ["ch07.s0830", "ch07.s0840"] }
+      ]
+    },
+    {
+      "id": "teapot",
+      "beats": [
+        { "id": "walk-off", "cue": "teapot", "segments": ["ch07.s0850", "ch07.s0860"] },
+        { "id": "the-door-in-the-tree", "cue": "door", "segments": ["ch07.s0870"] }
+      ]
+    }
+  ]
+}

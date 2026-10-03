@@ -1,0 +1,151 @@
+{
+  "id": "mouse-tale",
+  "titleChapter": 3,
+  "titleSection": "the-long-tale",
+  "shots": [
+    {
+      "id": "a-long-tale",
+      "beats": [
+        {
+          "id": "something-more",
+          "cue": "ring",
+          "segments": [
+            "ch03.s0580",
+            "ch03.s0590",
+            "ch03.s0600"
+          ]
+        },
+        {
+          "id": "long-and-sad",
+          "cue": "sad",
+          "segments": [
+            "ch03.s0610",
+            "ch03.s0620"
+          ]
+        },
+        {
+          "id": "a-long-tail",
+          "cue": "tail",
+          "segments": [
+            "ch03.s0630",
+            "ch03.s0640",
+            "ch03.s0650"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fury-and-the-mouse",
+      "beats": [
+        {
+          "id": "fury-one",
+          "cue": "fury-one",
+          "segments": [
+            "ch03.s0660",
+            "ch03.s0670"
+          ]
+        },
+        {
+          "id": "fury-two",
+          "cue": "fury-two",
+          "segments": [
+            "ch03.s0680",
+            "ch03.s0690"
+          ]
+        },
+        {
+          "id": "fury-three",
+          "cue": "fury-three",
+          "segments": [
+            "ch03.s0700",
+            "ch03.s0710"
+          ]
+        },
+        {
+          "id": "fury-four",
+          "cue": "fury-four",
+          "segments": [
+            "ch03.s0720",
+            "ch03.s0730"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a-knot",
+      "beats": [
+        {
+          "id": "not-attending",
+          "cue": "attending",
+          "segments": [
+            "ch03.s0740",
+            "ch03.s0750"
+          ]
+        },
+        {
+          "id": "a-knot",
+          "cue": "knot",
+          "segments": [
+            "ch03.s0760",
+            "ch03.s0770"
+          ]
+        },
+        {
+          "id": "walking-away",
+          "cue": "away",
+          "segments": [
+            "ch03.s0780",
+            "ch03.s0790"
+          ]
+        },
+        {
+          "id": "come-back",
+          "cue": "come-back",
+          "segments": [
+            "ch03.s0800",
+            "ch03.s0810"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alone-again",
+      "beats": [
+        {
+          "id": "dinah",
+          "cue": "dinah",
+          "segments": [
+            "ch03.s0820",
+            "ch03.s0830",
+            "ch03.s0840"
+          ]
+        },
+        {
+          "id": "sensation",
+          "cue": "sensation",
+          "segments": [
+            "ch03.s0850",
+            "ch03.s0860",
+            "ch03.s0870"
+          ]
+        },
+        {
+          "id": "alone",
+          "cue": "alone",
+          "segments": [
+            "ch03.s0880",
+            "ch03.s0890",
+            "ch03.s0900"
+          ]
+        },
+        {
+          "id": "footsteps",
+          "cue": "footsteps",
+          "segments": [
+            "ch03.s0910"
+          ]
+        }
+      ]
+    }
+  ]
+}

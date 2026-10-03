@@ -1,0 +1,502 @@
+/* The Caucus-race: a ring of runners in CSS 3D that the camera orbits. Rotation
+   is the parallax: the near runner sweeps past, the far one crawls. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  /* The bank in paper and sepia; the water is the pool's; chalk on the course;
+     the prizes and the thimble are the reader's moment, in the interaction colours. */
+  :root {
+    --cr-sky: var(--world-sky);
+    --cr-sky-low: var(--paper-base);
+    --cr-bank: var(--sepia-light);
+    --cr-bank-deep: var(--sepia-dark);
+    --cr-chalk: oklch(from var(--paper-base) l c h / 0.8);
+    --cr-comfit: var(--ix-pink);
+    --cr-thimble: var(--paper-aged);
+    --cr-thimble-dent: var(--sepia-dark);
+    --cr-thimble-shine: oklch(from var(--paper-base) l c h / 0.85);
+    --cr-gleam: var(--ix-gold);
+    --cr-dust: oklch(from var(--paper-aged) l c h / 0.7);
+    --cr-drip: oklch(from var(--world-water) l c h / 0.8);
+    --cr-shadow: oklch(from var(--ink-primary) l c h / 0.3);
+    --cr-radius: clamp(180px, 34vmin, 320px);
+    /* A runner's box: everything carried in the ring is placed in its units. */
+    --cr-w: clamp(4.5rem, 14vmin, 8rem);
+    /* The pool of tears' water (pool.css --pt-water, --pt-water-deep, --pt-foam):
+       the party has just swum out of it. */
+    --cr-water: color-mix(in oklch, var(--world-water), var(--ix-blue) 30%);
+    --cr-water-deep: color-mix(in oklch, var(--world-water-deep), var(--ix-blue) 20%);
+    --cr-foam: var(--paper-base);
+  }
+}
+
+@layer scene {
+  .demo--caucus-race .demo-beat {
+    inset-block-end: 8vh;
+  }
+
+  .demo--caucus-race .line[data-speaker="dodo"] {
+    font-weight: 700;
+    color: var(--ink-secondary);
+  }
+
+  .cr__sky {
+    background: linear-gradient(
+      to bottom,
+      var(--cr-sky),
+      var(--cr-sky-low) 55%,
+      var(--cr-bank) 55.5%,
+      var(--cr-bank-deep)
+    );
+  }
+
+  .cr__world {
+    perspective: 1100px;
+    perspective-origin: 50% 40%;
+    overflow: hidden;
+  }
+
+  .cr__ring {
+    --spin: 0;
+    --tilt: -10;
+    --dolly: 0;
+    --lift: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 58%;
+    inline-size: 0;
+    block-size: 0;
+    transform-style: preserve-3d;
+    transform: translate3d(0, calc(var(--lift) * 1px), calc(var(--dolly) * 1px))
+      rotateX(calc(var(--tilt) * 1deg)) rotateY(calc(var(--spin) * 1deg));
+  }
+
+  /* The water in the foreground at the start, the pool's own colours, with the
+     swell's bands; a sliver of the bank shows over it, where they stand. It
+     drops out of the frame as the camera climbs the bank. */
+  .cr__water {
+    inset-block-start: auto;
+    block-size: 43%;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0 5vh,
+        oklch(from var(--cr-foam) l c h / 0.1) 5vh 5.3vh
+      ),
+      linear-gradient(to bottom, var(--cr-water), var(--cr-water-deep));
+    border-block-start: 2px solid oklch(from var(--cr-foam) l c h / 0.6);
+    pointer-events: none;
+  }
+
+  .cr__course {
+    position: absolute;
+    inset-inline-start: calc(var(--cr-radius) * -1.15);
+    inset-block-start: calc(var(--cr-radius) * -1.15);
+    inline-size: calc(var(--cr-radius) * 2.3);
+    block-size: calc(var(--cr-radius) * 2.3);
+    transform: rotateX(90deg);
+  }
+
+  .cr__course circle {
+    fill: none;
+    stroke: var(--cr-chalk);
+    stroke-width: 6;
+    stroke-dasharray: 1;
+    stroke-dashoffset: calc(1 - var(--drawn, 0));
+    stroke-linecap: round;
+  }
+
+  /* A runner stands on the ring at its own angle and always faces the camera. */
+  .cr__runner {
+    --a: 0;
+    --r: 1;
+    --bob: 0;
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: var(--cr-w);
+    margin-inline-start: calc(var(--cr-w) / -2);
+    margin-block-start: calc(var(--cr-w) * -1.4);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    pointer-events: auto;
+    transform-style: preserve-3d;
+    transform: rotateY(calc(var(--a) * 1deg)) translateZ(calc(var(--cr-radius) * var(--r)))
+      translateY(calc(var(--y, 0) * 1px)) rotateY(calc((var(--a) + var(--spin)) * -1deg))
+      rotateX(calc(var(--tilt) * -1deg));
+    filter: drop-shadow(0 10px 8px var(--cr-shadow));
+  }
+
+  .cr__runner:focus-visible {
+    outline: 3px solid var(--ix-gold);
+    outline-offset: 4px;
+  }
+
+  .cr__runner svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .cr__figure {
+    transform-origin: 50% 100%;
+  }
+
+  .cr__runner[aria-pressed="true"] .cr__figure {
+    animation: cr-run 0.42s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -90ms);
+  }
+
+  /* Your runner, and a runner the reader fed, wear a star. It is drawn inside the
+     runner's own box, over its back, since the box clips what its shadow covers. */
+  .cr__runner[data-mine]::after,
+  .cr__runner[data-fed]::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 22%;
+    inset-block-start: 8%;
+    inline-size: max(0.9rem, 18%);
+    aspect-ratio: 1;
+    translate: -50% 0;
+    background: var(--cr-comfit);
+    clip-path: polygon(
+      50% 0,
+      62% 38%,
+      100% 38%,
+      69% 60%,
+      81% 100%,
+      50% 75%,
+      19% 100%,
+      31% 60%,
+      0 38%,
+      38% 38%
+    );
+  }
+
+  .cr__runner[data-spurt] .cr__figure {
+    animation: cr-spurt 0.5s ease-out 1;
+  }
+
+  /* The comfits layer lets taps through to the runners; only a falling comfit
+     can be picked up, and only while the prizes are handed round. */
+  .cr__comfits {
+    pointer-events: none;
+  }
+
+  .cr__comfit {
+    pointer-events: auto;
+    cursor: grab;
+  }
+
+  .cr__comfit[data-carried] {
+    animation: none;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: 3.2vmin;
+    cursor: grabbing;
+    z-index: 2;
+  }
+
+  .cr__hint {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: calc(var(--demo-bar-height) + 3.6rem);
+    margin: 0;
+    text-align: center;
+    font-family: system-ui, sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--ink-secondary);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--demo-calm) var(--demo-ease);
+  }
+
+  .cr__hint[data-shown] {
+    opacity: 0.85;
+  }
+
+  .cr__runner[data-panting] .cr__figure {
+    animation: cr-pant 0.6s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -70ms);
+  }
+
+  /* Sitting for a long time, thinking: no panting. */
+  .cr__runner[data-thinking] .cr__figure {
+    animation: none;
+  }
+
+  .cr__dust {
+    pointer-events: none;
+  }
+
+  .cr__puff {
+    position: absolute;
+    inline-size: 1.6vmin;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--cr-dust);
+    animation: cr-puff 0.7s ease-out forwards;
+  }
+
+  .cr__comfit--burst {
+    animation: none;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    pointer-events: none;
+  }
+
+  .cr__comfit--given {
+    --c: var(--cr-comfit);
+    inline-size: 3.4vmin;
+    translate: -50% -50%;
+    filter: drop-shadow(0 0 4px var(--cr-comfit));
+  }
+
+  .cr__runner[data-drip] .cr__figure {
+    animation: cr-shiver 0.3s ease-in-out infinite alternate;
+  }
+
+  .cr__runner[data-bow] .cr__figure {
+    animation: cr-bow 1.2s ease-in-out 1 both;
+  }
+
+  .cr__drips {
+    opacity: 1;
+  }
+
+  .cr__drips circle {
+    fill: var(--cr-drip);
+    animation: cr-drop 1.6s ease-in infinite;
+    animation-delay: calc(var(--i, 0) * -0.5s);
+  }
+
+  .cr__comfits {
+    opacity: 0;
+  }
+
+  .cr__comfit {
+    position: absolute;
+    inset-inline-start: var(--x, 50%);
+    inset-block-start: -6vh;
+    inline-size: 2.2vmin;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 35% 35%,
+      oklch(from var(--paper-base) l c h / 0.8),
+      var(--c, var(--cr-comfit)) 55%
+    );
+    animation: cr-comfit 2.6s linear infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  .cr__comfits:not([data-open]) .cr__comfit {
+    pointer-events: none;
+  }
+
+  /* What a runner holds is carried in the ring, in a box the size of a runner's,
+     so it stands where the hand is whichever way the camera looks. */
+  .cr__carry {
+    --a: 0;
+    --r: 1;
+    --u: 50;
+    --v: 50;
+    --s: 0;
+    --rot: 0;
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: var(--cr-w);
+    aspect-ratio: 100 / 116;
+    margin-inline-start: calc(var(--cr-w) / -2);
+    margin-block-start: calc(var(--cr-w) * -1.4);
+    transform-style: preserve-3d;
+    transform: rotateY(calc(var(--a) * 1deg)) translateZ(calc(var(--cr-radius) * var(--r)))
+      rotateY(calc((var(--a) + var(--spin)) * -1deg)) rotateX(calc(var(--tilt) * -1deg))
+      translateZ(4px);
+    pointer-events: none;
+  }
+
+  .cr__thimble {
+    position: absolute;
+    inset-inline-start: calc(var(--u) * 1%);
+    inset-block-start: calc(var(--v) / 1.16 * 1%);
+    inline-size: 24%;
+    translate: -50% -50%;
+    rotate: calc(var(--rot) * 1deg);
+    scale: var(--s);
+    filter: drop-shadow(0 3px 3px var(--cr-shadow));
+  }
+
+  .cr__carry[data-gleam] .cr__thimble {
+    filter: drop-shadow(0 0 6px var(--cr-gleam)) drop-shadow(0 3px 3px var(--cr-shadow));
+  }
+
+  .cr__thimble svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* The props a runner carries: the Dodo's arm rests on his cane until he thinks
+     or presents; Alice's arm comes out to hold the thimble. */
+  .cr__over {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    pointer-events: none;
+  }
+
+  .cr__arm,
+  .cr__thoughts {
+    transition: opacity var(--demo-quick) var(--demo-ease);
+  }
+
+  .cr__arm--think,
+  .cr__arm--present,
+  .cr__arm--hold,
+  .cr__thoughts {
+    opacity: 0;
+  }
+
+  .cr__runner:is([data-thinking], [data-present]) .cr__arm--rest {
+    opacity: 0;
+  }
+
+  .cr__runner[data-thinking] :is(.cr__arm--think, .cr__thoughts),
+  .cr__runner[data-present] .cr__arm--present,
+  .cr__runner[data-holding] .cr__arm--hold {
+    opacity: 1;
+  }
+
+  .cr__prop {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: -50% 0;
+  }
+
+  .demo[data-paused] .cr__figure,
+  .demo[data-paused] .cr__puff,
+  .demo[data-paused] .cr__comfit,
+  .demo[data-paused] .cr__drips circle {
+    animation-play-state: paused;
+  }
+
+  @keyframes cr-pant {
+    from {
+      transform: scale(1, 0.96);
+    }
+    to {
+      transform: scale(1.03, 1.02);
+    }
+  }
+
+  @keyframes cr-puff {
+    from {
+      transform: translate(-50%, 0) scale(0.4);
+      opacity: 0.9;
+    }
+    to {
+      transform: translate(-50%, -3vmin) scale(1.8);
+      opacity: 0;
+    }
+  }
+
+  @keyframes cr-spurt {
+    0% {
+      transform: scale(1);
+    }
+    35% {
+      transform: scale(1.25) translateY(-12%);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes cr-run {
+    from {
+      transform: translateY(0) rotate(-4deg) scaleY(1);
+    }
+    to {
+      transform: translateY(-9%) rotate(4deg) scaleY(1.04);
+    }
+  }
+
+  @keyframes cr-shiver {
+    from {
+      transform: translateX(-1.5%);
+    }
+    to {
+      transform: translateX(1.5%);
+    }
+  }
+
+  @keyframes cr-bow {
+    0%,
+    100% {
+      transform: rotateX(0deg);
+    }
+    50% {
+      transform: rotateX(30deg) translateY(4%);
+    }
+  }
+
+  @keyframes cr-drop {
+    from {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateY(40px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes cr-comfit {
+    from {
+      transform: translateY(0) rotate(0deg);
+    }
+    to {
+      transform: translateY(120vh) rotate(300deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cr__runner[aria-pressed="true"] .cr__figure,
+    .cr__runner[data-spurt] .cr__figure,
+    .cr__runner[data-panting] .cr__figure,
+    .cr__puff,
+    .cr__runner[data-drip] .cr__figure,
+    .cr__drips circle,
+    .cr__comfit {
+      animation: none;
+    }
+
+    /* A running figure leans into it; a resting one stands straight. */
+    .cr__runner[aria-pressed="true"] .cr__figure {
+      transform: rotate(6deg) translateY(-4%);
+    }
+
+    .cr__runner[data-bow] .cr__figure {
+      animation: none;
+      transform: rotateX(30deg);
+    }
+
+    .cr__comfit {
+      transform: translateY(calc(var(--ly, 0) * 100vh));
+    }
+
+    .cr__hint,
+    .cr__arm,
+    .cr__thoughts {
+      transition: none;
+    }
+  }
+}

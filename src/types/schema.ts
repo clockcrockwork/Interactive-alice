@@ -81,6 +81,82 @@ export interface CharacterRegistry {
   ];
 }
 
+// experience-demo.schema.json
+/**
+ * Composition plan for one standalone concept demo under /demos/: its shots, their beats, and the narrative segment ids each beat carries, in reading order. Holds no visible text. A demo is not a story Scene: it has no pacing plan, no part, and its page is built by build/demos.ts rather than the story runtime. See docs/concept-demos.md.
+ */
+export interface ExperienceConceptDemoFile {
+  /**
+   * Optional editor hint; not part of the data.
+   */
+  $schema?: string;
+  /**
+   * Demo id; also the directory of its page and of its code under src/demos/.
+   */
+  id: string;
+  /**
+   * The chapter whose localized title names this demo.
+   */
+  titleChapter: number;
+  /**
+   * @minItems 1
+   */
+  shots: [
+    {
+      id: string;
+      /**
+       * @minItems 1
+       */
+      beats: [
+        {
+          id: string;
+          /**
+           * Optional staging cue the demo's code may look up, so code addresses a moment by what happens in it rather than by a beat id or an index.
+           */
+          cue?: string;
+          segments: string[];
+        },
+        ...{
+          id: string;
+          /**
+           * Optional staging cue the demo's code may look up, so code addresses a moment by what happens in it rather than by a beat id or an index.
+           */
+          cue?: string;
+          segments: string[];
+        }[],
+      ];
+    },
+    ...{
+      id: string;
+      /**
+       * @minItems 1
+       */
+      beats: [
+        {
+          id: string;
+          /**
+           * Optional staging cue the demo's code may look up, so code addresses a moment by what happens in it rather than by a beat id or an index.
+           */
+          cue?: string;
+          segments: string[];
+        },
+        ...{
+          id: string;
+          /**
+           * Optional staging cue the demo's code may look up, so code addresses a moment by what happens in it rather than by a beat id or an index.
+           */
+          cue?: string;
+          segments: string[];
+        }[],
+      ];
+    }[],
+  ];
+  /**
+   * Optional: a story section of titleChapter whose localized title names this demo instead of the chapter's, for a second demo drawn from the same chapter.
+   */
+  titleSection?: string;
+}
+
 // experience-scene.schema.json
 /**
  * Composition plan for one runtime Scene: its Shots, their Beats, and the narrative segment ids each Beat carries. Holds no visible text and no localized strings; text is fetched from text/locales/<locale>/ by segment id at runtime. A scene is not tied to one chapter: the chapters it draws from are derived from the referenced ids. See docs/text-experience-binding.md.
@@ -373,5 +449,585 @@ export interface LocaleUIStrings {
      * Shown beside a language on the home page when none of its parts can be read yet.
      */
     localeNone: string;
+    /**
+     * Shown as the heading of the concept-demo index.
+     */
+    demosTitle: string;
+    /**
+     * One line under the demo index heading.
+     */
+    demosIntro: string;
+    /**
+     * Link from a demo back to the demo index.
+     */
+    demoBack: string;
+    /**
+     * Link from a demo to the next demo.
+     */
+    demoNext: string;
+    /**
+     * Label of the motion toggle while ambient motion is playing.
+     */
+    demoPause: string;
+    /**
+     * Rabbit hole: a button to look closely at a map on the well wall while falling.
+     */
+    demoLookMap: string;
+    /**
+     * Rabbit hole: close the map and look down the well again.
+     */
+    demoLookAway: string;
+    /**
+     * Drink Me: a button to lift the low curtain before the little door is found.
+     */
+    demoPeekCurtain: string;
+    /**
+     * Pool of tears: tilt the water to the left (the button form of tilting the phone).
+     */
+    demoLeanLeft: string;
+    /**
+     * Pool of tears: tilt the water to the right.
+     */
+    demoLeanRight: string;
+    /**
+     * Caterpillar: hint that holding the puff button blows a bigger smoke ring.
+     */
+    demoPuffHold: string;
+    /**
+     * Cheshire Cat: the reader chooses the Cat goes tail first; the grin always last.
+     */
+    demoVanishTail: string;
+    /**
+     * Cheshire Cat: the reader chooses the Cat goes head first; the grin always last.
+     */
+    demoVanishHead: string;
+    /**
+     * Tea-party: status when the reader moves round into a used place.
+     */
+    demoDirtySeat: string;
+    /**
+     * Croquet: a button to settle the flamingo before it sulks and twists away.
+     */
+    demoStrokeFlamingo: string;
+    /**
+     * Croquet: status when the flamingo has been left alone too long.
+     */
+    demoFlamingoSulks: string;
+    /**
+     * Trial: lean out of the way of the flying cards, to the left.
+     */
+    demoDodgeLeft: string;
+    /**
+     * Trial: lean out of the way of the flying cards, to the right.
+     */
+    demoDodgeRight: string;
+    /**
+     * Trial: status when a card misses her.
+     */
+    demoDodged: string;
+    /**
+     * The Duchess: a button that blows the latest moral ribbon away over the croquet-ground.
+     */
+    demoFlingMoral: string;
+    /**
+     * The witnesses: a button that puts the cheering guinea-pig into the officers' bag before they do.
+     */
+    demoSuppressGuineaPig: string;
+    /**
+     * The witnesses: a button that turns the Lizard in the jury-box the right way up before Alice does.
+     */
+    demoRightLizard: string;
+    /**
+     * Drink Me: turn the bottle to look for a poison label (there is none).
+     */
+    demoTurnBottle: string;
+    /**
+     * Drink Me: try to climb the glass table's leg to the key; she slides down.
+     */
+    demoClimbLeg: string;
+    /**
+     * Pool of tears: shed one giant tear; the pool rises a notch.
+     */
+    demoCryTear: string;
+    /**
+     * Pool of tears: wave the Rabbit's fan; each wave shrinks her.
+     */
+    demoFan: string;
+    /**
+     * Caucus-race: give the focused runner a comfit (the keyboard's way to feed).
+     */
+    demoGiveComfit: string;
+    /**
+     * A Long Tale: magnify the words of the tail where the reader is.
+     */
+    demoReadTail: string;
+    /**
+     * Growing in the House: her foot up the chimney kicks in a puff of soot.
+     */
+    demoWiggleFoot: string;
+    /**
+     * There Goes Bill: a guinea-pig holds up Bill's head for the brandy.
+     */
+    demoHoldHead: string;
+    /**
+     * There Goes Bill: move the crowd by the hedge under the falling Bill.
+     */
+    demoCatchBill: string;
+    /**
+     * Caterpillar: dip her long neck down into the tree tops.
+     */
+    demoDipLeaves: string;
+    /**
+     * Caterpillar: accessible name of the tape-measure that reads her height.
+     */
+    demoHeightInches: string;
+    /**
+     * Pig and Pepper: unfold the Queen's invitation, as large as the Footman.
+     */
+    demoOpenLetter: string;
+    /**
+     * Pig and Pepper: look at the grinning cat on the hearth.
+     */
+    demoLookCat: string;
+    /**
+     * Cheshire Cat: the pig from the kitchen trots across the wood.
+     */
+    demoCallPig: string;
+    /**
+     * Cheshire Cat: answer "pig" to the Cat's "pig, or fig?".
+     */
+    demoPig: string;
+    /**
+     * Cheshire Cat: answer "fig" to the Cat's "pig, or fig?".
+     */
+    demoFig: string;
+    /**
+     * No Room: tap along with the Hatter's song; bats flap across the sky.
+     */
+    demoSingAlong: string;
+    /**
+     * No Room: try the raven against the writing-desk; they never match.
+     */
+    demoAnswerRiddle: string;
+    /**
+     * Dormouse: first-touch hint that the treacle can be stirred.
+     */
+    demoStirTreacle: string;
+    /**
+     * Dormouse: pull a little bucket of treacle up the spiral.
+     */
+    demoDrawTreacle: string;
+    /**
+     * Dormouse: turn a floating M into a thing that begins with M.
+     */
+    demoDrawM: string;
+    /**
+     * Croquet: during the quarrel, a tap makes the players quarrel louder.
+     */
+    demoStirQuarrel: string;
+    /**
+     * Croquet: turn over a gardener lying face down to see which card it is.
+     */
+    demoTurnCard: string;
+    /**
+     * The Duchess: Alice shrugs the Duchess's sharp chin off her shoulder.
+     */
+    demoShrug: string;
+    /**
+     * Mock Turtle: break the long silence; the Mock Turtle sobs louder.
+     */
+    demoClearThroat: string;
+    /**
+     * Mock Turtle: the conger-eel drawls, stretches and faints in coils.
+     */
+    demoWakeEel: string;
+    /**
+     * The witnesses: catch the King writing Rule Forty-two on the spot.
+     */
+    demoKingsNotebook: string;
+    /**
+     * Sentence First: the dream comes back (the other half of Open her eyes).
+     */
+    demoCloseEyes: string;
+    /**
+     * Sentence First: hand a keepsake to the little children of the after-time.
+     */
+    demoGiveChildren: string;
+    /**
+     * Rabbit hole: Dinah, in the dream of cats and bats, pounces at the bat.
+     */
+    demoCallDinah: string;
+    /**
+     * Riverbank: status after the reader turns a page of her sister's book.
+     */
+    demoPageEmpty: string;
+    /**
+     * Riverbank: status after the reader picks a daisy.
+     */
+    demoChainLonger: string;
+    /**
+     * Riverbank: status after the reader looks at the Rabbit's watch.
+     */
+    demoWatchSpins: string;
+    /**
+     * Toggle at the end of a demo: when on, the page goes to the next scene by itself after a pause at the end.
+     */
+    demoAuto: string;
+    /**
+     * Label of the motion toggle while ambient motion is paused.
+     */
+    demoResume: string;
+    /**
+     * Hint at the top of a demo that scrolling moves the story on.
+     */
+    demoScrollHint: string;
+    /**
+     * Technique note on the demo index card for the rabbit hole.
+     */
+    demoTechRabbitHole: string;
+    /**
+     * Technique note on the demo index card for the Dormouse's tale.
+     */
+    demoTechDormouse: string;
+    /**
+     * Technique note on the demo index card for the trial.
+     */
+    demoTechTrial: string;
+    /**
+     * Button that takes the marmalade jar off its shelf.
+     */
+    demoGrabJar: string;
+    /**
+     * Status once the jar is tucked into a cupboard.
+     */
+    demoJarTucked: string;
+    /**
+     * Button that pinches the Dormouse awake.
+     */
+    demoPinch: string;
+    /**
+     * Button that brushes the cards off the screen.
+     */
+    demoBeatOff: string;
+    /**
+     * Note shown when the well cannot be drawn with WebGL and is drawn flat instead.
+     */
+    demoFlatWell: string;
+    /**
+     * Note shown when the visitor prefers reduced motion.
+     */
+    demoReducedMotion: string;
+    /**
+     * Technique note on the demo index card for Drink Me.
+     */
+    demoTechDrinkMe: string;
+    /**
+     * Technique note on the demo index card for the pool of tears.
+     */
+    demoTechPool: string;
+    /**
+     * Technique note on the demo index card for the Caucus-race.
+     */
+    demoTechCaucus: string;
+    /**
+     * Button that drinks from the bottle.
+     */
+    demoDrink: string;
+    /**
+     * Button that eats the cake.
+     */
+    demoEat: string;
+    /**
+     * Button that stirs the water.
+     */
+    demoRipple: string;
+    /**
+     * Accessible name of a runner in the Caucus-race; pressing it stops or starts that runner.
+     */
+    demoRunToggle: string;
+    /**
+     * Button that sets every runner running.
+     */
+    demoRaceStart: string;
+    /**
+     * Technique note on the demo index card for the White Rabbit's house.
+     */
+    demoTechRabbitHouse: string;
+    /**
+     * Technique note on the demo index card for Bill the Lizard.
+     */
+    demoTechBill: string;
+    /**
+     * Technique note on the demo index card for the Cheshire Cat.
+     */
+    demoTechCheshire: string;
+    /**
+     * Button that makes the snatch out of the window.
+     */
+    demoSnatch: string;
+    /**
+     * Button that gives the sharp kick up the chimney.
+     */
+    demoKick: string;
+    /**
+     * Button that makes the Cat vanish or appear.
+     */
+    demoVanish: string;
+    /**
+     * Heading of the Alice picker on the demo index.
+     */
+    demoAliceTitle: string;
+    /**
+     * Name of the blue Alice.
+     */
+    demoAliceBlue: string;
+    /**
+     * One line under the blue Alice: the look everyone knows.
+     */
+    demoAliceBlueNote: string;
+    /**
+     * Name of the yellow Alice.
+     */
+    demoAliceYellow: string;
+    /**
+     * One line under the yellow Alice: the earlier look, for those who remember it.
+     */
+    demoAliceYellowNote: string;
+    /**
+     * Signpost button toward the Hatter's house.
+     */
+    demoWayHatter: string;
+    /**
+     * Signpost button toward the March Hare's house.
+     */
+    demoWayHare: string;
+    /**
+     * Button that calls the Cat to another bough.
+     */
+    demoCallCat: string;
+    /**
+     * Accessible name of a door in the hall; pressing it tries the lock.
+     */
+    demoTryDoor: string;
+    /**
+     * Hint under the Cheshire Cat: tap the wood to move the Cat there.
+     */
+    demoTeleportHint: string;
+    /**
+     * Button that puts a thing taken from a shelf back into a cupboard.
+     */
+    demoPutBack: string;
+    /**
+     * Accessible name of a juror; pressing one flips what it writes on its slate.
+     */
+    demoJurorToggle: string;
+    /**
+     * Label of the sound toggle while sound is off.
+     */
+    demoSoundOn: string;
+    /**
+     * Label of the sound toggle while sound is on.
+     */
+    demoSoundOff: string;
+    /**
+     * Button that asks to steer the view with the phone's tilt.
+     */
+    demoTilt: string;
+    /**
+     * Status once tilt steering is on.
+     */
+    demoTiltOn: string;
+    /**
+     * Button that picks up the little golden key.
+     */
+    demoTakeKey: string;
+    /**
+     * Accessible-name suffix for the runner the reader chose.
+     */
+    demoMyRunner: string;
+    /**
+     * Hint that a comfit can be dragged to a runner.
+     */
+    demoFeed: string;
+    /**
+     * Button that shakes the house.
+     */
+    demoShakeHouse: string;
+    /**
+     * Index card: what the Caterpillar demo shows.
+     */
+    demoTechCaterpillar: string;
+    /**
+     * Index card: what the croquet demo shows.
+     */
+    demoTechCroquet: string;
+    /**
+     * Index card: what the Lobster Quadrille demo shows.
+     */
+    demoTechQuadrille: string;
+    /**
+     * Button that turns a page of the sister's book on the riverbank.
+     */
+    demoTurnPage: string;
+    /**
+     * Button that picks a daisy for Alice's chain on the riverbank.
+     */
+    demoPickDaisy: string;
+    /**
+     * Button that looks at the White Rabbit's watch; its hands spin for a moment.
+     */
+    demoLookWatch: string;
+    /**
+     * Button that makes the Caterpillar blow a smoke ring.
+     */
+    demoPuff: string;
+    /**
+     * Button on the left bit of mushroom: nibbling it makes her taller.
+     */
+    demoNibbleLeft: string;
+    /**
+     * Button on the right bit of mushroom: nibbling it makes her shorter.
+     */
+    demoNibbleRight: string;
+    /**
+     * Hint that the pointer bends her neck.
+     */
+    demoBendNeck: string;
+    /**
+     * Button on the Pigeon: shoo it away for a moment.
+     */
+    demoShoo: string;
+    /**
+     * Hint that a drag over a white rose paints it red.
+     */
+    demoPaintRose: string;
+    /**
+     * Button that swings the flamingo at the hedgehog.
+     */
+    demoStrike: string;
+    /**
+     * Button that brings the flamingo back.
+     */
+    demoCatchFlamingo: string;
+    /**
+     * Button that puts the gardeners into the flower-pot.
+     */
+    demoHideGardeners: string;
+    /**
+     * Button that throws the lobster out to sea.
+     */
+    demoThrowLobster: string;
+    /**
+     * Button that puts the reader into the line of dancers.
+     */
+    demoJoinDance: string;
+    /**
+     * Button that turns a somersault in the sea.
+     */
+    demoSomersault: string;
+    /**
+     * Button that wakes the sister from her dream.
+     */
+    demoOpenEyes: string;
+    /**
+     * Button on the snail in the song: it draws into its shell.
+     */
+    demoSnail: string;
+    /**
+     * Technique note on the demo index card for Pig and Pepper.
+     */
+    demoTechPig: string;
+    /**
+     * Technique note on the demo index card for the Mock Turtle's story.
+     */
+    demoTechMockTurtle: string;
+    /**
+     * Button that makes the two footmen bow again, tangling their curls.
+     */
+    demoBow: string;
+    /**
+     * Button, and the cauldron's label: more pepper, and a sneeze.
+     */
+    demoPepper: string;
+    /**
+     * Button that ducks the reader under the flying pots and pans.
+     */
+    demoDuck: string;
+    /**
+     * Label on a pan stuck to the glass: a tap bats it away.
+     */
+    demoBatPan: string;
+    /**
+     * Button that knots the baby into a bundle in her arms.
+     */
+    demoHoldTight: string;
+    /**
+     * Label on the baby in her arms: a tap makes it grunt and turn a little more pig.
+     */
+    demoPokeBaby: string;
+    /**
+     * Button on the Mock Turtle: comforting him makes him sigh harder and the sea heave.
+     */
+    demoComfort: string;
+    /**
+     * Button that sends a wave over the subject words written on the sand.
+     */
+    demoWash: string;
+    /**
+     * Button that makes one of the subject words writhe; tapping a word does the same.
+     */
+    demoUglify: string;
+    /**
+     * Button in the Mouse's tale that slides the tail-text along its curve; a drag on the tail does the same.
+     */
+    demoPullTail: string;
+    /**
+     * Button at the knot in the Mouse's tale: trying to undo it only offends the Mouse.
+     */
+    demoUndoKnot: string;
+    /**
+     * Status line after a failed undo of the knot: it holds, and the Mouse takes offence.
+     */
+    demoKnotHolds: string;
+    /**
+     * Label on each member of the party once the sensation starts: a tap sends it off at once.
+     */
+    demoBirdLeave: string;
+    /**
+     * Technique note on the demo index card for the riverbank.
+     */
+    demoTechRiverbank: string;
+    /**
+     * Technique note on the demo index card for the Mouse's tale.
+     */
+    demoTechMouseTale: string;
+    /**
+     * Index card: what the witnesses demo shows.
+     */
+    demoTechWitnesses: string;
+    /**
+     * Index card: what the Duchess demo shows.
+     */
+    demoTechDuchess: string;
+    /**
+     * Technique note on the demo index card for the tea-party.
+     */
+    demoTechTeaParty: string;
+    /**
+     * Button at the tea-party that lifts the pot-lids: there is nothing but tea.
+     */
+    demoLookForWine: string;
+    /**
+     * Button at the tea-party that spreads the best butter on the Hatter's watch.
+     */
+    demoButterWatch: string;
+    /**
+     * Button at the tea-party that whispers a hint to Time: round goes the clock.
+     */
+    demoWhisperTime: string;
+    /**
+     * Button at the tea-party that moves everyone one seat along the table.
+     */
+    demoMoveRound: string;
   };
 }

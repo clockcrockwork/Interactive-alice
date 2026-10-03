@@ -1,0 +1,382 @@
+/* The pool of tears: a Canvas sea the reader can stir, and sentences that ride
+   the swell. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  /* The hall is sepia; the water is the world's own printed water, allowed a
+     little of the interaction blue because the tears are the moment. The script
+     reads these through a probe element at mount, so the Canvas sea draws with
+     the same resolved colours. */
+  :root {
+    --pt-hall: var(--sepia-dark);
+    --pt-hall-deep: var(--sepia-deep);
+    --pt-water: color-mix(in oklch, var(--world-water), var(--ix-blue) 30%);
+    --pt-water-deep: color-mix(in oklch, var(--world-water-deep), var(--ix-blue) 20%);
+    --pt-foam: var(--paper-base);
+    --pt-tile: var(--paper-base);
+    --pt-tile-dark: var(--ink-primary);
+    --pt-ink: var(--ink-primary);
+    --pt-mouse: var(--sepia-mid);
+    /* The party in the water in the colours the race draws them in (art/vectors.ts
+       runnerSvg), so they are the same creatures when they stand up on the bank. */
+    --pt-duck: var(--paper-base);
+    --pt-duck-head: var(--world-leaf-deep);
+    --pt-dodo: var(--sepia-light);
+    --pt-dodo-head: var(--paper-aged);
+    --pt-lory: var(--sepia-mid);
+    --pt-eaglet: var(--sepia-dark);
+    --pt-eaglet-head: var(--paper-base);
+    --pt-crab: var(--sepia-dark);
+    --pt-magpie: var(--sepia-deep);
+    --pt-belly: var(--paper-base);
+    --pt-beak: var(--sepia-mid);
+    /* The open sky and the bank the party swims to: the race's own (caucus.css). */
+    --pt-sky: var(--cr-sky);
+    --pt-sky-low: var(--cr-sky-low);
+    --pt-bank: var(--cr-bank);
+    --pt-bank-deep: var(--cr-bank-deep);
+    /* A tear shed by hand: the pool's water, a little lighter, with an edge. */
+    --pt-tear: oklch(from var(--pt-water) calc(l + 0.08) c h / 0.85);
+    --pt-tear-edge: var(--pt-water-deep);
+    --pt-night: var(--world-night-deep);
+    /* The hall's furniture, in Drink Me's colours (drink-me.css --dk-door, --dk-glass,
+       --dk-gold), since the first frame is the room that demo ends in. */
+    --pt-door: var(--sepia-dark);
+    --pt-door-frame: var(--sepia-deep);
+    --pt-glass: oklch(from var(--paper-base) l c h / 0.3);
+    --pt-glass-edge: oklch(from var(--paper-base) l c h / 0.7);
+    --pt-gold: var(--ix-gold);
+    --pt-shadow: oklch(from var(--ink-primary) l c h / 0.55);
+  }
+}
+
+@layer scene {
+  /* Captions sit high here, clear of the link to the next demo already. */
+  .demo--pool-of-tears {
+    --demo-end-lift: 0px;
+  }
+
+  .demo--pool-of-tears .demo-beat {
+    inset-block-end: auto;
+    inset-block-start: 54vh;
+    translate: 0 calc(var(--bob, 0) * 1px);
+    rotate: calc(var(--tilt, 0) * 1deg);
+  }
+
+  /* At the bank the sentence goes down into the water, clear of the party. */
+  .demo--pool-of-tears .demo-beat[data-cue="shore"] {
+    inset-block-start: 64vh;
+  }
+
+  .demo--pool-of-tears .line[data-speaker="mouse"] {
+    font-style: italic;
+  }
+
+  /* Under the water for a moment: the water's own blue, and the sentences ripple. */
+  .pt__under {
+    background: linear-gradient(
+      to bottom,
+      oklch(from var(--pt-water) l c h / 0.7),
+      oklch(from var(--pt-water-deep) l c h / 0.85)
+    );
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .pt__under::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0 6vh,
+      oklch(from var(--pt-foam) l c h / 0.12) 6vh 6.4vh
+    );
+    animation: pt-caustic 2.2s linear infinite;
+  }
+
+  .demo--pool-of-tears .demo-beat {
+    filter: blur(calc(var(--under, 0) * 1.5px));
+  }
+
+  /* Her own skirt and shoes at the bottom of the frame, placed as Drink Me
+     places them, until the pool takes her. */
+  .pt__self-layer {
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .pt__self {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: -4%;
+    inline-size: clamp(24rem, 120vmin, 70rem);
+    translate: -50% 0;
+    filter: drop-shadow(0 -16px 30px var(--pt-shadow));
+  }
+
+  /* The roof, folded in at the top of the frame where her head met it. */
+  .pt__roof {
+    --fold: 0.55;
+    background: var(--pt-night);
+    clip-path: inset(0 0 calc(100% - var(--fold) * 50%) 0);
+    pointer-events: none;
+  }
+
+  .pt__canvas {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    touch-action: pan-y;
+    pointer-events: auto;
+  }
+
+  /* The props layer is over the water: it lets every tap through to the sea,
+     except on the fan while she can wave it. */
+  .pt__props,
+  .pt__cry {
+    pointer-events: none;
+  }
+
+  .pt__rabbit {
+    position: absolute;
+    inset-block-end: 40%;
+    inset-inline-start: 0;
+    inline-size: clamp(4rem, 12vmin, 8rem);
+    color: var(--paper-base);
+    opacity: 0;
+  }
+
+  .pt__rabbit svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .pt__fan {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: -4%;
+    inline-size: clamp(10rem, 34vmin, 20rem);
+    translate: -50% 0;
+    transform-origin: 50% 100%;
+    opacity: 0;
+    filter: drop-shadow(0 16px 24px var(--pt-shadow));
+  }
+
+  .pt__fan svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .pt__fan[data-waving] {
+    animation: pt-fan 0.9s ease-in-out infinite alternate;
+  }
+
+  .pt__fan[data-fannable] {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  /* One wave of the reader's own: a big sweep, then the fan's own waving again. */
+  .pt__fan[data-sweep] {
+    animation: pt-fan-sweep 0.5s ease-out 1;
+  }
+
+  /* A giant tear of the reader's, and the crown of its splash. */
+  .pt__tear,
+  .pt__splash {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+  }
+
+  .pt__tear {
+    inline-size: clamp(2.2rem, 6vmin, 3.6rem);
+    margin-inline-start: calc(clamp(2.2rem, 6vmin, 3.6rem) / -2);
+    margin-block-start: calc(clamp(2.2rem, 6vmin, 3.6rem) * -1.4);
+    filter: drop-shadow(0 4px 6px var(--pt-shadow));
+  }
+
+  .pt__tear svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .pt__splash {
+    inline-size: clamp(4rem, 12vmin, 7rem);
+    aspect-ratio: 3 / 1;
+    margin-inline-start: calc(clamp(4rem, 12vmin, 7rem) / -2);
+    margin-block-start: calc(clamp(4rem, 12vmin, 7rem) / -3);
+    border: 3px solid var(--pt-foam);
+    border-block-start-color: transparent;
+    border-radius: 50%;
+    animation: pt-splash 0.6s ease-out forwards;
+  }
+
+  /* The party's own figures at the end, in the race's sheet: a picture only. */
+  .pt__race {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .pt__race .cr__runner {
+    pointer-events: none;
+    cursor: default;
+  }
+
+  .pt__dinah {
+    position: absolute;
+    inset-inline-end: 8%;
+    inset-block-start: 12%;
+    inline-size: clamp(5rem, 16vmin, 9rem);
+    color: oklch(from var(--paper-aged) l c h / 0.55);
+    opacity: 0;
+    filter: blur(1px);
+  }
+
+  .pt__dinah svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* Where the script reads a token's resolved colour. */
+  .pt__probe {
+    position: absolute;
+    inline-size: 0;
+    block-size: 0;
+    color: var(--probe, var(--ink-primary));
+    visibility: hidden;
+  }
+
+  .pt__prop {
+    inset-inline-end: var(--space-2);
+    inset-block-end: calc(var(--space-4) + 1rem);
+  }
+
+  /* The lean buttons sit together at the top, clear of the captions and the
+     stir button; the sea layer carries the current lean in degrees. */
+  .pt__prop--left,
+  .pt__prop--right {
+    inset-inline: 50% auto;
+    inset-block: calc(var(--demo-bar-height) + 1rem) auto;
+  }
+
+  .pt__prop--left {
+    translate: calc(-100% - 0.3rem) 0;
+  }
+
+  .pt__prop--right {
+    translate: 0.3rem 0;
+  }
+
+  /* What the reader did to the water, for the tests: the lean in degrees, tears
+     shed by hand, waves of the fan. */
+  .pt__sea {
+    --lean: 0;
+    --cried: 0;
+    --fanned: 0;
+  }
+
+  .demo[data-paused] .pt__fan[data-waving],
+  .demo[data-paused] .pt__under::after {
+    animation-play-state: paused;
+  }
+
+  /* A phone: the long beats grow up from the foot of the frame, under the
+     swimmers, and every button the water offers sits at the top in two rows. */
+  @media (max-width: 600px) {
+    .demo--pool-of-tears {
+      --demo-end-lift: 5.5rem;
+    }
+
+    .demo--pool-of-tears .demo-beat,
+    .demo--pool-of-tears .demo-beat[data-cue="shore"] {
+      inset-block-start: auto;
+      inset-block-end: 3vh;
+    }
+
+    .pt__prop:is(.pt__prop--stir, .pt__prop--cry, .pt__prop--fan) {
+      inset-inline: 50% auto;
+      inset-block: calc(var(--demo-bar-height) + 3.6rem) auto;
+      translate: -50% 0;
+    }
+  }
+
+  @keyframes pt-caustic {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(6.4vh);
+    }
+  }
+
+  @keyframes pt-fan {
+    from {
+      transform: rotate(-14deg);
+    }
+    to {
+      transform: rotate(14deg);
+    }
+  }
+
+  @keyframes pt-fan-sweep {
+    0% {
+      transform: rotate(-30deg) scale(1.05);
+    }
+    55% {
+      transform: rotate(32deg) scale(1.1);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }
+
+  @keyframes pt-splash {
+    from {
+      transform: scale(0.3);
+      opacity: 1;
+    }
+    to {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .demo--pool-of-tears .demo-beat {
+      translate: 0 0;
+      rotate: 0deg;
+    }
+
+    .pt__fan[data-waving],
+    .pt__under::after {
+      animation: none;
+      transform: rotate(8deg);
+    }
+
+    .pt__under::after {
+      transform: none;
+    }
+
+    /* Each wave cuts the fan to its other side; the splash is a still crown. */
+    .pt__fan[data-sweep],
+    .pt__splash {
+      animation: none;
+    }
+
+    .pt__fan[data-side] {
+      transform: rotate(-8deg);
+    }
+
+    /* Under the water the sentences stay clear. */
+    .demo--pool-of-tears .demo-beat {
+      filter: none;
+    }
+  }
+}

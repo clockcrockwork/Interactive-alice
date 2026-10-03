@@ -1,0 +1,803 @@
+/* A Moral in Everything: a walk arm in arm along the croquet-ground, side-on,
+   in three bands that slide at their own rates; ribbons of morals from the
+   Duchess's mouth, piled above her cap; a pig that flies; the Queen's shadow;
+   and the ground running on to the Mock Turtle's shore, drawn by its sheet. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    /* The croquet-ground as the book prints it, the same tokens as the garden
+       before it: paper sky, leaf turf, the flamingo a printed sepia-pink. */
+    --dc-sky: var(--world-sky);
+    --dc-sky-low: var(--paper-base);
+    --dc-turf: var(--world-leaf);
+    --dc-turf-deep: var(--world-leaf-deep);
+    --dc-hedge: color-mix(in oklch, var(--world-leaf-deep), var(--sepia-dark) 40%);
+    --cq-flamingo: color-mix(in oklch, var(--wonder-red-faded), var(--paper-warm) 45%);
+    --dc-shadow: oklch(from var(--ink-primary) l c h / 0.35);
+    --dc-storm: oklch(from var(--ink-primary) l c h / 0.55);
+    /* A sampler ribbon: aged paper with ink stitches. */
+    --dc-ribbon: var(--paper-aged);
+    --dc-ribbon-edge: var(--sepia-mid);
+    --dc-stitch: oklch(from var(--ink-primary) l c h / 0.45);
+    /* Mustard: the book's glow dulled to a printed yellow-brown. */
+    --dc-mustard: color-mix(in oklch, var(--world-glow), var(--sepia-mid) 22%);
+    --dc-mustard-deep: color-mix(in oklch, var(--world-glow), var(--sepia-dark) 45%);
+    --dc-walker: clamp(9rem, 30vmin, 15rem);
+    /* Where the ground meets the sky, and where the two stand on it, as a
+       percentage of the frame's height (unitless, so either unit can be made). */
+    --dc-pig: clamp(4.4rem, 13vmin, 7.5rem);
+    --dc-horizon: 60;
+    --dc-feet: 73;
+    /* The Queen at the shore is the Mock Turtle's Queen, at its size; on the
+       ground, nearer the camera, she is that size times this. */
+    --dc-queen-near: 1.44;
+    --dc-queen: calc(clamp(4.5rem, 15vmin, 8.5rem) * var(--dc-queen-near));
+  }
+}
+
+@layer scene {
+  .demo--duchess {
+    /* The last beat's captions sit up in the empty sky, clear of the figures
+       and of the link to the next scene, so the shell need not lift them. */
+    --demo-end-lift: 0;
+  }
+
+  .demo--duchess .demo-beat {
+    inset-block-end: 7vh;
+  }
+
+  .demo--duchess[data-ending] .demo-beat {
+    inset-block-end: auto;
+    inset-block-start: calc(var(--demo-bar-height) + 1.5rem);
+  }
+
+  .demo--duchess .line[data-speaker="duchess"] {
+    font-style: italic;
+    color: var(--wonder-red-dark);
+  }
+
+  .demo--duchess .line[data-speaker="queen-of-hearts"] {
+    font-weight: 700;
+    color: var(--wonder-red-dark);
+  }
+
+  .dc__mine svg,
+  .dc__pig svg,
+  .dc__snap svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .dc__sky {
+    background: linear-gradient(
+      to bottom,
+      var(--dc-sky),
+      var(--dc-sky-low) calc((var(--dc-horizon) - 2) * 1%),
+      var(--dc-turf) calc(var(--dc-horizon) * 1%)
+    );
+    pointer-events: none;
+  }
+
+  /* --- The bands. Each layer is a full stage; its band slides by the walk at
+     the band's own rate (in vw), and leans a little with the pointer. */
+  .dc__far,
+  .dc__mid,
+  .dc__near,
+  .dc__pig-layer,
+  .dc__landing,
+  .dc__shade,
+  .dc__fury {
+    --walk: 0;
+    --lean: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* Layers that are off are not painted at all. */
+  .dc__pig-layer[data-off],
+  .dc__landing[data-off] {
+    visibility: hidden;
+  }
+
+  .dc__band {
+    --rate: 1;
+    position: absolute;
+    inset: 0;
+    transform: translate3d(calc((var(--walk) * var(--rate) + var(--lean) * 1.5) * -1vw), 0, 0);
+  }
+
+  .dc__band--far {
+    --rate: 0.3;
+  }
+
+  .dc__band--mid {
+    --rate: 0.6;
+  }
+
+  /* A hedge along the horizon, far off. */
+  .dc__hedge {
+    position: absolute;
+    inset-inline: 0 -90vw;
+    inset-block: calc((var(--dc-horizon) - 5) * 1%) calc((100 - var(--dc-horizon)) * 1%);
+    background:
+      radial-gradient(ellipse at 50% 100%, var(--dc-hedge) 0 46%, transparent 48%),
+      radial-gradient(ellipse at 50% 100%, var(--dc-hedge) 0 40%, transparent 42%);
+    background-size:
+      18vw 100%,
+      11vw 70%;
+    background-position:
+      0 100%,
+      5vw 100%;
+    background-repeat: repeat-x;
+  }
+
+  /* The near turf: ridges and furrows, side-on, wide enough for the whole walk. */
+  .dc__turf {
+    position: absolute;
+    inset-inline: 0 -270vw;
+    inset-block: calc(var(--dc-horizon) * 1%) 0;
+    background:
+      repeating-linear-gradient(
+        to right,
+        oklch(from var(--ink-primary) l c h / 0) 0 9vw,
+        oklch(from var(--ink-primary) l c h / 0.07) 9vw 11vw
+      ),
+      repeating-linear-gradient(
+        to bottom,
+        oklch(from var(--ink-primary) l c h / 0) 0 5vh,
+        oklch(from var(--ink-primary) l c h / 0.1) 5vh 7.5vh,
+        oklch(from var(--paper-base) l c h / 0.08) 7.5vh 9vh
+      ),
+      linear-gradient(to bottom, var(--dc-turf), var(--dc-turf-deep));
+  }
+
+  /* --- The game, behind: small pieces standing at the horizon. */
+  .dc__piece {
+    --x: 0;
+    --up: 0;
+    --off: 0;
+    position: absolute;
+    inset-inline-start: calc(var(--x) * 1vw);
+    inset-block-start: calc((var(--dc-horizon) + 1.5) * 1%);
+    inline-size: clamp(2.4rem, 7vmin, 4.2rem);
+    translate: -50% -100%;
+    transform-origin: 50% 100%;
+  }
+
+  .dc__piece::after {
+    content: "";
+    position: absolute;
+    inset-inline: 10%;
+    inset-block-end: -3%;
+    block-size: 10%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 50%, var(--dc-shadow), transparent 72%);
+    z-index: -1;
+  }
+
+  .dc__arch {
+    inline-size: clamp(3.6rem, 10vmin, 6rem);
+    inset-block-start: calc((var(--dc-horizon) + 1) * 1%);
+    /* Stands up out of its double, then walks off to the left. */
+    transform: translateX(calc(var(--off) * -70vw))
+      scale(calc(1 - var(--up) * 0.35), calc(1 + var(--up) * 0.9));
+  }
+
+  .dc__hedgehog {
+    inline-size: clamp(1.6rem, 4.5vmin, 2.8rem);
+    inset-block-start: calc((var(--dc-horizon) + 2) * 1%);
+  }
+
+  .dc__king {
+    inline-size: clamp(2.8rem, 8vmin, 4.8rem);
+  }
+
+  .dc__player[data-gone],
+  .dc__arch[data-off] {
+    visibility: hidden;
+  }
+
+  /* The mustard-mine, far off along the ground: a pithead, a heap, a cart. */
+  .dc__mine {
+    position: absolute;
+    inset-inline-start: calc(var(--x) * 1vw);
+    inset-block-start: calc((var(--dc-horizon) + 1.5) * 1%);
+    inline-size: clamp(8rem, 26vmin, 15rem);
+    translate: -50% -100%;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .dc__mine[data-shown] {
+    visibility: visible;
+  }
+
+  .dc__mine-wheel {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation: dc-wind 3.2s linear infinite;
+  }
+
+  /* --- Pigs have to fly: the pig-baby on paper wings, across the sky, until
+     the word is cut off and a dash hangs where it was. */
+  .dc__pig {
+    --fly: 0;
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: var(--dc-pig);
+    translate: calc(-14vw + var(--fly) * 86vw)
+      calc(30dvh - sin(var(--fly) * pi) * 14dvh + sin(var(--fly) * 5 * pi) * 2dvh);
+    rotate: calc(sin(var(--fly) * 5 * pi) * 6deg);
+  }
+
+  .dc__pig-layer[data-cut] .dc__pig {
+    visibility: hidden;
+  }
+
+  .dc__pig .art {
+    position: relative;
+    display: block;
+    inline-size: 100%;
+  }
+
+  .dc__wings {
+    position: absolute;
+    inset-inline: -52%;
+    inset-block-start: -6%;
+  }
+
+  .dc__wing {
+    position: absolute;
+    inset-block-start: 0;
+    inline-size: 58%;
+  }
+
+  .dc__wing--left {
+    inset-inline-start: 0;
+    transform-origin: 96% 86%;
+    animation: dc-flap-left 0.24s ease-in-out infinite alternate;
+  }
+
+  .dc__wing--right {
+    inset-inline-end: 0;
+    transform-origin: 4% 86%;
+    animation: dc-flap-right 0.24s ease-in-out infinite alternate;
+  }
+
+  .dc__wing--right svg {
+    scale: -1 1;
+  }
+
+  .dc__dash {
+    position: absolute;
+    inset-inline-start: calc(72vw + var(--dc-pig) * 0.1);
+    inset-block-start: calc(30dvh + var(--dc-pig) * 0.45);
+    inline-size: clamp(2.2rem, 7vmin, 4rem);
+    block-size: max(3px, 0.55vmin);
+    border-radius: 2px;
+    background: var(--ink-primary);
+    rotate: -4deg;
+    opacity: 0;
+  }
+
+  /* --- The shore the walk comes to, drawn by the Mock Turtle's own sheet: the
+     land slides in from the right as the walk goes on, its near edge soft, and
+     stops where that demo's first frame stands. */
+  .dc__landing {
+    --land: 0;
+  }
+
+  .dc__land {
+    position: absolute;
+    inset: 0;
+    transform: translate3d(calc((1 - var(--land)) * 105vw), 0, 0);
+    mask-image: linear-gradient(to right, transparent, var(--ink-primary) 28.6%);
+    mask-size: 140% 100%;
+    mask-position: 100% 0;
+    mask-repeat: no-repeat;
+  }
+
+  .dc__land > .mt__shore,
+  .dc__land > .mt__figures {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* --- The Queen's shadow, long across the ground from the right, and the
+     storm's shade over everything; neither walks with the ground. */
+  .dc__shade {
+    --shade: 0;
+    visibility: hidden;
+  }
+
+  .dc__shade[data-on] {
+    visibility: visible;
+  }
+
+  .dc__shade::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to left, var(--dc-storm), transparent 70%);
+    opacity: calc(var(--shade) * 0.8);
+  }
+
+  .dc__long-shadow {
+    position: absolute;
+    inset-inline: 0;
+    inset-block: calc((var(--dc-horizon) - 2) * 1%) 0;
+    background: radial-gradient(
+      ellipse 62% 66% at 82% 34%,
+      oklch(from var(--ink-primary) l c h / 0.42),
+      transparent 72%
+    );
+    transform: translateX(calc((1 - var(--shade)) * 90vw));
+    opacity: var(--shade);
+  }
+
+  .dc__fury {
+    background: var(--wonder-red);
+    opacity: 0;
+  }
+
+  /* --- The two of them, arm in arm, big in the frame; the Queen; the ribbons. */
+  .dc__pair {
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .dc__walkers {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: calc((100 - var(--dc-feet)) * 1%);
+    display: flex;
+    align-items: flex-end;
+    gap: 0;
+    translate: -56% 0;
+  }
+
+  .dc__walkers > * > .art,
+  .dc__queen > .art,
+  .dc__flamingo > .art {
+    transform-origin: 50% 100%;
+  }
+
+  /* Closer and closer: toward Alice, and down to her shoulder. A shrug knocks
+     the chin off (`--shrugged`), and the flamingo's snap makes her draw back
+     (`--flinch`); both are the reader's or a moment's, beside the story's lean. */
+  .dc__duchess {
+    --lean: 0;
+    --shrugged: 0;
+    --flinch: 0;
+    --near: calc(var(--lean) * (1 - var(--shrugged) * 0.8) - var(--flinch) * 0.3);
+    position: relative;
+    inline-size: var(--dc-walker);
+    transform-origin: 90% 100%;
+    transform: translateX(calc(var(--near) * 9%))
+      rotate(calc(var(--near) * 9deg - var(--shrugged) * 3deg));
+    z-index: 1;
+  }
+
+  .dc__duchess > .art[data-gone] {
+    visibility: hidden;
+  }
+
+  /* Alice winces from the chin, shrugs it off (`--shrug-up`), and at the end
+     steps past the camera (`--pass`), whose eyes are hers from then on. */
+  .dc__alice {
+    --wince: 0;
+    --shrug-up: 0;
+    --pass: 0;
+    position: relative;
+    inline-size: calc(var(--dc-walker) * 0.48);
+    margin-inline-start: calc(var(--dc-walker) * -0.04);
+    transform-origin: 50% 100%;
+    transform: translate(
+        calc(var(--wince) * 6% + var(--pass) * 40%),
+        calc(var(--shrug-up) * -5% + var(--pass) * 70%)
+      )
+      rotate(calc(var(--wince) * -7deg)) scale(calc(1 + var(--pass) * 2.6));
+    opacity: clamp(0, calc(1 - (var(--pass) - 0.45) * 2.2), 1);
+  }
+
+  .dc__pair[data-shrug] .dc__alice {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  /* The flamingo tucked under her arm, its head turned to the Duchess; at
+     "He might bite" it lunges with its beak out (`--bite`) and snaps. */
+  .dc__flamingo {
+    --eye: 0;
+    --snap: 0;
+    --bite: 0;
+    position: absolute;
+    inset-inline-end: -42%;
+    inset-block-start: 36%;
+    inline-size: 110%;
+    transform-origin: 45% 80%;
+    transform: rotate(calc(var(--bite) * -4deg));
+  }
+
+  /* At the bite (`--bite`) the neck shoots out up and left, stretched along its
+     own length, to the shoulder her chin is on; the head rides on its end with
+     the beak level and the lower half open; `--snap` clacks it shut. The head's
+     place is the neck's tip turned by the same angle and stretched by the same
+     factor: the tip is 14 across and 56 up from the neck's root. */
+  .dc__tucked-neck {
+    transform-origin: 136px 100px;
+    transform: rotate(calc(var(--bite) * -58deg)) scaleY(calc(1 + var(--bite) * 1.4));
+  }
+
+  .dc__tucked-head {
+    --turn: calc(var(--bite) * -58deg);
+    --stretch: calc(1 + var(--bite) * 1.4);
+    transform-origin: 150px 48px;
+    transform: translate(
+        calc((14 * cos(var(--turn)) + 56 * var(--stretch) * sin(var(--turn)) - 14) * 1px),
+        calc((14 * sin(var(--turn)) - 56 * var(--stretch) * cos(var(--turn)) + 56) * 1px)
+      )
+      rotate(
+        calc(var(--eye) * (1 - var(--bite)) * -28deg + var(--bite) * -8deg + var(--snap) * 22deg)
+      )
+      translate(
+        calc(var(--eye) * (1 - var(--bite)) * -12px),
+        calc(var(--eye) * (1 - var(--bite)) * -6px)
+      );
+  }
+
+  .dc__tucked-jaw {
+    transform-origin: 140px 50px;
+    transform: rotate(calc(var(--bite) * (1 - var(--snap)) * 26deg));
+  }
+
+  .dc__tucked-pupil {
+    --px: 0;
+    transform: translateX(calc(var(--px) * 1px));
+  }
+
+  .dc__snap {
+    position: absolute;
+    inset-inline-start: -36%;
+    inset-block-start: -3%;
+    inline-size: 32%;
+    opacity: var(--bite);
+  }
+
+  /* The Queen: in from the right to stand before them (`--arrive`); at the end
+     she walks on ahead (`--recede`), smaller with the distance, to the place and
+     the size the Mock Turtle's first frame gives her: feet at 66% of the frame,
+     24vw right of its middle. */
+  .dc__queen {
+    --arrive: 0;
+    --storm: 0;
+    --recede: 0;
+    --stop: 76vw;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 66%;
+    inline-size: var(--dc-queen);
+    translate: -50% -100%;
+    transform-origin: 50% 100%;
+    transform: translate(
+        calc(100vw - var(--arrive) * var(--stop) + var(--recede) * (var(--stop) - 76vw)),
+        calc((1 - var(--recede)) * (var(--dc-feet) - 66) * 1dvh)
+      )
+      scale(calc(1 - var(--recede) * (1 - 1 / var(--dc-queen-near))));
+    visibility: hidden;
+  }
+
+  .dc__queen[data-here] {
+    visibility: visible;
+  }
+
+  .dc__queen[data-shouting] > .art {
+    animation: dc-shout 0.35s ease-out 1;
+  }
+
+  /* A real little thunderstorm over her head, in ink and sepia. */
+  .dc__cloud {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 104%;
+    inline-size: 150%;
+    aspect-ratio: 2.2 / 1;
+    translate: -50% 0;
+    background:
+      radial-gradient(circle at 30% 70%, var(--sepia-deep) 0 22%, transparent 23%),
+      radial-gradient(circle at 55% 45%, var(--sepia-dark) 0 28%, transparent 29%),
+      radial-gradient(circle at 78% 70%, var(--sepia-deep) 0 20%, transparent 21%),
+      radial-gradient(ellipse at 50% 90%, var(--dc-storm) 0 44%, transparent 46%);
+    opacity: var(--storm);
+    animation: dc-brood 2.4s ease-in-out infinite alternate;
+  }
+
+  .dc__cloud::after {
+    content: "";
+    position: absolute;
+    inset-inline: 20%;
+    inset-block: 85% -30%;
+    background: repeating-linear-gradient(
+      100deg,
+      transparent 0 9%,
+      oklch(from var(--ink-primary) l c h / 0.35) 9% 10.5%
+    );
+  }
+
+  /* --- The morals: ribbons, stitched like a sampler, piled up above her cap.
+     Each unrolls from her mouth and rises to its place; each is a button, and a
+     flung one blows off over the ground. The moral on it is her own words. */
+  .dc__morals {
+    --gone: 0;
+    --morals: 0;
+    position: absolute;
+    inset-inline-start: calc(var(--dc-walker) * 0.5);
+    inset-block-end: 103%;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 0.3rem;
+    inline-size: min(21rem, 64vw);
+    translate: -50% 0;
+    pointer-events: none;
+  }
+
+  .dc__ribbon {
+    --i: 0;
+    --unroll: 0;
+    --fling: 0;
+    --tilt: calc(sin(var(--i) * 2.3 + 0.6) * 2.4deg);
+    position: relative;
+    inline-size: 100%;
+    margin: 0;
+    padding: 0.32em 1.8em 0.38em;
+    border: 0;
+    border-block: 2px dashed var(--dc-stitch);
+    background:
+      repeating-linear-gradient(
+        to right,
+        transparent 0 1.1rem,
+        oklch(from var(--dc-ribbon-edge) l c h / 0.25) 1.1rem 1.25rem
+      ),
+      var(--dc-ribbon);
+    clip-path: polygon(0 0, 100% 0, 95% 50%, 100% 100%, 0 100%, 5% 50%);
+    color: var(--ink-primary);
+    font-family: var(--demo-serif);
+    font-size: clamp(0.74rem, 0.62rem + 0.42vw, 0.98rem);
+    font-style: italic;
+    line-height: 1.25;
+    text-align: center;
+    text-wrap: balance;
+    cursor: pointer;
+    pointer-events: none;
+    transform-origin: 50% 100%;
+    transform: translate(
+        calc(var(--fling) * 70vw + var(--gone) * -55vw),
+        calc(
+          (1 - var(--unroll)) *
+          (var(--i) * 2.4rem + var(--dc-walker) * 0.42) +
+          var(--fling) *
+          -45vh +
+          var(--gone) *
+          -24vh
+        )
+      )
+      rotate(calc(var(--tilt) + var(--fling) * 60deg + var(--gone) * -50deg))
+      scale(calc(0.2 + var(--unroll) * 0.8), var(--unroll));
+    opacity: calc(var(--unroll) * (1 - var(--fling)) * (1 - var(--gone)));
+    visibility: hidden;
+  }
+
+  .dc__ribbon-words {
+    display: block;
+  }
+
+  .dc__ribbon-words::first-letter {
+    text-transform: uppercase;
+  }
+
+  .dc__ribbon[data-shown] {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .dc__ribbon[data-flung],
+  .dc__morals[data-gone] .dc__ribbon {
+    pointer-events: none;
+  }
+
+  .dc__ribbon:focus-visible {
+    outline: 3px solid var(--ix-gold);
+    outline-offset: 3px;
+  }
+
+  /* The props sit at the top right, clear of the pile of morals. */
+  .dc__prop--fling,
+  .dc__prop--shrug {
+    inset-inline-end: 4%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+  }
+
+  .dc__prop--shrug {
+    inset-block-start: calc(var(--demo-bar-height) + 3.6rem);
+  }
+
+  /* Walking: the two of them bob in step; the pieces behind step too. */
+  .dc__pair[data-walking] .dc__duchess > .art {
+    animation: dc-step 0.62s ease-in-out infinite alternate;
+  }
+
+  .dc__pair[data-walking] .dc__alice > .art {
+    animation: dc-step 0.62s ease-in-out infinite alternate -0.31s;
+  }
+
+  .dc__pair[data-walking] .dc__queen[data-here] > .art {
+    animation: dc-step 0.62s ease-in-out infinite alternate -0.2s;
+  }
+
+  .demo[data-paused] .dc__cloud,
+  .demo[data-paused] .dc__mine-wheel,
+  .demo[data-paused] .dc__wing,
+  .demo[data-paused] .dc__queen[data-shouting] > .art,
+  .demo[data-paused] .dc__pair[data-walking] .dc__duchess > .art,
+  .demo[data-paused] .dc__pair[data-walking] .dc__alice > .art,
+  .demo[data-paused] .dc__pair[data-walking] .dc__queen[data-here] > .art {
+    animation-play-state: paused;
+  }
+
+  @keyframes dc-step {
+    from {
+      transform: translateY(0) rotate(-1.5deg);
+    }
+
+    to {
+      transform: translateY(-3%) rotate(1.5deg);
+    }
+  }
+
+  @keyframes dc-brood {
+    from {
+      transform: translate(-2%, 0) scale(1);
+    }
+
+    to {
+      transform: translate(2%, -3%) scale(1.04);
+    }
+  }
+
+  @keyframes dc-shout {
+    0% {
+      transform: scale(1);
+    }
+
+    40% {
+      transform: scale(1.14) rotate(-3deg);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes dc-wind {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  @keyframes dc-flap-left {
+    from {
+      transform: rotate(-14deg);
+    }
+
+    to {
+      transform: rotate(34deg);
+    }
+  }
+
+  @keyframes dc-flap-right {
+    from {
+      transform: rotate(14deg);
+    }
+
+    to {
+      transform: rotate(-34deg);
+    }
+  }
+
+  /* On a wide frame the sentences stand beside the figures they are about: to
+     the right of the two of them on the walk, to the left once the Queen
+     stands at the right; at the shore they go up into the sky. */
+  @media (min-width: 701px) {
+    .demo--duchess[data-side] .demo-beat {
+      inset-inline: auto 3vw;
+      max-inline-size: min(27rem, 34vw);
+      margin-inline: 0;
+    }
+
+    .demo--duchess[data-side="left"] .demo-beat {
+      inset-inline: 3vw auto;
+    }
+  }
+
+  /* A phone's frame is tall and narrow: the ground comes up, so the two stand
+     clear of the sentences below them and the pile of morals still fits above. */
+  @media (max-width: 700px) {
+    .demo--duchess {
+      --dc-horizon: 47;
+      --dc-feet: 59;
+    }
+
+    .dc__walkers {
+      translate: -70% 0;
+    }
+
+    /* The Queen stops a little further off, so Alice stays in view; at the
+       shore she is where the Mock Turtle has her all the same. */
+    .dc__queen {
+      --stop: 74vw;
+    }
+
+    /* The pile of morals over the two of them, not over the Duchess alone, so it
+       stays inside the narrow frame. */
+    .dc__morals {
+      inset-inline-start: 50%;
+      inline-size: 76vw;
+      gap: 0.2rem;
+    }
+
+    .dc__ribbon {
+      padding: 0.2em 1.5em 0.26em;
+      font-size: 0.68rem;
+    }
+
+    /* The two props side by side under the bar, above the pile. */
+    .dc__prop--fling,
+    .dc__prop--shrug {
+      inset-block-start: calc(var(--demo-bar-height) + 0.6rem);
+    }
+
+    .dc__prop--fling {
+      inset-inline-end: 3%;
+    }
+
+    .dc__prop--shrug {
+      inset-inline: 3% auto;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dc__cloud,
+    .dc__mine-wheel,
+    .dc__wing,
+    .dc__queen[data-shouting] > .art,
+    .dc__pair[data-walking] .dc__duchess > .art,
+    .dc__pair[data-walking] .dc__alice > .art,
+    .dc__pair[data-walking] .dc__queen[data-here] > .art {
+      animation: none;
+    }
+
+    /* The pig holds its wings out, still, where it is in the sky. */
+    .dc__wing--left {
+      transform: rotate(10deg);
+    }
+
+    .dc__wing--right {
+      transform: rotate(-10deg);
+    }
+
+    /* The ribbons appear in place; a flung one is simply gone. */
+    .dc__ribbon {
+      transform: translate(calc(var(--gone) * -55vw), calc(var(--gone) * -24vh)) rotate(var(--tilt));
+      opacity: calc(var(--unroll) * (1 - var(--gone)));
+    }
+
+    .dc__ribbon[data-flung] {
+      visibility: hidden;
+    }
+  }
+}

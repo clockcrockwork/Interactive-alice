@@ -3,20 +3,30 @@
  *
  * The parallax is the swell. A Canvas sea rises through the hall as Alice cries,
  * takes her in with a splash when she shrinks, and carries her, the Mouse, and
- * eventually a Duck and a Dodo, a Lory and an Eaglet, to the shore. The captions
- * ride the surface: each frame the stage samples the water under them and the
- * sentences bob and tilt with it. The reader stirs the water with a finger or a
- * pointer, or with a button, and leans it with the pointer, the phone's tilt, or
- * a pair of buttons: the surface tips a few degrees, the water slops to the low
- * side, and everything afloat drifts downhill.
+ * eventually a Duck and a Dodo, a Lory and an Eaglet and the rest of the party,
+ * out of the hall to the bank, where the race begins. The captions ride the
+ * surface: each frame the stage samples the water under them and the sentences
+ * bob and tilt with it. The reader sheds a giant tear of her own while she cries
+ * and the pool rises a notch; fans herself smaller with the Rabbit's fan; stirs
+ * the water with a finger or a pointer, or with a button; and leans it with the
+ * pointer, the phone's tilt, or a pair of buttons.
  */
 
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
+import { dressRunner, OPENING, RUNNERS } from '../caucus-race/figures.ts';
+import '../caucus-race/caucus.css';
 import { attachDemo, type DemoShell, mix } from '../shell/shell.ts';
-import { FAN_SVG } from './figures.ts';
+import { FAN_SVG, TEAR_DROP_SVG } from './figures.ts';
 import './pool.css';
 import { createSea, type Swimmer } from './sea.ts';
+
+/** How much one tear shed by hand raises the pool, and how many it may add. */
+const NOTCH = 0.024;
+const MAX_NOTCHES = 5;
+/** How far one wave of the fan shrinks her, in horizon, and how many it may add. */
+const FAN_STEP = 0.07;
+const MAX_WAVES = 5;
 
 function mount(shell: DemoShell): void {
   const { master, reducedMotion } = shell;
@@ -35,6 +45,7 @@ function mount(shell: DemoShell): void {
   const iBack = cue('back');
   const iCrowd = cue('crowd');
   const iShore = cue('shore');
+  const quick = (duration: number): number => (reducedMotion ? 0.01 : duration);
 
   const seaLayer = shell.layer('pt__sea');
   const canvas = document.createElement('canvas');
@@ -60,35 +71,60 @@ function mount(shell: DemoShell): void {
   const rabbit = props.querySelector<HTMLElement>('.pt__rabbit');
   const dinah = props.querySelector<HTMLElement>('.pt__dinah');
   const fan = props.querySelector<HTMLElement>('.pt__fan');
+  // Tears she sheds by hand fall through their own layer, over the hall.
+  const cryLayer = shell.layer('pt__cry');
+
+  // --- The race's opening frame, in the race's own markup and sheet: the open
+  // sky over the bank, the party standing at the water's edge seen from the
+  // water, the water across the foreground. The pool ends on exactly this.
+  const raceSky = shell.layer('cr__sky pt__race');
+  const raceWorld = shell.layer('cr__world pt__race');
+  const raceRing = document.createElement('div');
+  raceRing.className = 'cr__ring';
+  for (const [key, value] of Object.entries(OPENING.camera)) {
+    raceRing.style.setProperty(`--${key}`, String(value));
+  }
+  raceWorld.append(raceRing);
+  const party = RUNNERS.map((kind, index) => {
+    const place = OPENING.places[index];
+    const el = document.createElement('div');
+    el.className = 'cr__runner';
+    el.dataset.kind = kind;
+    el.setAttribute('data-drip', '');
+    el.style.setProperty('--i', String(index));
+    el.style.setProperty('--a', (place?.angle ?? 0).toFixed(2));
+    el.style.setProperty('--r', (place?.radius ?? 1).toFixed(3));
+    el.innerHTML = figure(`runner/${kind}`);
+    dressRunner(el, kind);
+    raceRing.append(el);
+    return { kind, el, sink: place?.sink ?? 0 };
+  });
+  const raceWater = shell.layer('cr__water pt__race');
+  // 1 still swimming, low in the water; 0 standing as the race opens.
+  const stand = { v: 1 };
+  const applyStand = (): void => {
+    for (const member of party) {
+      member.el.style.setProperty('--y', (member.sink + stand.v * 70).toFixed(1));
+    }
+  };
+  applyStand();
 
   const { state } = sea;
-  const mouse: Swimmer = {
-    x: 1.3,
-    dir: -1,
+  const swimmer = (kind: Swimmer['kind'], x: number, dir: 1 | -1): Swimmer => ({
+    x,
+    dir,
     show: 0,
     jump: 0,
     bristle: 0,
-    climb: 0,
-    kind: 'mouse',
-  };
-  const alice: Swimmer = {
-    x: 0.5,
-    dir: 1,
-    show: 0,
-    jump: 0,
-    bristle: 0,
-    climb: 0,
-    kind: 'alice',
-  };
-  const others: Swimmer[] = (['duck', 'dodo', 'lory', 'eaglet'] as const).map((kind, i) => ({
-    x: -0.3 - i * 0.18,
-    dir: 1,
-    show: 0,
-    jump: 0,
-    bristle: 0,
-    climb: 0,
     kind,
-  }));
+  });
+  const mouse = swimmer('mouse', 1.3, -1);
+  const alice = swimmer('alice', 0.5, 1);
+  const named = (['duck', 'dodo', 'lory', 'eaglet'] as const).map((kind, i) =>
+    swimmer(kind, -0.3 - i * 0.18, 1),
+  );
+  const curious = [swimmer('crab', 1.3, -1), swimmer('magpie', 1.45, -1)];
+  const others = [...named, ...curious];
   state.swimmers = [...others, mouse, alice];
 
   // --- Nine feet high: the same giant view Drink Me ended on, her first tears
@@ -98,11 +134,7 @@ function mount(shell: DemoShell): void {
   state.horizon = 0.78;
   state.tears = 0.18;
   master.set(state, { horizon: 0.78, level: 0, tears: 0.18, hallDetail: 1 }, iGiant);
-  master.to(
-    roof,
-    { '--fold': 0.72, duration: reducedMotion ? 0.01 : 0.18, ease: 'power3.in' },
-    iRoof + 0.4,
-  );
+  master.to(roof, { '--fold': 0.72, duration: quick(0.18), ease: 'power3.in' }, iRoof + 0.4);
   master.call(
     () => (master.time() >= iRoof + 0.55 ? shell.sound.play('thud') : undefined),
     [],
@@ -110,11 +142,7 @@ function mount(shell: DemoShell): void {
   );
   master.to(state, { horizon: 0.86, duration: 0.6, ease: 'power2.in' }, iRoof);
   master.to(state, { tears: 1, duration: 0.5 }, iTears);
-  master.to(
-    roof,
-    { '--fold': 0, duration: reducedMotion ? 0.01 : 0.6, ease: 'power2.inOut' },
-    iTears + 0.1,
-  );
+  master.to(roof, { '--fold': 0, duration: quick(0.6), ease: 'power2.inOut' }, iTears + 0.1);
   master.to(state, { hallDetail: 0, duration: 0.6 }, iTears + 0.2);
   master.to(state, { level: 0.14, duration: 1.6, ease: 'power1.in' }, iTears + 0.3);
   master.to(
@@ -155,12 +183,14 @@ function mount(shell: DemoShell): void {
   master.to(state, { swell: reducedMotion ? 2 : 7, duration: 0.6 }, iSplash + 0.4);
   master.to(alice, { show: 1, duration: 0.3 }, iSplash + 0.3);
   // Drowned in her own tears, for a moment: the water goes over the camera.
-  master.to(state, { level: 1.35, duration: 0.3, ease: 'power2.in' }, iSwim + 0.45);
-  master.to(under, { opacity: 1, duration: 0.25 }, iSwim + 0.5);
-  master.to(shell.captions, { '--under': 1, duration: 0.25 }, iSwim + 0.5);
-  master.to(state, { level: 0.56, duration: 0.35, ease: 'power2.out' }, iSwim + 0.85);
-  master.to(under, { opacity: 0, duration: 0.3 }, iSwim + 0.85);
-  master.to(shell.captions, { '--under': 0, duration: 0.3 }, iSwim + 0.85);
+  // Under reduced motion it is a still: under the water for the settled beat,
+  // the sentences clear, and up again by the next.
+  master.to(state, { level: 1.35, duration: quick(0.3), ease: 'power2.in' }, iSwim + 0.45);
+  master.to(under, { opacity: 1, duration: quick(0.25) }, iSwim + 0.5);
+  master.to(shell.captions, { '--under': 1, duration: quick(0.25) }, iSwim + 0.5);
+  master.to(state, { level: 0.56, duration: quick(0.35), ease: 'power2.out' }, iSwim + 0.85);
+  master.to(under, { opacity: 0, duration: quick(0.3) }, iSwim + 0.85);
+  master.to(shell.captions, { '--under': 0, duration: quick(0.3) }, iSwim + 0.85);
 
   // --- The Mouse.
   master.to(mouse, { show: 1, x: 0.72, duration: 0.8, ease: 'power1.out' }, iMouse);
@@ -181,38 +211,58 @@ function mount(shell: DemoShell): void {
   master.to(mouse, { x: 1.25, dir: 1, bristle: 0, duration: 0.7, ease: 'power2.in' }, iDogs + 0.3);
   master.to(mouse, { x: 0.68, dir: -1, duration: 0.9, ease: 'power1.out' }, iBack + 0.2);
 
-  // --- The pool fills with creatures, and everyone swims to the shore: the bank
-  // comes in far enough to meet them, they swim up to it in a loose group on the
-  // right, and climb out one after another, the last of them as the beat ends.
-  others.forEach((other, index) => {
+  // --- The pool fills with creatures: the four the book names, then the Crab
+  // and the Magpie, so that all the party the race is run by is in the water.
+  named.forEach((other, index) => {
     master.to(
       other,
       { show: 1, x: 0.12 + index * 0.16, duration: 0.7, ease: 'power1.out' },
       iCrowd + index * 0.1,
     );
   });
-  master.to(state, { shore: 1, duration: 0.8, ease: 'power2.out' }, iShore);
-  master.to(state, { pan: 0, level: 0.5, duration: 0.8 }, iShore);
-  const landing: [Swimmer, number][] = [
-    [others[0] as Swimmer, 0.5],
-    [others[1] as Swimmer, 0.62],
-    [alice, 0.7],
-    [others[2] as Swimmer, 0.79],
-    [others[3] as Swimmer, 0.88],
-    [mouse, 0.95],
-  ];
-  landing.forEach(([swimmer, x], index) => {
-    master.to(swimmer, { x, dir: 1, duration: 0.7, ease: 'power1.inOut' }, iShore + 0.05);
+  curious.forEach((other, index) => {
     master.to(
-      swimmer,
-      { climb: 1, duration: 0.3, ease: 'power2.out' },
-      iShore + 0.45 + index * 0.05,
+      other,
+      { show: 1, x: 0.86 + index * 0.08, duration: 0.6, ease: 'power1.out' },
+      iCrowd + 0.4 + index * 0.1,
     );
   });
+
+  // --- To the shore. The hall gives way to the open sky over the bank, the water
+  // settles flat at the race's own line, and they swim to their places at its
+  // edge, Alice leading. There they stand up out of the water: the race's own
+  // figures rise where the swimmers were, and the last frame is the race's first.
+  master.to(state, { sky: 1, duration: 0.5, ease: 'power1.inOut' }, iShore);
+  master.to(state, { level: 0.43, swell: 1.2, duration: 0.6, ease: 'power1.inOut' }, iShore);
+  master.to(state, { zoom: 1.3, duration: 0.55, ease: 'power1.inOut' }, iShore + 0.05);
+  const leading = [alice, mouse, ...others];
+  leading.forEach((one, index) => {
+    master.fromTo(
+      one,
+      { homing: 0 },
+      { homing: 1, dir: 1, duration: 0.42, ease: 'power1.inOut', immediateRender: false },
+      iShore + 0.02 + index * 0.02,
+    );
+  });
+  master.to([raceSky, raceWater], { opacity: 1, duration: quick(0.12) }, iShore + 0.5);
+  master.to(raceWorld, { opacity: 1, duration: quick(0.15) }, iShore + 0.55);
+  master.to(
+    stand,
+    { v: 0, duration: quick(0.25), ease: 'power2.out', onUpdate: applyStand },
+    iShore + 0.55,
+  );
+  master.to(state.swimmers, { show: 0, duration: quick(0.15) }, iShore + 0.6);
   master.call(
-    () => shell.root.toggleAttribute('data-ashore', master.time() >= iShore + 0.5),
+    () => shell.root.toggleAttribute('data-ashore', master.time() >= iShore + 0.6),
     [],
-    iShore + 0.5,
+    iShore + 0.6,
+  );
+  master.call(
+    () => {
+      state.covered = master.time() >= iShore + 0.66;
+    },
+    [],
+    iShore + 0.66,
   );
 
   // --- Swimming: hold a finger on the water and she swims toward it. The Mouse
@@ -221,7 +271,131 @@ function mount(shell: DemoShell): void {
   alice.offset = 0;
   mouse.offset = 0;
 
-  // --- Stirring the water.
+  // --- Cry a tear. While she sits and cries, nine feet high, one giant tear of
+  // the reader's own falls past the eye, shrinking toward the floor far below,
+  // splashes, and the pool rises a notch. The notches are the reader's: they
+  // hold until she falls in, when the story's own water takes over.
+  const cry = { notches: 0, level: 0 };
+  const cryHold = { v: 1 };
+  master.to(cryHold, { v: 0, duration: quick(0.3) }, iSplash + 0.05);
+  const crying = (): boolean => master.time() >= iRoof && master.time() < iFan;
+  const cryButton = shell.prop(shell.ui.demoCryTear ?? '', 'pt__prop pt__prop--cry');
+  const offerCry = (): void => (crying() ? cryButton.show() : cryButton.hide());
+  master.call(offerCry, [], iRoof);
+  master.call(offerCry, [], iFan);
+  let side = -1;
+  const shedTear = (x: number, y?: number): void => {
+    const land = sea.landAt(x, y);
+    const height = shell.stage.clientHeight;
+    const drop = document.createElement('div');
+    drop.className = 'pt__tear';
+    drop.innerHTML = TEAR_DROP_SVG;
+    cryLayer.append(drop);
+    const splash = (): void => {
+      const crown = document.createElement('div');
+      crown.className = 'pt__splash';
+      gsap.set(crown, { x, y: land });
+      cryLayer.append(crown);
+      crown.addEventListener('animationend', () => crown.remove());
+      // Reduced motion: no animation ends, so the still is taken away by a timer.
+      if (reducedMotion) {
+        window.setTimeout(() => crown.remove(), 900);
+      }
+      sea.stir(x, land, 2.4);
+      shell.sound.play('splash', 0.6);
+      cry.notches = Math.min(MAX_NOTCHES, cry.notches + 1);
+      seaLayer.style.setProperty('--cried', String(cry.notches));
+      gsap.to(cry, {
+        level: cry.notches * NOTCH,
+        duration: reducedMotion ? 0 : 0.6,
+        ease: 'power2.out',
+      });
+    };
+    if (reducedMotion) {
+      // A still: the tear where it lands, and the splash, and the water up a notch.
+      gsap.set(drop, { x, y: land, scale: 0.9 });
+      splash();
+      window.setTimeout(() => drop.remove(), 900);
+      return;
+    }
+    gsap.fromTo(
+      drop,
+      { x, y: -height * 0.12, scale: 1.9 },
+      {
+        y: land,
+        scale: 0.65,
+        duration: 0.7,
+        ease: 'power2.in',
+        onComplete: () => {
+          drop.remove();
+          splash();
+        },
+      },
+    );
+  };
+  cryButton.addEventListener('click', () => {
+    // Beside her skirt, one side and then the other, where the floor shows.
+    side = -side;
+    shedTear(shell.stage.clientWidth * (0.5 + side * 0.36));
+  });
+
+  // --- Fan yourself. Each wave of the Rabbit's fan shrinks her a step: the
+  // horizon climbs and the hall grows round her. The waves are the reader's; she
+  // shrinks the whole way with the story anyway, and they are let go when she
+  // falls in, or forgotten if the reader scrolls back before the fan.
+  const waves = { count: 0, lift: 0 };
+  const fanHold = { v: 0 };
+  master.to(fanHold, { v: 1, duration: 0.01 }, iFan);
+  master.to(fanHold, { v: 0, duration: quick(0.3) }, iSplash + 0.05);
+  const fanning = (): boolean => master.time() >= iFan + 0.1 && master.time() < iSplash;
+  const fanButton = shell.prop(shell.ui.demoFan ?? '', 'pt__prop pt__prop--fan');
+  const offerFan = (): void => {
+    const on = fanning();
+    if (on) {
+      fanButton.show();
+    } else {
+      fanButton.hide();
+    }
+    fan?.toggleAttribute('data-fannable', on);
+    if (master.time() < iFan) {
+      gsap.killTweensOf(waves);
+      waves.count = 0;
+      waves.lift = 0;
+      seaLayer.style.setProperty('--fanned', '0');
+    }
+  };
+  master.call(offerFan, [], iFan);
+  master.call(offerFan, [], iFan + 0.1);
+  master.call(offerFan, [], iSplash);
+  const wave = (): void => {
+    if (!fanning()) {
+      return;
+    }
+    waves.count = Math.min(MAX_WAVES, waves.count + 1);
+    seaLayer.style.setProperty('--fanned', String(waves.count));
+    gsap.to(waves, {
+      lift: waves.count * FAN_STEP,
+      duration: reducedMotion ? 0 : 0.6,
+      ease: 'power2.out',
+    });
+    if (fan) {
+      // A sweep of the fan, or under reduced motion the fan cut to its other side.
+      fan.toggleAttribute('data-side', !fan.hasAttribute('data-side'));
+      fan.removeAttribute('data-sweep');
+      void fan.offsetWidth;
+      fan.setAttribute('data-sweep', '');
+    }
+    shell.sound.play('whoosh', 0.35);
+  };
+  fanButton.addEventListener('click', wave);
+  fan?.addEventListener('click', wave);
+  fan?.addEventListener('animationend', (event) => {
+    if (event.animationName === 'pt-fan-sweep') {
+      fan.removeAttribute('data-sweep');
+    }
+  });
+
+  // --- Stirring the water, or, while she cries, a tear where the finger is.
   const stirAt = (clientX: number, clientY: number, strength = 1): void => {
     const box = shell.stage.getBoundingClientRect();
     sea.stir(clientX - box.left, clientY - box.top, strength);
@@ -231,10 +405,14 @@ function mount(shell: DemoShell): void {
   };
   let dragging = false;
   canvas.addEventListener('pointerdown', (event) => {
+    const box = shell.stage.getBoundingClientRect();
+    if (crying()) {
+      shedTear(event.clientX - box.left, event.clientY - box.top);
+      return;
+    }
     dragging = true;
     stirAt(event.clientX, event.clientY, 1.4);
-    swimTarget =
-      (event.clientX - shell.stage.getBoundingClientRect().left) / shell.stage.clientWidth;
+    swimTarget = (event.clientX - box.left) / box.width;
   });
   window.addEventListener('pointerup', () => {
     dragging = false;
@@ -253,7 +431,7 @@ function mount(shell: DemoShell): void {
     },
     { passive: true },
   );
-  const stirButton = shell.prop(shell.ui.demoRipple ?? '', 'pt__prop');
+  const stirButton = shell.prop(shell.ui.demoRipple ?? '', 'pt__prop pt__prop--stir');
   stirButton.addEventListener('click', () => {
     sea.stir(
       shell.stage.clientWidth * (0.3 + Math.random() * 0.4),
@@ -261,7 +439,17 @@ function mount(shell: DemoShell): void {
       1.4,
     );
   });
-  master.call(() => (master.time() >= iSwim ? stirButton.show() : stirButton.hide()), [], iSwim);
+  // Offered in the water, and not once the party is ashore.
+  const offerStir = (): void => {
+    const t = master.time();
+    if (t >= iSwim && t < iShore + 0.45) {
+      stirButton.show();
+    } else {
+      stirButton.hide();
+    }
+  };
+  master.call(offerStir, [], iSwim);
+  master.call(offerStir, [], iShore + 0.45);
 
   // --- Leaning the water. While she is in the pool the surface tips with the
   // pointer (the mouse, or the phone's tilt when the reader turned it on); the
@@ -307,14 +495,27 @@ function mount(shell: DemoShell): void {
     return 0;
   };
 
-  // --- Per frame: the sea lives, and the captions ride it.
-  const resize = (): void => sea.resize(shell.stage.clientWidth, shell.stage.clientHeight);
+  // --- Per frame: the sea lives, and the captions ride it. Layout is read on
+  // resize only: the sea's size, and where each of the party stands at the bank.
+  const resize = (): void => {
+    sea.resize(shell.stage.clientWidth, shell.stage.clientHeight);
+    const box = shell.stage.getBoundingClientRect();
+    for (const one of state.swimmers) {
+      const member = party.find((candidate) => candidate.kind === one.kind);
+      if (member && box.width > 0) {
+        const r = member.el.getBoundingClientRect();
+        one.home = (r.left + r.width / 2 - box.left) / box.width;
+      }
+    }
+  };
   new ResizeObserver(resize).observe(shell.stage);
   resize();
   let bob = 0;
   let tilt = 0;
   shell.onFrame((dt, elapsed) => {
     lastElapsed = elapsed;
+    state.extraLevel = cry.level * cryHold.v;
+    state.extraHorizon = waves.lift * fanHold.v;
     // The lean: a loose spring toward the target, so the water slops past it and
     // settles; under reduced motion a quiet cut to the angle instead.
     const target = leanTarget(elapsed);
@@ -341,15 +542,18 @@ function mount(shell: DemoShell): void {
     // Everything afloat drifts downhill, and comes back to its place when the
     // water levels; the cut has no slop, so nothing drifts under it.
     const downhill = reducedMotion ? 0 : Math.sin((lean * Math.PI) / 180) * dt * 0.5;
-    for (const swimmer of state.swimmers) {
-      const drift = swimmer.drift ?? 0;
-      swimmer.drift =
-        swimmer.show > 0.5 && (swimmer.climb ?? 0) < 0.5 && Math.abs(lean) > 0.3
+    for (const one of state.swimmers) {
+      const drift = one.drift ?? 0;
+      one.drift =
+        one.show > 0.5 && Math.abs(lean) > 0.3
           ? Math.max(-0.2, Math.min(0.2, drift + downhill))
           : mix(drift, 0, Math.min(1, dt * 0.8));
     }
     sea.tick(dt, elapsed);
-    shell.sound.level('waves', Math.max(0, Math.min(1, (state.level - 0.2) * 1.2)) * 0.5);
+    shell.sound.level(
+      'waves',
+      state.covered ? 0 : Math.max(0, Math.min(1, (state.level - 0.2) * 1.2)) * 0.5,
+    );
     if (alice.show > 0.5 && !reducedMotion) {
       const want = swimTarget === undefined ? 0 : swimTarget - alice.x;
       const before = alice.offset ?? 0;

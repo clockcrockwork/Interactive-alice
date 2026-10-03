@@ -17,6 +17,19 @@
     --mt-ghost: oklch(from var(--paper-base) l c h / 0.85);
     --mt-rabbit: var(--paper-base);
     --mt-print: oklch(from var(--sepia-deep) l c h / 0.55);
+    /* A halo of paper round the tail's words, so a line that crosses a figure or
+       the bank's edge still reads; the reading-glass is the same paper. */
+    --mt-halo: oklch(from var(--paper-base) l c h / 0.85);
+    --mt-glass-rim: var(--sepia-dark);
+    --mt-tail-body: oklch(from var(--paper-base) l c h / 0.3);
+    /* The excuses: the Magpie's scarf in paper and sepia; the Canary a printed
+       yellow from the lamp-light, its chicks paler; and the dusk coming on. */
+    --mt-scarf: var(--paper-aged);
+    --mt-scarf-stripe: var(--sepia-mid);
+    --mt-canary: color-mix(in oklch, var(--world-glow), var(--sepia-light) 35%);
+    --mt-canary-deep: var(--sepia-light);
+    --mt-chick: color-mix(in oklch, var(--world-glow), var(--paper-base) 40%);
+    --mt-dusk: oklch(from var(--world-night) l c h / 0.24);
   }
 }
 
@@ -36,9 +49,41 @@
     font-style: italic;
   }
 
-  /* The verses of the tale are the tail's, not the caption layer's. */
+  /* The verses are drawn on the tail; their sentences stay in the caption layer,
+     in reading order with their beats, for assistive technology only. */
   .demo--mouse-tale .demo-beat[data-cue^="fury-"] {
-    visibility: hidden;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* The camera follows the tail down the bank: the bank, the party, the tail
+     and the house in the distance move up together by the pan. The bank is
+     drawn taller than the stage for it, the horizon where the race has it. */
+  .demo--mouse-tale :is(.cr__world, .mt__tail, .hs__arrival) {
+    translate: 0 calc(var(--mt-pan, 0) * -1px);
+  }
+
+  .demo--mouse-tale .cr__sky {
+    inset-block-end: -100%;
+    translate: 0 calc(var(--mt-pan, 0) * -1px);
+    background: linear-gradient(
+      to bottom,
+      var(--cr-sky),
+      var(--cr-sky-low) 27.5%,
+      var(--cr-bank) 27.75%,
+      var(--cr-bank-deep) 50%,
+      var(--cr-bank-deep)
+    );
+  }
+
+  /* The house's garden waits under everything until the last frame: it never
+     takes a tap meant for the party or the tail. */
+  .demo--mouse-tale .hs__garden {
+    pointer-events: none;
   }
 
   .mt__member {
@@ -98,7 +143,7 @@
      curve, each a little smaller than the last. */
   .mt__tail {
     pointer-events: none;
-    overflow: hidden;
+    overflow: visible;
     transition: opacity var(--demo-quick) var(--demo-ease);
   }
 
@@ -115,16 +160,19 @@
     stroke-width: 44;
     stroke-linecap: round;
     pointer-events: stroke;
-    cursor: grab;
+    cursor: zoom-in;
     touch-action: none;
   }
 
-  .mt__tail:not([data-pullable]) .mt__tail-grip {
-    pointer-events: none;
+  .mt__tail-body {
+    fill: none;
+    stroke: var(--mt-tail-body);
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
-  .mt__tail[data-dragging] .mt__tail-grip {
-    cursor: grabbing;
+  .mt__tail:not([data-readable]) .mt__tail-grip {
+    pointer-events: none;
   }
 
   .mt__tail text {
@@ -132,8 +180,66 @@
     font-family: inherit;
     text-anchor: middle;
     dominant-baseline: middle;
+    paint-order: stroke;
+    stroke: var(--mt-halo);
+    stroke-width: 3px;
+    stroke-linejoin: round;
     opacity: 0;
     user-select: none;
+  }
+
+  /* The line under the reading-glass, swollen by its transform, in full ink. */
+  .mt__tail text[data-near] {
+    stroke-width: 4px;
+  }
+
+  /* The reading-glass: the words under the finger, large, on the book's paper
+     in a rim, a handle below it. */
+  .mt__lens {
+    pointer-events: none;
+  }
+
+  .mt__loupe {
+    --lx: 0;
+    --ly: 0;
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    max-inline-size: min(22rem, 90vw);
+    margin: 0;
+    padding: 0.3em 0.9em 0.4em;
+    border: 3px solid var(--mt-glass-rim);
+    border-radius: 999px;
+    background: var(--demo-slip);
+    color: var(--ink-primary);
+    font-size: clamp(1.3rem, 1.1rem + 1vw, 1.7rem);
+    font-style: italic;
+    white-space: nowrap;
+    translate: calc(var(--lx) * 1px - 50%) calc(var(--ly) * 1px - 100%);
+    box-shadow: 0 6px 16px var(--cr-shadow);
+    opacity: 0;
+    scale: 0.8;
+    transform-origin: 50% 100%;
+    transition:
+      opacity var(--demo-quick) var(--demo-ease),
+      scale var(--demo-quick) var(--demo-ease);
+  }
+
+  .mt__loupe::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 100%;
+    inline-size: 0.35em;
+    block-size: 0.9em;
+    border-radius: 0 0 0.2em 0.2em;
+    background: var(--mt-glass-rim);
+    translate: -50% 0;
+  }
+
+  .mt__loupe[data-shown] {
+    opacity: 1;
+    scale: 1;
   }
 
   .mt__bend {
@@ -208,11 +314,55 @@
     inset-block-end: calc(5vh + 0.5rem);
   }
 
-  .mt__prop--undo {
+  .mt__prop--read {
     inset-block-end: calc(5vh + 3.4rem);
   }
 
+  .mt__prop--undo {
+    inset-block-end: calc(5vh + 6.3rem);
+  }
+
+  /* The excuses. The Magpie's scarf winds on; the Canary comes out to call, and
+     its chicks hop to it from behind the party. */
+  .mt__scarf {
+    opacity: 0;
+    scale: 0.3;
+    transform-box: fill-box;
+    transform-origin: 20% 20%;
+    transition:
+      opacity var(--demo-calm) var(--demo-ease),
+      scale var(--demo-calm) var(--demo-ease);
+  }
+
+  .mt__member[data-wrapped] .mt__scarf {
+    opacity: 1;
+    scale: 1;
+  }
+
+  .mt__chick,
+  .mt__calling {
+    opacity: 0;
+  }
+
+  .mt__member[data-calling] .mt__chick {
+    opacity: 1;
+    animation: mt-chick 0.5s ease-out both;
+    animation-delay: calc(var(--k, 0) * 120ms + 150ms);
+  }
+
+  .mt__member[data-calling] .mt__calling {
+    opacity: 1;
+    animation: mt-calling 0.6s ease-in-out infinite alternate;
+  }
+
+  .mt__dusk {
+    background: var(--mt-dusk);
+    opacity: 0;
+    pointer-events: none;
+  }
+
   .demo[data-paused] .mt__member .cr__figure,
+  .demo[data-paused] .mt__calling,
   .demo[data-paused] .mt__tear,
   .demo[data-paused] .mt__tail svg,
   .demo[data-paused] .mt__rabbit .art > svg {
@@ -271,6 +421,29 @@
     }
   }
 
+  @keyframes mt-chick {
+    from {
+      transform: translateX(-60%) translateY(-30%);
+      opacity: 0;
+    }
+    60% {
+      transform: translateX(-10%) translateY(-40%);
+    }
+    to {
+      transform: none;
+      opacity: 1;
+    }
+  }
+
+  @keyframes mt-calling {
+    from {
+      transform: scale(0.85);
+    }
+    to {
+      transform: scale(1.1);
+    }
+  }
+
   @keyframes mt-tug {
     0%,
     100% {
@@ -295,8 +468,16 @@
       animation: none;
     }
 
-    .mt__tail {
+    .mt__tail,
+    .mt__loupe,
+    .mt__scarf {
       transition: none;
+    }
+
+    /* The chicks are simply there when called, and the call is two still marks. */
+    .mt__member[data-calling] .mt__chick,
+    .mt__member[data-calling] .mt__calling {
+      animation: none;
     }
 
     .mt__member[data-look] .cr__figure {

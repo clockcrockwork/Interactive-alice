@@ -2,37 +2,47 @@
  * The Mouse's tale: the concept demo.
  *
  * The same bank as the Caucus-race, the party gathered round Alice as the race
- * left them, and the camera comes down low as they sit in a ring and beg the
- * Mouse for its tale. Then the tale is a tail: the verses the Mouse speaks are
- * not the caption layer's but are laid along a long curve that starts at the
- * Mouse's own tail and winds down the bank, each chunk a little smaller than the
- * last, exactly as the book sets it. The reader may pull the tail and the words
- * slide along it; at the knot the curve ties itself, and undoing it only offends
- * the Mouse, who walks off with its tail-text trailing after. The party calls
- * after it, Dinah is a ghost over the sky, the birds hurry off one by one, and
- * Alice is left alone until footsteps patter in from the distance, where the
- * Rabbit's house waits: the frame the next demo opens on.
+ * left them, the thimble in her hand, and the camera comes down low as they sit
+ * in a ring and beg the Mouse for its tale. Then the tale is a tail: the verses
+ * the Mouse speaks are laid along a long curve that starts at the Mouse's own
+ * tail and winds down the bank, each line a little smaller than the last, as the
+ * book sets it, and the camera follows the words down. The reader may read the
+ * tail up close under a glass, or pull it and the words slide along; at the knot
+ * the curve ties itself, and undoing it only offends the Mouse, who walks off
+ * with its tail-text trailing after. The party calls after it, Dinah is a ghost
+ * over the sky, the birds go off on their pretexts, and Alice is left alone until
+ * footsteps patter in from the distance, where the Rabbit's house waits: the
+ * frame the next demo opens on.
  */
 
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
-import { RUNNERS, type RunnerKind } from '../art/vectors.ts';
-import { THIMBLE_SVG } from '../caucus-race/figures.ts';
+import {
+  dressRunner,
+  HANDS,
+  huddleSlot,
+  RUNNERS,
+  type RunnerKind,
+  THIMBLE_SVG,
+} from '../caucus-race/figures.ts';
 import { HOUSE_FRONT_SVG } from '../rabbit-house/figures.ts';
-import { attachDemo, type Beat, type DemoShell, mix, seeded } from '../shell/shell.ts';
+import { attachDemo, type Beat, type DemoShell, mix } from '../shell/shell.ts';
 import '../caucus-race/caucus.css';
 import '../rabbit-house/house.css';
 import './mouse-tale.css';
-import { FOOTPRINTS_SVG, TEAR_SVG } from './figures.ts';
+import { CANARY_SVG, FOOTPRINTS_SVG, SCARF, TEAR_SVG } from './figures.ts';
 
 const SVG = 'http://www.w3.org/2000/svg';
 /** Samples per path; the chunks are placed by interpolation between them. */
 const SAMPLES = 180;
-/** How many words a chunk of the tail carries: the book's lines are this short. */
-const WORDS_PER_CHUNK = 3;
+/** A line of the tail and the next are this many of its own sizes apart, so they never touch. */
+const PITCH = 1.4;
+/** Where the knot ties itself, as a share of the tail's length. */
+const KNOT_FROM = 0.4;
+const KNOT_TO = 0.62;
 
 interface Member {
-  kind: RunnerKind;
+  kind: RunnerKind | 'canary';
   el: HTMLButtonElement;
   angle: number;
   /** 1 once this one has gone off: the timeline's share, and a tap's. */
@@ -43,9 +53,12 @@ interface Member {
 interface Chunk {
   el: SVGTextElement;
   beat: Beat;
-  /** Position along the plain tail, in path pixels, before any pull. */
+  /** Position down the plain tail, in px, before any pull. */
   s: number;
   size: number;
+  /** Where it was last laid out, in the tail's own px (the stage's, before the pan). */
+  x: number;
+  y: number;
 }
 
 type Point = [number, number];
@@ -53,12 +66,15 @@ type Point = [number, number];
 /** The verses of the tale are the beats whose cue names a verse. */
 const isVerse = (beat: Beat): boolean => beat.cue?.startsWith('fury-') === true;
 
-/** The words of a line in groups, the last group never a single word. */
-function chunksOf(text: string): string[] {
+/**
+ * The words of a line in groups, the last group never a single word. The book's
+ * lines are three or four words long: four where the stage is wide enough.
+ */
+function chunksOf(text: string, perChunk: number): string[] {
   const words = text.trim().split(/\s+/).filter(Boolean);
   const groups: string[] = [];
-  for (let i = 0; i < words.length; i += WORDS_PER_CHUNK) {
-    groups.push(words.slice(i, i + WORDS_PER_CHUNK).join(' '));
+  for (let i = 0; i < words.length; i += perChunk) {
+    groups.push(words.slice(i, i + perChunk).join(' '));
   }
   if (groups.length > 1 && !groups[groups.length - 1]?.includes(' ')) {
     const last = groups.pop();
@@ -69,10 +85,10 @@ function chunksOf(text: string): string[] {
 
 /**
  * The tail as a serpentine from `start`, `height` down: a sine wave about a
- * line drifting toward the middle, narrowing as it goes, and always going down,
- * so the chunks stack as the book's lines do. The knot variant ties a loop into
- * its lower third and is continuous with the plain one at both ends, so the two
- * interpolate point for point.
+ * line drifting toward the middle, narrowing as it goes, and always going down
+ * at the chunks' own pitch, so the lines stack as the book's do and never meet.
+ * The knot variant ties a loop into its lower third and is continuous with the
+ * plain one at both ends, so the two interpolate point for point.
  */
 function sampleTail(
   start: Point,
@@ -93,8 +109,8 @@ function sampleTail(
     const a = amplitude * Math.min(1, t * 5) * (1 - 0.6 * t);
     const x = cx + a * Math.sin(2 * Math.PI * bends * t + Math.PI);
     const y = sy + height * t;
-    if (knot && t > 0.58 && t < 0.8) {
-      const u = (t - 0.58) / 0.22;
+    if (knot && t > KNOT_FROM && t < KNOT_TO) {
+      const u = (t - KNOT_FROM) / (KNOT_TO - KNOT_FROM);
       const r = Math.max(34, a);
       const theta0 = -Math.PI / 2;
       const theta = theta0 + 2 * Math.PI * u;
@@ -124,13 +140,13 @@ function mount(shell: DemoShell): void {
   const iSensation = cue('sensation');
   const iAlone = cue('alone');
   const iFootsteps = cue('footsteps');
-  const random = seeded(7);
   const lite = matchMedia('(max-width: 700px)').matches;
   // Reduced motion lands on whole beats, so a change that belongs inside beat i
   // is cut in just before the landing it must be seen at.
   const before = (i: number): number => Math.max(0, i - 0.02);
   const during = (i: number, frac: number): number => (reducedMotion ? before(i + 1) : i + frac);
   const at = (i: number, frac: number): number => (reducedMotion ? before(i) : i + frac);
+  const quick = (duration: number): number => (reducedMotion ? 0.01 : duration);
 
   // --- The bank and the ring, the race's own.
   shell.layer('cr__sky');
@@ -143,25 +159,41 @@ function mount(shell: DemoShell): void {
     '<svg class="cr__course" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" pathLength="1" style="--drawn: 1"/></svg>';
   world.append(ring);
   const course = ring.querySelector<SVGElement>('.cr__course');
-  const members: Member[] = RUNNERS.map((kind, index) => {
+  const makeMember = (kind: RunnerKind | 'canary', index: number, angle: number): Member => {
     const el = document.createElement('button');
     el.type = 'button';
     el.className = 'cr__runner mt__member';
     el.dataset.kind = kind;
     el.disabled = true;
     el.style.setProperty('--i', String(index));
-    el.innerHTML = figure(`runner/${kind}`);
+    if (kind === 'canary') {
+      el.innerHTML = `<span class="art">${CANARY_SVG}</span>`;
+    } else {
+      el.innerHTML = figure(`runner/${kind}`);
+      dressRunner(el, kind);
+    }
     if (kind === 'alice') {
       el.insertAdjacentHTML('beforeend', `<span class="mt__tear">${TEAR_SVG}</span>`);
     }
     ring.append(el);
-    return { kind, el, angle: (index / RUNNERS.length) * 360, leave: { v: 0 }, tap: { v: 0 } };
-  });
+    return { kind, el, angle, leave: { v: 0 }, tap: { v: 0 } };
+  };
+  const members: Member[] = RUNNERS.map((kind, index) =>
+    makeMember(kind, index, (index / RUNNERS.length) * 360),
+  );
   const mouse = members.find((member) => member.kind === 'mouse');
   const alice = members.find((member) => member.kind === 'alice');
-  const birds = members.filter((member) => member.kind !== 'alice' && member.kind !== 'mouse');
+  const magpie = members.find((member) => member.kind === 'magpie');
   const mouseAngle = mouse?.angle ?? 180;
   const aliceAngle = alice?.angle ?? 225;
+  // The Canary and its chicks were somewhere in the crowd; they are only seen
+  // when it calls them home, from where the Mouse sat before it walked off.
+  const canary = makeMember('canary', RUNNERS.length, mouseAngle + 12);
+  const birds = [
+    ...members.filter((member) => member.kind !== 'alice' && member.kind !== 'mouse'),
+    canary,
+  ];
+  magpie?.el.querySelector('.cr__figure')?.insertAdjacentHTML('beforeend', SCARF);
   for (const bird of birds) {
     bird.el.setAttribute('aria-label', shell.ui.demoBirdLeave ?? '');
   }
@@ -169,13 +201,25 @@ function mount(shell: DemoShell): void {
   alice?.el.setAttribute('aria-hidden', 'true');
   alice?.el.setAttribute('tabindex', '-1');
 
-  // The race's last frame: the party crowded round Alice, the camera on her.
+  // The race's last frame: the party crowded round Alice, the camera close on
+  // her, the thimble in her hand.
   const gather = { amount: 1, centre: aliceAngle, spread: 120 };
   // The Mouse's walk off: it goes round the ring and out of the frame.
   const away = { v: 0 };
+  // The Canary: 0 unseen, 1 come out to call its chicks.
+  const called = { v: 0 };
+  const carry = document.createElement('div');
+  carry.className = 'cr__carry';
+  carry.innerHTML = `<div class="cr__thimble">${THIMBLE_SVG}</div>`;
+  carry.style.setProperty('--u', String(HANDS.aliceHand.u));
+  carry.style.setProperty('--v', String(HANDS.aliceHand.v));
+  carry.style.setProperty('--s', '0.8');
+  ring.append(carry);
+  alice?.el.setAttribute('data-holding', '');
   const apply = (): void => {
     members.forEach((member, index) => {
-      const offset = ((index / members.length) * 2 - 1) * gather.spread;
+      const kind = member.kind === 'canary' ? 'alice' : member.kind;
+      const offset = (huddleSlot(kind, 'alice') * gather.spread) / 4;
       let angle = mix(member.angle, gather.centre + offset, gather.amount);
       let radius = mix(1, 0.5, gather.amount);
       let leave = Math.max(member.leave.v, member.tap.v);
@@ -190,11 +234,24 @@ function mount(shell: DemoShell): void {
       member.el.style.setProperty('--r', radius.toFixed(3));
       member.el.style.setProperty('--leave', Math.min(1, leave).toFixed(3));
       member.el.toggleAttribute('data-gone', leave > 0.99);
+      if (member === alice) {
+        carry.style.setProperty('--a', angle.toFixed(2));
+        carry.style.setProperty('--r', radius.toFixed(3));
+      }
     });
+    // The Canary stands a little behind the ring, unseen until it calls.
+    const leave = Math.max(canary.leave.v, canary.tap.v);
+    canary.el.style.setProperty(
+      '--a',
+      (canary.angle + (reducedMotion ? 0 : leave * 40)).toFixed(2),
+    );
+    canary.el.style.setProperty('--r', (1.05 + (reducedMotion ? 0 : leave * 1.4)).toFixed(3));
+    canary.el.style.setProperty('--leave', Math.min(1, leave + (1 - called.v)).toFixed(3));
+    canary.el.toggleAttribute('data-gone', leave > 0.99 || called.v < 0.01);
   };
   apply();
 
-  const camera = { spin: -aliceAngle, tilt: -10, dolly: 80, lift: 0 };
+  const camera = { spin: -aliceAngle, tilt: -6, dolly: 300, lift: -70 };
   // The pointer leans the camera a little, except while the Mouse speaks.
   let lean = 0;
   const leanAmount = { v: 1 };
@@ -211,20 +268,14 @@ function mount(shell: DemoShell): void {
     duration = 0.7,
     ease = 'power2.inOut',
   ): void => {
-    master.to(
-      camera,
-      { ...to, duration: reducedMotion ? 0.01 : duration, ease, onUpdate: applyCamera },
-      time,
-    );
+    master.to(camera, { ...to, duration: quick(duration), ease, onUpdate: applyCamera }, time);
   };
 
-  // The thimble, where the race dropped it; it is forgotten with the course.
-  const thimbleLayer = shell.layer('cr__thimble-layer');
-  thimbleLayer.innerHTML = `<div class="cr__thimble">${THIMBLE_SVG}</div>`;
-  gsap.set(thimbleLayer.querySelector('.cr__thimble'), { scale: 0.5, y: '20vh' });
-  master.to(
-    [course, thimbleLayer],
-    { opacity: 0, duration: reducedMotion ? 0.01 : 0.6 },
+  // The thimble and the course are forgotten as they sit down again.
+  master.to([course, carry], { opacity: 0, duration: quick(0.6) }, during(iRing, 0.2));
+  master.call(
+    () => alice?.el.toggleAttribute('data-holding', master.time() < during(iRing, 0.2)),
+    [],
     during(iRing, 0.2),
   );
 
@@ -232,7 +283,7 @@ function mount(shell: DemoShell): void {
   // down low, to the Mouse.
   master.to(
     gather,
-    { amount: 0, duration: reducedMotion ? 0.01 : 0.7, ease: 'power2.inOut', onUpdate: apply },
+    { amount: 0, duration: quick(0.7), ease: 'power2.inOut', onUpdate: apply },
     during(iRing, 0.15),
   );
   look(during(iRing, 0.15), { spin: -mouseAngle - 20, tilt: -3, dolly: 20, lift: -30 }, 0.8);
@@ -248,34 +299,47 @@ function mount(shell: DemoShell): void {
     },
     0.6,
   );
-  master.to(leanAmount, { v: 0, duration: reducedMotion ? 0.01 : 0.4 }, during(iSad, 0.3));
-  master.to(leanAmount, { v: 1, duration: reducedMotion ? 0.01 : 0.4 }, during(iAway, 0.5));
+  master.to(leanAmount, { v: 0, duration: quick(0.4) }, during(iSad, 0.3));
+  master.to(leanAmount, { v: 1, duration: quick(0.4) }, during(iAway, 0.5));
 
-  // --- The tail. The verses' words, in chunks, on one SVG in stage pixels.
+  // --- The tail. The verses' words, in chunks, on one SVG in stage pixels. It is
+  // a picture of the verses: assistive technology reads them in the caption layer,
+  // each with its own beat, so the layer stays hidden from it.
   const tailLayer = shell.layer('mt__tail');
-  tailLayer.removeAttribute('aria-hidden');
   const svg = document.createElementNS(SVG, 'svg');
   svg.setAttribute('focusable', 'false');
   const grip = document.createElementNS(SVG, 'path');
   grip.classList.add('mt__tail-grip');
   svg.append(grip);
+  // The tail's own body, a pale band that narrows to its tip behind the words,
+  // so the bends and the knot are seen as a tail's.
+  const BODY_PARTS = 8;
+  const body = Array.from({ length: BODY_PARTS }, () => {
+    const part = document.createElementNS(SVG, 'path');
+    part.classList.add('mt__tail-body');
+    svg.append(part);
+    return part;
+  });
   const chunks: Chunk[] = [];
   const verses = shell.beats.filter(isVerse);
-  const baseSize = lite ? 15 : 19;
+  // The book's lines grow smaller down the tail; these stop where reading would.
+  const baseSize = lite ? 16 : 20;
+  const floorSize = lite ? 11 : 12.5;
   const shrink = 0.955;
   let s = 26;
   for (const beat of verses) {
     for (const line of beat.lines) {
-      for (const words of chunksOf(line.textContent ?? '')) {
+      for (const words of chunksOf(line.textContent ?? '', lite ? 3 : 4)) {
         const el = document.createElementNS(SVG, 'text');
         el.dataset.segment = line.dataset.segment ?? '';
         el.dataset.cue = beat.cue ?? '';
         el.textContent = words;
-        const size = Math.max(lite ? 6 : 7.5, baseSize * shrink ** chunks.length);
+        const size = Math.max(floorSize, baseSize * shrink ** chunks.length);
         el.setAttribute('font-size', size.toFixed(2));
         svg.append(el);
-        chunks.push({ el, beat, s, size });
-        s += size * 1.6;
+        s += size * PITCH * 0.5;
+        chunks.push({ el, beat, s, size, x: 0, y: 0 });
+        s += size * PITCH * 0.5;
       }
     }
   }
@@ -287,19 +351,16 @@ function mount(shell: DemoShell): void {
 
   const bends = lite ? 3.5 : 3;
   const last = chunks[chunks.length - 1];
-  /** The tail's natural height: the chunks stacked at their own pitch. */
+  /** The tail's natural height: the chunks stacked at their own pitch, never squeezed. */
   const natural = (last?.s ?? 0) + (last?.size ?? 0) * 2;
-  /** The tail that fits the stage: the column is as tall as the bank below the
-      Mouse allows, the chunks closer together where it must be shorter. */
-  const fitTail = (start: Point, width: number, available: number): [Point[], Point[]] => {
-    const height = Math.max(120, Math.min(available, natural));
+  const fitTail = (start: Point, width: number): [Point[], Point[]] => {
     const amplitude = Math.min(width * (lite ? 0.2 : 0.11), 84);
     return [
-      sampleTail(start, width, height, amplitude, false, bends),
-      sampleTail(start, width, height, amplitude, true, bends),
+      sampleTail(start, width, natural, amplitude, false, bends),
+      sampleTail(start, width, natural, amplitude, true, bends),
     ];
   };
-  let [plain, knotted] = fitTail([120, 200], 800, 400);
+  let [plain, knotted] = fitTail([120, 200], 800);
   const knot = { v: 0 };
   const pull = { v: 0 };
   // Each verse slides down the tail as it is spoken; the per-verse share.
@@ -308,22 +369,68 @@ function mount(shell: DemoShell): void {
   const mark = (): void => {
     dirty = true;
   };
-  /** Where a distance down the column falls, as a sample index fraction: past
-      the end everything piles up at the tip. */
+  /** Where a distance down the column falls, as a sample index: past the end
+      everything piles up at the tip. */
   const indexAt = (distance: number): number =>
     (Math.min(Math.max(distance, 0), natural) / natural) * SAMPLES;
-  const pointAt = (index: number): Point => {
+  const pointOn = (path: Point[], index: number): Point => {
     const i = Math.min(Math.max(index, 0), SAMPLES - 1e-6);
     const lo = Math.floor(i);
     const f = i - lo;
-    const p0 = plain[lo] as Point;
-    const p1 = plain[lo + 1] as Point;
-    const k0 = knotted[lo] as Point;
-    const k1 = knotted[lo + 1] as Point;
-    const px = mix(p0[0], p1[0], f);
-    const py = mix(p0[1], p1[1], f);
-    return [mix(px, mix(k0[0], k1[0], f), knot.v), mix(py, mix(k0[1], k1[1], f), knot.v)];
+    const p0 = path[lo] as Point;
+    const p1 = path[lo + 1] as Point;
+    return [mix(p0[0], p1[0], f), mix(p0[1], p1[1], f)];
   };
+  const pointAt = (index: number): Point => {
+    const [px, py] = pointOn(plain, index);
+    if (knot.v <= 0) {
+      return [px, py];
+    }
+    const [kx, ky] = pointOn(knotted, index);
+    return [mix(px, kx, knot.v), mix(py, ky, knot.v)];
+  };
+
+  // --- The camera follows the words down the bank as the Mouse speaks, comes up
+  // to the fifth bend and the knot, and back up when the Mouse walks off. Where
+  // each of those is depends on the layout, so the timeline drives a step `view`
+  // and the pan in pixels is read off the steps measured with the layout.
+  const view = { v: 0 };
+  let pans = [0, 0, 0, 0, 0, 0, 0, 0];
+  let stageHeight = 760;
+  let mouseTop = 300;
+  let pan = 0;
+  const applyPan = (): void => {
+    const i = Math.min(pans.length - 2, Math.max(0, Math.floor(view.v)));
+    pan = mix(pans[i] ?? 0, pans[i + 1] ?? 0, Math.min(1, Math.max(0, view.v - i)));
+    shell.stage.style.setProperty('--mt-pan', pan.toFixed(1));
+  };
+  const measurePans = (): void => {
+    const room = stageHeight - (lite ? 76 : 56);
+    const yOf = (distance: number): number => pointOn(plain, indexAt(distance))[1];
+    // Never so far that the Mouse leaves the frame while it is speaking to her.
+    const keepMouse = Math.max(0, mouseTop - (lite ? 200 : 170));
+    const verseEnds = verses.map((beat) => {
+      const own = chunks.filter((chunk) => chunk.beat === beat);
+      const end = own[own.length - 1];
+      return end ? Math.max(0, yOf(end.s) + end.size - room) : 0;
+    });
+    const bendY = pointOn(plain, SAMPLES * (4.5 / (2 * bends)))[1];
+    // The knot hangs below where it is tied: its lowest point is what must be seen.
+    let knotY = 0;
+    for (let i = Math.floor(SAMPLES * KNOT_FROM); i <= Math.ceil(SAMPLES * KNOT_TO); i += 1) {
+      knotY = Math.max(knotY, knotted[i]?.[1] ?? 0);
+    }
+    pans = [
+      0,
+      ...verseEnds,
+      Math.min(keepMouse, Math.max(0, bendY + 40 - room)),
+      // The knot is the picture of its beat: the party may slip up under the captions.
+      Math.min(keepMouse + 60, Math.max(0, knotY + 30 - room)),
+      0,
+    ];
+    applyPan();
+  };
+
   const layoutTail = (): void => {
     for (const chunk of chunks) {
       const slide = slides.get(chunk.beat)?.v ?? 0;
@@ -331,15 +438,33 @@ function mount(shell: DemoShell): void {
       const [x, y] = pointAt(index);
       const [x0, y0] = pointAt(index - 1.5);
       const [x1, y1] = pointAt(index + 1.5);
-      // Each chunk reads left to right, leaning the way the tail bends below it
-      // (the tail runs down the screen, so the lean is its drift from vertical).
+      // Each chunk reads left to right, leaning a little the way the tail bends
+      // below it, never so much that it reaches into the next line.
       const lean = (Math.atan2(x1 - x0, Math.max(0.01, y1 - y0)) * 180) / Math.PI;
-      const angle = Math.max(-11, Math.min(11, lean * 0.4));
+      const angle = Math.max(-5, Math.min(5, lean * 0.25));
+      chunk.x = x;
+      chunk.y = y;
+      // The line under the reading-glass swells a little where it lies.
+      const swell = chunk === near ? ' scale(1.25)' : '';
       chunk.el.setAttribute(
         'transform',
-        `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${angle.toFixed(1)})`,
+        `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${angle.toFixed(1)})${swell}`,
       );
     }
+    body.forEach((part, k) => {
+      const from = Math.floor((k * SAMPLES) / BODY_PARTS);
+      const to = Math.min(SAMPLES, Math.ceil(((k + 1) * SAMPLES) / BODY_PARTS) + 1);
+      let d = '';
+      for (let i = from; i <= to; i += 2) {
+        const [x, y] = pointAt(i);
+        d += `${d ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`;
+      }
+      part.setAttribute('d', d);
+      part.setAttribute(
+        'stroke-width',
+        mix(baseSize * 1.7, floorSize * 1.2, k / (BODY_PARTS - 1)).toFixed(1),
+      );
+    });
     const [bx, by] = pointAt(SAMPLES * (4.5 / (2 * bends)));
     bend.setAttribute('cx', bx.toFixed(1));
     bend.setAttribute('cy', by.toFixed(1));
@@ -350,19 +475,22 @@ function mount(shell: DemoShell): void {
     dirty = false;
   };
   // The tail starts at the Mouse's own tail: read where that is, once per shot
-  // and on resize, never per frame.
+  // and on resize, never per frame. The pan moves the Mouse too, so it is taken off.
   const anchorTail = (): void => {
     if (!mouse) {
       return;
     }
     const box = shell.stage.getBoundingClientRect();
     const r = mouse.el.getBoundingClientRect();
-    // At the Mouse's own tail, but never so near the edge that the words spill.
+    stageHeight = box.height;
+    mouseTop = r.top - box.top + pan;
+    // Just below the Mouse's own tail, never so near the edge that the words spill.
     const start: Point = [
-      Math.max(lite ? 72 : 100, r.left - box.left + r.width * 0.08),
-      r.top - box.top + r.height * 0.56,
+      Math.max(lite ? 76 : 104, r.left - box.left + r.width * 0.12),
+      r.top - box.top + pan + r.height * 0.82,
     ];
-    [plain, knotted] = fitTail(start, box.width, box.height - 14 - start[1]);
+    [plain, knotted] = fitTail(start, box.width);
+    measurePans();
     mark();
   };
   anchorTail();
@@ -377,9 +505,19 @@ function mount(shell: DemoShell): void {
   };
   window.addEventListener('resize', onResize, { passive: true });
 
+  // "It is a long tail, certainly": she looks at it, and the tail is there, empty,
+  // before the words come to fill it.
+  master.fromTo(
+    body,
+    { opacity: 0 },
+    { opacity: 1, duration: quick(0.5), immediateRender: true },
+    at(iTail, 0.3),
+  );
+
   // The verses appear chunk by chunk as the Mouse speaks them, each verse
-  // sliding a little way down the tail as it comes; in place under reduced motion.
-  for (const beat of verses) {
+  // sliding a little way down the tail as it comes, and the camera follows the
+  // newest line down; in place, and the camera cut, under reduced motion.
+  verses.forEach((beat, k) => {
     const own = chunks.filter((chunk) => chunk.beat === beat).map((chunk) => chunk.el);
     const t = beat.index;
     if (reducedMotion) {
@@ -401,29 +539,120 @@ function mount(shell: DemoShell): void {
         );
       }
     }
+    master.to(
+      view,
+      { v: k + 1, duration: quick(0.75), ease: 'power1.inOut', onUpdate: applyPan },
+      reducedMotion ? before(t) : t + 0.1,
+    );
     master.call(
       () => (master.time() >= t + 0.05 ? shell.sound.play('paper', 0.25) : undefined),
       [],
       t + 0.05,
     );
-  }
-  // Pull the tail: the words slide along the curve and spring back.
+  });
+  master.to(
+    view,
+    { v: 5, duration: quick(0.4), ease: 'power2.out', onUpdate: applyPan },
+    at(iAttending, 0.05),
+  );
+  master.to(
+    view,
+    { v: 6, duration: quick(0.5), ease: 'power1.inOut', onUpdate: applyPan },
+    at(iKnot, 0.05),
+  );
+  master.to(
+    view,
+    { v: 7, duration: quick(0.7), ease: 'power2.inOut', onUpdate: applyPan },
+    at(iAway, 0.15),
+  );
+
+  // --- Read the tail up close: drag along it and a reading-glass shows the
+  // words under the finger large; the button steps the glass along the lines
+  // spoken so far. Pull the tail: tap the Mouse or press the button, and the
+  // words slide along the curve and spring back.
+  const lensLayer = shell.layer('mt__lens');
+  const lens = document.createElement('p');
+  lens.className = 'mt__loupe';
+  lensLayer.append(lens);
+  const readButton = shell.prop(shell.ui.demoReadTail ?? '', 'mt__prop mt__prop--read');
   const pullButton = shell.prop(shell.ui.demoPullTail ?? '', 'mt__prop mt__prop--pull');
   let pullable = false;
-  const setPullable = (): void => {
-    pullable = master.time() >= iFuryOne && master.time() < iKnot;
-    tailLayer.toggleAttribute('data-pullable', pullable);
+  let readable = false;
+  let near: Chunk | undefined;
+  let lensTimer = 0;
+  const spoken = (): Chunk[] =>
+    chunks.filter((chunk) => master.time() >= chunk.beat.index + (reducedMotion ? -0.03 : 0.05));
+  const showLens = (chunk: Chunk | undefined, x?: number, y?: number): void => {
+    if (near !== chunk) {
+      near?.el.removeAttribute('data-near');
+      mark();
+    }
+    near = chunk;
+    window.clearTimeout(lensTimer);
+    if (!chunk) {
+      lens.removeAttribute('data-shown');
+      return;
+    }
+    chunk.el.setAttribute('data-near', '');
+    lens.textContent = chunk.el.textContent;
+    const box = shell.stage.getBoundingClientRect();
+    // Above the finger, or above the line when the button brought it; always in frame.
+    const lx = Math.min(box.width - 90, Math.max(90, x ?? chunk.x));
+    const ly = Math.min(box.height - 40, Math.max(90, (y ?? chunk.y - pan) - (lite ? 64 : 56)));
+    lens.style.setProperty('--lx', lx.toFixed(1));
+    lens.style.setProperty('--ly', ly.toFixed(1));
+    lens.setAttribute('data-shown', '');
+  };
+  const hideLensSoon = (delay: number): void => {
+    window.clearTimeout(lensTimer);
+    lensTimer = window.setTimeout(() => showLens(undefined), delay);
+  };
+  const nearest = (x: number, y: number): Chunk | undefined => {
+    let best: Chunk | undefined;
+    let bestDistance = Number.POSITIVE_INFINITY;
+    for (const chunk of spoken()) {
+      const distance = Math.hypot((chunk.x - x) * 0.6, chunk.y - y);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = chunk;
+      }
+    }
+    return bestDistance < 60 ? best : undefined;
+  };
+  // The button reads on from where it left off, line by line, and round again.
+  let step = -1;
+  readButton.addEventListener('click', () => {
+    const list = spoken();
+    if (!list.length) {
+      return;
+    }
+    step = (step + 1) % list.length;
+    showLens(list[step]);
+    hideLensSoon(2600);
+  });
+  const setPlay = (): void => {
+    const t = master.time();
+    pullable = t >= iFuryOne && t < iKnot;
+    readable = t >= iFuryOne && t < iAway;
+    tailLayer.toggleAttribute('data-readable', readable);
     if (pullable) {
       pullButton.show();
     } else {
       pullButton.hide();
     }
+    if (readable) {
+      readButton.show();
+    } else {
+      readButton.hide();
+      showLens(undefined);
+    }
     if (mouse) {
       mouse.el.disabled = !pullable;
     }
   };
-  master.call(setPullable, [], iFuryOne);
-  master.call(setPullable, [], iKnot);
+  master.call(setPlay, [], iFuryOne);
+  master.call(setPlay, [], iKnot);
+  master.call(setPlay, [], iAway);
   const settle = (): void => {
     gsap.killTweensOf(pull);
     gsap.to(pull, {
@@ -455,34 +684,37 @@ function mount(shell: DemoShell): void {
   };
   pullButton.addEventListener('click', pullTail);
   mouse?.el.addEventListener('click', pullTail);
-  let drag: { y: number; x: number; from: number } | undefined;
+  let reading = false;
+  const readAt = (event: PointerEvent): void => {
+    const box = shell.stage.getBoundingClientRect();
+    const x = event.clientX - box.left;
+    const y = event.clientY - box.top;
+    showLens(nearest(x, y + pan), x, y);
+  };
   grip.addEventListener('pointerdown', (event) => {
-    if (!pullable) {
+    if (!readable) {
       return;
     }
-    gsap.killTweensOf(pull);
-    drag = { x: event.clientX, y: event.clientY, from: pull.v };
-    tailLayer.setAttribute('data-dragging', '');
+    reading = true;
+    tailLayer.setAttribute('data-reading', '');
     grip.setPointerCapture(event.pointerId);
+    readAt(event);
   });
   grip.addEventListener('pointermove', (event) => {
-    if (!drag) {
-      return;
+    if (reading) {
+      readAt(event);
     }
-    const delta = event.clientY - drag.y + (event.clientX - drag.x) * 0.3;
-    pull.v = Math.max(-80, Math.min(240, drag.from + delta * (reducedMotion ? 1 : 1.2)));
-    mark();
   });
-  const endDrag = (): void => {
-    if (!drag) {
+  const endRead = (): void => {
+    if (!reading) {
       return;
     }
-    drag = undefined;
-    tailLayer.removeAttribute('data-dragging');
-    settle();
+    reading = false;
+    tailLayer.removeAttribute('data-reading');
+    hideLensSoon(1200);
   };
-  grip.addEventListener('pointerup', endDrag);
-  grip.addEventListener('pointercancel', endDrag);
+  grip.addEventListener('pointerup', endRead);
+  grip.addEventListener('pointercancel', endRead);
 
   // You are not attending: the Mouse is sharp, and the fifth bend lights up.
   master.call(
@@ -490,13 +722,13 @@ function mount(shell: DemoShell): void {
     [],
     iAttending + 0.05,
   );
-  master.to(bend, { opacity: 0.9, duration: reducedMotion ? 0.01 : 0.3 }, at(iAttending, 0.45));
-  master.to(bend, { opacity: 0, duration: reducedMotion ? 0.01 : 0.2 }, at(iKnot, 0.05));
+  master.to(bend, { opacity: 0.9, duration: quick(0.3) }, at(iAttending, 0.45));
+  master.to(bend, { opacity: 0, duration: quick(0.2) }, at(iKnot, 0.05));
 
   // A knot: the tail ties itself. Undoing it is tried and fails.
   master.to(
     knot,
-    { v: 1, duration: reducedMotion ? 0.01 : 0.6, ease: 'power2.inOut', onUpdate: mark },
+    { v: 1, duration: quick(0.6), ease: 'power2.inOut', onUpdate: mark },
     at(iKnot, 0.1),
   );
   master.call(
@@ -537,27 +769,17 @@ function mount(shell: DemoShell): void {
   master.call(undoWindow, [], iAway);
 
   // The Mouse got up and walked away, the tail-text trailing after it.
-  master.call(
-    () =>
-      mouse?.el.toggleAttribute(
-        'data-walking',
-        master.time() >= at(iAway, 0.1) && master.time() < iDinah,
-      ),
-    [],
-    at(iAway, 0.1),
-  );
-  master.call(
-    () =>
-      mouse?.el.toggleAttribute(
-        'data-walking',
-        master.time() >= at(iAway, 0.1) && master.time() < iDinah,
-      ),
-    [],
-    iDinah,
-  );
+  const walking = (): void => {
+    mouse?.el.toggleAttribute(
+      'data-walking',
+      master.time() >= at(iAway, 0.1) && master.time() < iDinah,
+    );
+  };
+  master.call(walking, [], at(iAway, 0.1));
+  master.call(walking, [], iDinah);
   master.to(
     away,
-    { v: 1, duration: reducedMotion ? 0.01 : 0.8, ease: 'power1.in', onUpdate: apply },
+    { v: 1, duration: quick(0.8), ease: 'power1.in', onUpdate: apply },
     at(iAway, 0.15),
   );
   master.to(
@@ -597,10 +819,10 @@ function mount(shell: DemoShell): void {
   dinahLayer.innerHTML = figure('dinah-cat');
   const dinah = dinahLayer.querySelector<HTMLElement>('.art');
   const glow = { v: 0 };
-  master.to(dinah, { opacity: 0.8, duration: reducedMotion ? 0.01 : 0.4 }, at(iDinah, 0.1));
-  master.to(glow, { v: 0.8, duration: reducedMotion ? 0.01 : 0.4 }, at(iDinah, 0.1));
-  master.to(dinah, { opacity: 0, duration: reducedMotion ? 0.01 : 0.3 }, at(iSensation, 0));
-  master.to(glow, { v: 0, duration: reducedMotion ? 0.01 : 0.3 }, at(iSensation, 0));
+  master.to(dinah, { opacity: 0.8, duration: quick(0.4) }, at(iDinah, 0.1));
+  master.to(glow, { v: 0.8, duration: quick(0.4) }, at(iDinah, 0.1));
+  master.to(dinah, { opacity: 0, duration: quick(0.3) }, at(iSensation, 0));
+  master.to(glow, { v: 0, duration: quick(0.3) }, at(iSensation, 0));
   if (!reducedMotion) {
     master.fromTo(
       dinah,
@@ -610,23 +832,45 @@ function mount(shell: DemoShell): void {
     );
   }
 
-  // A remarkable sensation: the birds hurry off one by one, on various
-  // pretexts; a tap sends one off at once. Under reduced motion they fade, half
-  // of them by this beat's landing and the rest by the next.
-  const order = [...birds].sort(() => random() - 0.5);
-  order.forEach((bird, index) => {
-    master.to(
-      bird.leave,
-      { v: 1, duration: reducedMotion ? 0.01 : 0.4, ease: 'power2.in', onUpdate: apply },
-      reducedMotion
-        ? before(index < order.length / 2 ? iSensation : iAlone)
-        : iSensation + 0.12 + index * 0.13,
-    );
+  // A remarkable sensation: the birds go off on various pretexts, and it is
+  // getting late. The old Magpie wraps itself up for the night air; the Canary
+  // calls its children to bed and they come; the rest hurry off at once. A tap
+  // sends one off at once. Under reduced motion the sensation settles with the
+  // Magpie wrapped and the Canary's chicks gathered and the others gone, and
+  // the two with excuses are gone by the next beat.
+  const dusk = shell.layer('mt__dusk');
+  master.to(dusk, { opacity: 1, duration: quick(0.8) }, at(iSensation, 0.05));
+  master.to(dusk, { opacity: 0, duration: quick(0.3) }, at(iFootsteps, 0.4));
+  master.call(
+    () => magpie?.el.toggleAttribute('data-wrapped', master.time() >= at(iSensation, 0.05)),
+    [],
+    at(iSensation, 0.05),
+  );
+  master.to(
+    called,
+    { v: 1, duration: quick(0.2), ease: 'back.out(2)', onUpdate: apply },
+    at(iSensation, 0.1),
+  );
+  master.call(
+    () => canary.el.toggleAttribute('data-calling', master.time() >= at(iSensation, 0.1)),
+    [],
+    at(iSensation, 0.1),
+  );
+  const leaveAt = (bird: Member, time: number): void => {
+    master.to(bird.leave, { v: 1, duration: quick(0.4), ease: 'power2.in', onUpdate: apply }, time);
+  };
+  const hurried = birds.filter((bird) => bird !== magpie && bird !== canary);
+  hurried.forEach((bird, index) => {
+    leaveAt(bird, reducedMotion ? iSensation + 0.3 : iSensation + 0.5 + index * 0.08);
   });
+  if (magpie) {
+    leaveAt(magpie, reducedMotion ? before(iAlone) : iSensation + 0.28);
+  }
+  leaveAt(canary, reducedMotion ? before(iAlone) : iSensation + 0.4);
   const sensation = (): void => {
     const on = master.time() >= at(iSensation, 0) && master.time() < iAlone;
     for (const bird of birds) {
-      bird.el.disabled = !on;
+      bird.el.disabled = !on || (bird === canary && master.time() < at(iSensation, 0.1));
       if (master.time() < iSensation) {
         gsap.killTweensOf(bird.tap);
         bird.tap.v = 0;
@@ -635,6 +879,7 @@ function mount(shell: DemoShell): void {
     apply();
   };
   master.call(sensation, [], at(iSensation, 0));
+  master.call(sensation, [], at(iSensation, 0.1));
   master.call(sensation, [], iAlone);
   for (const bird of birds) {
     bird.el.addEventListener('click', () => {
@@ -674,7 +919,9 @@ function mount(shell: DemoShell): void {
   gsap.set(garden, { opacity: 0 });
   const arrival = shell.layer('hs__arrival');
   arrival.innerHTML = HOUSE_FRONT_SVG;
-  const house = { hx: lite ? 22 : 26, hy: lite ? -24 : -26, hz: lite ? 0.09 : 0.07 };
+  // Small on the bank's horizon, to the right of the party, clear of Alice even
+  // on a narrow screen; it fills the frame by the end.
+  const house = { hx: lite ? 36 : 26, hy: lite ? -24 : -26, hz: lite ? 0.09 : 0.07 };
   const applyHouse = (): void => {
     arrival.style.setProperty('--hx', house.hx.toFixed(2));
     arrival.style.setProperty('--hy', house.hy.toFixed(2));
@@ -723,20 +970,16 @@ function mount(shell: DemoShell): void {
       hx: 0,
       hy: 0,
       hz: 1,
-      duration: reducedMotion ? 0.01 : 0.5,
+      duration: quick(0.5),
       ease: 'power3.in',
       onUpdate: applyHouse,
     },
     tighten,
   );
-  master.to(
-    garden,
-    { opacity: 1, duration: reducedMotion ? 0.01 : 0.25 },
-    tighten + (reducedMotion ? 0 : 0.25),
-  );
+  master.to(garden, { opacity: 1, duration: quick(0.25) }, tighten + (reducedMotion ? 0 : 0.25));
   master.to(
     [world, rabbitLayer, dinahLayer],
-    { opacity: 0, duration: reducedMotion ? 0.01 : 0.2 },
+    { opacity: 0, duration: quick(0.2) },
     tighten + (reducedMotion ? 0 : 0.3),
   );
   if (reducedMotion) {

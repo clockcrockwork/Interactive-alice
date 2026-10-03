@@ -20,9 +20,10 @@ export interface Swimmer {
   offset?: number;
   /** How far the leaning water has carried it downhill, on top of `x`. */
   drift?: number;
-  /** 0 afloat, 1 stood on the shore's top at `x`. */
-  climb?: number;
-  kind: 'mouse' | 'alice' | 'duck' | 'dodo' | 'lory' | 'eaglet';
+  /** Its place at the bank, across the screen 0..1, and how far it has swum there. */
+  home?: number;
+  homing?: number;
+  kind: 'mouse' | 'alice' | 'duck' | 'dodo' | 'lory' | 'eaglet' | 'crab' | 'magpie';
 }
 
 export interface SeaState {
@@ -33,10 +34,15 @@ export interface SeaState {
   tears: number;
   /** Where the horizon sits, 0..1 from the top: low when she is tall. */
   horizon: number;
-  /** The shore slides in from the right, 0..1. */
-  shore: number;
-  /** Camera x pan in px, positive moves the view right. */
-  pan: number;
+  /** What the reader added: tears shed by hand raise the water, fanning shrinks her. */
+  extraLevel: number;
+  extraHorizon: number;
+  /** The hall gives way to the open sky over the bank the party swims to, 0..1. */
+  sky: number;
+  /** How large the swimmers are drawn, as they come near the bank. */
+  zoom: number;
+  /** Everything here is covered by the race's own picture: nothing to draw. */
+  covered: boolean;
   /** The hall's furniture, seen from a giant's height: the doors and the table. */
   hallDetail: number;
   /** The water's lean in degrees: positive drops the right side, negative the left. */
@@ -66,6 +72,8 @@ export interface Sea {
   stir(x: number, y: number, strength?: number): void;
   /** Height of the surface at a screen x, in px from the top, and its slope. */
   surfaceAt(x: number): { y: number; slope: number };
+  /** Where a tear falling at a screen x lands: the water, or the floor (at y if given). */
+  landAt(x: number, y?: number): number;
 }
 
 /**
@@ -109,7 +117,6 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
     tileDark: '--pt-tile-dark',
     ink: '--pt-ink',
     mouse: '--pt-mouse',
-    shore: '--pt-shore',
     door: '--pt-door',
     doorFrame: '--pt-door-frame',
     glass: '--pt-glass',
@@ -119,8 +126,19 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
     dodo: '--pt-dodo',
     lory: '--pt-lory',
     eaglet: '--pt-eaglet',
+    crab: '--pt-crab',
+    magpie: '--pt-magpie',
+    duckHead: '--pt-duck-head',
+    dodoHead: '--pt-dodo-head',
+    loryHead: '--pt-lory',
+    eagletHead: '--pt-eaglet-head',
+    magpieHead: '--pt-magpie',
+    belly: '--pt-belly',
     beak: '--pt-beak',
-    beakPale: '--pt-beak-pale',
+    sky: '--pt-sky',
+    skyLow: '--pt-sky-low',
+    bank: '--pt-bank',
+    bankDeep: '--pt-bank-deep',
     hair: '--alice-hair',
     skin: '--alice-skin',
     dress: '--alice-dress',
@@ -131,8 +149,11 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
     swell: reduced ? 2 : 6,
     tears: 0,
     horizon: 0.72,
-    shore: 0,
-    pan: 0,
+    extraLevel: 0,
+    extraHorizon: 0,
+    sky: 0,
+    zoom: 1,
+    covered: false,
     hallDetail: 1,
     lean: 0,
     swimmers: [],
@@ -143,20 +164,14 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
    * tilt on the same line.
    */
   const leanSlope = (): number => -Math.tan((state.lean * Math.PI) / 180);
-
-  /** Where the shore begins, in px from the left; off the right edge until it slides in. */
-  const shoreEdge = (): number => width * (1.05 - state.shore * 0.8) - state.pan;
-  /** The top of the shore at a screen x: at the water's edge, then a low bank. */
-  const shoreTopAt = (x: number): number => {
-    const x0 = shoreEdge();
-    const levelY = height * (1 - state.level);
-    const t = clamp01((x - x0) / (width + 40 - x0));
-    const rise = t * t * (3 - 2 * t);
-    return levelY + 8 - rise * 84 + Math.sin(x * 0.02) * 3;
-  };
+  /** The water as the story has it, plus whatever the reader's tears added. */
+  const level = (): number => state.level + state.extraLevel;
+  /** She shrinks as she fans: the horizon climbs, never past where the story takes it. */
+  const horizon = (): number =>
+    Math.max(Math.min(state.horizon, 0.5), state.horizon - state.extraHorizon);
 
   const surfaceAt = (x: number): { y: number; slope: number } => {
-    const base = height * (1 - state.level);
+    const base = height * (1 - level());
     const slope = leanSlope();
     const wave = (px: number): number => {
       let y = 0;
@@ -182,18 +197,17 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
     if (swimmer.show <= 0.001 || alpha <= 0.001) {
       return;
     }
-    const climb = swimmer.climb ?? 0;
-    const x = (swimmer.x + (swimmer.offset ?? 0) + (swimmer.drift ?? 0)) * width - state.pan;
+    // Swimming to its place at the bank, if it has one.
+    const own = swimmer.x + (swimmer.offset ?? 0) + (swimmer.drift ?? 0);
+    const x = mix(own, swimmer.home ?? own, swimmer.homing ?? 0) * width;
     const surface = surfaceAt(x);
-    // Climbing out lifts it from the surface onto the bank, and stands it straight.
-    const y =
-      mix(surface.y, shoreTopAt(x) + 6, climb) - swimmer.jump * 90 + (1 - swimmer.show) * 40;
+    const y = surface.y - swimmer.jump * 90 + (1 - swimmer.show) * 40;
     ctx.save();
     ctx.globalAlpha = swimmer.show * alpha;
     ctx.translate(x, y);
-    ctx.rotate(Math.atan(surface.slope) * 0.6 * (1 - climb));
+    ctx.rotate(Math.atan(surface.slope) * 0.6);
     ctx.scale(swimmer.dir, 1);
-    const s = Math.min(width, height) / 900;
+    const s = (Math.min(width, height) / 900) * state.zoom;
     ctx.scale(s, s);
     switch (swimmer.kind) {
       case 'mouse': {
@@ -252,18 +266,49 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
         ctx.fill();
         break;
       }
+      case 'crab': {
+        // The old Crab: a low shell, two claws up out of the water, eyes on stalks.
+        ctx.fillStyle = colours.crab;
+        ctx.beginPath();
+        ctx.ellipse(0, -8, 30, 14, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = colours.crab;
+        ctx.lineWidth = 6;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-22, -12);
+        ctx.lineTo(-34, -30);
+        ctx.moveTo(22, -12);
+        ctx.lineTo(34, -30);
+        ctx.stroke();
+        ctx.fillStyle = colours.ink;
+        ctx.beginPath();
+        ctx.arc(-8, -24, 3.5, 0, Math.PI * 2);
+        ctx.arc(8, -24, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+        break;
+      }
       default: {
-        ctx.fillStyle = colours[swimmer.kind];
+        // A bird, in the colours the race draws it in: body, head, beak.
+        const kind = swimmer.kind as 'duck' | 'dodo' | 'lory' | 'eaglet' | 'magpie';
+        ctx.fillStyle = colours[kind];
         ctx.beginPath();
         ctx.ellipse(0, -10, 28, 14, 0, 0, Math.PI * 2);
         ctx.fill();
+        if (kind === 'magpie') {
+          ctx.fillStyle = colours.belly;
+          ctx.beginPath();
+          ctx.ellipse(-2, -6, 10, 6, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.fillStyle = colours[`${kind}Head`];
         ctx.beginPath();
         ctx.arc(22, -30, 11, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = swimmer.kind === 'dodo' ? colours.beakPale : colours.beak;
+        ctx.fillStyle = colours.beak;
         ctx.beginPath();
         ctx.moveTo(30, -32);
-        ctx.lineTo(swimmer.kind === 'dodo' ? 58 : 44, -28);
+        ctx.lineTo(kind === 'dodo' ? 58 : 44, -28);
         ctx.lineTo(30, -24);
         ctx.fill();
         ctx.fillStyle = colours.ink;
@@ -278,6 +323,15 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
   return {
     state,
     surfaceAt,
+    landAt(x, y) {
+      const floor = height * horizon();
+      const water = level() > 0.005 ? surfaceAt(x).y : height;
+      if (y === undefined) {
+        return level() > 0.005 ? water : mix(floor, height, 0.62);
+      }
+      // On the water where there is water, on the floor where it was tapped.
+      return Math.min(water, Math.max(floor + 6, y));
+    },
     resize(w, h) {
       width = w;
       height = h;
@@ -325,9 +379,12 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
     },
     draw() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      if (state.covered) {
+        return;
+      }
       ctx.clearRect(0, 0, width, height);
       // The hall behind: a wall and a checkered floor down to the horizon.
-      const horizonY = height * state.horizon;
+      const horizonY = height * horizon();
       const wall = ctx.createLinearGradient(0, 0, 0, horizonY);
       wall.addColorStop(0, colours.hallDeep);
       wall.addColorStop(1, colours.hall);
@@ -346,7 +403,7 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
         for (let col = 0; col < cols; col += 1) {
           const spread0 = 0.2 + t0 * 1.2;
           const spread1 = 0.2 + t1 * 1.2;
-          const cx = width / 2 - state.pan * 0.3;
+          const cx = width / 2;
           const xa = cx + (col - cols / 2) * (width / cols) * spread0;
           const xb = cx + (col + 1 - cols / 2) * (width / cols) * spread0;
           const xc = cx + (col + 1 - cols / 2) * (width / cols) * spread1;
@@ -365,7 +422,7 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
       // wall and the glass table on the floor below, the view Drink Me ends on.
       if (state.hallDetail > 0.001) {
         const unit = Math.min(width, height);
-        const cx = width / 2 - state.pan * 0.3;
+        const cx = width / 2;
         ctx.globalAlpha = state.hallDetail;
         const doorW = unit * 0.05;
         const doorH = unit * 0.09;
@@ -437,8 +494,21 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
         ctx.fill();
         ctx.globalAlpha = 1;
       }
+      // Out of the hall: the open sky and the far bank, drawn as the race draws
+      // them (caucus.css .cr__sky), so its own picture can take over unseen.
+      if (state.sky > 0.001) {
+        const open = ctx.createLinearGradient(0, 0, 0, height);
+        open.addColorStop(0, colours.sky);
+        open.addColorStop(0.55, colours.skyLow);
+        open.addColorStop(0.555, colours.bank);
+        open.addColorStop(1, colours.bankDeep);
+        ctx.globalAlpha = state.sky;
+        ctx.fillStyle = open;
+        ctx.fillRect(0, 0, width, height);
+        ctx.globalAlpha = 1;
+      }
       // Tears in the air: bigger while she is tall, since they fall close to the eye.
-      const tearScale = 1 + clamp01((state.horizon - 0.5) / 0.3) * 0.9;
+      const tearScale = 1 + clamp01((horizon() - 0.5) / 0.3) * 0.9;
       ctx.fillStyle = colours.foam;
       for (const tear of tears) {
         ctx.globalAlpha = 0.8;
@@ -448,7 +518,8 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
       }
       ctx.globalAlpha = 1;
       // The water: surface polyline, then a body with caustic bands.
-      if (state.level > 0.001) {
+      const waterLevel = level();
+      if (waterLevel > 0.001) {
         ctx.beginPath();
         ctx.moveTo(0, height);
         for (let x = 0; x <= width; x += 6) {
@@ -456,7 +527,7 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
         }
         ctx.lineTo(width, height);
         ctx.closePath();
-        const body = ctx.createLinearGradient(0, height * (1 - state.level), 0, height);
+        const body = ctx.createLinearGradient(0, height * (1 - waterLevel), 0, height);
         body.addColorStop(0, colours.water);
         body.addColorStop(1, colours.waterDeep);
         ctx.fillStyle = body;
@@ -468,7 +539,7 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
         ctx.lineWidth = 2;
         const bandSlope = leanSlope();
         for (let band = 0; band < 6; band += 1) {
-          const y = height * (1 - state.level) + 30 + band * 34;
+          const y = height * (1 - waterLevel) + 30 + band * 34;
           ctx.beginPath();
           for (let x = 0; x <= width; x += 8) {
             ctx.lineTo(
@@ -490,39 +561,11 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
         ctx.stroke();
         ctx.globalAlpha = 1;
       }
-      // The shore, sliding in from the right: its top is the line the party climbs to.
-      const shorePath = (): void => {
-        const x0 = shoreEdge();
-        ctx.moveTo(x0, height);
-        for (let x = x0; x <= width + 40; x += 8) {
-          ctx.lineTo(x, shoreTopAt(x));
-        }
-        ctx.lineTo(width + 40, shoreTopAt(width + 40));
-        ctx.lineTo(width + 40, height);
-        ctx.closePath();
-      };
-      if (state.shore > 0.001) {
-        const bank = ctx.createLinearGradient(0, height * (1 - state.level) - 80, 0, height);
-        bank.addColorStop(0, colours.shore);
-        bank.addColorStop(1, colours.hallDeep);
-        ctx.fillStyle = bank;
-        ctx.beginPath();
-        shorePath();
-        ctx.fill();
-      }
       for (const swimmer of state.swimmers) {
-        drawSwimmer(swimmer, 1 - (swimmer.climb ?? 0));
+        drawSwimmer(swimmer);
       }
-      // A little of the water in front of the swimmers, so they sit in it; the
-      // bank is not under water, so it is left out.
-      if (state.level > 0.001) {
-        ctx.save();
-        if (state.shore > 0.001) {
-          ctx.beginPath();
-          ctx.rect(0, 0, width, height);
-          shorePath();
-          ctx.clip('evenodd');
-        }
+      // A little of the water in front of the swimmers, so they sit in it.
+      if (waterLevel > 0.001) {
         ctx.globalAlpha = 0.35;
         ctx.fillStyle = colours.water;
         ctx.beginPath();
@@ -534,11 +577,6 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
         ctx.closePath();
         ctx.fill();
         ctx.globalAlpha = 1;
-        ctx.restore();
-      }
-      // Whoever has climbed out stands in front of the water, dry.
-      for (const swimmer of state.swimmers) {
-        drawSwimmer(swimmer, swimmer.climb ?? 0);
       }
     },
   };

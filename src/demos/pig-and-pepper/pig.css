@@ -184,6 +184,9 @@
     background-repeat: repeat-x;
     background-position: bottom;
     mask-image: linear-gradient(to right, black 22%, transparent 42%);
+    /* Drawn over the clearing, never in the way: the footmen and the letter
+       under them take the reader's taps. */
+    pointer-events: none;
   }
 
   .pp__trees--far {
@@ -227,6 +230,8 @@
   }
 
   .pp__tree svg,
+  .pp__pig-run svg,
+  .pp__fold svg,
   .pp__house svg,
   .pp__door svg,
   .pp__footman svg,
@@ -294,6 +299,13 @@
     inset-inline-start: 48%;
   }
 
+  /* The Frog-Footman leans in to read it back. */
+  .pp__footman--frog > .art {
+    display: block;
+    transform-origin: 50% 100%;
+    transition: rotate var(--demo-calm) var(--demo-ease);
+  }
+
   .pp__body {
     transform-box: fill-box;
     transform-origin: 50% 100%;
@@ -321,27 +333,15 @@
   }
 
   .pp__plate-flying {
+    --fly: 0;
+    --fly-x: -46vw;
+    --fly-y: -24vh;
     position: absolute;
     inset-inline-start: 62%;
     inset-block-end: 36%;
     inline-size: 8vmin;
-    translate: -50% 0;
+    translate: calc(-50% + var(--fly) * var(--fly-x)) calc(var(--fly) * var(--fly-y));
     opacity: 0;
-  }
-
-  /* The pig, set down, trots off into the wood. */
-  .pp__pig-run {
-    --stage: 3;
-    position: absolute;
-    inset-inline-start: 50%;
-    inset-block-end: 20%;
-    inline-size: clamp(8rem, 26vmin, 14rem);
-    translate: -50% 0;
-    opacity: 0;
-  }
-
-  .pp__pig-run .art {
-    rotate: -90deg;
   }
 
   /* --- The kitchen, from her own eyes. */
@@ -432,10 +432,28 @@
     inline-size: 46%;
   }
 
+  .pp__cat {
+    cursor: pointer;
+  }
+
+  /* The story's grin (--wide) and the reader's look (--more), on the one face. */
   .pp__cat-grin {
+    --widen: calc(var(--wide, 0) + var(--more, 0));
     transform-box: fill-box;
     transform-origin: 50% 40%;
-    transform: scale(calc(1 + var(--wide, 0) * 0.3), calc(1 + var(--wide, 0) * 0.7));
+    transform: scale(calc(1 + var(--widen) * 0.3), calc(1 + var(--widen) * 0.7));
+  }
+
+  /* A wink: its right eye shuts, and opens again. */
+  .pp__cat [data-cat="eyes"] ellipse:last-child,
+  .pp__cat [data-cat="pupils"] ellipse:last-child {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+  }
+
+  .pp__cat[data-wink] [data-cat="eyes"] ellipse:last-child,
+  .pp__cat[data-wink] [data-cat="pupils"] ellipse:last-child {
+    animation: pp-wink 0.8s ease-in-out 1;
   }
 
   .pp__cauldron {
@@ -448,11 +466,6 @@
     border: 0;
     background: none;
     cursor: pointer;
-  }
-
-  .pp__cauldron:focus-visible {
-    outline: 2px solid var(--pp-fire-hot);
-    outline-offset: 4px;
   }
 
   .pp__cauldron[data-shaken] svg {
@@ -496,6 +509,10 @@
   .pp__baby-in-arms > .art,
   .pp__baby > .art {
     transform-origin: 50% 100%;
+  }
+
+  .pp__footman--frog[data-reading] > .art {
+    rotate: -9deg;
   }
 
   .pp__duchess[data-singing] > .art {
@@ -676,11 +693,6 @@
     pointer-events: auto;
   }
 
-  .pp__baby:focus-visible {
-    outline: 2px solid var(--pp-fire-hot);
-    outline-offset: 6px;
-  }
-
   .pp__baby[data-grunt] > .art {
     animation: pp-grunt 0.4s ease-out;
   }
@@ -750,6 +762,95 @@
     transform: rotate(-16deg);
   }
 
+  /* The pig, set down at her feet, trots off along the ground into the wood on
+     the left: --trot carries it along a way set for the frame's shape, smaller
+     as it goes, and the near trunks pass in front of it. */
+  .pp__pig-run {
+    --trot: 0;
+    --trot-x: -41vw;
+    --trot-y: -12vh;
+    position: absolute;
+    inset-inline-start: 31%;
+    inset-block-end: 20%;
+    inline-size: clamp(6rem, 18vmin, 11rem);
+    translate: calc(-50% + var(--trot) * var(--trot-x)) calc(var(--trot) * var(--trot-y));
+    scale: calc(1 - var(--trot) * 0.55);
+    transform-origin: 50% 100%;
+    opacity: 0;
+  }
+
+  .pp__pig-run [data-part="legs-fore"],
+  .pp__pig-run [data-part="legs-hind"] {
+    transform-box: fill-box;
+    transform-origin: 50% 0;
+  }
+
+  .pp__pig-run[data-trotting] [data-part="legs-fore"] {
+    animation: pp-leg 0.3s ease-in-out infinite alternate;
+  }
+
+  .pp__pig-run[data-trotting] [data-part="legs-hind"] {
+    animation: pp-leg 0.3s ease-in-out infinite alternate-reverse;
+  }
+
+  .pp__pig-run[data-trotting] .art {
+    display: block;
+    animation: pp-step 0.15s ease-in-out infinite alternate;
+  }
+
+  /* The Queen's invitation, nearly as large as the Fish-Footman: folded in
+     three, the flaps open off the middle third (--unfold, 0 to 1); each flap
+     shows its outside until it passes upright, then the writing. */
+  .pp__letter {
+    --unfold: 0;
+    position: absolute;
+    inset-inline-start: calc(30% + 11vmin);
+    inset-block-end: calc(27% + 6vmin);
+    inline-size: clamp(5.5rem, 19vmin, 11rem);
+    aspect-ratio: 180 / 80;
+    opacity: 0;
+    cursor: pointer;
+    filter: drop-shadow(0 4px 6px var(--pp-shade));
+  }
+
+  .pp__fold {
+    position: absolute;
+    inset-inline: 0;
+    block-size: 100%;
+  }
+
+  .pp__fold--mid {
+    inset-block-start: 0;
+  }
+
+  .pp__fold--top {
+    inset-block-end: 100%;
+    transform-origin: 50% 100%;
+    scale: 1 calc(-1 * cos(var(--unfold) * 180deg));
+  }
+
+  .pp__fold--bottom {
+    inset-block-start: 100%;
+    transform-origin: 50% 0;
+    scale: 1 calc(-1 * cos(var(--unfold) * 180deg));
+  }
+
+  .pp__fold-face,
+  .pp__fold-back {
+    position: absolute;
+    inset: 0;
+  }
+
+  .pp__fold-face {
+    opacity: clamp(0, calc((var(--unfold) - 0.5) * 1000), 1);
+  }
+
+  /* Seen through its folded flap, so drawn the right way up. */
+  .pp__fold-back {
+    scale: 1 -1;
+    opacity: clamp(0, calc((0.5 - var(--unfold)) * 1000), 1);
+  }
+
   /* --- The join: a bough at the wood's edge, close, and the grin arriving. */
   .pp__bough {
     opacity: 0;
@@ -788,6 +889,14 @@
     translate: -50% 0;
   }
 
+  /* A beat's second prop sits under its first (*Bow*, *Shake the pepper*,
+     *Hold it tight*). */
+  .pp__prop--second {
+    inset-block-start: calc(var(--demo-bar-height) + 3.4rem);
+  }
+
+  .demo[data-paused] .pp__pig-run [data-part],
+  .demo[data-paused] .pp__pig-run .art,
   .demo[data-paused] .pp__speck,
   .demo[data-paused] .pp__fire,
   .demo[data-paused] .pp__steam,
@@ -961,6 +1070,35 @@
     }
   }
 
+  @keyframes pp-leg {
+    from {
+      transform: rotate(-24deg);
+    }
+    to {
+      transform: rotate(24deg);
+    }
+  }
+
+  @keyframes pp-step {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-4%);
+    }
+  }
+
+  @keyframes pp-wink {
+    0%,
+    100% {
+      transform: scaleY(1);
+    }
+    20%,
+    70% {
+      transform: scaleY(0.08);
+    }
+  }
+
   @keyframes pp-wow {
     from {
       transform: translateY(0) scale(1);
@@ -990,9 +1128,48 @@
     .demo--pig-and-pepper[data-holding] .demo-beat {
       inset-block-end: 36vh;
     }
+
+    /* Outside, the house and the footmen stand higher on the ground, above the
+       sentences, and the pig's way into the wood starts above them too. */
+    .pp__house,
+    .pp__footman,
+    .pp__tree {
+      inset-block-end: 34%;
+    }
+
+    .pp__letter {
+      inset-block-end: calc(34% + 6vmin);
+    }
+
+    .pp__plate-flying {
+      --fly-x: -39vw;
+      --fly-y: -5vh;
+      inset-block-end: 44%;
+    }
+
+    .pp__pig-run {
+      --trot-x: -34vw;
+      --trot-y: -3vh;
+      inset-block-end: 33%;
+    }
+  }
+
+  /* On a wide frame the sentences take the width of its lower part, about a line
+     each, so the footmen, the kitchen's people and the pig stay clear of them. */
+  @media (min-aspect-ratio: 4 / 3) {
+    .demo--pig-and-pepper .demo-beat:not([data-cue="chorus"]) {
+      inset-block-end: calc(var(--space-2) + 2.2rem);
+      max-inline-size: min(60rem, 92vw);
+      font-size: clamp(1.1rem, 0.7rem + 1vw, 1.5rem);
+    }
+
+    .demo--pig-and-pepper[data-holding] .demo-beat:not([data-cue="chorus"]) {
+      inset-block-end: 42vh;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .pp__footman--frog > .art,
     .pp__tangle,
     .pp__curls,
     .pp__pig-skin,
@@ -1022,9 +1199,18 @@
     .pp__cauldron[data-shaken] svg,
     .pp__baby[data-grunt] > .art,
     .pp__baby[data-wriggle] .pp__limbs,
-    .pp__pig-run[data-trotting] .pp__limbs,
+    .pp__pig-run[data-trotting] [data-part],
+    .pp__pig-run[data-trotting] .art,
+    .pp__cat[data-wink] [data-cat="eyes"] ellipse:last-child,
+    .pp__cat[data-wink] [data-cat="pupils"] ellipse:last-child,
     .demo--pig-and-pepper .demo-beat[data-cue="chorus"] .line[data-kind="sound"] {
       animation: none;
+    }
+
+    /* The wink is a still: the eye shut while the cat is looked at. */
+    .pp__cat[data-wink] [data-cat="eyes"] ellipse:last-child,
+    .pp__cat[data-wink] [data-cat="pupils"] ellipse:last-child {
+      transform: scaleY(0.08);
     }
 
     /* The bow is a cut: they stay bowed with their curls tangled. */

@@ -65,6 +65,46 @@ export const CAULDRON_SVG = `
   </g>
 </svg>`;
 
+/** A line of writing as a scribble: no letters, only the hand's wave. */
+const scribble = (y: number, x0: number, x1: number, wave = 3.2): string => {
+  let d = `M${x0} ${y}`;
+  for (let x = x0; x < x1 - 6; x += 12) {
+    d += ` q3 ${-wave} 6 0 t6 0`;
+  }
+  return `<path d="${d}" stroke="var(--ink-secondary)" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+};
+
+/** The Queen's invitation, folded in three: the middle third, and the two flaps
+    that open up and down off it. Each third is 180 by 80; the outside of the top
+    flap carries the seal, a heart, in the court's red. Scribbles, never lettering. */
+export const LETTER = {
+  top: `<svg viewBox="0 0 180 80" preserveAspectRatio="none" focusable="false">
+  <rect x="1.5" y="1.5" width="177" height="78" fill="var(--paper-base)" stroke="var(--ink-faded)" stroke-width="3"/>
+  <path d="M90 16 c-4 -6 -12 -2 -10 4 c1 4 6 7 10 11 c4 -4 9 -7 10 -11 c2 -6 -6 -10 -10 -4 Z" fill="var(--wonder-red)"/>
+  ${scribble(48, 40, 140, 2.6)}${scribble(66, 18, 162)}
+</svg>`,
+  mid: `<svg viewBox="0 0 180 80" preserveAspectRatio="none" focusable="false">
+  <rect x="1.5" y="0" width="177" height="80" fill="var(--paper-base)" stroke="var(--ink-faded)" stroke-width="3"/>
+  ${scribble(14, 18, 160)}${scribble(32, 18, 166)}${scribble(50, 18, 150)}${scribble(68, 18, 162)}
+</svg>`,
+  bottom: `<svg viewBox="0 0 180 80" preserveAspectRatio="none" focusable="false">
+  <rect x="1.5" y="0" width="177" height="78.5" fill="var(--paper-base)" stroke="var(--ink-faded)" stroke-width="3"/>
+  ${scribble(14, 18, 128)}
+  <path d="M104 46 c10 -14 20 -6 14 2 c-6 8 6 10 16 -2 c8 -10 16 -4 22 0" stroke="var(--ink-primary)" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+</svg>`,
+  /** The outside of the folded letter: paper, the fold, and the seal on it. */
+  outside: `<svg viewBox="0 0 180 80" preserveAspectRatio="none" focusable="false">
+  <rect x="1.5" y="1.5" width="177" height="77" fill="var(--paper-warm)" stroke="var(--ink-faded)" stroke-width="3"/>
+  <path d="M6 6 L90 44 L174 6" stroke="var(--paper-shadow)" stroke-width="2.4" fill="none"/>
+  <circle cx="90" cy="46" r="15" fill="var(--wonder-red-dark)"/>
+  <path d="M90 41 c-3 -5 -10 -2 -8 3 c1 3 5 6 8 9 c3 -3 7 -6 8 -9 c2 -5 -5 -8 -8 -3 Z" fill="var(--wonder-red-light)"/>
+</svg>`,
+  /** The back of the bottom flap: plain paper. */
+  plain: `<svg viewBox="0 0 180 80" preserveAspectRatio="none" focusable="false">
+  <rect x="1.5" y="1.5" width="177" height="77" fill="var(--paper-warm)" stroke="var(--ink-faded)" stroke-width="3"/>
+</svg>`,
+};
+
 /** What the cook throws: each a small drawing of its own. */
 export const THINGS: Record<string, string> = {
   saucepan:

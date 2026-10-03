@@ -77,8 +77,21 @@
     scale: 1.06;
   }
 
+  /* The cup's layer takes the reader's hands: a horizontal drag stirs, a held
+     finger reads ahead; a vertical drag still scrolls the page on. */
   .dm__stage {
     overflow: hidden;
+    touch-action: pan-y;
+  }
+
+  /* The layers over the cup are drawings: they never take the pointer, only the
+     things in them the reader can press (the Dormouse, the letters at muchness). */
+  .dm__mouse-layer,
+  .dm__drips-layer,
+  .dm__letters,
+  .dm__sister-letters,
+  .dm__teapot-layer {
+    pointer-events: none;
   }
 
   /* The cup: a fixed box the SVG is drawn into once; the camera is its transform,
@@ -109,6 +122,40 @@
     will-change: transform;
   }
 
+  .dm__sisters {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  /* The sisters' bucket, pulled up the spiral by its rope, dripping as it goes. */
+  .dm__svg--bucket {
+    opacity: 0;
+    transition: opacity var(--demo-calm) var(--demo-ease);
+    will-change: transform;
+  }
+
+  .dm__svg--bucket[data-on] {
+    opacity: 1;
+    transition-duration: var(--demo-quick);
+  }
+
+  .dm__rope {
+    fill: none;
+    stroke: var(--sepia-light);
+    stroke-width: 2.6;
+    stroke-dasharray: 5 2.5;
+    stroke-linecap: round;
+  }
+
+  .dm__drop {
+    fill: var(--dm-treacle-shine);
+    stroke: var(--dm-treacle-deep);
+    stroke-width: 0.8;
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation: dm-drop 1.6s ease-out forwards;
+  }
+
   .dm__svg--text {
     --sleep: 0;
     --wobble: 0;
@@ -121,10 +168,15 @@
     filter: blur(calc(var(--sleep) * 1px));
   }
 
+  /* Geometric precision: Chrome otherwise sets SVG text at its on-screen size,
+     and the cup's own CSS scale then skews what the text reports about itself, so
+     the camera's targets, read at mount, would miss the sentence (on a phone by a
+     third of the cup). With it, the tale lays out the same at every zoom. */
   .dm__text {
     font-family: var(--demo-serif);
     fill: var(--dm-ink);
     letter-spacing: 0.02em;
+    text-rendering: geometricPrecision;
   }
 
   .dm__text tspan {
@@ -211,19 +263,24 @@
     block-size: auto;
   }
 
+  /* Awake by the story (--awake) or by the reader's pinch (--pinched). */
+  .dm__mouse {
+    --woken: max(var(--awake, 0), var(--pinched, 0));
+  }
+
   .dm__eye-open {
-    opacity: var(--awake, 0);
+    opacity: var(--woken, 0);
   }
 
   .dm__eye-shut {
-    opacity: calc(1 - var(--awake, 0));
+    opacity: calc(1 - var(--woken, 0));
   }
 
   .dm__zzz {
     font-family: var(--demo-serif);
     font-weight: 700;
     fill: var(--ink-secondary);
-    opacity: calc(1 - var(--awake, 0));
+    opacity: calc(1 - var(--woken, 0));
     animation: dm-zzz 2.4s ease-in-out infinite;
   }
 
@@ -249,6 +306,18 @@
     inset-block-end: calc(6% + clamp(6rem, 16vmin, 10rem) + 0.5rem);
   }
 
+  /* The reader's own props on the cup sit at the lower left, clear of the
+     Dormouse on the right and of the bubbles round the top: the stir below, and
+     the beat's own (drawing treacle, drawing an M) above it. */
+  .dm__prop-left {
+    inset-inline-start: 4%;
+    inset-block-end: calc(6% + 2.6rem);
+  }
+
+  .dm__prop-stir {
+    inset-block-end: 6%;
+  }
+
   .dm__drips {
     position: absolute;
     inset: 0;
@@ -257,6 +326,7 @@
 
   .dm__drip {
     position: absolute;
+    inset-inline-start: var(--dx, 50%);
     inset-block-start: -6vh;
     inline-size: 3vmin;
     block-size: 8vh;
@@ -283,6 +353,30 @@
     will-change: transform;
     animation: dm-float 7s linear infinite;
     animation-delay: var(--delay, 0s);
+  }
+
+  /* At muchness a letter is the reader's to press: it becomes a thing that
+     begins with it. */
+  .dm__letters[data-on] .dm__letter {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .dm__letter svg {
+    display: block;
+    inline-size: 1.6em;
+    block-size: auto;
+    filter: drop-shadow(0 2px 6px oklch(from var(--ink-primary) l c h / 0.45));
+  }
+
+  .dm__sister-letters {
+    font-family: var(--demo-serif);
+    font-size: clamp(2rem, 8vmin, 5rem);
+    color: var(--dm-ink);
+  }
+
+  .dm__letter--once {
+    animation: dm-float 4s linear 1 forwards;
   }
 
   .dm__teapot {
@@ -466,17 +560,11 @@
     will-change: transform;
   }
 
-  /* Reduced motion: the cuts blink. */
-  .dm__blink {
-    background: var(--ink-primary);
-    opacity: 0;
-    pointer-events: none;
-  }
-
   .demo[data-paused] .dm__zzz,
   .demo[data-paused] .dm__body,
   .demo[data-paused] .dm__drip,
-  .demo[data-paused] .dm__letter {
+  .demo[data-paused] .dm__letter,
+  .demo[data-paused] .dm__drop {
     animation-play-state: paused;
   }
 
@@ -530,6 +618,21 @@
     }
   }
 
+  @keyframes dm-drop {
+    from {
+      transform: scale(0.4);
+      opacity: 1;
+    }
+    30% {
+      transform: scale(1.2);
+      opacity: 1;
+    }
+    to {
+      transform: scale(1.7);
+      opacity: 0;
+    }
+  }
+
   @keyframes dm-float {
     from {
       transform: translateY(0) rotate(-10deg);
@@ -552,7 +655,7 @@
     }
 
     .dm__zzz {
-      opacity: calc(0.7 - var(--awake, 0) * 0.7);
+      opacity: calc(0.7 - var(--woken, 0) * 0.7);
     }
 
     .dm__mouse[data-shriek] .dm__body {
@@ -561,9 +664,17 @@
     }
 
     /* The letters hang in the air instead of rising. */
-    .dm__letter {
+    .dm__letter,
+    .dm__letter--once {
       inset-block-start: calc(20% + var(--ly, 0) * 60%);
       opacity: 1;
+    }
+
+    /* The bucket is a still: there on the sentence, the drips on the words. */
+    .dm__drop,
+    .dm__svg--bucket {
+      animation: none;
+      transition: none;
     }
 
     .dm__drip {

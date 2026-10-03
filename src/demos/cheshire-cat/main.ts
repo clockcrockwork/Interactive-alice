@@ -19,7 +19,7 @@ import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix, REDUCED_SETTLE, seeded } from '../shell/shell.ts';
 import './cheshire.css';
-import { BARE_BOUGH_SVG, closeBough, GRIN_SVG, signSvg } from './figures.ts';
+import { BARE_BOUGH_SVG, closeBough, GRIN_SVG, MOON_PICTURES, SIGN_SVG } from './figures.ts';
 
 /** Where the boughs are, as a share of the stage; the Cat starts on the middle one. */
 const BOUGHS = [
@@ -42,11 +42,27 @@ function mount(shell: DemoShell): void {
   const iSlowly = cue('slowly');
   const iGrin = cue('grin');
 
+  /** Shows props while the timeline is inside [from, to), whichever way it went. */
+  const during = (props: { show(): void; hide(): void }[], from: number, to: number): void => {
+    const set = (): void => {
+      const inside = master.time() >= from && master.time() < to;
+      for (const prop of props) {
+        if (inside) {
+          prop.show();
+        } else {
+          prop.hide();
+        }
+      }
+    };
+    master.call(set, [], from);
+    master.call(set, [], to);
+  };
+
   const wood = shell.layer('cc__wood');
   const random = seeded(29);
   const starCount = 36;
   wood.innerHTML =
-    '<div class="cc__moon"></div>' +
+    '<div class="cc__moon"></div><div class="cc__moon-picture"></div>' +
     `<div class="cc__stars">${Array.from(
       { length: starCount },
       (_, i) =>
@@ -64,6 +80,7 @@ function mount(shell: DemoShell): void {
         `<div class="cc__bough" data-bough="${i}" style="--bx: ${b.x}%; --by: ${b.y}%; --bs: ${b.s}">` +
         `<div class="cc__bough-bare">${BARE_BOUGH_SVG}</div>${i === 1 ? figure('cheshire-cat/on-bough') : ''}</div>`,
     ).join('')}</div>` +
+    `<div class="cc__pig" data-facing="left">${figure('pig/trotting')}</div>` +
     '<div class="cc__mist"></div>' +
     '<div class="cc__trees cc__trees--near"></div>' +
     `<div class="cc__alice">${figure('alice/silhouette')}</div>` +
@@ -103,8 +120,8 @@ function mount(shell: DemoShell): void {
   }
   const signs = shell.layer('cc__signs');
   signs.innerHTML =
-    `<button type="button" class="cc__sign cc__sign--left" aria-label="${shell.ui.demoWayHatter ?? ''}">${signSvg('left')}</button>` +
-    `<button type="button" class="cc__sign cc__sign--right" aria-label="${shell.ui.demoWayHare ?? ''}">${signSvg('right')}</button>`;
+    `<button type="button" class="cc__sign cc__sign--left" aria-label="${shell.ui.demoWayHatter ?? ''}">${SIGN_SVG}</button>` +
+    `<button type="button" class="cc__sign cc__sign--right" aria-label="${shell.ui.demoWayHare ?? ''}">${SIGN_SVG}</button>`;
   const signLeft = signs.querySelector<HTMLButtonElement>('.cc__sign--left');
   const signRight = signs.querySelector<HTMLButtonElement>('.cc__sign--right');
   const hint = document.createElement('p');
@@ -276,6 +293,143 @@ function mount(shell: DemoShell): void {
     );
   });
 
+  // --- "It turned into a pig": the kitchen's pig trots across the wood floor
+  // behind Alice. `--trot` is the story's (0 off to the right, 1 gone into the wood
+  // on the left); `--back` is the reader's *Call the pig*, which brings it back
+  // to stand by her for a moment, a hop and a grunt, and lets it go again.
+  const pig = wood.querySelector<HTMLElement>('.cc__pig');
+  let calling = false;
+  const trotting = (): void => {
+    const t = master.time();
+    const crossing = !reducedMotion && t >= iBaby + 0.25 && t < iBaby + 0.85;
+    pig?.toggleAttribute('data-trotting', calling || crossing);
+  };
+  if (reducedMotion) {
+    // A still: at its sentence the pig stands on the wood floor behind her, and
+    // by the next beat it has gone on into the wood.
+    master.fromTo(
+      pig,
+      { '--trot': 0 },
+      { '--trot': 0.4, duration: 0.01, immediateRender: false },
+      iBaby + 0.3,
+    );
+    master.to(pig, { '--trot': 1, duration: 0.01 }, iAgain + 0.05);
+  } else {
+    master.fromTo(
+      pig,
+      { '--trot': 0 },
+      { '--trot': 1, duration: 0.6, immediateRender: false },
+      iBaby + 0.25,
+    );
+  }
+  master.call(trotting, [], iBaby + 0.25);
+  master.call(trotting, [], iBaby + 0.85);
+  const back = { v: 0 };
+  const applyBack = (): void => pig?.style.setProperty('--back', back.v.toFixed(3));
+  let pigTimer: ReturnType<typeof setTimeout> | undefined;
+  // The reader's own errand for the pig, so a second call replaces the first.
+  let pigTrip: gsap.core.Timeline | undefined;
+  const pigCallButton = shell.prop(shell.ui.demoCallPig ?? '', 'cc__prop cc__prop--pig-call');
+  pigCallButton.addEventListener('click', () => {
+    if (!pig) {
+      return;
+    }
+    // To stand on the floor just beside her, wherever the story has it now.
+    const trot = Number(pig.style.getPropertyValue('--trot')) || 0;
+    const come = trot - 0.4;
+    pigTrip?.kill();
+    clearTimeout(pigTimer);
+    shell.sound.play('thud', 0.3);
+    if (reducedMotion) {
+      back.v = come;
+      applyBack();
+      pigTimer = setTimeout(() => {
+        back.v = 0;
+        applyBack();
+      }, 2600);
+      return;
+    }
+    calling = true;
+    trotting();
+    pig.dataset.facing = come > back.v ? 'right' : 'left';
+    pigTrip = gsap
+      .timeline()
+      .to(back, { v: come, duration: 1.1, ease: 'power1.inOut', onUpdate: applyBack })
+      .call(() => {
+        pig.toggleAttribute('data-trotting', false);
+        pig.removeAttribute('data-hop');
+        void pig.offsetWidth;
+        pig.setAttribute('data-hop', '');
+        shell.sound.play('thud', 0.45);
+      })
+      .call(
+        () => {
+          pig.dataset.facing = back.v > 0 ? 'left' : 'right';
+          pig.toggleAttribute('data-trotting', true);
+        },
+        [],
+        '+=0.9',
+      )
+      .to(back, {
+        v: 0,
+        duration: 1.3,
+        ease: 'power1.in',
+        onUpdate: applyBack,
+        onComplete: () => {
+          calling = false;
+          pig.dataset.facing = 'left';
+          trotting();
+        },
+      });
+  });
+  during([pigCallButton], iBaby, iSlowly);
+  // A tap on the pig itself: it hops and grunts.
+  pig?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    pig.removeAttribute('data-hop');
+    void pig.offsetWidth;
+    pig.setAttribute('data-hop', '');
+    shell.sound.play('thud', 0.45);
+  });
+
+  // --- "Did you say pig, or fig?": the reader answers. The thing chosen shows
+  // for a moment in the moon, drawn into it like its markings, and the grin
+  // widens: its own amount, on top of the pointer's and the story's.
+  const moonPicture = wood.querySelector<HTMLElement>('.cc__moon-picture');
+  const more = { v: 0 };
+  const applyMore = (): void => grin?.style.setProperty('--more', more.v.toFixed(3));
+  let moonTimer: ReturnType<typeof setTimeout> | undefined;
+  let widening: gsap.core.Animation | undefined;
+  const answer = (which: 'pig' | 'fig'): void => {
+    if (moonPicture) {
+      moonPicture.innerHTML = MOON_PICTURES[which];
+      moonPicture.dataset.picture = which;
+      moonPicture.setAttribute('data-shown', '');
+    }
+    clearTimeout(moonTimer);
+    moonTimer = setTimeout(() => moonPicture?.removeAttribute('data-shown'), 2000);
+    widening?.kill();
+    shell.sound.play('chime', 0.35);
+    if (reducedMotion) {
+      more.v = 0.9;
+      applyMore();
+      widening = gsap.delayedCall(2, () => {
+        more.v = 0;
+        applyMore();
+      });
+      return;
+    }
+    widening = gsap
+      .timeline()
+      .to(more, { v: 0.9, duration: 0.35, ease: 'back.out(2)', onUpdate: applyMore })
+      .to(more, { v: 0, duration: 0.8, ease: 'sine.inOut', onUpdate: applyMore }, '+=1.3');
+  };
+  const pigButton = shell.prop(shell.ui.demoPig ?? '', 'cc__prop cc__prop--pig');
+  const figButton = shell.prop(shell.ui.demoFig ?? '', 'cc__prop cc__prop--fig');
+  pigButton.addEventListener('click', () => answer('pig'));
+  figButton.addEventListener('click', () => answer('fig'));
+  during([pigButton, figButton], iAgain + 0.3, iSlowly);
+
   // --- The reader's Cat: it looks at you, grins wider as you come near, and goes
   // wherever you tap.
   const currentBough = (): HTMLElement | undefined =>
@@ -357,26 +511,22 @@ function mount(shell: DemoShell): void {
     const others = boughs.filter((b) => b !== currentBough());
     sendTo(others[Math.floor(random() * others.length)]);
   });
-  master.call(
-    () => {
-      const inside = master.time() < iVanish1;
-      if (inside) {
-        callButton.show();
-        hint.dataset.shown = '';
-      } else {
-        callButton.hide();
-        delete hint.dataset.shown;
-      }
-    },
-    [],
-    0.02,
-  );
-  callButton.show();
-  hint.dataset.shown = '';
-  master.call(
-    () => {
+  // *Call the Cat* and its hint belong to the wood before the first vanishing,
+  // whichever way the scroll crosses into or out of it (under reduced motion the
+  // first beat is seen settled, past the first moment of the page).
+  const callShown = (): void => {
+    if (master.time() < iVanish1) {
+      callButton.show();
+      hint.dataset.shown = '';
+    } else {
       callButton.hide();
       delete hint.dataset.shown;
+    }
+  };
+  master.call(callShown, [], 0.02);
+  master.call(
+    () => {
+      callShown();
       if (master.time() >= iVanish1 && currentBough() !== boughs[1]) {
         boughs[1]?.append(catBox as Node);
       }
@@ -384,6 +534,8 @@ function mount(shell: DemoShell): void {
     [],
     iVanish1,
   );
+  callButton.show();
+  hint.dataset.shown = '';
 
   // --- Signposts: press one and the wood walks that way for a moment.
   const walk = (direction: number): void => {

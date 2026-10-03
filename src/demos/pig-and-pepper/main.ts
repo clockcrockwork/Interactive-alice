@@ -17,7 +17,7 @@
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { closeBough } from '../cheshire-cat/figures.ts';
-import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
+import { attachDemo, type DemoShell, mix, REDUCED_SETTLE, seeded } from '../shell/shell.ts';
 import './pig.css';
 import {
   CAULDRON_SVG,
@@ -25,6 +25,7 @@ import {
   HEARTH_SVG,
   HOUSE_SVG,
   hands,
+  LETTER,
   THINGS,
   TREE_SVG,
 } from './figures.ts';
@@ -86,9 +87,13 @@ function mount(shell: DemoShell): void {
     `<div class="pp__house">${HOUSE_SVG}<div class="pp__door">${DOOR_LEAF_SVG}</div></div>` +
     `<div class="pp__footman pp__footman--frog">${figure('frog-footman')}</div>` +
     `<div class="pp__footman pp__footman--fish">${figure('fish-footman')}</div>` +
+    '<div class="pp__letter"><div class="pp__fold pp__fold--mid">' +
+    `${LETTER.mid}</div><div class="pp__fold pp__fold--bottom"><div class="pp__fold-face">${LETTER.bottom}</div>` +
+    `<div class="pp__fold-back">${LETTER.plain}</div></div><div class="pp__fold pp__fold--top">` +
+    `<div class="pp__fold-face">${LETTER.top}</div><div class="pp__fold-back">${LETTER.outside}</div></div></div>` +
     `<div class="pp__plate-flying">${THINGS.plate}</div>` +
+    `<div class="pp__pig-run">${figure('pig/trotting')}</div>` +
     '<div class="pp__trees pp__trees--near"></div>' +
-    `<div class="pp__pig-run" data-stage="3">${figure('pig-baby')}</div>` +
     '</div>';
   const world = outside.querySelector<HTMLElement>('.pp__world') ?? outside;
   const night = outside.querySelector<HTMLElement>('.pp__night');
@@ -126,13 +131,14 @@ function mount(shell: DemoShell): void {
     '<div class="pp__room">' +
     '<div class="pp__wall"></div><div class="pp__shelf"></div><div class="pp__floor"></div>' +
     `<div class="pp__hearth">${HEARTH_SVG}<div class="pp__cat">${figure('cheshire-cat/on-hearth')}</div></div>` +
-    `<button type="button" class="pp__cauldron" aria-label="${shell.ui.demoPepper ?? ''}">${CAULDRON_SVG}</button>` +
+    `<div class="pp__cauldron">${CAULDRON_SVG}</div>` +
     `<div class="pp__cook">${figure('cook')}</div>` +
     `<div class="pp__duchess">${figure('duchess')}<div class="pp__baby-in-arms" data-stage="0">${figure('pig-baby')}</div></div>` +
     '<div class="pp__smoke"></div><div class="pp__anger"></div>' +
     '</div>';
   const room = kitchen.querySelector<HTMLElement>('.pp__room') ?? kitchen;
-  const cauldron = kitchen.querySelector<HTMLButtonElement>('.pp__cauldron');
+  const cauldron = kitchen.querySelector<HTMLElement>('.pp__cauldron');
+  const hearthCat = kitchen.querySelector<HTMLElement>('.pp__cat');
   const cook = kitchen.querySelector<HTMLElement>('.pp__cook');
   const duchess = kitchen.querySelector<HTMLElement>('.pp__duchess');
   const babyInArms = kitchen.querySelector<HTMLElement>('.pp__baby-in-arms');
@@ -155,23 +161,29 @@ function mount(shell: DemoShell): void {
 
   // --- Her own hands, and the bundle in them.
   const handsLayer = shell.layer('pp__hands');
-  handsLayer.innerHTML = hands(
-    `<button type="button" class="pp__baby" data-stage="0" aria-label="${shell.ui.demoPokeBaby ?? ''}">${figure('pig-baby')}</button>`,
-  );
-  const held = handsLayer.querySelector<HTMLButtonElement>('.pp__baby');
+  handsLayer.innerHTML = hands(`<div class="pp__baby" data-stage="0">${figure('pig-baby')}</div>`);
+  const held = handsLayer.querySelector<HTMLElement>('.pp__baby');
 
   // --- The join: a bough at the wood's edge, close, with a grin arriving on it.
   const bough = shell.layer('pp__bough');
   bough.innerHTML = closeBough('pp__close');
   const closeGrin = bough.querySelector<HTMLElement>('.pp__close-grin');
   const blink = shell.layer('pp__blink');
+  // Under reduced motion a cut blinks. Each beat is seen settled, seven tenths in
+  // (REDUCED_SETTLE), so a blink must never be under way there: one that would be
+  // starts just after it instead, and is over before the next beat is seen.
   const wink = (at: number): void => {
     if (reducedMotion) {
+      const into = at - Math.floor(at);
+      const start =
+        into > REDUCED_SETTLE - 0.25 && into <= REDUCED_SETTLE + 1e-6
+          ? Math.floor(at) + REDUCED_SETTLE + 0.02
+          : at;
       master.fromTo(
         blink,
         { opacity: 1 },
         { opacity: 0, duration: 0.25, immediateRender: false },
-        at,
+        start,
       );
     }
   };
@@ -242,6 +254,58 @@ function mount(shell: DemoShell): void {
   bowButton.show();
   master.call(() => (master.time() >= iIn ? bowButton.hide() : bowButton.show()), [], iIn);
 
+  // --- The invitation, "nearly as large as himself": the Fish-Footman holds it out
+  // and the Frog-Footman takes it to read back. Folded in three, sealed with a
+  // heart; a tap on it, or *Open the letter*, unfolds it, and the Frog leans in.
+  const letter = outside.querySelector<HTMLElement>('.pp__letter');
+  master.fromTo(
+    letter,
+    { opacity: 0, scale: 0.3, x: '-4vmin' },
+    { opacity: 1, scale: 1, x: '0vmin', duration: still(0.2), ease: 'back.out(1.6)' },
+    iInvitation + 0.05,
+  );
+  master.to(letter, { x: '5vmin', duration: still(0.25), ease: 'sine.inOut' }, iInvitation + 0.32);
+  master.to(letter, { opacity: 0, duration: still(0.2) }, iLaugh + 0.05);
+  let letterTimer: ReturnType<typeof setTimeout> | undefined;
+  const unfold = (open: boolean): void => {
+    gsap.killTweensOf(letter, '--unfold');
+    if (reducedMotion) {
+      letter?.style.setProperty('--unfold', open ? '1' : '0');
+    } else {
+      gsap.to(letter, {
+        '--unfold': open ? 1 : 0,
+        duration: open ? 0.7 : 0.5,
+        ease: open ? 'power2.out' : 'power2.in',
+      });
+    }
+    frog?.toggleAttribute('data-reading', open);
+  };
+  const openLetter = (): void => {
+    unfold(true);
+    shell.sound.play('paper', 0.6);
+    clearTimeout(letterTimer);
+    letterTimer = setTimeout(() => unfold(false), 4200);
+  };
+  letter?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    openLetter();
+  });
+  const letterButton = shell.prop(
+    shell.ui.demoOpenLetter ?? '',
+    'pp__prop pp__prop--second pp__prop--letter',
+  );
+  letterButton.addEventListener('click', openLetter);
+  const letterShown = (): void => {
+    const inside = master.time() >= iInvitation && master.time() < iLaugh;
+    if (inside) {
+      letterButton.show();
+    } else {
+      letterButton.hide();
+    }
+  };
+  master.call(letterShown, [], iInvitation);
+  master.call(letterShown, [], iLaugh);
+
   // She laughs and runs back into the wood, then comes back; the Frog sits down.
   master.to(
     world,
@@ -261,12 +325,13 @@ function mount(shell: DemoShell): void {
   // Things that fly once: shown by a set at their moment and hidden by one after,
   // so a scrub back past either puts them away again.
   master.to(plateFlying, { opacity: 1, duration: 0.01 }, iPlate + 0.1);
+  // `--fly` carries it from the door to the tree's crown, a way the sheet sets
+  // for the frame's shape; the spin and the growing are the tween's own.
   master.fromTo(
     plateFlying,
-    { x: '0vw', y: '0vh', scale: 0.3, rotation: 0 },
+    { '--fly': 0, scale: 0.3, rotation: 0 },
     {
-      x: '-46vw',
-      y: '-24vh',
+      '--fly': 1,
       scale: 1,
       rotation: 540,
       duration: still(0.3),
@@ -390,6 +455,54 @@ function mount(shell: DemoShell): void {
   master.to(babyInArms, { y: -12, duration: still(0.08), yoyo: true, repeat: 1 }, iWhy + 0.54);
   near(iWhy + 0.5, () => shell.sound.play('thud', 0.5), 0.2);
   master.to(catGrin, { '--wide': 1, duration: still(0.4) }, iGrin + 0.1);
+  // *Look at the cat*, or a tap on it: the one Cheshire face grins wider still
+  // and winks, then is as the story has it. Its own amount (--more), so the
+  // story's grin is the scroll's.
+  const more = { v: 0 };
+  const applyMore = (): void => catGrin?.style.setProperty('--more', more.v.toFixed(3));
+  let winkTimer: ReturnType<typeof setTimeout> | undefined;
+  let widening: gsap.core.Animation | undefined;
+  const lookAtCat = (): void => {
+    widening?.kill();
+    hearthCat?.removeAttribute('data-wink');
+    void hearthCat?.offsetWidth;
+    hearthCat?.setAttribute('data-wink', '');
+    clearTimeout(winkTimer);
+    winkTimer = setTimeout(
+      () => hearthCat?.removeAttribute('data-wink'),
+      reducedMotion ? 1400 : 900,
+    );
+    shell.sound.play('chime', 0.3);
+    if (reducedMotion) {
+      more.v = 0.8;
+      applyMore();
+      widening = gsap.delayedCall(1.6, () => {
+        more.v = 0;
+        applyMore();
+      });
+      return;
+    }
+    widening = gsap
+      .timeline()
+      .to(more, { v: 0.8, duration: 0.3, ease: 'back.out(2)', onUpdate: applyMore })
+      .to(more, { v: 0, duration: 0.7, ease: 'sine.inOut', onUpdate: applyMore }, '+=1');
+  };
+  hearthCat?.addEventListener('click', lookAtCat);
+  const catButton = shell.prop(
+    shell.ui.demoLookCat ?? '',
+    'pp__prop pp__prop--second pp__prop--look',
+  );
+  catButton.addEventListener('click', lookAtCat);
+  const catShown = (): void => {
+    const inside = master.time() >= iCat && master.time() < iThrow;
+    if (inside) {
+      catButton.show();
+    } else {
+      catButton.hide();
+    }
+  };
+  master.call(catShown, [], iCat);
+  master.call(catShown, [], iThrow);
   master.to(duchess, { scale: 1.08, duration: still(0.3) }, iGrin + 0.6);
   master.to(duchess, { scale: 1, duration: still(0.3) }, iThrow + 0.05);
 
@@ -416,6 +529,8 @@ function mount(shell: DemoShell): void {
     el.className = 'pp__thing';
     el.dataset.kind = kind;
     el.setAttribute('aria-label', shell.ui.demoBatPan ?? '');
+    // Only a thing stuck on the glass is in its moment: until then it is inert.
+    el.inert = true;
     el.innerHTML = THINGS[kind] ?? '';
     flying.append(el);
     return { el, stuck: false };
@@ -440,6 +555,7 @@ function mount(shell: DemoShell): void {
       return;
     }
     thing.stuck = false;
+    thing.el.inert = true;
     shell.sound.play('thud', 0.35);
     gsap.to(thing.el, {
       x: `${(pick() - 0.5) * 120}vw`,
@@ -453,9 +569,15 @@ function mount(shell: DemoShell): void {
   const placeOnGlass = (thing: Thing): void => {
     glass.append(thing.el);
     thing.stuck = true;
+    thing.el.inert = false;
     shell.sound.play('thud', 0.6);
-    thing.el.style.setProperty('--gx', `${(6 + pick() * 88).toFixed(1)}%`);
-    thing.el.style.setProperty('--gy', `${(8 + pick() * 72).toFixed(1)}%`);
+    // Never where the sentences are: they hold the lower part of the frame (on a
+    // tall frame, more of it), so the glass takes its things above them.
+    const gx = 6 + pick() * 88;
+    const tall = shell.stage.clientHeight > shell.stage.clientWidth;
+    const gy = 8 + pick() * (tall ? 32 : 42);
+    thing.el.style.setProperty('--gx', `${gx.toFixed(1)}%`);
+    thing.el.style.setProperty('--gy', `${gy.toFixed(1)}%`);
     gsap.set(thing.el, { clearProps: 'transform,opacity' });
     gsap.fromTo(
       thing.el,
@@ -508,6 +630,7 @@ function mount(shell: DemoShell): void {
         flying.append(thing.el);
       }
       thing.stuck = false;
+      thing.el.inert = true;
       thing.el.style.removeProperty('--gx');
       thing.el.style.removeProperty('--gy');
       gsap.killTweensOf(thing.el);
@@ -701,21 +824,24 @@ function mount(shell: DemoShell): void {
     [],
     iCatch,
   );
-  const knot = (): void => {
+  /** Knots the bundle; the status speaks only when the reader did it. */
+  const knot = (byReader = true): void => {
     if (held?.hasAttribute('data-knotted')) {
       return;
     }
     held?.setAttribute('data-knotted', '');
     held?.removeAttribute('data-wriggle');
     shell.sound.play('paper', 0.5);
-    shell.status(shell.ui.demoHoldTight ?? '');
+    if (byReader) {
+      shell.status(shell.ui.demoHoldTight ?? '');
+    }
   };
   const unknot = (): void => {
     held?.removeAttribute('data-knotted');
     held?.toggleAttribute('data-wriggle', master.time() >= iCatch);
   };
   const holdButton = shell.prop(shell.ui.demoHoldTight ?? '', 'pp__prop pp__prop--hold');
-  holdButton.addEventListener('click', knot);
+  holdButton.addEventListener('click', () => knot());
   const holdShown = (): void => {
     const inside = master.time() >= iCatch + 0.2 && master.time() < iKnot + 0.5;
     if (inside) {
@@ -726,7 +852,7 @@ function mount(shell: DemoShell): void {
   };
   master.call(holdShown, [], iCatch + 0.2);
   master.call(holdShown, [], iKnot + 0.5);
-  master.call(() => (master.time() >= iKnot + 0.5 ? knot() : unknot()), [], iKnot + 0.5);
+  master.call(() => (master.time() >= iKnot + 0.5 ? knot(false) : unknot()), [], iKnot + 0.5);
   // Or drag the bundle: a pull of a hand's width twists it into a knot.
   let drag: { x: number; y: number } | undefined;
   held?.addEventListener('pointerdown', (event) => {
@@ -807,7 +933,7 @@ function mount(shell: DemoShell): void {
     grunt(1.4);
     shake(0.5);
   });
-  held?.addEventListener('click', () => {
+  const poke = (): void => {
     if (master.time() < iCatch || scrollStage >= PIG) {
       grunt(0.7);
       return;
@@ -816,22 +942,49 @@ function mount(shell: DemoShell): void {
     applyStage();
     grunt();
     shell.status(shell.ui.demoPokeBaby ?? '');
-  });
+  };
+  held?.addEventListener('click', poke);
+  const pokeButton = shell.prop(
+    shell.ui.demoPokeBaby ?? '',
+    'pp__prop pp__prop--second pp__prop--poke',
+  );
+  pokeButton.addEventListener('click', poke);
+  const pokeShown = (): void => {
+    const inside = master.time() >= iCatch + 0.2 && master.time() < iTrot + 0.1;
+    if (inside) {
+      pokeButton.show();
+    } else {
+      pokeButton.hide();
+    }
+  };
+  master.call(pokeShown, [], iCatch + 0.2);
+  master.call(pokeShown, [], iTrot + 0.1);
   // She looks down in alarm, then sets it down; it trots off into the wood.
   master.to(world, { '--look': -0.6, duration: still(0.3) }, iPig + 0.1);
   master.to(world, { '--look': 0, duration: still(0.4) }, iTrot);
   master.to(handsLayer, { y: 220, duration: still(0.3), ease: 'power2.in' }, iTrot + 0.1);
-  master.fromTo(
-    pigRun,
-    { opacity: 0, x: '0vw', y: '0vh', scale: 1 },
-    { opacity: 1, duration: 0.05 },
-    iTrot + 0.35,
-  );
-  master.to(
-    pigRun,
-    { x: '-38vw', y: '-24vh', scale: 0.18, duration: still(0.55), ease: 'power1.in' },
-    iTrot + 0.4,
-  );
+  // Set down at her feet, it trots off along the ground to the left, smaller as
+  // it goes, and into the trees at the wood's edge (the near trunks pass in front
+  // of it). `--trot` runs 0 to 1; the sheet turns it into the way along the
+  // ground for the frame's shape. Under reduced motion it is a still, half-way to
+  // the trees at its sentence, and gone when she looks up.
+  master.fromTo(pigRun, { opacity: 0 }, { opacity: 1, duration: 0.05 }, iTrot + 0.35);
+  if (reducedMotion) {
+    master.fromTo(
+      pigRun,
+      { '--trot': 0 },
+      { '--trot': 0.45, duration: 0.01, immediateRender: false },
+      iTrot + 0.35,
+    );
+  } else {
+    master.fromTo(
+      pigRun,
+      { '--trot': 0 },
+      { '--trot': 1, duration: 0.6, ease: 'none', immediateRender: false },
+      iTrot + 0.35,
+    );
+    master.to(pigRun, { opacity: 0, duration: 0.12 }, iTrot + 0.83);
+  }
   master.call(
     () =>
       pigRun?.toggleAttribute(
@@ -861,9 +1014,12 @@ function mount(shell: DemoShell): void {
   );
 
   // --- She looks up: a bough of a tree at the wood's edge, and a grin on it.
-  // Under reduced motion the scroll lands on whole beats, so the cut sits just
-  // before the last beat begins and the grin is there wherever the scroll stops.
-  const up = reducedMotion ? iLookUp - 0.35 : iLookUp;
+  // Under reduced motion the last beat is seen as it ends, so the cut sits in it
+  // and the trot's own beat keeps its picture of the pig going into the wood.
+  const up = iLookUp;
+  if (reducedMotion) {
+    master.to(pigRun, { opacity: 0, duration: 0.01 }, up);
+  }
   master.to(world, { '--look': 1.6, duration: still(0.45), ease: 'power2.inOut' }, up + 0.05);
   master.fromTo(bough, { opacity: 0 }, { opacity: 1, duration: still(0.3) }, up + 0.2);
   master.fromTo(

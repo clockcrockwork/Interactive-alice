@@ -18,7 +18,7 @@
         { "id": "very-ill", "segments": ["ch07.s0540", "ch07.s0550", "ch07.s0560", "ch07.s0570"] },
         { "id": "why-a-well", "segments": ["ch07.s0580", "ch07.s0590", "ch07.s0600", "ch07.s0610"] },
         { "id": "no-such-thing", "segments": ["ch07.s0620", "ch07.s0630", "ch07.s0640", "ch07.s0650", "ch07.s0660"] },
-        { "id": "draw", "segments": ["ch07.s0670", "ch07.s0680", "ch07.s0690", "ch07.s0700"] },
+        { "id": "draw", "cue": "draw", "segments": ["ch07.s0670", "ch07.s0680", "ch07.s0690", "ch07.s0700"] },
         { "id": "well-in", "segments": ["ch07.s0710", "ch07.s0720", "ch07.s0730", "ch07.s0740", "ch07.s0750"] }
       ]
     },

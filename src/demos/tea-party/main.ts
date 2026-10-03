@@ -12,7 +12,11 @@
  * follow, and moving round is one number (the round) that the party's seat and
  * the dirty cups follow, so reverse scrolling reconstructs both. The places the
  * reader has sat the party at stay used on top of that: the Hatter's own way
- * round goes into a clean place, and a used one tapped makes him frown.
+ * round goes into a clean place, a used one tapped makes him frown, and with
+ * nothing clean left the way round comes to the beginning again. The reader may
+ * also try the raven against the writing-desk, and sing along with the Hatter
+ * until the Dormouse sings in its sleep. What the status line says is the
+ * page's own sentence for what happened, never the button's label.
  */
 
 import gsap from 'gsap';
@@ -26,6 +30,7 @@ import {
   FROWN_SVG,
   HOUSE_SVG,
   KNIFE_SVG,
+  NOTES_SVG,
   RAVEN_SVG,
   SETTING_SYMBOL,
   SETTING_USE,
@@ -97,6 +102,14 @@ function mount(shell: DemoShell): void {
     }
   };
 
+  /** The page's own sentence in a beat, said by a speaker: what a status line says. */
+  const lineOf = (beat: number, speaker: string, last = false): string => {
+    const lines = (shell.beats[beat]?.lines ?? []).filter(
+      (line) => line.dataset.speaker === speaker,
+    );
+    return ((last ? lines.at(-1) : lines[0])?.textContent ?? '').trim();
+  };
+
   // --- The sky: the house with ears, the tree, and the sun that is also a clock.
   const sky = shell.layer('tp__sky');
   sky.innerHTML =
@@ -160,7 +173,13 @@ function mount(shell: DemoShell): void {
     PARTY_Z + 20,
     230,
   );
-  const dormouse = piece('tp__party tp__dormouse', figure('dormouse'), 0, PARTY_Z - 10, 170);
+  const dormouse = piece(
+    'tp__party tp__dormouse',
+    `${figure('dormouse')}<div class="tp__notes">${NOTES_SVG}</div>`,
+    0,
+    PARTY_Z - 10,
+    170,
+  );
   const hare = piece('tp__party tp__hare', figure('march-hare'), 150, PARTY_Z + 20, 230);
 
   // --- The camera: Alice. Standing at the table's end first.
@@ -185,14 +204,26 @@ function mount(shell: DemoShell): void {
   );
   words.innerHTML = `<p class="tp__big">${noRoomLine?.innerHTML ?? ''}</p>`;
   const big = words.querySelector<HTMLElement>('.tp__big');
-  between(words, iNoRoom, iNoRoom + 0.6);
-  master.fromTo(
-    big,
-    { opacity: 0, scale: reducedMotion ? 1 : 0.5 },
-    { opacity: 1, scale: 1, duration: 0.2, ease: 'back.out(2)' },
-    iNoRoom + 0.05,
-  );
-  master.to(big, { opacity: 0, scale: reducedMotion ? 1 : 1.15, duration: 0.15 }, iNoRoom + 0.42);
+  if (reducedMotion) {
+    // A still: the words stand big over the table for the whole settled beat,
+    // as she sits, and are gone with the next.
+    between(words, iNoRoom - 0.02, iNoRoom + 0.95);
+    master.fromTo(
+      big,
+      { opacity: 0 },
+      { opacity: 1, duration: 0.01, immediateRender: false },
+      iNoRoom - 0.02,
+    );
+  } else {
+    between(words, iNoRoom, iNoRoom + 0.6);
+    master.fromTo(
+      big,
+      { opacity: 0, scale: 0.5 },
+      { opacity: 1, scale: 1, duration: 0.2, ease: 'back.out(2)' },
+      iNoRoom + 0.05,
+    );
+    master.to(big, { opacity: 0, scale: 1.15, duration: 0.15 }, iNoRoom + 0.42);
+  }
   const chair = shell.layer('tp__chair');
   chair.innerHTML =
     '<div class="tp__arm tp__arm--left"></div><div class="tp__arm tp__arm--right"></div>';
@@ -238,7 +269,8 @@ function mount(shell: DemoShell): void {
       },
     );
     shell.sound.play('glass', 0.4);
-    shell.status(shell.ui.demoLookForWine ?? '');
+    // What she finds, in the Hare's own words: there is not any.
+    shell.status(lineOf(iWine, 'march-hare', true));
   };
   wineButton.addEventListener('click', lookForWine);
   pot.addEventListener('click', lookForWine);
@@ -280,6 +312,111 @@ function mount(shell: DemoShell): void {
       at,
     );
   });
+  // --- Answer the riddle: try the raven against the writing-desk. Drag it onto
+  // the desk, or press the prop: the two change places, since they never
+  // match, and the Hatter shrugs. The reader's swap rides on the story's
+  // (`--play` beside `--swap`), so neither undoes the other.
+  const raven = riddle.querySelector<HTMLElement>('.tp__raven') ?? riddle;
+  const desk = riddle.querySelector<HTMLElement>('.tp__desk') ?? riddle;
+  const answerFrom = iRaven + 0.3;
+  const answerTo = iSilence;
+  const answering = (): boolean => master.time() >= answerFrom && master.time() < answerTo;
+  const riddlePlay = { play: 0, dx: 0, dy: 0 };
+  const shrug = { v: 0 };
+  const applyRiddle = (): void => {
+    riddle.style.setProperty('--play', riddlePlay.play.toFixed(3));
+    raven.style.setProperty('--drag-x', `${riddlePlay.dx.toFixed(1)}px`);
+    raven.style.setProperty('--drag-y', `${riddlePlay.dy.toFixed(1)}px`);
+  };
+  const applyShrug = (): void => {
+    hatter.style.setProperty('--shrug', shrug.v.toFixed(3));
+  };
+  const answerButton = shell.prop(shell.ui.demoAnswerRiddle ?? '', 'tp__prop-riddle');
+  const answer = (): void => {
+    if (!answering() || shell.paused) {
+      return;
+    }
+    gsap.killTweensOf(riddlePlay);
+    gsap
+      .timeline({ onUpdate: applyRiddle, onComplete: applyRiddle })
+      .to(riddlePlay, { dx: 0, dy: 0, duration: d(0.25), ease: 'power2.out' }, 0)
+      .to(
+        riddlePlay,
+        { play: riddlePlay.play > 0.5 ? 0 : 1, duration: d(0.45), ease: 'power2.inOut' },
+        0,
+      );
+    gsap.killTweensOf(shrug);
+    gsap
+      .timeline({ onUpdate: applyShrug, onComplete: applyShrug })
+      .to(shrug, { v: 1, duration: d(0.25), ease: 'power2.out' }, d(0.3))
+      .to(shrug, { v: 0, duration: d(0.35), ease: 'power2.inOut' }, '+=0.9');
+    shell.sound.play('paper', 0.6);
+    // His answer, when at last he is asked for it.
+    shell.status(lineOf(iGiveUp, 'hatter', true));
+  };
+  answerButton.addEventListener('click', answer);
+  let drag: { id: number; x: number; y: number } | undefined;
+  raven.addEventListener('pointerdown', (event) => {
+    if (!answering()) {
+      return;
+    }
+    drag = {
+      id: event.pointerId,
+      x: event.clientX - riddlePlay.dx,
+      y: event.clientY - riddlePlay.dy,
+    };
+    raven.setPointerCapture(event.pointerId);
+    gsap.killTweensOf(riddlePlay);
+  });
+  raven.addEventListener('pointermove', (event) => {
+    if (!drag || event.pointerId !== drag.id) {
+      return;
+    }
+    riddlePlay.dx = event.clientX - drag.x;
+    riddlePlay.dy = event.clientY - drag.y;
+    applyRiddle();
+  });
+  const drop = (event: PointerEvent): void => {
+    if (!drag || event.pointerId !== drag.id) {
+      return;
+    }
+    drag = undefined;
+    // Measured once, at the drop: is the raven over the desk?
+    const a = raven.getBoundingClientRect();
+    const b = desk.getBoundingClientRect();
+    const across = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+    const down = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+    if (across > a.width * 0.3 && down > a.height * 0.3) {
+      answer();
+    } else {
+      gsap.to(riddlePlay, {
+        dx: 0,
+        dy: 0,
+        duration: d(0.4),
+        ease: 'back.out(1.6)',
+        onUpdate: applyRiddle,
+        onComplete: applyRiddle,
+      });
+    }
+  };
+  raven.addEventListener('pointerup', drop);
+  raven.addEventListener('pointercancel', drop);
+  const offerAnswer = (): void => {
+    const on = answering();
+    riddle.toggleAttribute('data-answering', on);
+    if (on) {
+      answerButton.show();
+    } else {
+      answerButton.hide();
+      drag = undefined;
+      riddlePlay.dx = 0;
+      riddlePlay.dy = 0;
+      applyRiddle();
+    }
+  };
+  master.call(offerAnswer, [], answerFrom);
+  master.call(offerAnswer, [], answerTo);
+
   // The Dormouse talks in its sleep: its zzz are always on; here they grow.
   master.to(dormouse, { '--sleep': 1, duration: d(0.3) }, iSee);
   master.to(dormouse, { '--sleep': 0, duration: d(0.3) }, iSilence);
@@ -346,7 +483,7 @@ function mount(shell: DemoShell): void {
       },
     );
     shell.sound.play('paper', 0.4);
-    shell.status(shell.ui.demoButterWatch ?? '');
+    shell.status(lineOf(iButter, 'march-hare'));
   };
   butterButton.addEventListener('click', butterTheWatch);
   butterPat?.addEventListener('click', butterTheWatch);
@@ -426,14 +563,17 @@ function mount(shell: DemoShell): void {
       })
       .to(whisper, { amount: 0, spin: 0, duration: d(0.5), ease: 'power2.inOut' }, '+=0.8');
     shell.sound.play('chime', 0.6);
-    shell.status(shell.ui.demoWhisperTime ?? '');
+    shell.status(lineOf(iHim, 'hatter', true));
   };
   whisperButton.addEventListener('click', whisperToTime);
   sun?.addEventListener('click', whisperToTime);
   propBetween(whisperButton, iHim + 0.2, iMurder);
 
   // --- The concert: the Hatter sings, and a bat flies up like a tea-tray.
-  move(iQuarrel, { pitch: 6 }, 0.5);
+  // On a narrow frame the camera looks a little further down for the song, so
+  // the party sits above its sentences.
+  const lite = matchMedia('(max-width: 700px)').matches;
+  move(iQuarrel, { pitch: lite ? 14 : 6 }, 0.5);
   master.to(hatter, { '--sing': 1, duration: d(0.3), ease: 'back.out(1.5)' }, iTwinkle + 0.05);
   master.to(hatter, { '--sing': 0, duration: d(0.3) }, iMurder + 0.3);
   const batLayer = shell.layer('tp__bat-layer');
@@ -460,6 +600,74 @@ function mount(shell: DemoShell): void {
     { '--jolt': 0, '--sleep': 0, duration: d(0.3), ease: 'power2.inOut' },
     iTwinkle + 0.93,
   );
+
+  // --- Sing along: each tap flaps a bat across the sky like a tea-tray, the
+  // Hatter's song in the status line; at the fourth the Dormouse sings in its
+  // sleep. A tap on the Hatter sings along too.
+  const singFrom = iTwinkle + 0.05;
+  const singTo = iMurder;
+  const singing = (): boolean => master.time() >= singFrom && master.time() < singTo;
+  const singButton = shell.prop(shell.ui.demoSingAlong ?? '', 'tp__prop-sing');
+  const song = (shell.beats[iTwinkle]?.lines ?? [])
+    .filter((line) => line.dataset.speaker === 'hatter')
+    .map((line) => (line.textContent ?? '').trim());
+  let sung = 0;
+  let batsOut = 0;
+  let snore = 0;
+  const singAlong = (): void => {
+    if (!singing() || shell.paused) {
+      return;
+    }
+    sung += 1;
+    batsOut += 1;
+    const bat = document.createElement('div');
+    bat.className = 'tp__sing-bat';
+    const side = batsOut % 2 === 0 ? -1 : 1;
+    bat.style.setProperty('--dx', `${side * (22 + (batsOut % 3) * 7)}vw`);
+    bat.style.setProperty('--peak', `${-(46 + (batsOut % 2) * 10)}vh`);
+    // Under reduced motion each bat is a still in its own place in the sky.
+    bat.style.setProperty('--still-x', `${8 + ((batsOut * 23) % 76)}vw`);
+    bat.style.setProperty('--still-y', `${10 + ((batsOut * 11) % 26)}vh`);
+    bat.innerHTML = `${figure('bat')}<div class="tp__tray">${TRAY_SVG}</div>`;
+    if (!reducedMotion) {
+      bat.addEventListener('animationend', (event) => {
+        if (event.target === bat) {
+          bat.remove();
+        }
+      });
+    }
+    batLayer.append(bat);
+    shell.sound.play('whoosh', 0.4);
+    if (sung >= 4) {
+      sung = 0;
+      dormouse.setAttribute('data-singing', '');
+      window.clearTimeout(snore);
+      snore = window.setTimeout(() => dormouse.removeAttribute('data-singing'), 3600);
+      shell.sound.play('chime', 0.5);
+      shell.status(lineOf(iTwinkle, 'dormouse'));
+    } else {
+      shell.status(song[(sung - 1) % Math.max(1, song.length)] ?? '');
+    }
+  };
+  singButton.addEventListener('click', singAlong);
+  hatter.addEventListener('click', singAlong);
+  const offerSing = (): void => {
+    const on = singing();
+    scene.toggleAttribute('data-singalong', on);
+    if (on) {
+      singButton.show();
+    } else {
+      singButton.hide();
+      sung = 0;
+      window.clearTimeout(snore);
+      dormouse.removeAttribute('data-singing');
+      for (const bat of batLayer.querySelectorAll('.tp__sing-bat')) {
+        bat.remove();
+      }
+    }
+  };
+  master.call(offerSing, [], singFrom);
+  master.call(offerSing, [], singTo);
 
   // --- Off with his head: the Queen's words flash red; since then, six o'clock.
   const red = shell.layer('tp__red');
@@ -506,7 +714,7 @@ function mount(shell: DemoShell): void {
     }
   };
   applyRounds();
-  move(iTeaTime, { pitch: 22, y: 260 }, 0.6);
+  move(iTeaTime, { pitch: 25, y: 260 }, 0.6);
   master.to(storyRounds, { mess: 1, duration: d(0.3), onUpdate: applyRounds }, iTeaTime + 0.05);
   master.to(
     storyRounds,
@@ -529,13 +737,23 @@ function mount(shell: DemoShell): void {
   // The Hatter's way: the next clean place toward Alice, and never her end.
   const roundButton = shell.prop(shell.ui.demoMoveRound ?? '', 'tp__prop-round');
   const moveRound = (): void => {
-    for (let round = Math.round(totalRound()) + 1; round <= FAR - 1; round += 1) {
+    const current = Math.round(totalRound());
+    for (let round = current + 1; round <= FAR - 1; round += 1) {
       if (!isUsed(seatOf(round))) {
         goRound(round);
         shell.sound.play('glass', 0.4);
-        shell.status(shell.ui.demoMoveRound ?? '');
+        shell.status(lineOf(iTeaTime, 'hatter', true));
         return;
       }
+    }
+    // Nothing clean left toward Alice: they come to the beginning again, to a
+    // used place, and the Hatter frowns. This is also the keyboard's way to sit
+    // at a used place.
+    const back = current === 0 ? 1 : 0;
+    const place = places.find((candidate) => candidate.slot === seatOf(back));
+    goRound(back);
+    if (place) {
+      frown(place.el);
     }
   };
   roundButton.addEventListener('click', moveRound);
@@ -581,7 +799,7 @@ function mount(shell: DemoShell): void {
       frown(place.el);
     } else {
       shell.sound.play('glass', 0.4);
-      shell.status(shell.ui.demoMoveRound ?? '');
+      shell.status(lineOf(iTeaTime, 'hatter', true));
     }
   };
   for (const place of places) {
@@ -591,7 +809,7 @@ function mount(shell: DemoShell): void {
 
   // --- Then the Dormouse shall: the camera turns to it, and down into its cup.
   const joinLayer = shell.layer('tp__join');
-  joinLayer.innerHTML = '<div class="tp__join-cup"></div>';
+  joinLayer.innerHTML = `<div class="tp__join-cup"></div><div class="tp__join-mouse">${figure('dormouse')}</div>`;
   between(joinLayer, iStory + 0.5, end);
   // Where the party sits when the turn begins, so it lands on the Dormouse
   // wherever the reader has moved it to.
@@ -608,6 +826,14 @@ function mount(shell: DemoShell): void {
     [],
     iStory + 0.6,
   );
+  // Once the cup covers the frame, the table beneath it is not painted.
+  const covered = (): void => {
+    const under = master.time() >= iStory + 0.96;
+    for (const layer of [sky, world, chair]) {
+      layer.toggleAttribute('data-off', under);
+    }
+  };
+  master.call(covered, [], iStory + 0.96);
 
   // --- Every frame: the table and the sky lean a little with the pointer.
   let lookX = 0;

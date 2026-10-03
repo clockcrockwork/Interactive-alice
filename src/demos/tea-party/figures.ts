@@ -205,3 +205,11 @@ export const TRAY_SVG = `
   <ellipse cx="80" cy="25" rx="78" ry="22" fill="var(--tp-china-shade)"/>
   <ellipse cx="80" cy="22" rx="66" ry="16" fill="var(--tp-china)"/>
 </svg>`;
+
+/** What the Dormouse sings in its sleep: three notes in ink, rising. */
+export const NOTES_SVG = `
+<svg viewBox="0 0 120 80" focusable="false">
+  <g class="tp__note"><ellipse cx="18" cy="66" rx="9" ry="6.5" transform="rotate(-20 18 66)" fill="var(--ink-primary)"/><path d="M26 63 V24" stroke="var(--ink-primary)" stroke-width="3"/><path d="M26 24 q10 6 8 16" stroke="var(--ink-primary)" stroke-width="3" fill="none"/></g>
+  <g class="tp__note tp__note--2"><ellipse cx="56" cy="52" rx="8" ry="6" transform="rotate(-20 56 52)" fill="var(--ink-primary)"/><path d="M63 49 V14" stroke="var(--ink-primary)" stroke-width="3"/></g>
+  <g class="tp__note tp__note--3"><ellipse cx="92" cy="60" rx="8" ry="6" transform="rotate(-20 92 60)" fill="var(--ink-primary)"/><ellipse cx="110" cy="54" rx="8" ry="6" transform="rotate(-20 110 54)" fill="var(--ink-primary)"/><path d="M99 57 V20 L117 14 V51" stroke="var(--ink-primary)" stroke-width="3" fill="none"/></g>
+</svg>`;

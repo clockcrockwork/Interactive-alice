@@ -654,6 +654,22 @@ export interface LocaleUIStrings {
      */
     demoGiveChildren: string;
     /**
+     * Rabbit hole: Dinah, in the dream of cats and bats, pounces at the bat.
+     */
+    demoCallDinah: string;
+    /**
+     * Riverbank: status after the reader turns a page of her sister's book.
+     */
+    demoPageEmpty: string;
+    /**
+     * Riverbank: status after the reader picks a daisy.
+     */
+    demoChainLonger: string;
+    /**
+     * Riverbank: status after the reader looks at the Rabbit's watch.
+     */
+    demoWatchSpins: string;
+    /**
      * Toggle at the end of a demo: when on, the page goes to the next scene by itself after a pause at the end.
      */
     demoAuto: string;

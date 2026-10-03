@@ -289,7 +289,7 @@ test('the pool of tears: the sentences ride the swell once she is in the water',
     await page.waitForTimeout(120);
   }
   expect(Math.max(...samples) - Math.min(...samples)).toBeGreaterThan(0.5);
-  await expect(page.locator('.pt__prop').first()).toBeVisible();
+  await expect(page.locator('.pt__prop--stir')).toBeVisible();
 });
 
 test('the index: the visitor chooses an Alice, and the demos remember her', async ({ page }) => {
@@ -320,6 +320,64 @@ test('the index: the visitor chooses an Alice, and the demos remember her', asyn
     );
   });
   expect(tokens).toEqual(['#d8b348', '#f2e8d8', '#a74838', '#d6b557']);
+});
+
+test('the index: nineteen cards that read, each at a small tilt, joined runs dealt over one another', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 760 });
+  await page.goto('./demos/');
+  const cards = page.locator('.demos__card');
+  await expect(cards).toHaveCount(demos.length);
+  const tilts = await cards.evaluateAll((items) =>
+    items.map((item) => Number.parseFloat(getComputedStyle(item).getPropertyValue('--tilt'))),
+  );
+  // Small, and alternating rather than growing with position.
+  for (const tilt of tilts) {
+    expect(Math.abs(tilt)).toBeLessThanOrEqual(4);
+  }
+  for (let i = 1; i < 4; i += 1) {
+    expect(Math.sign(tilts[i] ?? 0)).not.toBe(Math.sign(tilts[i - 1] ?? 0));
+  }
+  // A card that joins the one before it overlaps it a little, on the same row.
+  const boxes = await cards.evaluateAll((items) =>
+    items.map((item) => {
+      const box = item.getBoundingClientRect();
+      return {
+        left: box.left,
+        right: box.right,
+        top: box.top,
+        joined: item.hasAttribute('data-joined'),
+      };
+    }),
+  );
+  let runs = 0;
+  for (let i = 1; i < boxes.length; i += 1) {
+    const card = boxes[i];
+    const before = boxes[i - 1];
+    if (card?.joined && before && Math.abs(card.top - before.top) < 40) {
+      runs += 1;
+      const overlap = before.right - card.left;
+      expect(overlap).toBeGreaterThan(0);
+      expect(overlap).toBeLessThan((card.right - card.left) * 0.25);
+    }
+  }
+  expect(runs).toBeGreaterThan(3);
+  // On a phone: two columns of smaller cards, and a page far shorter than one.
+  await page.setViewportSize({ width: 390, height: 780 });
+  await page.reload();
+  const sides = await cards.evaluateAll((items) =>
+    items.map((item) => {
+      const box = item.getBoundingClientRect();
+      return {
+        left: box.left + box.width / 2 < innerWidth / 2,
+        narrow: box.width < innerWidth * 0.55,
+      };
+    }),
+  );
+  expect(new Set(sides.map((side) => side.left)).size).toBe(2);
+  expect(sides.every((side) => side.narrow)).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThan(4200);
 });
 
 test("the rabbit's house: the camera pulls out as Alice fills the room", async ({ page }) => {
@@ -369,8 +427,8 @@ test('bill the lizard: down the chimney, then up like a sky-rocket', async ({ pa
   await expect.poll(cam, { timeout: 8000 }).toBeLessThan(-1000);
   // The kick is the reader's to give: a real button, and the world goes up.
   await at('kick', 0.3);
-  await expect(page.locator('.bl__prop')).toBeVisible();
-  await page.locator('.bl__prop').click();
+  await expect(page.locator('.bl__prop--kick')).toBeVisible();
+  await page.locator('.bl__prop--kick').click();
   await expect.poll(cam, { timeout: 8000 }).toBeGreaterThan(500);
 });
 
@@ -547,10 +605,18 @@ test('the caterpillar: the meadow scales with her height, and the tree tops take
     .poll(() => customProperty(page, '.ct__treetops', '--fade'), { timeout: 8000 })
     .toBeGreaterThan(0.9);
   await expect(page.locator('.ct__neck').first()).toHaveAttribute('d', /M.+L.+Z/);
+  // Back to her usual height, looking down at her feet: the meadow is small
+  // under her, and the mushroom by her shoe is a toy rather than a speck.
   await scrollTo(page, 1);
   await expect
+    .poll(() => customProperty(page, '.demo', '--ct-height'), { timeout: 8000 })
+    .toBeCloseTo(36, 0);
+  await expect
     .poll(() => customProperty(page, '.ct__meadow', '--s'), { timeout: 8000 })
-    .toBeLessThan(0.2);
+    .toBeLessThan(0.4);
+  await expect
+    .poll(() => customProperty(page, '.ct__meadow', '--toy'), { timeout: 8000 })
+    .toBeCloseTo(1, 1);
 });
 
 test('the caterpillar: each bit of mushroom is a button, and nibbling changes her height', async ({
@@ -675,11 +741,13 @@ test("the trial: her sister's dream fills the bank, and opening her eyes turns i
     );
   expect(await realOpacity()).toBeLessThan(0.1);
   // The button opens her eyes: every dream thing becomes its real one, and back.
+  // Its label says what a press will do (tests/play/trial.spec.ts checks the words).
   const eyes = page.locator('.tr__prop-eyes');
   await expect(eyes).toBeVisible();
-  await expect(eyes).toHaveAttribute('aria-pressed', 'false');
+  const closed = await eyes.textContent();
   await eyes.click();
-  await expect(eyes).toHaveAttribute('aria-pressed', 'true');
+  await expect(eyes).not.toHaveText(closed ?? '');
+  await expect(eyes).toHaveAttribute('data-open', '');
   await expect.poll(realOpacity, { timeout: 5000 }).toBeGreaterThan(0.9);
   await eyes.click();
   await expect.poll(realOpacity, { timeout: 5000 }).toBeLessThan(0.1);
@@ -708,7 +776,50 @@ test('the rabbit hole: the fall ends through a door in the floor, and a door bey
   // She is through every door but the last, which opens on the hall far below.
   await expect(page.locator('.rh__door[data-passed]')).toHaveCount(5);
   await expect(page.locator('.rh__door').last()).toHaveAttribute('data-open', '');
-  await expect(page.locator('.rh__hall-floor')).toBeVisible();
+  await expect(page.locator('.rh__door .trapdoor__floor')).toBeVisible();
+});
+
+test('the rabbit hole → drink me: the last door, open on the hall, is the frame Drink Me opens on and falls through', async ({
+  page,
+}) => {
+  test.slow();
+  const hole = demos.find((candidate) => candidate.demo === 'rabbit-hole');
+  const drinkMe = demos.find((candidate) => candidate.demo === 'drink-me');
+  test.skip(!hole || !drinkMe, 'both demos are needed for the join');
+  const doorBox = () =>
+    page.evaluate(() => {
+      const doors = [...document.querySelectorAll<HTMLElement>('.trapdoor')];
+      const box = doors[doors.length - 1]?.getBoundingClientRect();
+      return box ? [box.x, box.y, box.width, box.height].map(Math.round) : [];
+    });
+  await page.goto(hole?.url ?? '');
+  await scrollTo(page, 1);
+  await expect(page.locator('.rh__door').last()).toHaveAttribute('data-open', '');
+  await expect
+    .poll(() => customProperty(page, '.rh__doors', '--fall'), { timeout: 8000 })
+    .toBeGreaterThan(3400);
+  const last = await doorBox();
+
+  // Drink Me's first frame is that door, open, in the same place and the same size.
+  await page.goto(drinkMe?.url ?? '');
+  await expect(page.locator('.dk__arrival .trapdoor')).toHaveAttribute('data-open', '');
+  await expect(page.locator('.dk__arrival .trapdoor__floor')).toBeVisible();
+  const first = await doorBox();
+  expect(first.length).toBe(4);
+  first.forEach((value, i) => {
+    expect(Math.abs(value - (last[i] ?? 0)), `door box ${i}`).toBeLessThanOrEqual(2);
+  });
+  // Then the page falls through it, and from below the strange door is open as she
+  // tumbles out of it; back, the first frame again.
+  const opacity = () =>
+    page.evaluate(() =>
+      Number(getComputedStyle(document.querySelector('.dk__arrival') as Element).opacity),
+    );
+  await atCue(page, 'fall', 0.5);
+  await expect.poll(opacity, { timeout: 8000 }).toBeLessThan(0.05);
+  expect(await customProperty(page, '.dk__trapdoor-leaf', '--open')).toBeGreaterThan(0.9);
+  await scrollTo(page, 0);
+  await expect.poll(opacity, { timeout: 8000 }).toBeGreaterThan(0.95);
 });
 
 test('the dormouse: the camera is a transform on the cup, and the doze is a filter only while it lasts', async ({
@@ -926,36 +1037,69 @@ test('drink me → the pool of tears: she cries at the roof, and the pool opens 
   await expect.poll(() => opacity('.pt__self'), { timeout: 8000 }).toBeGreaterThan(0.9);
 });
 
-test('the pool of tears → the caucus-race: the party climbs the bank, and the race opens from the water', async ({
+test("the pool of tears → the caucus-race: the pool ends on the race's first frame, figure for figure", async ({
   page,
 }) => {
   const pool = demos.find((candidate) => candidate.demo === 'pool-of-tears');
   const race = demos.find((candidate) => candidate.demo === 'caucus-race');
   test.skip(!pool || !race, 'both demos are needed for the join');
+  const opacity = (selector: string) =>
+    page.evaluate(
+      (sel) => Number(getComputedStyle(document.querySelector(sel) as Element).opacity),
+      selector,
+    );
+  /** The picture both pages draw: the ring's camera, each runner's place, the water. */
+  const frame = (scope: string) =>
+    page.evaluate((root) => {
+      const ring = document.querySelector(`${root} .cr__ring`) as HTMLElement;
+      const camera = ['--spin', '--tilt', '--dolly', '--lift'].map((name) =>
+        Number(ring.style.getPropertyValue(name)),
+      );
+      const runners = [...document.querySelectorAll<HTMLElement>(`${root} .cr__runner`)].map(
+        (el) => ({
+          kind: el.dataset.kind,
+          a: Number(el.style.getPropertyValue('--a')),
+          r: Number(el.style.getPropertyValue('--r')),
+          y: Number(el.style.getPropertyValue('--y')),
+        }),
+      );
+      const water = document.querySelector(`.cr__water${root === '.pt__race' ? '.pt__race' : ''}`);
+      return { camera, runners, water: water ? getComputedStyle(water).blockSize : '' };
+    }, scope);
   await page.goto(pool?.url ?? '');
   await atCue(page, 'crowd', 0.9);
-  await page.waitForTimeout(400);
   await expect(page.locator('.demo')).not.toHaveAttribute('data-ashore', '');
-  // At the shore the swimmers climb out onto the bank; the last frame is ashore.
+  await expect.poll(() => opacity('.cr__sky.pt__race')).toBeLessThan(0.05);
+  // At the end the hall has given way to the race's own sky, water and party.
   await scrollTo(page, 1);
   await expect(page.locator('.demo')).toHaveAttribute('data-ashore', '', { timeout: 8000 });
+  for (const layer of ['.cr__sky.pt__race', '.cr__world.pt__race', '.cr__water.pt__race']) {
+    await expect.poll(() => opacity(layer), { timeout: 8000 }).toBeGreaterThan(0.95);
+  }
+  await expect(page.locator('.pt__race .cr__runner')).toHaveCount(8);
+  const ending = await frame('.pt__race');
+  // No shore drawn across the water, and nothing to stir once ashore.
+  await expect(page.locator('.pt__prop--stir')).not.toHaveAttribute('data-shown', '');
   await atCue(page, 'crowd', 0.9);
   await expect(page.locator('.demo')).not.toHaveAttribute('data-ashore', '', { timeout: 8000 });
 
-  // The race opens low, from the water: the pool's water fills the foreground and
-  // the runners stand gathered at its edge with their feet still in it, dripping.
+  // The race opens on the same picture: camera, every runner's place, the water.
   await page.goto(race?.url ?? '');
-  const water = () =>
-    page.evaluate(() =>
-      Number(getComputedStyle(document.querySelector('.cr__water') as Element).opacity),
-    );
-  await expect.poll(water).toBeGreaterThan(0.9);
   await expect(page.locator('.cr__runner').first()).toHaveAttribute('data-drip', '');
-  await expect.poll(() => customProperty(page, '.cr__runner', '--y')).toBeGreaterThan(20);
-  await expect.poll(() => customProperty(page, '.cr__ring', '--lift')).toBeLessThan(-10);
+  await expect.poll(() => opacity('.cr__water')).toBeGreaterThan(0.9);
+  const opening = await frame('.demo__stage');
+  expect(opening.camera).toEqual(ending.camera);
+  expect(opening.water).toBe(ending.water);
+  for (const runner of ending.runners) {
+    const twin = opening.runners.find((candidate) => candidate.kind === runner.kind);
+    expect(twin, runner.kind).toBeDefined();
+    expect(twin?.a).toBeCloseTo(runner.a, 1);
+    expect(twin?.r).toBeCloseTo(runner.r, 2);
+    expect(twin?.y).toBeCloseTo(runner.y, 0);
+  }
   // By the end of the first beat the water has gone and the party is a ring on the bank.
   await atCue(page, 'bank', 0.98);
-  await expect.poll(water, { timeout: 8000 }).toBeLessThan(0.05);
+  await expect.poll(() => opacity('.cr__water'), { timeout: 8000 }).toBeLessThan(0.05);
   await expect
     .poll(() => customProperty(page, '.cr__runner', '--y'), { timeout: 8000 })
     .toBeLessThan(0.5);
@@ -1228,7 +1372,6 @@ test('the riverbank: a page turns and finds nothing, picked daisies chain in her
   await expect.poll(() => customProperty(page, '.rb__book', '--page')).toBe(1);
   // The pages are paper and lines of ghost text-shapes: no picture in any of them.
   await expect(page.locator('.rb__book img, .rb__book svg')).toHaveCount(0);
-  await expect(page.locator('.demo__status')).not.toBeEmpty();
   // A daisy by the button, and one by a tap on the flower itself.
   await page.locator('.rb__prop--pick').click();
   await expect(page.locator('.rb__chain')).toHaveAttribute('data-chain', '1');
@@ -1273,7 +1416,20 @@ test('the riverbank → the rabbit hole: the Rabbit stops for his watch, she jum
   await expect
     .poll(() => customProperty(page, '.demo', '--pan'), { timeout: 8000 })
     .toBeCloseTo(1, 1);
-  await expect.poll(() => customProperty(page, '.rb__field', '--hole')).toBeCloseTo(0.15, 2);
+  await expect(page.locator('.rb__field')).toHaveAttribute('data-diving', '');
+  // The picture at the hedge, measured: the hole, the Rabbit in it and Alice.
+  const parts = ['.field__hole', '.field__burrow', '.field__runner'];
+  const boxes = () =>
+    page.evaluate(
+      (selectors) =>
+        selectors.map((sel) => {
+          const box = document.querySelector(sel)?.getBoundingClientRect();
+          return box ? [box.x, box.y, box.width, box.height].map(Math.round) : [];
+        }),
+      parts,
+    );
+  await expect.poll(() => page.evaluate(() => window.__aliceDemo?.settled() ?? false)).toBe(true);
+  const atHedge = await boxes();
   // And back: the join is a function of the scroll.
   await atCue(page, 'book', 0.5);
   await expect(page.locator('.demo')).not.toHaveAttribute('data-at-hedge', '', { timeout: 8000 });
@@ -1283,12 +1439,17 @@ test('the riverbank → the rabbit hole: the Rabbit stops for his watch, she jum
     .poll(() => customProperty(page, '.demo', '--pan'), { timeout: 8000 })
     .toBeLessThan(0.05);
 
-  // The rabbit hole opens on that frame: the same hole at the same size, with the
-  // Rabbit's tail just going in.
+  // The rabbit hole opens on that frame: the same hole, the same Rabbit nose-down
+  // in it with his tail out, the same Alice, to the pixel.
   await page.goto(hole?.url ?? '');
-  await expect(page.locator('.rh__surface .rh__hole')).toBeAttached();
-  await expect.poll(() => customProperty(page, '.rh__surface', '--hole')).toBeCloseTo(0.15, 2);
-  await expect(page.locator('.rh__rabbit .art')).toBeAttached();
+  await expect(page.locator('.rh__surface .field__rabbit .art')).toBeAttached();
+  const opening = await boxes();
+  opening.forEach((box, i) => {
+    expect(box.length, parts[i]).toBe(4);
+    box.forEach((value, j) => {
+      expect(Math.abs(value - (atHedge[i]?.[j] ?? 0)), `${parts[i]} ${j}`).toBeLessThanOrEqual(2);
+    });
+  });
 });
 
 test("the mouse's tale: the verses are written along the tail in order, shrinking, and the tail can be pulled", async ({
@@ -1376,23 +1537,60 @@ test("the mouse's tale: the tail ties a knot that will not undo, and a tapped bi
   await expect(dodo).not.toHaveAttribute('data-gone', '', { timeout: 8000 });
 });
 
-test("the caucus-race → the mouse's tale: the tale opens on the race's huddle and sits down in a ring", async ({
+test("the caucus-race → the mouse's tale: the tale opens on the race's huddle, thimble in her hand, and sits down in a ring", async ({
   page,
 }) => {
   const race = demos.find((candidate) => candidate.demo === 'caucus-race');
   const tale = demos.find((candidate) => candidate.demo === 'mouse-tale');
   test.skip(!race || !tale, 'both demos are needed for the join');
-  // The race ends crowded round Alice, the course still chalked on the bank.
+  /** The huddle as drawn: the camera, each one's place, and the thimble's. */
+  const huddle = () =>
+    page.evaluate(() => {
+      const ring = document.querySelector('.cr__ring') as HTMLElement;
+      const read = (el: Element | null, names: string[]) =>
+        names.map((name) => Number((el as HTMLElement | null)?.style.getPropertyValue(name)));
+      return {
+        camera: read(ring, ['--spin', '--tilt', '--dolly', '--lift']),
+        places: [...document.querySelectorAll<HTMLElement>('.cr__runner')]
+          .filter((el) => el.dataset.kind !== 'canary')
+          .map((el) => [el.dataset.kind, ...read(el, ['--a', '--r'])]),
+        thimble: read(document.querySelector('.cr__carry'), ['--a', '--r', '--u', '--v', '--s']),
+        holding: document
+          .querySelector('.cr__runner[data-kind="alice"]')
+          ?.hasAttribute('data-holding'),
+      };
+    });
+  // The race ends crowded round Alice, the thimble in her hand, the course still chalked.
   await page.goto(race?.url ?? '');
   await scrollTo(page, 1);
   await expect
     .poll(() => customProperty(page, '.cr__runner', '--r'), { timeout: 8000 })
     .toBeCloseTo(0.5, 1);
   await expect.poll(() => customProperty(page, '.cr__course circle', '--drawn')).toBeCloseTo(1, 1);
-  // The tale opens on that huddle, course and all, and opens into the ring.
+  await expect(page.locator('.cr__runner[data-kind="alice"]')).toHaveAttribute('data-holding', '', {
+    timeout: 8000,
+  });
+  await expect
+    .poll(async () => (await huddle()).thimble[4], { timeout: 8000 })
+    .toBeGreaterThan(0.7);
+  const ending = await huddle();
+  // The tale opens on that huddle, course, thimble and all, and opens into the ring.
   await page.goto(tale?.url ?? '');
-  await expect(page.locator('.cr__runner.mt__member')).toHaveCount(8);
+  await expect(page.locator('.cr__runner.mt__member:not([data-kind="canary"])')).toHaveCount(8);
   await expect.poll(() => customProperty(page, '.cr__runner', '--r')).toBeCloseTo(0.5, 1);
+  const opening = await huddle();
+  expect(opening.holding).toBe(true);
+  // The race keeps its own angles, the tale starts its ring from others: the
+  // picture is the same when every place is taken relative to the camera.
+  const facing = (frame: typeof ending) =>
+    frame.places.map(([kind, a, r]) => [
+      kind,
+      Math.round((((Number(a) + (frame.camera[0] ?? 0)) % 360) + 360) % 360),
+      Number(r).toFixed(2),
+    ]);
+  expect(facing(opening)).toEqual(facing(ending));
+  expect(opening.camera.slice(1)).toEqual(ending.camera.slice(1));
+  expect(opening.thimble.slice(1)).toEqual(ending.thimble.slice(1));
   const courseOpacity = () =>
     page.evaluate(() =>
       Number(getComputedStyle(document.querySelector('.cr__course') as Element).opacity),
@@ -1403,6 +1601,10 @@ test("the caucus-race → the mouse's tale: the tale opens on the race's huddle 
     .poll(() => customProperty(page, '.cr__runner', '--r'), { timeout: 8000 })
     .toBeCloseTo(1, 1);
   await expect.poll(courseOpacity, { timeout: 8000 }).toBeLessThan(0.05);
+  await expect(page.locator('.cr__runner[data-kind="alice"]')).not.toHaveAttribute(
+    'data-holding',
+    '',
+  );
 });
 
 test("the mouse's tale → the rabbit's house: the footsteps lead to the house's door, and the house opens on it", async ({

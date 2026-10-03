@@ -77,6 +77,10 @@
         "demoKingsNotebook",
         "demoCloseEyes",
         "demoGiveChildren",
+        "demoCallDinah",
+        "demoPageEmpty",
+        "demoChainLonger",
+        "demoWatchSpins",
         "demoScrollHint",
         "demoTechRabbitHole",
         "demoTechDormouse",
@@ -437,6 +441,26 @@
           "type": "string",
           "minLength": 1,
           "description": "Sentence First: hand a keepsake to the little children of the after-time."
+        },
+        "demoCallDinah": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Rabbit hole: Dinah, in the dream of cats and bats, pounces at the bat."
+        },
+        "demoPageEmpty": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Riverbank: status after the reader turns a page of her sister's book."
+        },
+        "demoChainLonger": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Riverbank: status after the reader picks a daisy."
+        },
+        "demoWatchSpins": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Riverbank: status after the reader looks at the Rabbit's watch."
         },
         "demoAuto": {
           "type": "string",

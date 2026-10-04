@@ -284,3 +284,55 @@ test.describe('lobster quadrille: phone', () => {
     expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(391);
   });
 });
+
+/** Each caption line of the active beat against each figure drawn, as boxes. */
+const captionFigureOverlaps = (page: Page) =>
+  page.evaluate(() => {
+    const box = (element: Element) => {
+      const { x, y, width, height } = element.getBoundingClientRect();
+      return { x, y, width, height };
+    };
+    const lines = [...document.querySelectorAll('.demo-beat[data-active] .line')]
+      .filter((line) => Number(getComputedStyle(line).opacity) > 0.5)
+      .map(box);
+    const drawn = [...document.querySelectorAll('.lq__item > .art, .lq__swimmer > .art')]
+      .filter((figure) => figure.checkVisibility({ opacityProperty: true }))
+      .map(box);
+    const hits: string[] = [];
+    for (const line of lines) {
+      for (const figure of drawn) {
+        if (
+          line.x + 2 < figure.x + figure.width &&
+          figure.x + 2 < line.x + line.width &&
+          line.y + 2 < figure.y + figure.height &&
+          figure.y + 2 < line.y + line.height
+        ) {
+          hits.push(JSON.stringify({ line, figure }));
+        }
+      }
+    }
+    return { lines: lines.length, figures: drawn.length, hits };
+  });
+
+for (const [frame, viewport] of [
+  ['desktop', { width: 1280, height: 760 }],
+  ['a 390px phone', { width: 390, height: 780 }],
+] as const) {
+  test.describe(`lobster quadrille: the verses over the dance, on ${frame}`, () => {
+    test.skip(!demo, 'no lobster-quadrille demo page in the build');
+    test.use({ viewport });
+
+    test('the five lines of a verse stay clear of the dancers', async ({ page }) => {
+      await page.goto(demo?.url ?? '');
+      for (const cue of ['verse-one', 'verse-two', 'verse-three']) {
+        for (const within of [0.5, 0.8]) {
+          await atCue(page, cue, within);
+          const { lines, figures, hits } = await captionFigureOverlaps(page);
+          expect(lines, cue).toBeGreaterThanOrEqual(4);
+          expect(figures, cue).toBeGreaterThan(4);
+          expect(hits, `${cue} at ${within}`).toEqual([]);
+        }
+      }
+    });
+  });
+}

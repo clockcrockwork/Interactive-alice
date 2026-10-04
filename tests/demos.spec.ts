@@ -1574,12 +1574,35 @@ test("the caucus-race → the mouse's tale: the tale opens on the race's huddle,
     .poll(async () => (await huddle()).thimble[4], { timeout: 8000 })
     .toBeGreaterThan(0.7);
   const ending = await huddle();
+  /** The Rabbit's house small in the distance: drawn, and where on the stage. */
+  const distantHouse = () =>
+    page.evaluate(() => {
+      const layer = document.querySelector('.hs__arrival') as HTMLElement | null;
+      const front = layer?.querySelector('.hs__front');
+      const r = front?.getBoundingClientRect();
+      return {
+        opacity: layer ? Number(getComputedStyle(layer).opacity) : 0,
+        box: r ? [r.left, r.top, r.width, r.height].map((n) => Math.round(n)) : [],
+      };
+    });
+  // The race's last frame already has the house the tale walks to.
+  await expect
+    .poll(async () => (await distantHouse()).opacity, { timeout: 8000 })
+    .toBeGreaterThan(0.95);
+  const houseAtEnd = await distantHouse();
+  expect(houseAtEnd.box.length).toBe(4);
   // The tale opens on that huddle, course, thimble and all, and opens into the ring.
   await page.goto(tale?.url ?? '');
   await expect(page.locator('.cr__runner.mt__member:not([data-kind="canary"])')).toHaveCount(8);
   await expect.poll(() => customProperty(page, '.cr__runner', '--r')).toBeCloseTo(0.5, 1);
   const opening = await huddle();
   expect(opening.holding).toBe(true);
+  // The same house, drawn by the same markup, in the same place.
+  const houseAtOpening = await distantHouse();
+  expect(houseAtOpening.opacity).toBeGreaterThan(0.95);
+  houseAtOpening.box.forEach((value, index) => {
+    expect(Math.abs(value - (houseAtEnd.box[index] ?? Number.NaN))).toBeLessThanOrEqual(1);
+  });
   // The race keeps its own angles, the tale starts its ring from others: the
   // picture is the same when every place is taken relative to the camera.
   const facing = (frame: typeof ending) =>

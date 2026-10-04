@@ -12,8 +12,9 @@
  */
 
 import gsap from 'gsap';
-import { attachDemo, type DemoShell, seeded } from '../shell/shell.ts';
-import { BOTTLE_IN_HAND_SVG, HOUSE_FRONT_SVG, HOUSE_SVG, RIM_SVG, WIDE_FRAME } from './figures.ts';
+import { attachDemo, type DemoShell, REDUCED_SETTLE, seeded } from '../shell/shell.ts';
+import { BOTTLE_IN_HAND_SVG, HOUSE_SVG, RIM_SVG, WIDE_FRAME } from './figures.ts';
+import { HOUSE_FRONT_SVG } from './front.ts';
 import './house.css';
 
 function mount(shell: DemoShell): void {
@@ -69,15 +70,17 @@ function mount(shell: DemoShell): void {
   };
   applyEye();
   // In through the door: the front comes at the reader and gives way to the
-  // room. Under reduced motion the room is a cut with a blink, just after the
-  // page's first landing on the house.
+  // room. Under reduced motion the room is a cut with a blink placed after the
+  // first beat's settled frame, so that beat rests on the house front (the join
+  // with the Mouse's tale) and the room is there from the next beat.
   if (reducedMotion) {
-    master.set([arrival, arrivalGarden], { opacity: 0 }, iRoom + 0.12);
+    const inside = iRoom + REDUCED_SETTLE + 0.1;
+    master.set([arrival, arrivalGarden], { opacity: 0 }, inside);
     master.fromTo(
       flash,
       { opacity: 0.8 },
       { opacity: 0, duration: 0.1, immediateRender: false },
-      iRoom + 0.12,
+      inside,
     );
   } else {
     master.to(

@@ -14,8 +14,10 @@
 
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
+import { DISTANT_HOUSE, HOUSE_FRONT_SVG } from '../rabbit-house/front.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import './caucus.css';
+import '../rabbit-house/front.css';
 import {
   dressRunner,
   HANDS,
@@ -660,6 +662,23 @@ function mount(shell: DemoShell): void {
     },
     [],
     cue('she'),
+  );
+
+  // --- The Rabbit's house, small in the bank's distance as the thimble is given:
+  // the walk the Mouse's tale ends on starts here. The same front, in the same
+  // place, as the tale's first frame.
+  const distant = shell.layer('hs__arrival');
+  distant.innerHTML = HOUSE_FRONT_SVG;
+  const spot = DISTANT_HOUSE(matchMedia('(max-width: 700px)').matches);
+  distant.style.setProperty('--hx', spot.hx.toFixed(2));
+  distant.style.setProperty('--hy', spot.hy.toFixed(2));
+  distant.style.setProperty('--hz', spot.hz.toFixed(4));
+  gsap.set(distant, { opacity: 0 });
+  master.fromTo(
+    distant,
+    { opacity: 0 },
+    { opacity: 1, duration: reducedMotion ? 0.01 : 0.4, immediateRender: false },
+    iBow + 0.3,
   );
 
   // --- Per frame: whoever is running, runs.

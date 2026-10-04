@@ -36,10 +36,12 @@
     max-inline-size: min(46rem, 92vw);
   }
 
-  /* A verse is five long lines: set a little smaller, so the dance shows under it. */
+  /* A verse is five long lines: set a little smaller and, with no prop over the
+     song, up under the bar, so the tops of the dancers' leaps stay clear of it. */
   .demo--lobster-quadrille
   .demo-beat:is([data-cue="verse-one"], [data-cue="verse-two"], [data-cue="verse-three"]) {
-    font-size: calc(var(--demo-caption-size) * 0.86);
+    inset-block-start: calc(var(--demo-bar-height) + 0.75rem);
+    font-size: calc(var(--demo-caption-size) * 0.84);
   }
 
   .demo--lobster-quadrille .demo-beat[data-cue="faint"] {

@@ -113,6 +113,13 @@
     overflow: visible;
   }
 
+  /* While her size is changing the meadow is one composited layer, scaled as a
+     whole rather than redrawn every frame; once it rests it is drawn crisp again
+     at its new size (the demo sets and clears the flag). */
+  .ct__meadow[data-scaling] {
+    will-change: transform;
+  }
+
   .ct__grass {
     position: absolute;
     inset-inline: -20vw;
@@ -142,12 +149,18 @@
     opacity: 0.8;
   }
 
+  /* The near blades read as nearer by size and a deeper, unlit tint rather than
+     a live blur, so scaling the meadow never re-rasterises a filter. */
   .ct__blade--near {
     --lean-own: var(--lean);
     inline-size: 3.4vmin;
     block-size: calc(var(--h) * 0.62vmin);
     inset-block-end: -6vmin;
-    filter: blur(1px);
+    background: linear-gradient(
+      to top,
+      oklch(from var(--world-leaf-deep) calc(l - 0.06) c calc(h + (var(--hue) - 135) * 0.4)),
+      oklch(from var(--world-leaf) l c calc(h + (var(--hue) - 135) * 0.4))
+    );
   }
 
   .ct__mushroom {
@@ -367,7 +380,25 @@
     transform-origin: 50% 100%;
     transform: scale(calc(1 - var(--bite) * 0.12)) rotate(calc(var(--bite) * -4deg));
     transition: transform var(--demo-quick) var(--demo-ease);
-    filter: drop-shadow(0 12px 18px var(--ct-shade));
+  }
+
+  /* The hand's and the bit's soft shadows are painted gradients, not a live
+     drop-shadow: a filter here was redrawn under every frame of a nibble. */
+  .ct__bit-hand::before,
+  .ct__bit-piece::before {
+    content: "";
+    position: absolute;
+    inset: 4% 8% -2%;
+    z-index: -1;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--ct-shade-soft), transparent);
+    translate: 0 12px;
+  }
+
+  .ct__bit-piece::before {
+    inset: 10% 4% 0;
+    background: radial-gradient(closest-side, var(--ct-shade), transparent);
+    translate: 0 8px;
   }
 
   .ct__bit svg {
@@ -378,6 +409,7 @@
 
   /* Her hand comes up from the bottom of the frame; the bit sits on the fingertips. */
   .ct__bit-hand {
+    position: relative;
     display: block;
   }
 
@@ -386,7 +418,8 @@
     inset-inline-start: 6%;
     inset-block-start: -22%;
     inline-size: 78%;
-    filter: drop-shadow(0 8px 10px var(--ct-shade));
+    /* Its shadow falls on the hand, under the bit itself. */
+    isolation: isolate;
   }
 
   .ct__bit--right .ct__bit-piece {

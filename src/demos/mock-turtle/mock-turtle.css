@@ -10,6 +10,8 @@
   :root {
     --mt-radius: clamp(180px, 36vmin, 340px);
     --mt-figure: clamp(7rem, 24vmin, 14rem);
+    /* How far the Gryphon steps back, out from under a long beat's captions. */
+    --mt-aside: 16vw;
   }
 }
 
@@ -48,6 +50,13 @@
 
   .demo--mock-turtle[data-words] .demo-beat {
     inset-block-start: calc(var(--demo-bar-height) + 4rem);
+  }
+
+  /* Five lines about uglifying: the column moves a little toward the Gryphon,
+     clear of the Mock Turtle on his ledge, and the Gryphon steps back out from
+     under it (`--aside`). */
+  .demo--mock-turtle .demo-beat[data-cue="uglify"] {
+    inset-inline: 0 6rem;
   }
 
   /* --- The shore in layers. `--pan` is the walk along it, each band at its own
@@ -286,10 +295,24 @@
     transform: rotate(calc((1 - max(var(--hide), var(--count) * 0.55)) * 80deg));
   }
 
+  /* `--aside` (on the figures layer, from the demo) is the Gryphon's step back
+     while the five lines about uglifying are up; its shadow goes with it. */
+  .mt__figures {
+    --aside: 0;
+  }
+
   .mt__shade--gryphon {
     inset-block-start: 66%;
     transform: translate(
-      calc(-16vw * (1 - var(--settle)) - var(--mt-radius) * 0.4 * var(--settle)),
+      calc(
+        -16vw *
+        (1 - var(--settle)) -
+        var(--mt-radius) *
+        0.4 *
+        var(--settle) -
+        var(--aside) *
+        var(--mt-aside)
+      ),
       calc(var(--settle) * 8.5dvh)
     );
   }
@@ -310,7 +333,15 @@
     inline-size: var(--mt-figure);
     filter: drop-shadow(0 8px 8px var(--lq-ink-shadow));
     transform: translate(
-        calc(-16vw * (1 - var(--settle)) - var(--mt-radius) * 0.4 * var(--settle)),
+        calc(
+          -16vw *
+          (1 - var(--settle)) -
+          var(--mt-radius) *
+          0.4 *
+          var(--settle) -
+          var(--aside) *
+          var(--mt-aside)
+        ),
         calc(var(--settle) * 8.5dvh + var(--hop) * -7vmin + var(--sleep) * -7vmin)
       )
       rotate(
@@ -977,9 +1008,33 @@
       inset-block-start: calc(var(--demo-bar-height) + 3.4rem);
     }
 
+    /* A narrow frame: while the subjects are on the sand, washing and uglifying
+       them are offered under them, and only *Comfort him* stays at the top, so
+       the captions have the sky down to the Mock Turtle's horns. The Gryphon is
+       already clear of them here and does not step back. */
+    .demo--mock-turtle {
+      --mt-aside: 0vw;
+    }
+
+    .demo--mock-turtle[data-words] :is(.mt__prop--wash, .mt__prop--uglify) {
+      inset-block: auto calc(var(--space-2) + 2.6rem);
+    }
+
+    .demo--mock-turtle[data-words] .mt__prop--comfort {
+      inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    }
+
+    .demo--mock-turtle .demo-beat[data-cue="uglify"] {
+      inset-inline: 0;
+    }
+
     .demo--mock-turtle[data-words] .demo-beat {
-      inset-block-start: calc(var(--demo-bar-height) + 6.5rem);
+      inset-block-start: calc(var(--demo-bar-height) + 3.6rem);
       font-size: clamp(0.95rem, 0.85rem + 1vw, 1.1rem);
+    }
+
+    .demo--mock-turtle[data-words] .demo-beat[data-cue="uglify"] {
+      font-size: 0.95rem;
     }
 
     /* A tall narrow frame: the captions at the top take a third of it, so under

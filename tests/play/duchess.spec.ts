@@ -3,7 +3,7 @@
  * Duchess is gone at her choice, and the game empties until three are left.
  */
 
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 import { atCue, collectErrors, customProperty, demos } from '../demo-helpers.ts';
 
 const demo = demos.find((d) => d.demo === 'duchess');
@@ -253,5 +253,33 @@ test.describe('duchess under reduced motion', () => {
     await atCue(page, 'think', 0);
     await expect(page.locator('.dc__pig-layer')).not.toHaveAttribute('data-off', '');
     await expect(page.locator('.dc__pig-layer')).not.toHaveAttribute('data-cut', '');
+  });
+});
+
+/** The page's own UI labels, as the build wrote them into `#demo-ui`. */
+const uiLabels = (page: Page) =>
+  page.evaluate(
+    () =>
+      JSON.parse(document.getElementById('demo-ui')?.textContent ?? '{}') as Record<string, string>,
+  );
+
+test.describe('duchess: what the status line says', () => {
+  test.skip(!demo, 'no duchess demo page in the build');
+
+  test('a shrug by its button announces the chin bouncing off, not the button again', async ({
+    page,
+  }) => {
+    await page.goto(demo?.url ?? '');
+    const ui = await uiLabels(page);
+    expect(ui.demoShrugged).toBeTruthy();
+    expect(ui.demoShrugged).not.toBe(ui.demoShrug);
+    await atCue(page, 'sense', 0.05);
+    const shrug = page.locator('.dc__prop--shrug');
+    await expect(shrug).toBeVisible();
+    await expect(shrug).toHaveAccessibleName(ui.demoShrug ?? '');
+    await shrug.click();
+    const status = page.locator('.demo__status');
+    await expect(status).toHaveText(ui.demoShrugged ?? '');
+    await expect(status).not.toHaveText(ui.demoShrug ?? '');
   });
 });

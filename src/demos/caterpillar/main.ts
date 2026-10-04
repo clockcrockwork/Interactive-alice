@@ -378,6 +378,29 @@ function mount(shell: DemoShell): void {
   const footLayer = shell.layer('ct__foot-layer');
   footLayer.innerHTML = `<div class="ct__foot">${figure('alice/foot')}</div>`;
   const foot = footLayer.querySelector<HTMLElement>('.ct__foot') ?? footLayer;
+  // While the meadow's scale is changing it is one composited layer scaled as a
+  // whole (`data-scaling`); a moment after it rests the flag goes and the meadow
+  // is drawn crisp at its new size. Redrawing it every frame of a nibble, blades
+  // and all, cost the software renderer the better part of a second a frame.
+  let lastScale = '';
+  let restTimer = 0;
+  const rest = (): void => {
+    restTimer = 0;
+    meadow.removeAttribute('data-scaling');
+  };
+  const scaling = (scale: string): void => {
+    if (scale === lastScale) {
+      return;
+    }
+    const first = lastScale === '';
+    lastScale = scale;
+    if (first) {
+      return;
+    }
+    meadow.setAttribute('data-scaling', '');
+    window.clearTimeout(restTimer);
+    restTimer = window.setTimeout(rest, 240);
+  };
   const apply = (): void => {
     const h = shownHeight();
     // The meadow scales about the ground under her feet: at three inches it is
@@ -385,6 +408,7 @@ function mount(shell: DemoShell): void {
     // At the very end she looks down at her feet, and the mushroom by her shoe is
     // nearer than the horizon: a toy, not a speck.
     const scale = mix(Math.max(0.02, THREE / h), 0.27, toy.t);
+    scaling(scale.toFixed(4));
     meadow.style.setProperty('--s', scale.toFixed(4));
     meadow.style.setProperty('--toy', toy.t.toFixed(3));
     feet.style.setProperty('--toy', toy.t.toFixed(3));

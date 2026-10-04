@@ -25,7 +25,7 @@ import {
   type RunnerKind,
   THIMBLE_SVG,
 } from '../caucus-race/figures.ts';
-import { HOUSE_FRONT_SVG } from '../rabbit-house/figures.ts';
+import { DISTANT_HOUSE, HOUSE_FRONT_SVG } from '../rabbit-house/front.ts';
 import { attachDemo, type Beat, type DemoShell, mix } from '../shell/shell.ts';
 import '../caucus-race/caucus.css';
 import '../rabbit-house/house.css';
@@ -920,8 +920,9 @@ function mount(shell: DemoShell): void {
   const arrival = shell.layer('hs__arrival');
   arrival.innerHTML = HOUSE_FRONT_SVG;
   // Small on the bank's horizon, to the right of the party, clear of Alice even
-  // on a narrow screen; it fills the frame by the end.
-  const house = { hx: lite ? 36 : 26, hy: lite ? -24 : -26, hz: lite ? 0.09 : 0.07 };
+  // on a narrow screen, where the race's last frame left it; it fills the frame
+  // by the end.
+  const house = DISTANT_HOUSE(lite);
   const applyHouse = (): void => {
     arrival.style.setProperty('--hx', house.hx.toFixed(2));
     arrival.style.setProperty('--hy', house.hy.toFixed(2));

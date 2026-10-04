@@ -173,6 +173,34 @@ test('the caterpillar: at the end the mushroom is a toy by her feet', async ({ p
   }
 });
 
+test('the caterpillar: a nibble scales the meadow as one layer, with no live filter in it', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'caterpillar');
+  test.skip(!demo, 'no caterpillar demo in this build');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'nibble', 0.3);
+  // Nothing in the meadow or the hands draws through a filter: a blur or a drop
+  // shadow there was redrawn under every frame of a nibble.
+  const filtered = await page.evaluate(
+    () =>
+      [...document.querySelectorAll('.ct__meadow .ct__blade, .ct__bit, .ct__bit-piece')].filter(
+        (element) => getComputedStyle(element).filter !== 'none',
+      ).length,
+  );
+  expect(filtered).toBe(0);
+  const meadow = page.locator('.ct__meadow');
+  await expect(meadow).not.toHaveAttribute('data-scaling', '');
+  await page.locator('.ct__bit--right').click();
+  // While her size changes the meadow is promoted and scaled whole...
+  await expect(meadow).toHaveAttribute('data-scaling', '', { timeout: 2000 });
+  expect(await meadow.evaluate((element) => getComputedStyle(element).willChange)).toBe(
+    'transform',
+  );
+  // ...and once it rests it is drawn crisp again at its new size.
+  await expect(meadow).not.toHaveAttribute('data-scaling', '', { timeout: 4000 });
+});
+
 test.describe('the caterpillar, reduced motion', () => {
   test.use({ reducedMotion: 'reduce' });
 

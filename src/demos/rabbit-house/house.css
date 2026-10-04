@@ -3,28 +3,22 @@
 
 @layer tokens, base, layout, scene, utilities;
 
+/* The house front, its colours and `.hs__arrival`: shared with the pages that
+   only draw the front (the caucus-race). */
+@import "./front.css";
+
 @layer tokens {
   :root {
-    /* The book's palette (docs/visual-design.md): paper skies and walls, sepia
-       roof and timber, the garden in the world's leaf tint. Every value here
-       resolves from a shared token; the Bill demo repeats the roof, timber and
-       garden ones so its rooftop is this one. */
+    /* The book's palette (docs/visual-design.md): paper skies, the room and
+       the bottle; the walls, roof, timber and garden are in front.css. Every
+       value here resolves from a shared token; the Bill demo repeats the roof,
+       timber and garden ones so its rooftop is this one. */
     --hs-sky: var(--world-sky);
     --hs-sky-low: var(--paper-base);
-    --hs-grass: var(--world-leaf);
-    --hs-grass-deep: var(--world-leaf-deep);
-    --hs-wall: var(--paper-warm);
-    --hs-wall-shade: var(--paper-aged);
-    --hs-roof: var(--sepia-dark);
-    --hs-roof-deep: var(--sepia-deep);
-    --hs-timber: oklch(from var(--sepia-deep) calc(l - 0.08) c h);
-    --hs-timber-deep: var(--ink-secondary);
     --hs-room: var(--paper-warm);
     --hs-ceiling: var(--paper-base);
     --hs-floor: var(--sepia-mid);
     --hs-floor-line: var(--sepia-dark);
-    --hs-glass: oklch(from var(--world-sky) calc(l + 0.06) c h / 0.6);
-    --hs-brass: var(--paper-aged);
     /* The unlabelled bottle: paper-white glass, a printed sepia draught. */
     --hs-cork: var(--sepia-mid);
     --hs-drink: color-mix(in oklch, var(--sepia-mid), var(--paper-base) 30%);
@@ -489,26 +483,5 @@
       opacity: 0.55;
       transform: translate(calc(var(--dx) * 0.6px), calc(var(--dy) * -0.6px)) scale(1.2);
     }
-  }
-}
-
-@layer scene {
-  /* The house from the path, door in the middle: the Mouse's tale ends on this
-     frame, small in the bank's distance and then filling the stage, and this
-     page opens on it before the cut inside. `--hx`/`--hy` in viewport units and
-     `--hz` are the one transform both pages drive. */
-  .hs__arrival {
-    --hx: 0;
-    --hy: 0;
-    --hz: 1;
-    transform-origin: 50% 78%;
-    transform: translate(calc(var(--hx) * 1vw), calc(var(--hy) * 1vh)) scale(var(--hz));
-    pointer-events: none;
-  }
-
-  .hs__arrival .hs__front {
-    display: block;
-    inline-size: 100%;
-    block-size: 100%;
   }
 }

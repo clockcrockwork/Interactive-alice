@@ -512,7 +512,9 @@ come down as prizes, the thimble goes from Alice's pocket to the Dodo, is held u
 presented (the one gold gleam, while it is), and ends in her hand as she bows.
 Tenniel's Dodo carries his cane throughout, so he is told apart; at *thinking* the
 camera pushes in on him as the others step back, and he sits with one finger pressed
-upon his forehead while three thoughts rise.
+upon his forehead while three thoughts rise. As Alice takes the thimble the White
+Rabbit's house appears small on the bank's horizon, the same front in the same place
+as the Mouse's tale's first frame, foreshadowing the walk.
 
 **Interaction.** They began running when they liked, and left off when they liked:
 every runner is a real button, `aria-pressed` while running, and pressing one makes it
@@ -608,8 +610,9 @@ against the wall, the Rabbit and Pat in the garden looking up, and Bill climbing
 ladder and the slates to the chimney's rim, where the camera comes down to rest on the
 cap.
 
-**Reduced motion.** Cuts between poses and camera positions, and two blinks for the
-pull-back and the chimney; no rattle, no bulge
+**Reduced motion.** The first beat rests on the house front, the frame the Mouse's
+tale ends on; the cut inside, with a blink, comes with the next beat. Cuts between
+poses and camera positions, and two blinks for the pull-back and the chimney; no rattle, no bulge
 easing, no tumble spin; the glass hangs in the air.
 
 **The house, the foot, and the rim.** *Drink it*, or a press on the bottle, drains it in the room. Outside, *Push the wall* (or a tap on the house) shakes it and slates slide off the roof. Her foot comes out of the chimney's top; *Wiggle her foot*, or a tap on it, kicks it out in a puff of soot. On a wide screen the captions step aside for the door and the cucumber-frame. Press the window, or *Make a snatch*, and her hand comes out; the Rabbit, on screen at the door, the snatch and the crash, tumbles head first into the cucumber-frame and the glass bursts up and settles round it. The story makes the snatch before the beat is out if the reader does not, and scrolling back puts him under the window again. The house and Bill the Lizard are one minute of the book, and they join: the house's last beat pulls back and up until the cutaway gives way to the house from above, Bill climbing the ladder to the chimney's rim, and then drops into his eyes: the garden from the rim, the ladder's top over the eave, the Rabbit and Pat below. That frame (`RIM_SVG`) is the one Bill opens on, drawn once and shared. Under reduced motion the glass hangs in the air over the frame and the wiggle is a still kick and a standing cloud of soot.
@@ -650,6 +653,9 @@ into them as a tapered ribbon along a curve, with her shoulders and dress at its
 (`alice/from-above`). The Caterpillar's lines arrive as smoke: blurred, rising,
 clearing, with a ring from the hookah for each. The right-hand bit strikes her chin
 on her foot: the foot rises into the frame, the frame folds up from below, a thud.
+While her size changes the meadow is scaled as one composited layer and redrawn sharp
+once it rests; the near blades show depth by size and tint, not a live blur, and the
+shadows under the bits are painted, so a nibble stays cheap on a software renderer.
 
 **Interaction.** Press the Caterpillar, or *Blow a smoke ring*, and it blows one
 toward you. The two bits of mushroom are in her hands, real buttons: nibble the left
@@ -977,7 +983,10 @@ breaks it: he starts and sobs louder than ever, tears running, the sea heaving. 
 the Drawling-master is up he is a button, *Wake the Drawling-master*: he drawls,
 stretches right across the sea and faints in coils, then comes round. On the sand, tap
 a word and its letters writhe, or press *Uglify a word*; the story uglifies the word
-it argues about by itself. Drag a wave across the sand, or press *Wash the words
+it argues about by itself. On the five lines about uglifying the Gryphon steps back
+out from under the captions on a wide frame; on a phone, while the subjects are on
+the sand, *Wash the words away* and *Uglify a word* sit under the words and the
+captions take the sky down to the Mock Turtle's horns. Drag a wave across the sand, or press *Wash the words
 away*, and the wave takes them early; the story washes them anyway before the next are
 written, and scrolling back before they were written takes the reader's wave back.
 The pointer leans the shore and the school.
@@ -1009,7 +1018,9 @@ lobsters: a long jointed tail with a fan, great claws, long antennae. The reader
 lobster of their own in their hands. Then the reader is in the ring: the camera steps
 into its centre and the dancers go round and round, treading on her toes every so
 often, while the Mock Turtle sings; each verse comes up whole, its words lit one at a
-time as they are sung, each rising on the swell, and it stays up through the beat.
+time as they are sung, each rising on the swell, and it stays up through the beat. A
+verse is set a little smaller and up under the bar, so its five lines stay clear of
+the tops of the dancers' leaps.
 After the dance the ring turns back to its own places, so the end is the same however
 long the dance went round. At the cry from the distance the Gryphon takes her hand and
 runs: the shingle streams toward the camera under them, the dancers slide past and

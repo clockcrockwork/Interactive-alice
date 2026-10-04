@@ -215,3 +215,89 @@ test.describe('mock turtle: phone', () => {
     }
   });
 });
+
+/** Each caption line of the active beat against each figure drawn, as boxes. */
+const captionFigureOverlaps = (page: Page, figures: string) =>
+  page.evaluate((selector) => {
+    const box = (element: Element) => {
+      const { x, y, width, height } = element.getBoundingClientRect();
+      return { x, y, width, height };
+    };
+    const lines = [...document.querySelectorAll('.demo-beat[data-active] .line')]
+      .filter((line) => Number(getComputedStyle(line).opacity) > 0.5)
+      .map(box);
+    const drawn = [...document.querySelectorAll(selector)]
+      .filter((figure) => figure.checkVisibility({ opacityProperty: true }))
+      .map(box);
+    const hits: string[] = [];
+    for (const line of lines) {
+      for (const figure of drawn) {
+        if (
+          line.x + 2 < figure.x + figure.width &&
+          figure.x + 2 < line.x + line.width &&
+          line.y + 2 < figure.y + figure.height &&
+          figure.y + 2 < line.y + line.height
+        ) {
+          hits.push(JSON.stringify({ line, figure }));
+        }
+      }
+    }
+    return { lines: lines.length, figures: drawn.length, hits };
+  }, figures);
+
+for (const [frame, viewport] of [
+  ['desktop', { width: 1280, height: 760 }],
+  ['a 390px phone', { width: 390, height: 780 }],
+] as const) {
+  test.describe(`mock turtle: the five lines about uglifying, on ${frame}`, () => {
+    test.skip(!demo, 'no mock-turtle demo page in the build');
+    test.use({ viewport });
+
+    test('the captions stay clear of the Gryphon and the Mock Turtle', async ({ page }) => {
+      await page.goto(demo?.url ?? '');
+      for (const within of [0.5, 0.9]) {
+        await atCue(page, 'uglify', within);
+        // The Gryphon has stepped back (on a wide frame) and the column is clear.
+        await expect
+          .poll(
+            async () =>
+              (await captionFigureOverlaps(page, '.mt__gryphon > .art, .mt__turtle > .art')).hits,
+            {
+              timeout: 8000,
+            },
+          )
+          .toEqual([]);
+        const { lines, figures } = await captionFigureOverlaps(
+          page,
+          '.mt__gryphon > .art, .mt__turtle > .art',
+        );
+        // The last line may still be fading in mid-beat; by the end all five are up.
+        expect(lines).toBeGreaterThanOrEqual(within > 0.8 ? 5 : 4);
+        expect(figures).toBe(2);
+        // The props stay off the captions, and off the subjects on the sand.
+        const props = await captionFigureOverlaps(page, '.mt__prop');
+        expect(props.hits).toEqual([]);
+        await expectSubjectsClear(page);
+        const { boxes } = await subjectCollisions(page);
+        const shown = await page.locator('.mt__prop').evaluateAll((elements) =>
+          elements
+            .filter((element) => element.checkVisibility({ visibilityProperty: true }))
+            .map((element) => {
+              const { x, y, width, height } = element.getBoundingClientRect();
+              return { x, y, width, height };
+            }),
+        );
+        for (const word of boxes) {
+          for (const prop of shown) {
+            expect(overlaps(word, prop), JSON.stringify({ word, prop })).toBe(false);
+          }
+        }
+      }
+      // The next beat brings the Gryphon back to its place.
+      await atCue(page, 'more', 0.6);
+      await expect
+        .poll(() => customProperty(page, '.mt__figures', '--aside'), { timeout: 8000 })
+        .toBe(0);
+    });
+  });
+}

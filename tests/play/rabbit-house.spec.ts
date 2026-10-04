@@ -168,3 +168,29 @@ test.describe('Growing in the House', () => {
     expect(first).toBe(last);
   });
 });
+
+test.describe('Growing in the House, reduced motion', () => {
+  test.skip(!house, 'no rabbit-house demo in this build');
+  test.use({ reducedMotion: 'reduce' });
+
+  test('the first beat rests on the house front, the join with the tale; the room comes with the next', async ({
+    page,
+  }) => {
+    const arrival = () =>
+      page.evaluate(() =>
+        Number(getComputedStyle(document.querySelector('.hs__arrival') as Element).opacity),
+      );
+    await page.goto(house?.url ?? '');
+    await expect.poll(arrival).toBeGreaterThan(0.9);
+    // Anywhere in the first beat shows its settled frame: still the front.
+    for (const within of [0, 0.5, 0.95]) {
+      await atCue(page, 'room', within);
+      await expect.poll(arrival, { timeout: 8000 }).toBeGreaterThan(0.9);
+    }
+    await atCue(page, 'sip', 0);
+    await expect.poll(arrival, { timeout: 8000 }).toBeLessThan(0.05);
+    // And back: the front again.
+    await atCue(page, 'room', 0.5);
+    await expect.poll(arrival, { timeout: 8000 }).toBeGreaterThan(0.9);
+  });
+});

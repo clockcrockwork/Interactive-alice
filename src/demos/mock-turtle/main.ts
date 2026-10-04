@@ -724,6 +724,15 @@ function mount(shell: DemoShell): void {
     iUglify + 0.35,
   );
   master.to(gryphon, { '--hop': 1, duration: quick(0.12), yoyo: true, repeat: 1 }, iUglify + 0.2);
+  // Its paws up in surprise, it steps back out from under the five lines about
+  // uglifying (a length the CSS sets per frame width), and comes back after them.
+  master.fromTo(
+    figures,
+    { '--aside': 0 },
+    { '--aside': 1, duration: quick(0.3), ease: 'power2.out', immediateRender: false },
+    iUglify,
+  );
+  master.to(figures, { '--aside': 0, duration: quick(0.3), ease: 'power2.inOut' }, iMore);
   master.to(turtle, { '--count': 1, duration: quick(0.1), yoyo: true, repeat: 5 }, iMore + 0.2);
 
   // The Drawling-master rises out of the sea in coils; the Classics master

@@ -277,3 +277,55 @@ test.describe('croquet under reduced motion', () => {
     expect(await customProperty(page, '.cq__cat', '--bob')).toBeCloseTo(1, 1);
   });
 });
+
+/** The page's own UI labels, as the build wrote them into `#demo-ui`. */
+const uiLabels = (page: Page) =>
+  page.evaluate(
+    () =>
+      JSON.parse(document.getElementById('demo-ui')?.textContent ?? '{}') as Record<string, string>,
+  );
+
+test.describe('croquet: what the status line says', () => {
+  test.skip(!demo, 'no croquet demo page in the build');
+
+  test('a card turned over by its button says what is on its face, not the button again', async ({
+    page,
+  }) => {
+    await page.goto(demo?.url ?? '');
+    const ui = await uiLabels(page);
+    expect(ui.demoCardTurned).toBeTruthy();
+    expect(ui.demoCardTurned).not.toBe(ui.demoTurnCard);
+    await atCue(page, 'these', 0.8);
+    const turn = page.locator('.cq__prop--turn');
+    await expect(turn).toBeVisible();
+    await expect(turn).toHaveAccessibleName(ui.demoTurnCard ?? '');
+    await turn.click();
+    const status = page.locator('.demo__status');
+    await expect(status).toHaveText(ui.demoCardTurned ?? '');
+    await expect(status).not.toHaveText(ui.demoTurnCard ?? '');
+  });
+
+  test.describe('with the flamingo held still', () => {
+    // Under reduced motion the flamingo never twists up to look at her, so a
+    // fresh strike always lands.
+    test.use({ reducedMotion: 'reduce' });
+
+    test('a strike by its button says where the hedgehog went, not the button again', async ({
+      page,
+    }) => {
+      await page.goto(demo?.url ?? '');
+      const ui = await uiLabels(page);
+      expect(ui.demoStruck).toBeTruthy();
+      expect(ui.demoStruck).not.toBe(ui.demoStrike);
+      await atCue(page, 'flamingo', 0.5);
+      const strike = page.locator('.cq__prop--strike');
+      await expect(strike).toBeVisible();
+      await expect(strike).toHaveAccessibleName(ui.demoStrike ?? '');
+      await expect(page.locator(FLAMINGO)).not.toHaveAttribute('data-mood', 'sulking');
+      await strike.click();
+      const status = page.locator('.demo__status');
+      await expect(status).toHaveText(ui.demoStruck ?? '');
+      await expect(status).not.toHaveText(ui.demoStrike ?? '');
+    });
+  });
+});

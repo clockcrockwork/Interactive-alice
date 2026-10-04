@@ -2,6 +2,7 @@
   "id": "drink-me",
   "titleChapter": 1,
   "titleSection": "drink-me",
+  "joinsPrevious": true,
   "shots": [
     {
       "id": "through-the-trapdoor",

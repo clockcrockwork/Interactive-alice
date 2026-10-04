@@ -1,6 +1,7 @@
 {
   "id": "pool-of-tears",
   "titleChapter": 2,
+  "joinsPrevious": true,
   "shots": [
     {
       "id": "nine-feet-high",

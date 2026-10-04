@@ -2,6 +2,7 @@
   "$schema": "../../schema/experience-demo.schema.json",
   "id": "witnesses",
   "titleChapter": 11,
+  "joinsPrevious": true,
   "shots": [
     {
       "id": "looking-round-the-court",

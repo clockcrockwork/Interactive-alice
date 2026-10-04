@@ -1,6 +1,7 @@
 {
   "id": "rabbit-hole",
   "titleChapter": 1,
+  "joinsPrevious": true,
   "shots": [
     {
       "id": "edge-of-the-hole",

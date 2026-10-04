@@ -2,6 +2,7 @@
   "id": "bill-the-lizard",
   "titleChapter": 4,
   "titleSection": "there-goes-bill",
+  "joinsPrevious": true,
   "shots": [
     {
       "id": "sent-down",

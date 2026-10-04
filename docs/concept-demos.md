@@ -281,7 +281,9 @@ per-demo `mode` (the rabbit hole reports `webgl` or `flat`).
 **Joins.** The demos are viewed in the book's order, and where two adjacent demos are
 one moment of the book they join: the end of the first is staged so that it leads
 straight into the opening of the second, and the opening picks the picture up where
-the first left it. Fifteen pairs join today: the riverbank and the rabbit hole at the
+the first left it. A demo that joins the one before says so in its own file
+(`joinsPrevious` in `experience/demos/<id>.demo.json`), and the index deals its card
+over the one before. Fifteen pairs join today: the riverbank and the rabbit hole at the
 hedge; the rabbit hole and Drink Me through the door in the floor; Drink Me and the
 pool at the roof, in tears; the pool and the race at the bank; the race and the Mouse's
 tale in the huddle; the tale and the house at the house's front; the house and Bill at

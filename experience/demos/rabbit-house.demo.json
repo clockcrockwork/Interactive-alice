@@ -2,6 +2,7 @@
   "id": "rabbit-house",
   "titleChapter": 4,
   "titleSection": "growing",
+  "joinsPrevious": true,
   "shots": [
     {
       "id": "the-bottle-by-the-glass",

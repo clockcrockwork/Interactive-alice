@@ -155,6 +155,10 @@ export interface ExperienceConceptDemoFile {
    * Optional: a story section of titleChapter whose localized title names this demo instead of the chapter's, for a second demo drawn from the same chapter.
    */
   titleSection?: string;
+  /**
+   * Optional: true when this demo's first frame is the previous demo's last, one moment of the book across two pages (see docs/concept-demos.md, Joins). The index deals such cards over the card before.
+   */
+  joinsPrevious?: boolean;
 }
 
 // experience-scene.schema.json
@@ -669,6 +673,54 @@ export interface LocaleUIStrings {
      * Riverbank: status after the reader looks at the Rabbit's watch.
      */
     demoWatchSpins: string;
+    /**
+     * The Duchess: status after the reader shrugs the chin off.
+     */
+    demoShrugged: string;
+    /**
+     * Croquet: status after the reader turns a face-down gardener over.
+     */
+    demoCardTurned: string;
+    /**
+     * Croquet: status after the reader strikes the hedgehog.
+     */
+    demoStruck: string;
+    /**
+     * Index: heading of the art-style trial picker.
+     */
+    demoArtTitle: string;
+    /**
+     * Index: art style, the figures as drawn now.
+     */
+    demoArtFlat: string;
+    /**
+     * Index: note under the flat art style.
+     */
+    demoArtFlatNote: string;
+    /**
+     * Index: art style, ink line and hatching.
+     */
+    demoArtEngraved: string;
+    /**
+     * Index: note under the engraved art style.
+     */
+    demoArtEngravedNote: string;
+    /**
+     * Index: art style, shapes cut from tinted paper.
+     */
+    demoArtPaper: string;
+    /**
+     * Index: note under the cut-paper art style.
+     */
+    demoArtPaperNote: string;
+    /**
+     * Index: art style, the figures as transparent images.
+     */
+    demoArtBaked: string;
+    /**
+     * Index: note under the baked-image art style.
+     */
+    demoArtBakedNote: string;
     /**
      * Toggle at the end of a demo: when on, the page goes to the next scene by itself after a pause at the end.
      */

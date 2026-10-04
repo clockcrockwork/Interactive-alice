@@ -1,6 +1,7 @@
 {
   "id": "caucus-race",
   "titleChapter": 3,
+  "joinsPrevious": true,
   "shots": [
     {
       "id": "a-queer-looking-party",

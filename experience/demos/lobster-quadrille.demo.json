@@ -1,6 +1,7 @@
 {
   "id": "lobster-quadrille",
   "titleChapter": 10,
+  "joinsPrevious": true,
   "shots": [
     {
       "id": "on-the-shore",

@@ -24,6 +24,18 @@ describe('the concept-demo pages', () => {
     expect(manifest.pages.map((page) => page.demo ?? page.kind)).toEqual(['demos', ...DEMO_ORDER]);
   });
 
+  it('reads the joins from the demos themselves, and deals each joined card over the one before', () => {
+    const index = pages.find((page) => page.path === 'demos/index.html')?.html ?? '';
+    const joined = project.demos.filter((demo) => demo.joinsPrevious).map((demo) => demo.id);
+    // The first demo joins nothing; every joined one follows a demo in the order.
+    expect(project.demos[0]?.joinsPrevious).toBeFalsy();
+    expect(joined.length).toBeGreaterThan(10);
+    for (const demo of project.demos) {
+      const card = new RegExp(`data-demo="${demo.id}"( data-joined)?`).exec(index);
+      expect(Boolean(card?.[1]), demo.id).toBe(Boolean(demo.joinsPrevious));
+    }
+  });
+
   it('carries every segment of the composition, in composition order, with its text', () => {
     for (const demo of project.demos) {
       const page = pages.find((candidate) => candidate.path === `demos/${demo.id}/index.html`);

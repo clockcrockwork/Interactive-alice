@@ -1,6 +1,7 @@
 {
   "id": "mock-turtle",
   "titleChapter": 9,
+  "joinsPrevious": true,
   "shots": [
     {
       "id": "the-gryphon",

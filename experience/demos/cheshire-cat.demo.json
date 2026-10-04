@@ -2,6 +2,7 @@
   "id": "cheshire-cat",
   "titleChapter": 6,
   "titleSection": "cheshire-puss",
+  "joinsPrevious": true,
   "shots": [
     {
       "id": "on-a-bough",

@@ -81,6 +81,18 @@
         "demoPageEmpty",
         "demoChainLonger",
         "demoWatchSpins",
+        "demoShrugged",
+        "demoCardTurned",
+        "demoStruck",
+        "demoArtTitle",
+        "demoArtFlat",
+        "demoArtFlatNote",
+        "demoArtEngraved",
+        "demoArtEngravedNote",
+        "demoArtPaper",
+        "demoArtPaperNote",
+        "demoArtBaked",
+        "demoArtBakedNote",
         "demoScrollHint",
         "demoTechRabbitHole",
         "demoTechDormouse",
@@ -461,6 +473,66 @@
           "type": "string",
           "minLength": 1,
           "description": "Riverbank: status after the reader looks at the Rabbit's watch."
+        },
+        "demoShrugged": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The Duchess: status after the reader shrugs the chin off."
+        },
+        "demoCardTurned": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Croquet: status after the reader turns a face-down gardener over."
+        },
+        "demoStruck": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Croquet: status after the reader strikes the hedgehog."
+        },
+        "demoArtTitle": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index: heading of the art-style trial picker."
+        },
+        "demoArtFlat": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index: art style, the figures as drawn now."
+        },
+        "demoArtFlatNote": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index: note under the flat art style."
+        },
+        "demoArtEngraved": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index: art style, ink line and hatching."
+        },
+        "demoArtEngravedNote": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index: note under the engraved art style."
+        },
+        "demoArtPaper": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index: art style, shapes cut from tinted paper."
+        },
+        "demoArtPaperNote": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index: note under the cut-paper art style."
+        },
+        "demoArtBaked": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index: art style, the figures as transparent images."
+        },
+        "demoArtBakedNote": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Index: note under the baked-image art style."
         },
         "demoAuto": {
           "type": "string",

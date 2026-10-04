@@ -1,6 +1,7 @@
 {
   "id": "dormouse",
   "titleChapter": 7,
+  "joinsPrevious": true,
   "shots": [
     {
       "id": "pinched-awake",

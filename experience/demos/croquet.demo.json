@@ -1,6 +1,7 @@
 {
   "id": "croquet",
   "titleChapter": 8,
+  "joinsPrevious": true,
   "shots": [
     {
       "id": "the-rose-tree",

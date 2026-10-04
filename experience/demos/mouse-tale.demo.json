@@ -2,6 +2,7 @@
   "id": "mouse-tale",
   "titleChapter": 3,
   "titleSection": "the-long-tale",
+  "joinsPrevious": true,
   "shots": [
     {
       "id": "a-long-tale",

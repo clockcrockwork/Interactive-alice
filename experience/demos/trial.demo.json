@@ -1,6 +1,7 @@
 {
   "id": "trial",
   "titleChapter": 12,
+  "joinsPrevious": true,
   "shots": [
     {
       "id": "sentence-before-verdict",

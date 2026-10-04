@@ -3,6 +3,7 @@
   "id": "duchess",
   "titleChapter": 9,
   "titleSection": "a-moral",
+  "joinsPrevious": true,
   "shots": [
     {
       "id": "arm-in-arm",

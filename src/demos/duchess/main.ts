@@ -376,7 +376,7 @@ function mount(shell: DemoShell): void {
       .to(shrug, { off: 1, duration: quick(0.5), ease: reducedMotion ? 'none' : 'back.out(3)' }, 0);
     shell.sound.play('thud', 0.35);
     if (byButton) {
-      shell.status(shell.ui.demoShrug ?? '');
+      shell.status(shell.ui.demoShrugged ?? '');
     }
   };
   shrugButton.addEventListener('click', () => shrugOff(true));

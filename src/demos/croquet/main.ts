@@ -361,7 +361,7 @@ function mount(shell: DemoShell): void {
     });
     shell.sound.play('paper', 0.6);
     if (byButton) {
-      shell.status(shell.ui.demoTurnCard ?? '');
+      shell.status(shell.ui.demoCardTurned ?? '');
     }
   };
   turnButton.addEventListener('click', () => turnOver(turnCount % gardeners.length, true));
@@ -701,7 +701,7 @@ function mount(shell: DemoShell): void {
     swing.to(flamingo, { rotation: -40, duration: quick(0.18), ease: 'power3.in' });
     swing.to(flamingo, { rotation: 0, duration: quick(0.4), ease: 'power2.out' });
     shell.sound.play('thud', 0.8);
-    shell.status(shell.ui.demoStrike ?? '');
+    shell.status(shell.ui.demoStruck ?? '');
     // The hedgehog rolls off toward the nearest arch, and the arch walks away.
     mine.el.removeAttribute('data-walking');
     const arch = arches[Math.floor(random() * arches.length)];

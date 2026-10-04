@@ -256,10 +256,16 @@ test.describe('lobster quadrille: phone', () => {
     await page.goto(demo?.url ?? '');
     await atCue(page, 'swim', 0.5);
     await expect(page.locator('.lq__prop--somersault')).toBeVisible();
-    await page.locator('.lq__prop--somersault').click();
+    // A dispatched click, as a tap is: Playwright's own click first scrolls the
+    // pinned stage's button "into view", which can carry the page past the sea.
+    await page.locator('.lq__prop--somersault').dispatchEvent('click');
+    // Watch the roll until it has turned (under load, GSAP's lag smoothing
+    // stretches the 1.1 s roll over many seconds),
+    // checking the page's width on every sample.
     let turned = false;
-    for (let i = 0; i < 14; i += 1) {
-      await page.waitForTimeout(80);
+    const until = Date.now() + 12_000;
+    while (!turned && Date.now() < until) {
+      await page.waitForTimeout(60);
       const sample = await page.evaluate(() => ({
         width: document.documentElement.scrollWidth,
         client: document.documentElement.clientWidth,

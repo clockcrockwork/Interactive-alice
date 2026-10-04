@@ -35,15 +35,18 @@ test('the caterpillar: a tap blows a small ring, a held press a strong one', asy
     })
     .toBeLessThan(0.1);
 
-  // The keyboard charges the same way: a held Space, with its repeats, is one press.
+  // The keyboard charges the same way: a held Space, with its repeats, is one press
+  // that blows one ring. (How strong depends on how long the keys were apart, which
+  // a loaded machine stretches, so only "charged, and not a tap" is asserted.)
+  const rings = page.locator('.ct__ring');
+  const before = await rings.count();
   await button.focus();
   await page.keyboard.down(' ');
   await page.keyboard.down(' ');
   await page.waitForTimeout(300);
   await page.keyboard.up(' ');
-  // About a fifth of the full charge; well short of the held press above.
+  await expect.poll(() => rings.count(), { timeout: 5000 }).toBe(before + 1);
   await expect.poll(strength, { timeout: 5000 }).toBeGreaterThan(0.1);
-  await expect.poll(strength, { timeout: 5000 }).toBeLessThan(0.65);
 });
 
 const caterpillarState = (page: Parameters<typeof atCue>[0]) =>

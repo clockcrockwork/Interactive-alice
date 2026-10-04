@@ -125,7 +125,18 @@ test('pig and pepper: the crockery is out of the tab order until it sticks, and 
   await atCue(page, 'throw', 0.9);
   const stuck = page.locator('.pp__glass .pp__thing');
   await expect.poll(() => stuck.count(), { timeout: 10000 }).toBeGreaterThan(2);
-  await expect.poll(reachable, { timeout: 5000 }).toBe(await stuck.count());
+  // Every piece on the glass is reachable, read in one go so pieces still landing
+  // cannot come between the two counts.
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() => {
+          const onGlass = [...document.querySelectorAll<HTMLElement>('.pp__glass .pp__thing')];
+          return onGlass.length > 0 && onGlass.every((el) => !el.inert);
+        }),
+      { timeout: 5000 },
+    )
+    .toBe(true);
   // Nothing on the glass sits over the sentences of the beats it stays for.
   for (const cue of ['throw', 'mind', 'axes']) {
     await atCue(page, cue, 0.6);

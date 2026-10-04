@@ -25,12 +25,15 @@ import { assertValid } from './schema.ts';
 const PROJECT_NAME = 'Interactive Alice';
 
 /**
- * Which Alice the visitor chose, applied before first paint so the figures never
- * flash the other one. The key is the demos' own; the picker on the index writes it.
+ * Which Alice the visitor chose, and which drawing (docs/art-trials.md), applied
+ * before first paint so the figures never flash the other one. The keys are the
+ * demos' own; the pickers on the index write them. Flat drawing and the yellow
+ * Alice are the defaults and set nothing.
  */
 const ALICE_SCRIPT =
-  '<script>try{var a=localStorage.getItem("alice-demos:alice");' +
-  'if(a==="blue")document.documentElement.dataset.alice=a}catch(e){}</script>';
+  '<script>try{var d=document.documentElement,a=localStorage.getItem("alice-demos:alice"),' +
+  'r=localStorage.getItem("alice-demos:art");if(a==="blue")d.dataset.alice=a;' +
+  'if(r==="engraved"||r==="paper"||r==="baked")d.dataset.art=r}catch(e){}</script>';
 
 /** Order the index lists them in, and the order "next scene" follows. */
 export const DEMO_ORDER = [
@@ -394,6 +397,25 @@ const TECH_KEY = {
 /** A small tilt per card, alternating, so nineteen cards on the table all read. */
 const CARD_TILT = [-4, 2, -1, 3, -2.5, 1, -3, 2.5, -1.5];
 
+/** The figure each drawing choice on the index is previewed with. */
+const ART_PREVIEW = 'white-rabbit/herald';
+
+/**
+ * A baked picture's URL, as the build sees it, is a file URL into src/assets/
+ * (art/baked.ts resolves it against its own module). In a generated page it
+ * becomes a path relative to the page, which Vite then hashes like any image.
+ */
+export const pageRelativeArt = (html: string, root: string): string =>
+  html.replace(/file:\/\/[^"]*?\/src\/assets\//g, `${root}assets/`);
+
+/** The drawing trial's choices, in the order the index offers them. */
+const ART_CHOICES = [
+  ['flat', 'demoArtFlat', 'demoArtFlatNote'],
+  ['engraved', 'demoArtEngraved', 'demoArtEngravedNote'],
+  ['paper', 'demoArtPaper', 'demoArtPaperNote'],
+  ['baked', 'demoArtBaked', 'demoArtBakedNote'],
+] as const;
+
 function renderIndex(project: DemoProject): string {
   const root = '../../';
   const ui = project.ui;
@@ -439,6 +461,17 @@ function renderIndex(project: DemoProject): string {
           <span class="demos__alice-name">${escapeHtml(ui.demoAliceBlue)}</span>
           <span class="demos__alice-note">${escapeHtml(ui.demoAliceBlueNote)}</span>
         </button>
+      </fieldset>
+      <fieldset class="demos__alice demos__art">
+        <legend class="demos__alice-title">${escapeHtml(ui.demoArtTitle)}</legend>
+${ART_CHOICES.map(
+  ([style, name, note]) =>
+    `        <button class="demos__alice-choice demos__art-choice" type="button" data-art-style="${style}" aria-pressed="${style === 'flat'}">
+          <span class="demos__art-figure" data-art-style="${style}" aria-hidden="true">${pageRelativeArt(figure(ART_PREVIEW, '', style), root)}</span>
+          <span class="demos__alice-name">${escapeHtml(ui[name])}</span>
+          <span class="demos__alice-note">${escapeHtml(ui[note])}</span>
+        </button>`,
+).join('\n')}
       </fieldset>
       <ul class="demos__cards">
 ${cards}

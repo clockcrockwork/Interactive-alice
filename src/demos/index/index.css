@@ -124,6 +124,36 @@
     --alice-band: #2f4272;
   }
 
+  /* The drawing trial: the same figure in each style, whatever the root says
+     (docs/art-trials.md). The filters are on this page always (main.ts). */
+  /* Four in a row where there is room; on a phone they stack like the Alices. */
+  @media (min-width: 64rem) {
+    .demos__art .demos__art-choice {
+      inline-size: 14.5rem;
+    }
+  }
+
+  .demos__art-figure {
+    grid-row: 1 / 3;
+    inline-size: 3.2rem;
+  }
+
+  .demos__art-figure[data-art-style="engraved"] .art > svg {
+    filter: url("#art-engraved");
+  }
+
+  .demos__art-figure[data-art-style="paper"] .art > svg {
+    filter: url("#art-paper");
+  }
+
+  .demos__art-figure[data-art-style="baked"] .art--baked > svg {
+    display: none;
+  }
+
+  .demos__art-figure[data-art-style="baked"] .art__image--baked {
+    display: block;
+  }
+
   .demos__alice-name {
     font-family: var(--demo-serif);
     font-size: 1.15rem;

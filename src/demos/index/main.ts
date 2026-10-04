@@ -1,16 +1,20 @@
 /**
- * The demo index. Cards on a table that lean toward the pointer, and the choice of
- * which Alice walks through them; the page
+ * The demo index. Cards on a table that lean toward the pointer, the choice of
+ * which Alice walks through them, and the trial of how they are drawn; the page
  * itself falls away like a dropped card when one is chosen (see shell.css).
  */
 
 import gsap from 'gsap';
 import '../../styles/base.css';
+import '../art/art.css';
 import '../shell/shell.css';
 import './index.css';
+import { ART_KEY, artStyle, installArtTreatments, parseArtStyle } from '../art/treatments.ts';
 import { installTransitions } from '../shell/transitions.ts';
 
 installTransitions();
+// The previews show every style at once, so the filters are always on this page.
+installArtTreatments(true);
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const cards = [...document.querySelectorAll<HTMLElement>('.demos__card')];
@@ -18,7 +22,9 @@ const cards = [...document.querySelectorAll<HTMLElement>('.demos__card')];
 // --- Which Alice. The page head already applied the remembered choice; the
 // buttons show it and change it, for this page and every demo after it.
 const ALICE_KEY = 'alice-demos:alice';
-const choices = [...document.querySelectorAll<HTMLButtonElement>('.demos__alice-choice')];
+const choices = [
+  ...document.querySelectorAll<HTMLButtonElement>('.demos__alice-choice[data-alice]'),
+];
 const chooseAlice = (name: string, remember: boolean): void => {
   if (name === 'blue') {
     document.documentElement.dataset.alice = 'blue';
@@ -39,6 +45,32 @@ const chooseAlice = (name: string, remember: boolean): void => {
 chooseAlice(document.documentElement.dataset.alice === 'blue' ? 'blue' : 'yellow', false);
 for (const choice of choices) {
   choice.addEventListener('click', () => chooseAlice(choice.dataset.alice ?? 'yellow', true));
+}
+
+// --- How the figures are drawn (docs/art-trials.md): the same head script applies
+// the remembered choice as `data-art`; flat, the default, sets nothing.
+const artChoices = [...document.querySelectorAll<HTMLButtonElement>('.demos__art-choice')];
+const chooseArt = (value: string | undefined, remember: boolean): void => {
+  const style = parseArtStyle(value);
+  if (style === 'flat') {
+    delete document.documentElement.dataset.art;
+  } else {
+    document.documentElement.dataset.art = style;
+  }
+  for (const choice of artChoices) {
+    choice.setAttribute('aria-pressed', String(choice.dataset.artStyle === style));
+  }
+  if (remember) {
+    try {
+      localStorage.setItem(ART_KEY, style);
+    } catch {
+      // As above: the choice holds for this visit.
+    }
+  }
+};
+chooseArt(artStyle(), false);
+for (const choice of artChoices) {
+  choice.addEventListener('click', () => chooseArt(choice.dataset.artStyle, true));
 }
 
 for (const card of cards) {

@@ -1,6 +1,10 @@
 /* The art box: whatever is inside fills it. A cut-out image shows the file for
    the page's Alice; a vector reads the --alice-* tokens instead. */
 
+/* Declared here as in base.css and shell.css: this sheet can be the first the
+   browser meets (the index and the demos share it), and the first fixes the order. */
+@layer tokens, base, layout, scene, utilities;
+
 @layer scene {
   .art {
     display: block;
@@ -18,15 +22,88 @@
     display: none;
   }
 
+  /* The yellow Alice is the default: the root carries data-alice="blue" only for
+     the other one (see the head script in build/demos.ts). */
   .art__image[data-variant="any"],
-  :root:not([data-alice="yellow"]) .art__image[data-variant="blue"],
-  :root[data-alice="yellow"] .art__image[data-variant="yellow"] {
+  :root:not([data-alice="blue"]) .art__image[data-variant="yellow"],
+  :root[data-alice="blue"] .art__image[data-variant="blue"] {
     display: block;
   }
 
   svg .art__image[data-variant="any"],
-  :root:not([data-alice="yellow"]) svg .art__image[data-variant="blue"],
-  :root[data-alice="yellow"] svg .art__image[data-variant="yellow"] {
+  :root:not([data-alice="blue"]) svg .art__image[data-variant="yellow"],
+  :root[data-alice="blue"] svg .art__image[data-variant="blue"] {
     display: inline;
+  }
+
+  /* --- The drawing trial (docs/art-trials.md). Flat is the default and adds
+     nothing. The filters live in one hidden SVG per page (treatments.ts); they
+     go on the drawing inside the box, so a demo's own filter on the box (a
+     shadow, a blur) still applies on top. */
+  .art-defs {
+    position: absolute;
+    inline-size: 0;
+    block-size: 0;
+    overflow: hidden;
+  }
+
+  .art-fx-ink {
+    flood-color: var(--ink-primary);
+  }
+
+  .art-fx-paper {
+    flood-color: var(--paper-base);
+  }
+
+  .art-fx-shadow {
+    flood-color: oklch(from var(--ink-primary) l c h / 0.45);
+  }
+
+  /* Baked: the vector steps aside for its picture, which art.ts only adds where
+     one was baked and the demo does not move the figure's parts. */
+  .art__image--baked {
+    display: none;
+  }
+
+  :root[data-art="baked"] .art--baked > :is(svg, g) {
+    display: none;
+  }
+
+  :root[data-art="baked"] .art--baked > .art__image--baked[data-variant="any"],
+  :root[data-art="baked"]:not([data-alice="blue"])
+    .art--baked
+    > .art__image--baked[data-variant="yellow"],
+  :root[data-art="baked"][data-alice="blue"] .art--baked > .art__image--baked[data-variant="blue"] {
+    display: block;
+  }
+
+  :root[data-art="baked"] g.art--baked > .art__image--baked[data-variant="any"],
+  :root[data-art="baked"]:not([data-alice="blue"])
+    g.art--baked
+    > .art__image--baked[data-variant="yellow"],
+  :root[data-art="baked"][data-alice="blue"]
+    g.art--baked
+    > .art__image--baked[data-variant="blue"] {
+    display: inline;
+  }
+
+  /* On a demo page (.demo): the index draws its own previews of each style. In
+     the pictures style, a figure with no picture here (its parts move, or none
+     was baked) is drawn through the same engraving, so the page reads as one. */
+  :root:is([data-art="engraved"], [data-art="baked"])
+    .demo
+    :is(.art:not(.art--baked) > svg, g.art:not(.art--baked) > g) {
+    filter: url("#art-engraved");
+  }
+
+  :root:is([data-art="engraved"], [data-art="baked"])
+    .demo
+    :is(.art[data-art^="alice/"], .art[data-art="runner/alice"]):not(.art--baked)
+    > :is(svg, g) {
+    filter: url("#art-engraved-alice");
+  }
+
+  :root[data-art="paper"] .demo :is(.art > svg, g.art > g) {
+    filter: url("#art-paper");
   }
 }

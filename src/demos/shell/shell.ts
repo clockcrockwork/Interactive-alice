@@ -13,11 +13,13 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import '../../styles/base.css';
 import '../art/art.css';
+import { installArtTreatments } from '../art/treatments.ts';
 import './shell.css';
 import { createSound, type DemoSound } from './sound.ts';
 import { installTransitions } from './transitions.ts';
 
 installTransitions();
+installArtTreatments();
 
 gsap.registerPlugin(ScrollTrigger);
 

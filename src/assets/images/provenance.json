@@ -1,0 +1,356 @@
+{
+  "$comment": "Every raster image in src/assets/images/, per docs/assets-and-audio.md §3: what it is, what made it, why, when, and any editing after.",
+  "images": [
+    {
+      "file": "figures/alice--falling.yellow.webp",
+      "what": "Registry figure alice/falling (yellow Alice), engraved treatment, at 2x its 120x200 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 12010
+    },
+    {
+      "file": "figures/alice--falling.blue.webp",
+      "what": "Registry figure alice/falling (blue Alice), engraved treatment, at 2x its 120x200 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 13250
+    },
+    {
+      "file": "figures/alice--running-away.yellow.webp",
+      "what": "Registry figure alice/running-away (yellow Alice), engraved treatment, at 2x its 120x220 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 17088
+    },
+    {
+      "file": "figures/alice--running-away.blue.webp",
+      "what": "Registry figure alice/running-away (blue Alice), engraved treatment, at 2x its 120x220 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 17118
+    },
+    {
+      "file": "figures/alice--from-behind.yellow.webp",
+      "what": "Registry figure alice/from-behind (yellow Alice), engraved treatment, at 2x its 120x220 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 19564
+    },
+    {
+      "file": "figures/alice--from-behind.blue.webp",
+      "what": "Registry figure alice/from-behind (blue Alice), engraved treatment, at 2x its 120x220 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 20998
+    },
+    {
+      "file": "figures/alice--looking-down.yellow.webp",
+      "what": "Registry figure alice/looking-down (yellow Alice), engraved treatment, at 2x its 400x220 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 15658
+    },
+    {
+      "file": "figures/alice--looking-down.blue.webp",
+      "what": "Registry figure alice/looking-down (blue Alice), engraved treatment, at 2x its 400x220 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 23704
+    },
+    {
+      "file": "figures/alice--foot.yellow.webp",
+      "what": "Registry figure alice/foot (yellow Alice), engraved treatment, at 2x its 200x260 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 5388
+    },
+    {
+      "file": "figures/alice--foot.blue.webp",
+      "what": "Registry figure alice/foot (blue Alice), engraved treatment, at 2x its 200x260 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 5386
+    },
+    {
+      "file": "figures/alice--hand-left.yellow.webp",
+      "what": "Registry figure alice/hand-left (yellow Alice), engraved treatment, at 2x its 120x200 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 10464
+    },
+    {
+      "file": "figures/alice--hand-left.blue.webp",
+      "what": "Registry figure alice/hand-left (blue Alice), engraved treatment, at 2x its 120x200 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 12012
+    },
+    {
+      "file": "figures/alice--hand-right.yellow.webp",
+      "what": "Registry figure alice/hand-right (yellow Alice), engraved treatment, at 2x its 120x200 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 10394
+    },
+    {
+      "file": "figures/alice--hand-right.blue.webp",
+      "what": "Registry figure alice/hand-right (blue Alice), engraved treatment, at 2x its 120x200 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 11872
+    },
+    {
+      "file": "figures/alice--standing.yellow.webp",
+      "what": "Registry figure alice/standing (yellow Alice), engraved treatment, at 2x its 80x110 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 7374
+    },
+    {
+      "file": "figures/alice--standing.blue.webp",
+      "what": "Registry figure alice/standing (blue Alice), engraved treatment, at 2x its 80x110 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 7940
+    },
+    {
+      "file": "figures/alice--kneeling.yellow.webp",
+      "what": "Registry figure alice/kneeling (yellow Alice), engraved treatment, at 2x its 230x230 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 19026
+    },
+    {
+      "file": "figures/alice--kneeling.blue.webp",
+      "what": "Registry figure alice/kneeling (blue Alice), engraved treatment, at 2x its 230x230 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 19952
+    },
+    {
+      "file": "figures/alice--filling.yellow.webp",
+      "what": "Registry figure alice/filling (yellow Alice), engraved treatment, at 2x its 720x330 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 25716
+    },
+    {
+      "file": "figures/alice--filling.blue.webp",
+      "what": "Registry figure alice/filling (blue Alice), engraved treatment, at 2x its 720x330 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 42490
+    },
+    {
+      "file": "figures/white-rabbit--herald.any.webp",
+      "what": "Registry figure white-rabbit/herald, engraved treatment, at 2x its 140x220 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 13324
+    },
+    {
+      "file": "figures/white-rabbit--garden.any.webp",
+      "what": "Registry figure white-rabbit/garden, engraved treatment, at 2x its 60x80 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 3696
+    },
+    {
+      "file": "figures/queen-of-hearts.any.webp",
+      "what": "Registry figure queen-of-hearts, engraved treatment, at 2x its 160x240 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 26726
+    },
+    {
+      "file": "figures/king-of-hearts.any.webp",
+      "what": "Registry figure king-of-hearts, engraved treatment, at 2x its 160x240 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 17920
+    },
+    {
+      "file": "figures/knave-of-hearts.any.webp",
+      "what": "Registry figure knave-of-hearts, engraved treatment, at 2x its 140x220 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 11240
+    },
+    {
+      "file": "figures/card-soldier.any.webp",
+      "what": "Registry figure card-soldier, engraved treatment, at 2x its 120x220 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 9028
+    },
+    {
+      "file": "figures/card-arch.any.webp",
+      "what": "Registry figure card-arch, engraved treatment, at 2x its 200x140 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 9388
+    },
+    {
+      "file": "figures/duchess.any.webp",
+      "what": "Registry figure duchess, engraved treatment, at 2x its 240x260 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 25576
+    },
+    {
+      "file": "figures/cook.any.webp",
+      "what": "Registry figure cook, engraved treatment, at 2x its 200x260 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 13412
+    },
+    {
+      "file": "figures/march-hare.any.webp",
+      "what": "Registry figure march-hare, engraved treatment, at 2x its 160x260 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 17818
+    },
+    {
+      "file": "figures/dormouse.any.webp",
+      "what": "Registry figure dormouse, engraved treatment, at 2x its 140x110 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 8174
+    },
+    {
+      "file": "figures/mock-turtle.any.webp",
+      "what": "Registry figure mock-turtle, engraved treatment, at 2x its 240x220 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 28834
+    },
+    {
+      "file": "figures/gryphon.any.webp",
+      "what": "Registry figure gryphon, engraved treatment, at 2x its 240x220 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 24082
+    },
+    {
+      "file": "figures/lobster.any.webp",
+      "what": "Registry figure lobster, engraved treatment, at 2x its 160x120 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 16236
+    },
+    {
+      "file": "figures/alices-sister.any.webp",
+      "what": "Registry figure alices-sister, engraved treatment, at 2x its 300x200 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 14284
+    },
+    {
+      "file": "figures/bill.any.webp",
+      "what": "Registry figure bill, engraved treatment, at 2x its 120x100 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 5876
+    },
+    {
+      "file": "figures/guinea-pigs.any.webp",
+      "what": "Registry figure guinea-pigs, engraved treatment, at 2x its 400x120 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 7816
+    },
+    {
+      "file": "figures/rose-tree.any.webp",
+      "what": "Registry figure rose-tree, engraved treatment, at 2x its 320x360 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 32182
+    },
+    {
+      "file": "figures/mushroom.any.webp",
+      "what": "Registry figure mushroom, engraved treatment, at 2x its 400x320 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
+      "date": "2026-10-04",
+      "edits": "none",
+      "bytes": 52134
+    }
+  ]
+}

@@ -168,3 +168,21 @@ export const ART: Record<string, ArtEntry> = {
     RUNNERS.map((kind) => [`runner/${kind}`, vector(runnerSvg(kind), [100, 116])]),
   ),
 };
+
+/**
+ * Demos that move a figure's own parts (a limb, the eyes, the Cat's grin), or
+ * animate the drawing inside its box: there the vector stays even where a baked
+ * picture exists, because one picture cannot move a part. A figure whose parts move
+ * wherever it appears is not baked at all (see scripts/bake-art.mjs).
+ */
+export const LIVE_PARTS: Record<string, readonly string[]> = {
+  'alice/falling': ['rabbit-hole'],
+  'alice/running-away': ['riverbank'],
+  'white-rabbit/running': ['mouse-tale'],
+  'queen-of-hearts': ['trial'],
+  hatter: ['tea-party', 'witnesses'],
+  'mock-turtle': ['mock-turtle', 'lobster-quadrille'],
+  dormouse: ['dormouse', 'tea-party'],
+  cook: ['pig-and-pepper'],
+  bill: ['bill-the-lizard'],
+};

@@ -5,6 +5,7 @@ import {
   generateDemoPages,
   generateDemoPagesFrom,
   loadDemoProject,
+  pageRelativeArt,
   titleOf,
 } from './demos.ts';
 
@@ -85,6 +86,34 @@ describe('the concept-demo pages', () => {
       const next = DEMO_ORDER[(position + 1) % DEMO_ORDER.length];
       expect(page?.html).toContain(`href="../${next}/"`);
     }
+  });
+
+  it('applies the remembered drawing before first paint and offers the four, flat pressed', () => {
+    for (const page of pages) {
+      expect(page.html, page.path).toContain('localStorage.getItem("alice-demos:art")');
+    }
+    const index = pages.find((page) => page.path === 'demos/index.html')?.html ?? '';
+    const styles = [
+      ...index.matchAll(/<button[^>]*data-art-style="([a-z]+)" aria-pressed="(\w+)"/g),
+    ];
+    expect(styles.map((match) => [match[1], match[2]])).toEqual([
+      ['flat', 'true'],
+      ['engraved', 'false'],
+      ['paper', 'false'],
+      ['baked', 'false'],
+    ]);
+    // The pictures preview carries its baked image, relative to the page, never a file URL.
+    expect(index).toMatch(
+      /<img class="art__image art__image--baked"[^>]*src="\.\.\/\.\.\/assets\/images\/figures\//,
+    );
+    expect(index).not.toContain('file:');
+  });
+
+  it('turns a baked picture file URL into a path relative to the page', () => {
+    const html = '<img src="file:///work/repo/src/assets/images/figures/x.any.webp" />';
+    expect(pageRelativeArt(html, '../../')).toBe(
+      '<img src="../../assets/images/figures/x.any.webp" />',
+    );
   });
 
   it('keeps every URL relative, so the build runs in a subdirectory', () => {

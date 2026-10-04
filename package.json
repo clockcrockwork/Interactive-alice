@@ -19,6 +19,7 @@
     "test:e2e:full": "playwright test",
     "types:schema": "node build/generate-types.mjs && biome check --write src/types/schema.ts",
     "plan:fixture": "node build/python.mjs scripts/show-scene.py --all --plan --json > tests/fixtures/plans.json",
+    "art:bake": "node --experimental-strip-types scripts/bake-art.mjs && biome check --write src/demos/art/baked.ts src/assets/images/provenance.json",
     "check:text": "node build/python.mjs scripts/check-text.py",
     "check:experience": "node build/python.mjs scripts/check-experience.py",
     "check:frontend": "node build/python.mjs scripts/check-frontend.py",

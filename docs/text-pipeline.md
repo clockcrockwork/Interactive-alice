@@ -108,6 +108,15 @@ between phrases to help a new reader chunk the line. Spaces are part of the
 text, not formatting, so they are stored in the JSON and the locale entry sets
 `significantSpaces`. Nothing downstream may trim, collapse, or re-wrap them.
 
+Speech is not wrapped in 「」: speakers are told apart by style. 「」 is kept for
+words set apart as words — something written on an object, a word being named or
+argued about — so a page that shows such words reads them the way it reads the
+capitals of the English (`src/demos/drink-me/label.ts`). Names are fixed across
+the book and the site's own labels: 白うさぎ, 女王さま, 王さま, ぼうしや, 三月うさぎ,
+ヤマネ, こうしゃくふじん, コック, チェシャねこ, にせウミガメ, グリフォン.
+Measures become things a child can picture (three inches is ゆび 一本ぶん) or metric
+(a mile is 1キロ), and money is in 円.
+
 ### One sentence per segment, with one exception
 
 A segment is one line of text, normally one sentence. A paired or repeated cry
@@ -183,8 +192,8 @@ Publishability is derived from this layer, not declared by a flag:
   there is nothing for the other languages to be translated from;
 - the build logs every part it skipped and why, so a gap is visible rather than quiet.
 
-So adding a scene that stages chapter 2 never breaks the English build because the
-Japanese chapter 2 is still being written.
+So adding a scene that stages a chapter never breaks the English build because its
+Japanese text is still being written.
 
 #### What a reader meets
 
@@ -226,4 +235,4 @@ once, and stay in reading order across the whole scene list.
 | Chapter | Structure | en-simple | ja | Experience mapping |
 | --- | --- | --- | --- | --- |
 | 1. Down the Rabbit-Hole | done | done | done | Rabbit Hole scene only (`s0200`–`s0630`, 44 of 137 segments) |
-| 2–12 | not started | not started | not started | not started |
+| 2–12 | done | done | done | Concept demos only (`docs/concept-demos.md`); no story scene yet |

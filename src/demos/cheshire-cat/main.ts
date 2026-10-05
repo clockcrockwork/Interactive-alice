@@ -19,7 +19,14 @@ import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix, REDUCED_SETTLE, seeded } from '../shell/shell.ts';
 import './cheshire.css';
-import { BARE_BOUGH_SVG, closeBough, GRIN_SVG, MOON_PICTURES, SIGN_SVG } from './figures.ts';
+import {
+  BARE_BOUGH_SVG,
+  closeBough,
+  GRIN_SVG,
+  MOON_PICTURES,
+  moonPicture as pictureFor,
+  SIGN_SVG,
+} from './figures.ts';
 
 /** Where the boughs are, as a share of the stage; the Cat starts on the middle one. */
 const BOUGHS = [
@@ -394,7 +401,8 @@ function mount(shell: DemoShell): void {
 
   // --- "Did you say pig, or fig?": the reader answers. The thing chosen shows
   // for a moment in the moon, drawn into it like its markings, and the grin
-  // widens: its own amount, on top of the pointer's and the story's.
+  // widens: its own amount, on top of the pointer's and the story's. Which thing
+  // the second answer is depends on the page's language (a lid, in Japanese).
   const moonPicture = wood.querySelector<HTMLElement>('.cc__moon-picture');
   const more = { v: 0 };
   const applyMore = (): void => grin?.style.setProperty('--more', more.v.toFixed(3));
@@ -402,8 +410,9 @@ function mount(shell: DemoShell): void {
   let widening: gsap.core.Animation | undefined;
   const answer = (which: 'pig' | 'fig'): void => {
     if (moonPicture) {
-      moonPicture.innerHTML = MOON_PICTURES[which];
-      moonPicture.dataset.picture = which;
+      const drawn = pictureFor(shell.picture(which), which);
+      moonPicture.innerHTML = MOON_PICTURES[drawn];
+      moonPicture.dataset.picture = drawn;
       moonPicture.setAttribute('data-shown', '');
     }
     clearTimeout(moonTimer);

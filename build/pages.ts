@@ -305,7 +305,8 @@ function renderHome(
 ): string {
   // One directory up from the generated root to the shared stylesheet.
   const root = up(1);
-  // The concept demos are staged in the base locale, so their link is worded in it.
+  // The concept demos' index is the base locale's, so its link is worded in it;
+  // that index links every other language's (build/demos.ts).
   const base = project.locales[project.baseLocale];
   const baseStrings = project.ui.get(project.baseLocale);
   if (!base || !baseStrings) {

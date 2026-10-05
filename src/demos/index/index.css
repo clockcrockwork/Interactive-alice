@@ -28,6 +28,31 @@
     view-transition-name: demo-title;
   }
 
+  /* The language switch: each index linked to the others, each named in its
+     own language, a quiet row above the title. The page's own is marked. */
+  .demos__languages ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-1) var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: system-ui, sans-serif;
+    font-size: 0.9rem;
+  }
+
+  .demos__language {
+    color: var(--demo-ink-soft);
+    text-underline-offset: 0.25em;
+  }
+
+  .demos__language[aria-current="page"] {
+    color: var(--demo-ink);
+    text-decoration: none;
+    border-block-end: 1px solid currentColor;
+  }
+
   .demos__intro {
     margin: 0 0 var(--space-3);
     color: var(--demo-ink-soft);
@@ -267,6 +292,13 @@
   .demos__link:focus-visible {
     outline: 2px solid var(--demo-accent);
     outline-offset: 4px;
+  }
+
+  /* A demo this language cannot show yet: the card lies face down, greyed,
+     its title in the language it has, the reason in this one. */
+  .demos__card[data-available="false"] .demos__link {
+    filter: grayscale(1);
+    opacity: 0.6;
   }
 
   /* A dealt run: the card lies over the edge of the one before, and that card

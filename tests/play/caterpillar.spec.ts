@@ -197,11 +197,17 @@ test('the caterpillar: a nibble scales the meadow as one layer, with no live fil
   const meadow = page.locator('.ct__meadow');
   await expect(meadow).not.toHaveAttribute('data-scaling', '');
   await page.locator('.ct__bit--right').click();
-  // While her size changes the meadow is promoted and scaled whole...
-  await expect(meadow).toHaveAttribute('data-scaling', '', { timeout: 2000 });
-  expect(await meadow.evaluate((element) => getComputedStyle(element).willChange)).toBe(
-    'transform',
-  );
+  // While her size changes the meadow is promoted and scaled whole. The flag and the
+  // style are read together: on a loaded machine the flag can clear between two reads.
+  await expect
+    .poll(
+      () =>
+        meadow.evaluate((element) =>
+          element.hasAttribute('data-scaling') ? getComputedStyle(element).willChange : 'resting',
+        ),
+      { timeout: 2000, intervals: [16] },
+    )
+    .toBe('transform');
   // ...and once it rests it is drawn crisp again at its new size.
   await expect(meadow).not.toHaveAttribute('data-scaling', '', { timeout: 4000 });
 });

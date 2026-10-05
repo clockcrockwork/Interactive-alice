@@ -22,8 +22,9 @@ export const SIGN_SVG = `
 </svg>`;
 
 /** Pig, or fig: what the moon shows for a moment, drawn into it like its own
-    markings. Pictures only. */
-export const MOON_PICTURES: Record<'pig' | 'fig', string> = {
+    markings. Pictures only. A locale whose rhyme for pig is another thing draws
+    that instead (the demo file's `pictures`): the lid is the Japanese one. */
+export const MOON_PICTURES: Record<'pig' | 'fig' | 'lid', string> = {
   pig: `
 <svg viewBox="0 0 100 100" focusable="false">
   <g fill="none" stroke="var(--sepia-dark)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
@@ -43,7 +44,20 @@ export const MOON_PICTURES: Record<'pig' | 'fig', string> = {
   <path d="M50 16 C58 6 72 8 77 14 C68 21 58 21 50 16 Z" fill="oklch(from var(--sepia-dark) l c h / 0.35)" stroke="var(--sepia-dark)" stroke-width="3" stroke-linejoin="round"/>
   <path d="M41 50 q-5 13 0 26" stroke="var(--sepia-mid)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
 </svg>`,
+  lid: `
+<svg viewBox="0 0 100 100" focusable="false">
+  <path d="M17 66 C19 44 34 34 50 34 C66 34 81 44 83 66 Z" fill="oklch(from var(--sepia-mid) l c h / 0.45)" stroke="var(--sepia-dark)" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M10 68 H90" stroke="var(--sepia-dark)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M42 34 V27 C42 20 58 20 58 27 V34" fill="oklch(from var(--sepia-dark) l c h / 0.35)" stroke="var(--sepia-dark)" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M30 54 q7 -10 17 -12" stroke="var(--sepia-mid)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>`,
 };
+
+const isMoonPicture = (name: string): name is keyof typeof MOON_PICTURES => name in MOON_PICTURES;
+
+/** The moon's picture for an answer, after the page's locale has had its say. */
+export const moonPicture = (name: string, fallback: 'pig' | 'fig'): keyof typeof MOON_PICTURES =>
+  isMoonPicture(name) ? name : fallback;
 
 /** The bough close up with the grin already on it: the last frame of Pig and
     Pepper and the first of the Cat's own demo, so the two join. `prefix` names

@@ -1,11 +1,20 @@
 import { expect, test } from '@playwright/test';
-import { atCue, collectErrors, customProperty, demos, scrollTo, settled } from './demo-helpers.ts';
+import {
+  atCue,
+  baseDemos,
+  collectErrors,
+  customProperty,
+  demos,
+  scrollTo,
+  settled,
+} from './demo-helpers.ts';
+import { sentencesOf } from './manifest.ts';
 
 test('the demo index links every demo, and the home page links the index', async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto('./demos/');
   await expect(page.locator('h1')).not.toBeEmpty();
-  for (const demo of demos) {
+  for (const demo of baseDemos) {
     await expect(page.locator(`.demos__card[data-demo="${demo.demo}"] a`)).toHaveAttribute(
       'href',
       `./${demo.demo}/`,
@@ -31,6 +40,11 @@ for (const demo of demos) {
       .locator('.line')
       .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-segment')));
     expect(rendered).toEqual(demo.segments);
+    // In the page's own language, and each one its locale's own sentence.
+    await expect(page.locator('html')).toHaveAttribute('lang', demo.locale);
+    const text = sentencesOf(demo.locale, demo.segments ?? []);
+    const shown = await page.locator('.line').allTextContents();
+    expect(shown).toEqual((demo.segments ?? []).map((id) => text[id]));
 
     // The shell attached: the beats moved into the pinned stage and the first is active.
     await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
@@ -53,6 +67,10 @@ for (const demo of demos) {
       '',
     );
     await expect(page.locator('.demo__next')).toBeVisible();
+    // The next scene is in the same language: a sibling of this page's directory.
+    const here = new URL(page.url());
+    const nextUrl = new URL((await page.locator('.demo__next').getAttribute('href')) ?? '', here);
+    expect(new URL('..', nextUrl).pathname).toBe(new URL('..', here).pathname);
     // The link to the next demo and the last caption do not overlap.
     await expect(page.locator('.demo')).toHaveAttribute('data-ending', '');
     const next = await page.locator('.demo__next').boundingBox();
@@ -328,7 +346,7 @@ test('the index: nineteen cards that read, each at a small tilt, joined runs dea
   await page.setViewportSize({ width: 1280, height: 760 });
   await page.goto('./demos/');
   const cards = page.locator('.demos__card');
-  await expect(cards).toHaveCount(demos.length);
+  await expect(cards).toHaveCount(baseDemos.length);
   const tilts = await cards.evaluateAll((items) =>
     items.map((item) => Number.parseFloat(getComputedStyle(item).getPropertyValue('--tilt'))),
   );

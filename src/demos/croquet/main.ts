@@ -17,6 +17,7 @@
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
+import { exclaims } from '../shell/words.ts';
 import {
   CARD_BACK_SVG,
   CLUB_SOLDIER_SVG,
@@ -410,7 +411,7 @@ function mount(shell: DemoShell): void {
   };
   for (const beat of shell.spokenBy('queen-of-hearts')) {
     beat.lines.forEach((line, n) => {
-      if (line.dataset.speaker === 'queen-of-hearts' && /!$/.test(line.textContent ?? '')) {
+      if (line.dataset.speaker === 'queen-of-hearts' && exclaims(line.textContent ?? '')) {
         const at = beat.index + 0.08 + n * 0.1;
         master.call(() => (Math.abs(master.time() - at) < 0.25 ? shout() : undefined), [], at);
       }

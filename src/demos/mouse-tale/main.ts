@@ -27,6 +27,7 @@ import {
 } from '../caucus-race/figures.ts';
 import { DISTANT_HOUSE, HOUSE_FRONT_SVG } from '../rabbit-house/front.ts';
 import { attachDemo, type Beat, type DemoShell, mix } from '../shell/shell.ts';
+import { chunksOf, isWide } from './chunks.ts';
 import '../caucus-race/caucus.css';
 import '../rabbit-house/house.css';
 import './mouse-tale.css';
@@ -37,6 +38,8 @@ const SVG = 'http://www.w3.org/2000/svg';
 const SAMPLES = 180;
 /** A line of the tail and the next are this many of its own sizes apart, so they never touch. */
 const PITCH = 1.4;
+/** Full-width glyphs fill the em box, so their lines stand further apart. */
+const PITCH_WIDE = 1.7;
 /** Where the knot ties itself, as a share of the tail's length. */
 const KNOT_FROM = 0.4;
 const KNOT_TO = 0.62;
@@ -65,23 +68,6 @@ type Point = [number, number];
 
 /** The verses of the tale are the beats whose cue names a verse. */
 const isVerse = (beat: Beat): boolean => beat.cue?.startsWith('fury-') === true;
-
-/**
- * The words of a line in groups, the last group never a single word. The book's
- * lines are three or four words long: four where the stage is wide enough.
- */
-function chunksOf(text: string, perChunk: number): string[] {
-  const words = text.trim().split(/\s+/).filter(Boolean);
-  const groups: string[] = [];
-  for (let i = 0; i < words.length; i += perChunk) {
-    groups.push(words.slice(i, i + perChunk).join(' '));
-  }
-  if (groups.length > 1 && !groups[groups.length - 1]?.includes(' ')) {
-    const last = groups.pop();
-    groups[groups.length - 1] = `${groups[groups.length - 1]} ${last}`;
-  }
-  return groups;
-}
 
 /**
  * The tail as a serpentine from `start`, `height` down: a sine wave about a
@@ -329,7 +315,7 @@ function mount(shell: DemoShell): void {
   let s = 26;
   for (const beat of verses) {
     for (const line of beat.lines) {
-      for (const words of chunksOf(line.textContent ?? '', lite ? 3 : 4)) {
+      for (const words of chunksOf(line.textContent ?? '', lite ? 3 : 4, lite ? 9 : 12.5)) {
         const el = document.createElementNS(SVG, 'text');
         el.dataset.segment = line.dataset.segment ?? '';
         el.dataset.cue = beat.cue ?? '';
@@ -337,9 +323,10 @@ function mount(shell: DemoShell): void {
         const size = Math.max(floorSize, baseSize * shrink ** chunks.length);
         el.setAttribute('font-size', size.toFixed(2));
         svg.append(el);
-        s += size * PITCH * 0.5;
+        const pitch = isWide(words) ? PITCH_WIDE : PITCH;
+        s += size * pitch * 0.5;
         chunks.push({ el, beat, s, size, x: 0, y: 0 });
-        s += size * PITCH * 0.5;
+        s += size * pitch * 0.5;
       }
     }
   }

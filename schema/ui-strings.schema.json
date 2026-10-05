@@ -178,7 +178,8 @@
         "demoLookForWine",
         "demoButterWatch",
         "demoWhisperTime",
-        "demoMoveRound"
+        "demoMoveRound",
+        "demoLanguages"
       ],
       "additionalProperties": false,
       "properties": {
@@ -971,6 +972,11 @@
           "type": "string",
           "minLength": 1,
           "description": "Button at the tea-party that moves everyone one seat along the table."
+        },
+        "demoLanguages": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Demo index: the name of the language switch, read by assistive technology; each choice is named in its own language."
         }
       }
     }

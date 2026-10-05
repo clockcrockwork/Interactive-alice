@@ -111,7 +111,8 @@ text, not formatting, so they are stored in the JSON and the locale entry sets
 Speech is not wrapped in 「」: speakers are told apart by style. 「」 is kept for
 words set apart as words — something written on an object, a word being named or
 argued about — so a page that shows such words reads them the way it reads the
-capitals of the English (`src/demos/drink-me/label.ts`). Names are fixed across
+capitals of the English (`src/demos/shell/words.ts`, used by every demo that reads
+a word out of a sentence). Names are fixed across
 the book and the site's own labels: 白うさぎ, 女王さま, 王さま, ぼうしや, 三月うさぎ,
 ヤマネ, こうしゃくふじん, コック, チェシャねこ, にせウミガメ, グリフォン.
 Measures become things a child can picture (three inches is ゆび 一本ぶん) or metric
@@ -194,6 +195,14 @@ Publishability is derived from this layer, not declared by a flag:
 
 So adding a scene that stages a chapter never breaks the English build because its
 Japanese text is still being written.
+
+The **concept demos** follow the same rule at a finer grain, since a demo stages
+sentences rather than whole chapters: a demo page is generated for a language when
+its title and every segment it stages have text there (`isPublishable` in
+`build/demos.ts`). A demo that cannot be shown yet keeps its card on that language's
+index, titled in the base locale with that locale's `lang` and the `partPending`
+note, and is skipped by "Next scene"; its URL is an honest 404. In the base locale a
+missing segment is a build error, as for a part.
 
 #### What a reader meets
 

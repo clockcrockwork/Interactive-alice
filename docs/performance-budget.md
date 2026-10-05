@@ -45,6 +45,13 @@ Lobster Quadrille, the trial, the riverbank, the Mouse's tale and the tea-party 
 well. Story pages are unaffected: they share none of these
 chunks, and their own sizes did not move.
 
+The Japanese demos (`/demos/ja/`) reuse every chunk of the English ones: the build's
+script grew by 0.6 KB raw (0.17 KB gzip, the shared word reader and the Cat's lid) and
+its styles by 1.5 KB raw (0.4 KB gzip, the Japanese typography and the language
+switch), measured against the build before them. A Japanese demo page's HTML is about
+0.6 KB gzip larger than its English one (the dormouse: 4.9 KB against 4.2 KB). No font
+is downloaded (system fonts only, 0 bytes) and no storage key was added.
+
 Frame time was also measured for the demos, on the software renderer this project
 tests on (Chromium with SwiftShader, no GPU, 1280×760), holding each beat and taking
 the mean of a dozen frames; the numbers are large because there is no GPU, and their

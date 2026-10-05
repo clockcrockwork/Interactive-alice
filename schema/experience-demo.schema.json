@@ -89,6 +89,23 @@
     "joinsPrevious": {
       "type": "boolean",
       "description": "Optional: true when this demo's first frame is the previous demo's last, one moment of the book across two pages (see docs/concept-demos.md, Joins). The index deals such cards over the card before."
+    },
+    "pictures": {
+      "type": "object",
+      "description": "Optional: per locale, a picture to draw in place of another, for a picture whose sense rides on a word of that locale's text. Keyed by locale id, then by the name the demo's code knows the picture by; the value is the name of the picture to draw instead. The Cheshire Cat's pig, or fig: where a locale's rhyme for pig is a lid, the second picture is a lid. A locale without an entry draws the pictures the code names.",
+      "propertyNames": {
+        "pattern": "^[a-z]{2,3}(-[a-z0-9]+)*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "propertyNames": {
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "additionalProperties": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        }
+      }
     }
   }
 }

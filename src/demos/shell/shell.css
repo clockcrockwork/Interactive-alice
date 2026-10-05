@@ -89,6 +89,19 @@
     --alice-shadow: oklch(38% 0.06 80);
   }
 
+  /* Japanese is set in the reader's own system fonts, never a downloaded one: a
+     textbook face where the system has one (the shapes a young reader learns
+     from), else a Mincho, the book face. Its glyphs are full-width, so a caption
+     line holds fewer of them at a slightly smaller size. */
+  :root:lang(ja) {
+    --demo-serif:
+      "UD Digi Kyokasho NK-R", "UD Digi Kyokasho N-R", "Hiragino Mincho ProN", "Yu Mincho",
+      YuMincho, "Noto Serif CJK JP", "Noto Serif JP", "IPAexMincho", "IPAMincho", serif;
+    --demo-caption-size: clamp(1.05rem, 0.95rem + 1vw, 1.55rem);
+    /* Speech is told apart by a warmer slip rather than a slant (see .line). */
+    --demo-slip-say: oklch(from var(--paper-warm) l c h / 0.92);
+  }
+
   /* The other Alice, the one everyone knows: blue dress, fair hair. Set on the
      root by the picker on the demo index and remembered per visitor. */
   :root[data-alice="blue"] {
@@ -303,6 +316,34 @@
     letter-spacing: 0.08em;
   }
 
+  /* Japanese (docs/concept-demos.md, Locales). Lines break only at the authored
+     phrase spaces and by the strict kinsoku rules, and a run too long for its
+     slip may still break anywhere rather than overflow. Kana have no italic, and
+     a slanted one is a fault, so nothing on these pages may synthesise one:
+     speech and thought keep the softer ink and stand on a warmer slip instead. */
+  .demo-body:lang(ja) {
+    line-break: strict;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    font-synthesis-style: none;
+  }
+
+  .demo-body:lang(ja) .demo-beat {
+    line-height: 1.7;
+    letter-spacing: 0.04em;
+  }
+
+  :where(.demo-body:lang(ja)) .line {
+    padding-block: 0.1em 0.14em;
+  }
+
+  /* As specific as the italic rule above and no more, so a demo that restyles a
+     speaker (a bubble, a tint) still wins over this. */
+  :where(.demo-body:lang(ja)) .line:is([data-kind="dialogue"], [data-kind="thought"]) {
+    font-style: normal;
+    background: var(--demo-slip-say);
+  }
+
   /* Before the shell attaches, the track is a readable document. Once the beats have
      moved into the stage the track is only scroll distance. */
   .demo__track {
@@ -441,6 +482,23 @@
 
     .demo__back {
       margin-inline-end: auto;
+    }
+
+    /* Japanese labels are long runs of full-width glyphs: a little smaller, and
+       a label that still does not fit breaks at its phrase space inside its own
+       pill, so the bar stays one row on the narrowest phone. */
+    .demo-body:lang(ja) .demo__bar {
+      gap: 3px;
+      padding-inline: var(--space-1, 4px);
+      font-size: 0.66rem;
+    }
+
+    .demo-body:lang(ja) :is(.demo__back, .demo__motion, .demo__sound, .demo__tilt) {
+      padding-inline: 0.5em;
+      white-space: normal;
+      overflow-wrap: normal;
+      line-height: 1.15;
+      text-align: center;
     }
   }
 

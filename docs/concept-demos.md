@@ -30,6 +30,8 @@ makes its moment strongest and spends its budget on that.
 /demos/lobster-quadrille/ The Lobster Quadrille: a dance on the shore the reader joins
 /demos/witnesses/        Who Stole the Tarts?: the court through its doors, the witnesses, Alice a mile high
 /demos/trial/            Sentence First: the pack flies, the leaves fall, her sister's dream
+/demos/ja/               the same index and the same nineteen, in Japanese (§1, Locales)
+/demos/ja/<id>/          ...one page per demo, for every demo Japanese can show
 ```
 
 ### Colour, and which Alice
@@ -91,9 +93,59 @@ palette, always inside the guide's own colours and always transiently:
 - the kitchen's invitation is sealed with the Queen's red heart;
 - the index's cards lift with a gold edge.
 
-They are staged in the base locale (`en-simple`) for now. A locale switch is a later
-step and nothing in the build prevents it: every sentence on a demo page is resolved
-by segment id at build time, the same way a story page resolves its text.
+### Locales
+
+The demos are built in every language in `text/locales.json`. The base locale's
+pages keep the URLs they were first published at (`/demos/`, `/demos/<id>/`); every
+other locale's are one level down, `/demos/<locale>/` and `/demos/<locale>/<id>/`,
+mirroring the story's `/<locale>/` scheme without moving the English. Every page is
+`<html lang dir data-line-break data-significant-spaces>` from the registry, as the
+story's pages are, and every sentence on it is resolved by segment id at build time
+in that language; titles, card descriptions (`demoTech*`) and every label come from
+that locale's `ui.json`.
+
+- **Publishability is derived.** A demo has a page in a language when its title and
+  every segment it stages have text there (`isPublishable` in `build/demos.ts`);
+  nothing falls back to English. A demo that cannot be shown yet keeps its card on
+  that language's index, face down: titled in the base locale under that locale's
+  own `lang`, with the `partPending` note, and no link. In the base locale a missing
+  segment is a build error. Japanese publishes all nineteen today.
+- **The language switch** is a row of links above each index's title, every language
+  named in its own words (`nativeName`), the page's own marked `aria-current`. It is
+  a link, not stored state: the URL is the choice.
+- **Staying in the language.** "Next scene", the back link, going on by itself and the
+  page transitions all stay inside the page's locale: "Next scene" goes to the next
+  demo this locale publishes, skipping one it cannot show, and the transition kind
+  is read from the demo id wherever it sits in the path.
+- **Shared across languages.** The visitor's Alice, drawing, going-on-by-itself and
+  keepsakes are stored under the same keys for every language (`alice-demos:*`): they
+  are the reader's choices and the reader's record of play, not the language's, so a
+  daisy chain kept in English lies on the bank in Japanese too. No storage was added.
+- **Pictures that ride on a word.** Where a picture's sense rides on a word of the
+  text, a demo file may swap it per locale (`pictures` in the demo schema, written
+  onto the page as `data-pictures`, read with `shell.picture()`): the Cat's *pig, or
+  fig?* is ブタ, or フタ in Japanese, so the second answer is a lid there.
+
+**Japanese typography.** Captions are the same paper slips, set in the reader's own
+system fonts (no web font, so no bytes): a textbook face where the system has one
+(UD Digi Kyokasho), else a Mincho (Hiragino, Yu, Noto Serif CJK, IPA), as
+`--demo-serif` under `:lang(ja)`, at a slightly smaller caption size since the glyphs
+are full width. Lines break only at the authored phrase spaces and by the strict
+kinsoku rules (`word-break: keep-all`, `line-break: strict`), with `overflow-wrap:
+anywhere` so an over-long run breaks rather than overflows; line-height 1.7 and a
+little letter-spacing. Kana have no italic, so these pages forbid a synthesised one
+(`font-synthesis-style: none`) and speech and thought stand on a warmer slip
+(`--demo-slip-say`) in the softer ink instead of slanting. On a phone the bar's
+labels are a little smaller and a label that still does not fit breaks at its phrase
+space inside its own pill, so the bar stays one row.
+
+**Reading words out of the page, in any script.** Every place a demo takes something
+from its sentences reads it by punctuation and case, never by language
+(`shell/words.ts`): words set apart in quotation marks of any kind first, capitals
+second; an exclamation in either width; widths in ems where full-width glyphs count
+one and the rest a half. Japanese sets apart in 「」 exactly what English capitalises
+(`text-pipeline.md` §3), so the same code finds both. Each demo's use is described in
+its own section below.
 
 ## 2. What they share with the story, and what they do not
 
@@ -213,7 +265,8 @@ the first frame, and each demo substitutes a designed still version for each eff
 **Captions are slips of paper.** Every sentence is set on its own slip of the book's
 paper (`--demo-slip`), in ink, so it reads the same over a night wood, a red court or
 a paper sky; the measured contrast no longer depends on the picture behind it.
-Speech and thought are in italic and a softer ink (`--demo-say`), the court and its
+Speech and thought are in italic and a softer ink (`--demo-say`; in Japanese a warmer
+slip instead of the italic, §1 Locales), the court and its
 Rabbit speak in Wonderland red (`--demo-say-red`), and Alice's own lines carry her
 dress colour as a mark at the start, so either Alice is recognised in her own words.
 A demo may restyle a speaker (the Dormouse's and the tea-table's speech bubbles), but
@@ -426,7 +479,9 @@ frame (`alice/looking-down` in the art layer), and the roof folds in at the top 
 a thud.
 
 The bottle's and the cake's labels are the words their sentences set apart, inside
-quotation marks of any script or in a run of capitals. They are read from the page at
+quotation marks of any script or in a run of capitals; words of full-width glyphs too
+long for one line of the label are set on two, broken at the phrase space nearest the
+middle, rather than squeezed. They are read from the page at
 mount (`drink-me/label.ts`, unit-tested against every locale's own sentences), never
 written in code.
 
@@ -546,7 +601,10 @@ The same bank as the race, and the same party: the page opens on the race's last
 frame, the party crowded round Alice with the chalk course still on the bank and the
 thimble in her hand, and as they sit down again in a ring the course wears off and
 the camera comes down low, to the Mouse. Then the tale is a tail. The verses the Mouse
-speaks are drawn on the tail: each sentence is cut into lines of three or four words,
+speaks are drawn on the tail: each sentence is cut into lines of three or four words
+and no wider than the book's lines in ems (`mouse-tale/chunks.ts`), so Japanese, whose
+phrases are wide, gets lines of one to three phrases, may break after a 、, and stands
+its lines a little further apart,
 laid along a curve on the tail's own pale body that starts at the Mouse and winds down
 the bank, each line a little smaller than the last down to a readable size and never
 closer than a line's height, and the camera follows the words down the bank as the
@@ -749,7 +807,9 @@ line and the fireflies run along it. The story's own vanishings take the Cat bac
 they begin. *Call the pig* brings the pig back to stand beside her, hop and grunt,
 before it trots on into the wood; a tap on the pig makes it hop. At *Did you say pig,
 or fig?* two props, *Pig* and *Fig*, answer: the thing chosen shows for a moment in the
-moon, drawn into it like its markings, and the grin widens.
+moon, drawn into it like its markings, and the grin widens. In Japanese the rhyme is
+ブタ, or フタ, so the second answer is a lid and the moon draws a pot lid (the demo
+file's `pictures`).
 
 It opens on the bough Pig and Pepper ended looking up at, close, with the grin
 already on it; over the first beat the bough settles to its place in the wood and the
@@ -833,7 +893,9 @@ March Hare on the right, narration in the middle. The Dormouse's own lines stay 
 document as visually hidden paragraphs, so the accessibility tree still carries the
 tale once, in order. Treacle drips down the screen, three little sisters drift round
 the well, and at *everything that begins with an M* the letter itself floats up through the cup,
-read from the page: the capital that stands alone in that beat's sentences.
+read from the page: the letter that beat's sentences name as a letter, a capital
+standing alone (the M of "an M") or a single character set apart in quotation marks
+(the Japanese 「お」).
 
 The cup is drawn once. The SVG sits in a fixed 1000 by 1000 box and the camera is a
 CSS transform on that box, so the compositor moves and turns a rasterised cup rather
@@ -857,7 +919,8 @@ to stir it*, which is also the stir's button for the keyboard. At the drawing,
 through the middle of the frame along the lines of the tale, dripping treacle on the
 words. At *muchness* a floating letter pressed, or *Draw something with an M*, becomes
 one of the things the sisters drew: a mouse-trap, the moon, or memory as a knot in a
-string. The cup's own layers take no pointer, so every one of these reaches it.
+string. The Japanese things begin with お and are the same things (おとしわな, おつきさま,
+おもいで, おおさ), so the same three pictures serve. The cup's own layers take no pointer, so every one of these reaches it.
 
 The tea-party and the croquet-ground join. When Alice walks off, the tea-table pulls
 back and away and a tree stands in a dark wood with a door in its trunk; the door
@@ -945,7 +1008,7 @@ the quadrille's sea at the horizon, the shingle and a tongue of grass where the
 Gryphon lies asleep on its back in the sun at the right edge, and the Queen walks off
 to the right with Alice toward it; the captions move up into the empty sky for it.
 
-**The morals, stitched.** Each ribbon carries the moral stitched on it, taken from the Duchess's own sentence on the page, and rises to a pile above her cap, clear of Alice's face. *Shrug her chin off* (or a tap on Alice) knocks the chin from her shoulder, and it creeps back with the next moral. At "He might bite" the flamingo's neck shoots out at the shoulder her chin is on, beak open. The mustard-mine is a little pithead with its wheel, a heap and a loaded cart. When pigs have to fly, the winged pig-baby flaps across the sky and is cut off with her word as the Queen's shadow lands. The last frame is the Mock Turtle's first, drawn by that demo's own markup and stylesheet: the ground runs on to the shore, the Queen walks on to her place there, and Alice steps past the camera, whose eyes are hers from then on. Under reduced motion the bite and the pig are stills seen with their sentences, she is gone within her own beat, and the shore is a cut.
+**The morals, stitched.** Each ribbon carries the moral stitched on it, taken from the Duchess's own sentence on the page (what follows the colon of "the moral of that is:", ASCII or full-width, or her last sentence in the beat when the moral is a sentence of its own, as the fourth is in Japanese), and rises to a pile above her cap, clear of Alice's face. *Shrug her chin off* (or a tap on Alice) knocks the chin from her shoulder, and it creeps back with the next moral. At "He might bite" the flamingo's neck shoots out at the shoulder her chin is on, beak open. The mustard-mine is a little pithead with its wheel, a heap and a loaded cart. When pigs have to fly, the winged pig-baby flaps across the sky and is cut off with her word as the Queen's shadow lands. The last frame is the Mock Turtle's first, drawn by that demo's own markup and stylesheet: the ground runs on to the shore, the Queen walks on to her place there, and Alice steps past the camera, whose eyes are hers from then on. Under reduced motion the bite and the pig are stills seen with their sentences, she is gone within her own beat, and the shore is a cut.
 
 ### The Mock Turtle's Story: the sea answers, and the picture goes under it
 
@@ -960,7 +1023,8 @@ translates and stretches with the sigh, so the breathing and the heaving never f
 over one transform), sends a ripple out across the water and plays on the breeze; at
 *eyes full of tears* the tears fill and drop into the sea. Once the walk begins the
 sun throws the figures' shadows on the sand. "Hjckrrh!" is the Gryphon's own noise,
-taken from the sound line of the text at mount and drawn letter by letter as its line
+taken from the sound line of the text at mount (ヒックルルッ！ in Japanese, in the
+page's own book face) and drawn letter by letter as its line
 appears, while the Gryphon shakes with it; it stays up through the beat. Through the
 long silence the sun slides across the sky and the shadows swing round under it; as
 the lessons lessen it goes down into the sea at the far side.
@@ -972,8 +1036,9 @@ CSS 3D, the old Tortoise with his spectacles and cane at the back, three rows of
 with the little sea-creatures of the quadrille at them, light caustics moving over
 everything, bubbles for the extras and the washing; the captions move up into the
 clear water. Back on the shore, the subjects are written low on the wet sand, clear of
-the figures and the captions: the capitalised words of what the Mock Turtle says in
-each beat (five letters or more, his lines only), each word an element of its own made
+the figures and the captions: the words the Mock Turtle's lines set apart in each
+beat (quoted, as Japanese sets them, or else capitalised with five letters or more,
+as English does; his lines only), each word an element of its own made
 of letters, written with a stagger and taken away by a wave of foam. The
 Drawling-master rises out of the sea in coils, the old crab comes along the shingle,
 and as the sentence says so both creatures hide their faces: the Gryphon in both
@@ -1024,7 +1089,7 @@ lobsters: a long jointed tail with a fan, great claws, long antennae. The reader
 lobster of their own in their hands. Then the reader is in the ring: the camera steps
 into its centre and the dancers go round and round, treading on her toes every so
 often, while the Mock Turtle sings; each verse comes up whole, its words lit one at a
-time as they are sung, each rising on the swell, and it stays up through the beat. A
+time as they are sung (a word is what the line's spaces divide: in Japanese a phrase), each rising on the swell, and it stays up through the beat. A
 verse is set a little smaller and up under the bar, so its five lines stay clear of
 the tops of the dancers' leaps.
 After the dance the ring turns back to its own places, so the end is the same however
@@ -1082,7 +1147,8 @@ of the frame (`alice/from-behind`: hair down her back under the band, puffed sle
 the apron's straps and bow, in the chosen Alice's own colours), and the jury-box goes
 over with her skirt, the jurymen sprawling on the crowd; she puts them back, and the Lizard goes
 in head downwards, waving. The King writes "nothing" and "important" in his note-book,
-the jury mark important or unimportant. At Rule Forty-two the rule is a third line in
+the jury mark important or unimportant (the note-book's words and the slates are
+drawn scribbles, not text, so they serve every language). At Rule Forty-two the rule is a third line in
 the King's note-book, still wet and still being written through "you invented it just
 now", until he turns pale and shuts it. A mile high, she grows until her head is out
 of the top of the frame, wisps of cloud drift between her and the court, and the court
@@ -1179,7 +1245,14 @@ then the child back.
 
 Unit, `build/demos.test.ts`: the page set and order, every segment present and in
 composition order with its text, cues written as attributes, titles from the chapter,
-relative URLs, and a refusal when a segment has no text.
+relative URLs, and a refusal when a segment has no text in the base locale; for every
+other locale, its pages under `demos/<locale>/`, all nineteen in Japanese with
+`lang="ja"` and the Japanese sentence (never the English) for every segment, "Next
+scene" inside the locale, the language switch on every index, a demo with a missing
+sentence left out, carded as pending and skipped in the ring, and the Cat's lid
+written onto the Japanese page only. `shell/words.test.ts` and
+`mouse-tale/chunks.test.ts` run the word readers and the tail's grouping against every
+locale's own sentences.
 
 Browser, `tests/demos.spec.ts`, desktop Chromium on the production build: every demo
 page loads without console, page or request errors; carries its sentences in order
@@ -1216,7 +1289,12 @@ the Mock Turtle's breath is the quadrille's first sigh; the race's huddle is the
 first frame and the tale's house front is the house's; the tea-party's last cup is the
 Dormouse's first), and scrolling back undoes it; no demo's
 timeline overruns its beats; and the index's picker chooses an Alice the next page
-still wears.
+still wears. The generic page checks run for every locale's pages (the sentences
+shown are that locale's, and the next link stays in its directory), the tail's
+readability check runs in each language, and `tests/play/japanese.spec.ts` covers the
+Japanese index and its language switch both ways, the Mock Turtle's quoted subjects on
+the sand, the Dormouse's お, the Cat's lid in the moon, the Duchess's ribbons with and
+without a colon, and the tale's words down the tail.
 
 What costs frames, and what was done about it, is in
 [`performance-budget.md`](performance-budget.md) §2: a drop-shadow filter on many

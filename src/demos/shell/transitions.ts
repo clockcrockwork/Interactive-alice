@@ -30,9 +30,12 @@ const KIND: Record<string, 'hole' | 'whirl' | 'cards'> = {
   'pig-and-pepper': 'cards',
 };
 
+/** The kind for a destination: its demo id is the first known one after `demos/`,
+    so a locale's own pages (`demos/ja/<id>/`) turn the way the base locale's do. */
 export const transitionKindFor = (url: string): 'hole' | 'whirl' | 'cards' => {
-  const match = /\/demos\/([a-z-]+)\/?/.exec(url);
-  return (match?.[1] && KIND[match[1]]) || 'cards';
+  const path = /\/demos\/([^?#]*)/.exec(url)?.[1] ?? '';
+  const id = path.split('/').find((part) => part in KIND);
+  return (id && KIND[id]) || 'cards';
 };
 
 interface PageTransitionEvent extends Event {

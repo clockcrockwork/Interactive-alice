@@ -12,6 +12,7 @@
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
+import { lonelyLetter } from '../shell/words.ts';
 import { BUCKET_INNER, M_PICTURES, TEAPOT_SVG } from './figures.ts';
 import './dormouse.css';
 
@@ -56,31 +57,6 @@ function el<K extends keyof SVGElementTagNameMap>(
     node.setAttribute(key, value);
   }
   return node;
-}
-
-/**
- * The letter the sisters drew everything with, read from the page: the capital
- * that stands alone, as a word of its own, most often in the given sentences (in
- * English the M of "an M"). A translation brings its own; none found, none shown.
- */
-function lonelyCapital(lines: HTMLElement[]): string {
-  const counts = new Map<string, number>();
-  for (const line of lines) {
-    for (const match of (line.textContent ?? '').matchAll(
-      /(?<![\p{L}\p{N}])\p{Lu}(?![\p{L}\p{N}])/gu,
-    )) {
-      counts.set(match[0], (counts.get(match[0]) ?? 0) + 1);
-    }
-  }
-  let best = '';
-  let most = 0;
-  for (const [letter, count] of counts) {
-    if (count > most) {
-      best = letter;
-      most = count;
-    }
-  }
-  return best;
 }
 
 function mount(shell: DemoShell): void {
@@ -452,7 +428,12 @@ function mount(shell: DemoShell): void {
   // The letters float up through the cup at *muchness*; tap one, or press *Draw
   // something with an M*, and it becomes one of the things the sisters drew: a
   // mouse-trap, the moon, memory (a knot in a string). Pictures only.
-  const letter = lonelyCapital(shell.beats[iDoze]?.lines ?? []);
+  // The letter the sisters drew everything with, read from the page: the one its
+  // sentences name as a letter (in English the M of "an M", in Japanese a kana
+  // set apart in quotation marks). A translation brings its own; none found, none shown.
+  const letter = lonelyLetter(
+    (shell.beats[iDoze]?.lines ?? []).map((line) => line.textContent ?? ''),
+  );
   const letters = shell.layer('dm__letters');
   const sisterLetters = shell.layer('dm__sister-letters');
   const mButton = shell.prop(shell.ui.demoDrawM ?? '', 'dm__prop-left dm__prop-m');

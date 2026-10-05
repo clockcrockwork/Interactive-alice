@@ -9,7 +9,7 @@
  * See docs/concept-demos.md.
  */
 
-import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { figure } from '../src/demos/art/art.ts';
 import type {
@@ -66,7 +66,20 @@ export interface DemoText {
 
 export interface DemoProject {
   locale: string;
+  /** The locale's own name for itself, for the language switch. */
+  nativeName: string;
+  /** Whether this is the base locale, whose pages keep the plain `demos/` URLs. */
+  base: boolean;
+  /** The base locale's chapter and section titles, for a card this locale cannot show yet. */
+  baseTitles?: {
+    locale: string;
+    dir: 'ltr' | 'rtl';
+    titles: Map<number, string>;
+    sectionTitles: Map<number, Record<string, string>>;
+  };
   dir: 'ltr' | 'rtl';
+  lineBreak: string;
+  significantSpaces: boolean;
   demos: ExperienceConceptDemoFile[];
   ui: LocaleUIStrings['strings'];
   /** Chapter title by number, in the demo locale. */
@@ -83,7 +96,12 @@ const read = (root: string, ...parts: string[]): unknown =>
 const chapterOf = (segmentId: string): number => Number(segmentId.slice(2, 4));
 const chapterName = (chapter: number): string => `ch${String(chapter).padStart(2, '0')}`;
 
-/** The demos are staged in the base locale for now; a locale switch is a later step. */
+/**
+ * One locale's demo data. In the base locale every sentence a demo stages must have
+ * text, as in the story: there is nothing to translate from otherwise. In any other
+ * locale a missing sentence, or a missing chapter file, only means that the demos
+ * which stage it are not published in that language yet (`isPublishable`).
+ */
 export function loadDemoProject(root: string, locale?: string): DemoProject {
   const registry = read(root, 'text', 'locales.json') as LocaleRegistry;
   const chosen = locale ?? registry.baseLocale;
@@ -91,6 +109,7 @@ export function loadDemoProject(root: string, locale?: string): DemoProject {
   if (!settings) {
     throw new Error(`unknown locale ${chosen}`);
   }
+  const base = chosen === registry.baseLocale;
   const uiFile = read(root, 'text', 'locales', chosen, 'ui.json') as LocaleUIStrings;
   assertValid(uiFile, read(root, 'schema', 'ui-strings.schema.json'), `${chosen}/ui.json`);
 
@@ -102,6 +121,13 @@ export function loadDemoProject(root: string, locale?: string): DemoProject {
     assertValid(demo, schema, `experience/demos/${name}`);
     if (name !== `${demo.id}.demo.json`) {
       throw new Error(`experience/demos/${name} says id ${demo.id}`);
+    }
+    for (const pictureLocale of Object.keys(demo.pictures ?? {})) {
+      if (!registry.locales[pictureLocale]) {
+        throw new Error(
+          `experience/demos/${name} has pictures for unknown locale ${pictureLocale}`,
+        );
+      }
     }
     byId.set(demo.id, demo);
   }
@@ -130,34 +156,89 @@ export function loadDemoProject(root: string, locale?: string): DemoProject {
     }
   }
 
-  const titles = new Map<number, string>();
-  const sectionTitles = new Map<number, Record<string, string>>();
-  const lines: DemoText['lines'] = new Map();
-  for (const chapter of chapters) {
-    const name = chapterName(chapter);
-    const structure = read(root, 'text', 'story', `${name}.structure.json`) as ChapterStructureFile;
-    const text = read(root, 'text', 'locales', chosen, `${name}.json`) as LocaleChapterFile;
-    titles.set(chapter, text.title);
-    sectionTitles.set(chapter, text.sections);
-    for (const segment of structure.segments) {
-      const sentence = text.segments[segment.id];
-      if (sentence === undefined) {
-        throw new Error(`${chosen}/${name}.json has no text for ${segment.id}`);
+  const readTitles = (from: string) => {
+    const titles = new Map<number, string>();
+    const sectionTitles = new Map<number, Record<string, string>>();
+    const lines: DemoText['lines'] = new Map();
+    for (const chapter of chapters) {
+      const name = chapterName(chapter);
+      const structure = read(
+        root,
+        'text',
+        'story',
+        `${name}.structure.json`,
+      ) as ChapterStructureFile;
+      const file = join(root, 'text', 'locales', from, `${name}.json`);
+      if (!existsSync(file)) {
+        if (from === registry.baseLocale) {
+          throw new Error(`${from}/${name}.json is missing`);
+        }
+        continue;
       }
-      lines.set(segment.id, { text: sentence, kind: segment.kind, speaker: segment.speaker });
+      const text = JSON.parse(readFileSync(file, 'utf8')) as LocaleChapterFile;
+      titles.set(chapter, text.title);
+      sectionTitles.set(chapter, text.sections);
+      for (const segment of structure.segments) {
+        const sentence = text.segments[segment.id];
+        if (sentence === undefined) {
+          if (from === registry.baseLocale) {
+            throw new Error(`${from}/${name}.json has no text for ${segment.id}`);
+          }
+          continue;
+        }
+        lines.set(segment.id, { text: sentence, kind: segment.kind, speaker: segment.speaker });
+      }
     }
-  }
+    return { titles, sectionTitles, lines };
+  };
+  const own = readTitles(chosen);
+  const fallback = base ? undefined : readTitles(registry.baseLocale);
 
   return {
     locale: chosen,
+    nativeName: settings.nativeName,
+    base,
+    baseTitles: fallback && {
+      locale: registry.baseLocale,
+      dir: registry.locales[registry.baseLocale]?.dir ?? 'ltr',
+      titles: fallback.titles,
+      sectionTitles: fallback.sectionTitles,
+    },
     dir: settings.dir,
+    lineBreak: settings.lineBreak,
+    significantSpaces: settings.significantSpaces,
     demos,
     ui: uiFile.strings,
-    titles,
-    sectionTitles,
-    lines,
+    titles: own.titles,
+    sectionTitles: own.sectionTitles,
+    lines: own.lines,
   };
 }
+
+/** Every locale in the registry, the base locale first. */
+export function loadDemoProjects(root: string): DemoProject[] {
+  const registry = read(root, 'text', 'locales.json') as LocaleRegistry;
+  const others = Object.keys(registry.locales).filter((name) => name !== registry.baseLocale);
+  return [registry.baseLocale, ...others].map((name) => loadDemoProject(root, name));
+}
+
+/**
+ * Publishability is derived, never declared (docs/text-pipeline.md): a demo has a
+ * page in a locale when its title and every sentence it stages have text there.
+ * Nothing falls back to the base locale's words.
+ */
+export function isPublishable(project: DemoProject, demo: ExperienceConceptDemoFile): boolean {
+  return (
+    titleIn(project, demo) !== undefined &&
+    demo.shots.every((shot) =>
+      shot.beats.every((beat) => beat.segments.every((id) => project.lines.has(id))),
+    )
+  );
+}
+
+/** Where a locale's demo pages live, relative to the generated root. */
+export const demoDir = (project: DemoProject): string =>
+  project.base ? 'demos' : `demos/${project.locale}`;
 
 const UI_FOR_SCRIPT = [
   'demoTurnPage',
@@ -288,10 +369,16 @@ const UI_FOR_SCRIPT = [
   'demoMoveRound',
 ] as const;
 
+const titleIn = (
+  titles: Pick<DemoProject, 'titles' | 'sectionTitles'>,
+  demo: ExperienceConceptDemoFile,
+): string | undefined =>
+  (demo.titleSection
+    ? titles.sectionTitles.get(demo.titleChapter)?.[demo.titleSection]
+    : titles.titles.get(demo.titleChapter)) || undefined;
+
 export function titleOf(project: DemoProject, demo: ExperienceConceptDemoFile): string {
-  const title = demo.titleSection
-    ? project.sectionTitles.get(demo.titleChapter)?.[demo.titleSection]
-    : project.titles.get(demo.titleChapter);
+  const title = titleIn(project, demo);
   if (!title) {
     throw new Error(
       `no title for chapter ${demo.titleChapter}${demo.titleSection ? ` section ${demo.titleSection}` : ''}`,
@@ -324,17 +411,40 @@ function renderTrack(project: DemoProject, demo: ExperienceConceptDemoFile): str
     .join('\n');
 }
 
+/** The root element's language attributes, from the locale registry, as the story writes them. */
+const htmlOpen = (project: DemoProject): string =>
+  `<html lang="${project.locale}" dir="${project.dir}" data-line-break="${project.lineBreak}" data-significant-spaces="${project.significantSpaces}">`;
+
+/**
+ * The demo after this one that has a page in the same locale, so "Next scene" and
+ * going on by itself never leave the reader's language. The ring closes on the first.
+ */
+export function nextDemo(project: DemoProject, id: string): string {
+  const start = DEMO_ORDER.indexOf(id as (typeof DEMO_ORDER)[number]);
+  for (let step = 1; step <= DEMO_ORDER.length; step += 1) {
+    const candidate = DEMO_ORDER[(start + step) % DEMO_ORDER.length];
+    const demo = project.demos.find((entry) => entry.id === candidate);
+    if (demo && isPublishable(project, demo)) {
+      return demo.id;
+    }
+  }
+  return id;
+}
+
 function renderDemo(project: DemoProject, demo: ExperienceConceptDemoFile): string {
   const title = titleOf(project, demo);
-  const index = DEMO_ORDER.indexOf(demo.id as (typeof DEMO_ORDER)[number]);
-  const next = DEMO_ORDER[(index + 1) % DEMO_ORDER.length];
+  const next = nextDemo(project, demo.id);
   const ui = project.ui;
   const forScript = Object.fromEntries(UI_FOR_SCRIPT.map((key) => [key, ui[key]]));
-  // Two directories deep: demos/<id>/index.html, and one more up out of the
-  // generated tree to src/, where styles, assets and the demo code live.
-  const root = '../../../';
+  // demos/<id>/index.html, or demos/<locale>/<id>/index.html, and one more up out
+  // of the generated tree to src/, where styles, assets and the demo code live.
+  const root = up(demoDir(project).split('/').length + 2);
+  // A picture whose sense rides on a word of the text, swapped where this
+  // locale's word lands on a different thing (the Cat's pig or fig).
+  const pictures = demo.pictures?.[project.locale];
+  const picturesAttr = pictures ? ` data-pictures="${escapeHtml(JSON.stringify(pictures))}"` : '';
   return `<!doctype html>
-<html lang="${project.locale}" dir="${project.dir}">
+${htmlOpen(project)}
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -346,7 +456,7 @@ function renderDemo(project: DemoProject, demo: ExperienceConceptDemoFile): stri
     <script type="application/json" id="demo-ui">${escapeHtml(JSON.stringify(forScript)).replace(/&quot;/g, '"')}</script>
   </head>
   <body class="demo-body" data-demo="${demo.id}"${demo.ground ? ` data-ground="${demo.ground}"` : ''}>
-    <main class="demo demo--${demo.id}" id="demo" data-demo="${demo.id}">
+    <main class="demo demo--${demo.id}" id="demo" data-demo="${demo.id}"${picturesAttr}>
       <header class="demo__bar">
         <a class="demo__back" href="../">${escapeHtml(ui.demoBack)}</a>
         <h1 class="demo__title">${escapeHtml(title)}</h1>
@@ -414,16 +524,65 @@ const ART_CHOICES = [
   ['paper', 'demoArtPaper', 'demoArtPaperNote'],
 ] as const;
 
-function renderIndex(project: DemoProject): string {
-  const root = '../../';
+const up = (depth: number): string => '../'.repeat(depth);
+
+/** The URL of one locale's index from another's, relative to the page. */
+function indexHref(from: DemoProject, to: DemoProject): string {
+  if (from.locale === to.locale) {
+    return './';
+  }
+  const back = from.base ? './' : '../';
+  return to.base ? back : `${back}${to.locale}/`;
+}
+
+/**
+ * The language switch: every locale's index, each named in its own language. A
+ * link, not a stored preference: the URL is the choice.
+ */
+function renderLanguages(project: DemoProject, all: readonly DemoProject[]): string {
+  if (all.length < 2) {
+    return '';
+  }
+  const items = all
+    .map((other) => {
+      const current = other.locale === project.locale ? ' aria-current="page"' : '';
+      return `          <li><a class="demos__language" href="${indexHref(project, other)}" lang="${other.locale}" dir="${other.dir}" hreflang="${other.locale}"${current}>${escapeHtml(other.nativeName)}</a></li>`;
+    })
+    .join('\n');
+  return `      <nav class="demos__languages" aria-label="${escapeHtml(project.ui.demoLanguages)}">
+        <ul>
+${items}
+        </ul>
+      </nav>
+`;
+}
+
+function renderIndex(project: DemoProject, all: readonly DemoProject[] = [project]): string {
+  const root = up(demoDir(project).split('/').length + 1);
   const ui = project.ui;
   const cards = project.demos
     .map((demo, index) => {
       const id = demo.id as (typeof DEMO_ORDER)[number];
       const tilt = CARD_TILT[index % CARD_TILT.length] ?? 0;
       const joined = demo.joinsPrevious ? ' data-joined' : '';
+      const open = `        <li class="demos__card" data-demo="${demo.id}"${joined} style="--i: ${index}; --tilt: ${tilt}deg">\n`;
+      if (!isPublishable(project, demo)) {
+        // Listed in its place, as the story's entry lists a part it cannot show
+        // yet: the title in the base locale, with that language's own attributes,
+        // and the reason in this one.
+        const fallback = project.baseTitles;
+        const baseTitle = fallback ? titleIn(fallback, demo) : undefined;
+        return (
+          open.replace('class="demos__card"', 'class="demos__card" data-available="false"') +
+          `          <span class="demos__link">\n` +
+          `            <span class="demos__pip" aria-hidden="true"></span>\n` +
+          `            <span class="demos__name" lang="${fallback?.locale ?? project.locale}" dir="${fallback?.dir ?? project.dir}">${escapeHtml(baseTitle ?? demo.id)}</span>\n` +
+          `            <span class="demos__tech">${escapeHtml(ui.partPending)}</span>\n` +
+          `          </span>\n        </li>`
+        );
+      }
       return (
-        `        <li class="demos__card" data-demo="${demo.id}"${joined} style="--i: ${index}; --tilt: ${tilt}deg">\n` +
+        open +
         `          <a class="demos__link" href="./${demo.id}/">\n` +
         `            <span class="demos__pip" aria-hidden="true"></span>\n` +
         `            <span class="demos__name">${escapeHtml(titleOf(project, demo))}</span>\n` +
@@ -433,7 +592,7 @@ function renderIndex(project: DemoProject): string {
     })
     .join('\n');
   return `<!doctype html>
-<html lang="${project.locale}" dir="${project.dir}">
+${htmlOpen(project)}
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -445,7 +604,7 @@ function renderIndex(project: DemoProject): string {
   </head>
   <body class="demo-body">
     <main class="demos" id="demos">
-      <h1 class="demos__title">${escapeHtml(ui.demosTitle)}</h1>
+${renderLanguages(project, all)}      <h1 class="demos__title">${escapeHtml(ui.demosTitle)}</h1>
       <p class="demos__intro">${escapeHtml(ui.demosIntro)}</p>
       <fieldset class="demos__alice">
         <legend class="demos__alice-title">${escapeHtml(ui.demoAliceTitle)}</legend>
@@ -484,11 +643,15 @@ export interface DemoPageEntry {
   path: string;
   url: string;
   kind: 'demos' | 'demo';
+  /** The locale the page is in. */
+  locale: string;
   demo?: string;
   /** Beat cues in staging order, so a browser test can drive the page by them. */
   cues?: string[];
   /** Segment ids in reading order. */
   segments?: string[];
+  /** On an index: the demos this locale publishes, in order. */
+  published?: string[];
 }
 
 export interface DemoPageGraph {
@@ -496,19 +659,56 @@ export interface DemoPageGraph {
   manifest: { pages: DemoPageEntry[] };
 }
 
-export const generateDemoPages = (root: string): DemoPageGraph =>
-  generateDemoPagesFrom(loadDemoProject(root));
+/** Every locale's demo pages: the base locale's under `demos/`, each other's under `demos/<locale>/`. */
+export const generateDemoPages = (root: string): DemoPageGraph => {
+  const projects = loadDemoProjects(root);
+  const graphs = projects.map((project) => generateDemoPagesFrom(project, projects));
+  return {
+    pages: graphs.flatMap((graph) => graph.pages),
+    manifest: { pages: graphs.flatMap((graph) => graph.manifest.pages) },
+  };
+};
 
-/** Builds the demo page graph from already-loaded data. */
-export function generateDemoPagesFrom(project: DemoProject): DemoPageGraph {
-  const pages: GeneratedPage[] = [{ path: 'demos/index.html', html: renderIndex(project) }];
-  const manifest: DemoPageEntry[] = [{ path: 'demos/index.html', url: './demos/', kind: 'demos' }];
-  for (const demo of project.demos) {
-    pages.push({ path: `demos/${demo.id}/index.html`, html: renderDemo(project, demo) });
+/**
+ * Builds one locale's demo pages from already-loaded data: its index, and a page
+ * for every demo it can publish. In the base locale every demo must be publishable.
+ */
+export function generateDemoPagesFrom(
+  project: DemoProject,
+  all: readonly DemoProject[] = [project],
+): DemoPageGraph {
+  const dir = demoDir(project);
+  const published = project.demos.filter((demo) => {
+    if (isPublishable(project, demo)) {
+      return true;
+    }
+    if (project.base) {
+      const missing = demo.shots
+        .flatMap((shot) => shot.beats.flatMap((beat) => beat.segments))
+        .find((id) => !project.lines.has(id));
+      throw new Error(
+        `${demo.id}: ${missing ? `segment ${missing} has no text` : 'no title'} in ${project.locale}`,
+      );
+    }
+    return false;
+  });
+  const pages: GeneratedPage[] = [{ path: `${dir}/index.html`, html: renderIndex(project, all) }];
+  const manifest: DemoPageEntry[] = [
+    {
+      path: `${dir}/index.html`,
+      url: `./${dir}/`,
+      kind: 'demos',
+      locale: project.locale,
+      published: published.map((demo) => demo.id),
+    },
+  ];
+  for (const demo of published) {
+    pages.push({ path: `${dir}/${demo.id}/index.html`, html: renderDemo(project, demo) });
     manifest.push({
-      path: `demos/${demo.id}/index.html`,
-      url: `./demos/${demo.id}/`,
+      path: `${dir}/${demo.id}/index.html`,
+      url: `./${dir}/${demo.id}/`,
       kind: 'demo',
+      locale: project.locale,
       demo: demo.id,
       cues: demo.shots.flatMap((shot) =>
         shot.beats.flatMap((beat) => (beat.cue ? [beat.cue] : [])),

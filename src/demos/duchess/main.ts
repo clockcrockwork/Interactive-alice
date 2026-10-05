@@ -20,6 +20,7 @@ import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { SHORE_HTML } from '../mock-turtle/figures.ts';
 import { attachDemo, type DemoShell, mix } from '../shell/shell.ts';
+import { exclaims } from '../shell/words.ts';
 import { MINE_SVG, SNAP_SVG, WING_SVG } from './figures.ts';
 import '../lobster-quadrille/shore.css';
 import '../mock-turtle/mock-turtle.css';
@@ -494,7 +495,7 @@ function mount(shell: DemoShell): void {
   };
   for (const beat of shell.spokenBy('queen-of-hearts')) {
     beat.lines.forEach((line, n) => {
-      if (line.dataset.speaker === 'queen-of-hearts' && /!$/.test(line.textContent ?? '')) {
+      if (line.dataset.speaker === 'queen-of-hearts' && exclaims(line.textContent ?? '')) {
         const at = beat.index + 0.08 + n * 0.1;
         master.call(() => (Math.abs(master.time() - at) < 0.25 ? shout() : undefined), [], at);
       }

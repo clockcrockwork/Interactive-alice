@@ -27,6 +27,7 @@ import {
   mix,
   seeded,
 } from '../shell/shell.ts';
+import { exclaims } from '../shell/words.ts';
 import { COURT_DOORS, HANDS_WITH_LOBSTER, JELLY_SVG, TUREEN_SVG } from './figures.ts';
 import './quadrille.css';
 import './shore.css';
@@ -347,7 +348,7 @@ function mount(shell: DemoShell): void {
   master.to(turtle, { '--sob': 1, duration: 0.3, yoyo: true, repeat: 3 }, iSigh + 0.1);
   for (const beat of shell.spokenBy('gryphon')) {
     beat.lines.forEach((line, n) => {
-      if (line.dataset.speaker === 'gryphon' && /!$/.test(line.textContent ?? '')) {
+      if (line.dataset.speaker === 'gryphon' && exclaims(line.textContent ?? '')) {
         master.to(
           gryphon,
           { '--hop': 1, duration: quick(0.18), yoyo: true, repeat: 1, ease: 'power2.out' },

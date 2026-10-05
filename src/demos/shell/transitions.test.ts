@@ -20,5 +20,12 @@ describe('which way the screen turns between demo pages', () => {
     expect(transitionKindFor('https://x/demos/trial/')).toBe('cards');
     expect(transitionKindFor('https://x/demos/')).toBe('cards');
     expect(transitionKindFor('https://x/')).toBe('cards');
+    expect(transitionKindFor('https://x/demos/ja/')).toBe('cards');
+  });
+
+  it("turns a locale's own page the way it turns the base locale's", () => {
+    expect(transitionKindFor('https://x/demos/ja/rabbit-hole/')).toBe('hole');
+    expect(transitionKindFor('/sub/demos/ja/dormouse/?probe=1')).toBe('whirl');
+    expect(transitionKindFor('https://x/demos/ja/trial/')).toBe('cards');
   });
 });

@@ -163,6 +163,14 @@ export interface ExperienceConceptDemoFile {
    * Optional: true when this demo's first frame is the previous demo's last, one moment of the book across two pages (see docs/concept-demos.md, Joins). The index deals such cards over the card before.
    */
   joinsPrevious?: boolean;
+  /**
+   * Optional: per locale, a picture to draw in place of another, for a picture whose sense rides on a word of that locale's text. Keyed by locale id, then by the name the demo's code knows the picture by; the value is the name of the picture to draw instead. The Cheshire Cat's pig, or fig: where a locale's rhyme for pig is a lid, the second picture is a lid. A locale without an entry draws the pictures the code names.
+   */
+  pictures?: {
+    [k: string]: {
+      [k: string]: string;
+    };
+  };
 }
 
 // experience-scene.schema.json
@@ -1077,5 +1085,9 @@ export interface LocaleUIStrings {
      * Button at the tea-party that moves everyone one seat along the table.
      */
     demoMoveRound: string;
+    /**
+     * Demo index: the name of the language switch, read by assistive technology; each choice is named in its own language.
+     */
+    demoLanguages: string;
   };
 }

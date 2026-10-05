@@ -4,6 +4,7 @@
   "ground": "dark",
   "titleSection": "cheshire-puss",
   "joinsPrevious": true,
+  "pictures": { "ja": { "fig": "lid" } },
   "shots": [
     {
       "id": "on-a-bough",

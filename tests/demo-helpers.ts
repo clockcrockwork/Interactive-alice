@@ -19,7 +19,10 @@ export function demoPages(): DemoPageEntry[] {
 }
 
 export const pages = demoPages();
+/** Every demo page, in every locale: the base locale's first, so `find` by id returns it. */
 export const demos = pages.filter((page) => page.kind === 'demo');
+/** The base locale's demo pages, at the plain `demos/<id>/` URLs. */
+export const baseDemos = demos.filter((page) => page.locale === pages[0]?.locale);
 
 export const collectErrors = (page: Page): string[] => {
   const errors: string[] = [];

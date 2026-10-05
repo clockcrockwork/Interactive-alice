@@ -1,16 +1,58 @@
 /** The key, the bottle and the cake. Their labels are filled in from the text
  * (label.ts reads them from the sentences that set them apart). */
 
+import { emWidth } from '../shell/words.ts';
+
 /** A label's words as SVG text: escaped, since they come from the page's own text. */
 const words = (label: string): string =>
   label.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
+/**
+ * Words of full-width glyphs that would be squeezed thin on one line are set on
+ * two instead, broken at the space nearest the middle, at a size that fits.
+ * A label narrow enough for one line (any capitals) is left to the caller.
+ */
+function twoLines(label: string): [string, string] | undefined {
+  if (emWidth(label) <= 5) {
+    return undefined;
+  }
+  const spaces = [...label.matchAll(/\s+/g)].map((match) => match.index ?? 0);
+  if (spaces.length === 0) {
+    return undefined;
+  }
+  const middle = label.length / 2;
+  const at = spaces.reduce((best, index) =>
+    Math.abs(index - middle) < Math.abs(best - middle) ? index : best,
+  );
+  return [label.slice(0, at).trim(), label.slice(at).trim()];
+}
+
+/** The label's `<text>`: one line fitted to `fit` units, or two lines when it reads better. */
+export const labelText = (
+  label: string,
+  x: number,
+  y: number,
+  size: number,
+  fit: number,
+): string => {
+  const lines = twoLines(label);
+  if (!lines) {
+    return `<text class="dk__label-text" x="${x}" y="${y}" font-size="${size}" text-anchor="middle" textLength="${fit}" lengthAdjust="spacingAndGlyphs">${words(label)}</text>`;
+  }
+  // A little under the size that fills the measure, the pair centred where the
+  // single line's middle would be.
+  const small = Math.min(size, fit / Math.max(...lines.map(emWidth))) * 0.9;
+  const lead = small * 1.1;
+  const first = y - size * 0.4 - lead / 2 + small * 0.35;
+  return `<text class="dk__label-text" x="${x}" y="${first.toFixed(2)}" font-size="${small.toFixed(2)}" text-anchor="middle"><tspan x="${x}">${words(lines[0])}</tspan><tspan x="${x}" dy="${lead.toFixed(2)}">${words(lines[1])}</tspan></text>`;
+};
 
 /** One side of the paper label round the bottle's neck: the words and nothing else,
  * stretched to fit whatever their length in whatever language. */
 export const labelFaceSvg = (label: string): string => `
 <svg viewBox="0 0 48 26" focusable="false">
   <rect x="1" y="1" width="46" height="24" rx="3" fill="var(--dk-label)" stroke="var(--sepia-dark)"/>
-  <text class="dk__label-text" x="24" y="17.5" font-size="11" text-anchor="middle" textLength="38" lengthAdjust="spacingAndGlyphs">${words(label)}</text>
+  ${labelText(label, 24, 17.5, 11, 38)}
 </svg>`;
 
 export const KEY_SVG = `
@@ -28,7 +70,7 @@ export const bottleSvg = (label: string): string => `
   </g>
   <rect x="6" y="52" width="48" height="26" rx="3" fill="var(--dk-label)" stroke="var(--sepia-dark)"/>
   <path d="M30 40 v12" stroke="var(--sepia-dark)" stroke-width="1.5"/>
-  <text class="dk__label-text" x="30" y="70" font-size="11" text-anchor="middle" textLength="40" lengthAdjust="spacingAndGlyphs">${words(label)}</text>
+  ${labelText(label, 30, 70, 11, 40)}
 </svg>`;
 
 /** The bottle in her hand, without its label: the label is a ring of paper the

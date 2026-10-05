@@ -53,6 +53,12 @@ export interface DemoShell {
   cue(name: string): number;
   /** Beat indices whose lines are said by this speaker. */
   spokenBy(speaker: string): Beat[];
+  /**
+   * The picture to draw for one the code names: itself, unless this page's locale
+   * swaps it for another because its word lands on a different thing (the demo
+   * file's `pictures`, written onto the page by the build).
+   */
+  picture(name: string): string;
   /** Scrubbed by the scroll; duration is the beat count, one unit of time per beat. */
   master: gsap.core.Timeline;
   /** Self-running motion: loops that the visitor can pause. */
@@ -136,6 +142,8 @@ declare global {
       paused(): boolean;
       reduced(): boolean;
       mode(): string;
+      /** The page's locale, as its root element declares it. */
+      locale(): string;
       /** The master timeline's length against the beat count: they must agree. */
       overrun(): number;
       /** Whether the scrubbed timeline has caught up with the scroll. */
@@ -152,6 +160,15 @@ function readUi(): Record<string, string> {
   }
   try {
     return JSON.parse(script.textContent) as Record<string, string>;
+  } catch {
+    return {};
+  }
+}
+
+function readPictures(root: HTMLElement): Record<string, string> {
+  try {
+    const parsed: unknown = JSON.parse(root.dataset.pictures ?? '{}');
+    return typeof parsed === 'object' && parsed !== null ? (parsed as Record<string, string>) : {};
   } catch {
     return {};
   }
@@ -190,6 +207,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     return undefined;
   }
   const ui = readUi();
+  const pictures = readPictures(root);
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Stage first, captions on top; the beats move in keeping their order.
@@ -487,6 +505,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     cue,
     spokenBy: (speaker) =>
       beats.filter((beat) => beat.lines.some((line) => line.dataset.speaker === speaker)),
+    picture: (name) => pictures[name] ?? name,
     master,
     ambient,
     reducedMotion,
@@ -578,6 +597,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     paused: () => paused,
     reduced: () => reducedMotion,
     mode: () => root.dataset.mode ?? '',
+    locale: () => document.documentElement.lang,
     overrun: () => master.duration() - beats.length,
     auto: () => auto,
     settled: () => {

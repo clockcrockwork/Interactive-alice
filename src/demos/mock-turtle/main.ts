@@ -21,35 +21,34 @@
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
+import { namedWords } from '../shell/words.ts';
 import { GRYPHON_PAWS, SHORE_HTML, schoolMarkup, TURTLE_FLAPPERS } from './figures.ts';
 import '../lobster-quadrille/shore.css';
 import './mock-turtle.css';
 
-/** A capitalised word of five letters or more, so the pronouns and the words
-    that only open a sentence stay out of the sand. */
-const CAPITAL_WORD = /\b[A-Z][a-z]{4,}\b/g;
-
-/** The subject names in what the Mock Turtle says in a beat, in order, once each. */
+/**
+ * The subject names in what the Mock Turtle says in a beat, in order, once each:
+ * the words his sentences set apart, quoted or capitalised (Reeling),
+ * whichever his language does (shell/words.ts).
+ */
 function subjectsIn(lines: HTMLElement[]): string[] {
   const found: string[] = [];
   for (const line of lines) {
     if (line.dataset.speaker !== 'mock-turtle') {
       continue;
     }
-    for (const match of (line.textContent ?? '').matchAll(CAPITAL_WORD)) {
-      if (!found.includes(match[0])) {
-        found.push(match[0]);
+    for (const word of namedWords(line.textContent ?? '')) {
+      if (!found.includes(word)) {
+        found.push(word);
       }
     }
   }
   return found;
 }
 
-/** Every capitalised word in a beat, whoever says it. */
-function capitalsIn(lines: HTMLElement[]): string[] {
-  return lines.flatMap((line) =>
-    [...(line.textContent ?? '').matchAll(CAPITAL_WORD)].map((m) => m[0]),
-  );
+/** Every word a beat sets apart, whoever says it. */
+function namedIn(lines: HTMLElement[]): string[] {
+  return lines.flatMap((line) => namedWords(line.textContent ?? ''));
 }
 
 /** A word as a run of letter spans, so each letter can writhe on its own. */
@@ -706,7 +705,7 @@ function mount(shell: DemoShell): void {
     master.call(wordsShown, [], group.washAt + 0.3);
   }
   // Never heard of uglifying: the word the beat itself argues about writhes by itself.
-  const argued = capitalsIn(shell.beats[iUglify]?.lines ?? []);
+  const argued = namedIn(shell.beats[iUglify]?.lines ?? []);
   master.call(
     () => {
       if (master.time() < iUglify + 0.35) {

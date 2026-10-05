@@ -546,6 +546,13 @@
     display: inline-block;
   }
 
+  /* Georgia has no kana: a Japanese page writes the cry and the subjects in its
+     own book face (shell.css). */
+  .mt__cry-word:lang(ja),
+  .mt__subject:lang(ja) {
+    font-family: var(--demo-serif);
+  }
+
   /* Each letter of the cry is drawn in turn, popping up out of nothing. */
   .mt__cry-word .mt__letter {
     opacity: var(--drawn, 0);

@@ -54,7 +54,8 @@ still loading, and every page is independently linkable and cacheable.
 /                     language pick + entry
 /<locale>/            story entry for that language
 /<locale>/<part>/     one part of the story, hosting one or more Scenes
-/demos/               the concept demos and their index; see concept-demos.md
+/demos/               the concept demos and their index, in the base locale; see concept-demos.md
+/demos/<locale>/      the same demos in another language, under the same scheme
 ```
 
 All three levels are generated from the data. Every registered language has an entry
@@ -65,7 +66,11 @@ means for the site.
 The locale lives in the path, which keeps the static output free of negotiation
 logic and lets a CDN cache each language separately. No cookie, no redirect, no
 runtime language switch that rewrites the DOM: switching language navigates to the
-sibling URL.
+sibling URL. The demos follow the same rule with one difference kept on purpose:
+the base locale's demos stay at the plain `/demos/<id>/` URLs they were published
+at, and every other locale's are at `/demos/<locale>/<id>/`. Each demo index links
+the others (a link, not a stored preference), and a demo page links only to pages in
+its own language.
 
 ### A document is not a Scene
 

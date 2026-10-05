@@ -171,9 +171,11 @@ export const ART: Record<string, ArtEntry> = {
 
 /**
  * Demos that move a figure's own parts (a limb, the eyes, the Cat's grin), or
- * animate the drawing inside its box: there the vector stays even where a baked
- * picture exists, because one picture cannot move a part. A figure whose parts move
- * wherever it appears is not baked at all (see scripts/bake-art.mjs).
+ * animate the drawing inside its box: there a single baked picture cannot serve,
+ * because one picture cannot move a part. The figure is served as cut-outs, one
+ * picture per moving part (CUT_OUTS), where that demo is listed there, and as the
+ * vector, engraved at runtime, everywhere else in this list. A figure whose parts
+ * move wherever it appears is not baked whole (see scripts/bake-art.mjs).
  */
 export const LIVE_PARTS: Record<string, readonly string[]> = {
   'alice/falling': ['rabbit-hole'],
@@ -185,4 +187,43 @@ export const LIVE_PARTS: Record<string, readonly string[]> = {
   dormouse: ['dormouse', 'tea-party'],
   cook: ['pig-and-pepper'],
   bill: ['bill-the-lizard'],
+  flamingo: ['croquet'],
+  hedgehog: ['croquet'],
+  'gardener/two': ['croquet'],
+  'gardener/five': ['croquet'],
+  'gardener/seven': ['croquet'],
+  'guinea-pig': ['bill-the-lizard', 'witnesses'],
+  'tortoise-master': ['mock-turtle'],
+  jury: ['trial', 'witnesses'],
+  'pig-baby': ['pig-and-pepper'],
+};
+
+/**
+ * Figures baked as cut-outs: the drawing without its moving parts, and one picture
+ * per part, stacked in the same box, each part in a group with its class so a
+ * demo's transform on it still applies. Only where the demo moves the part as a
+ * whole, about a point given in the drawing's own units or percentages of its box
+ * (a `fill-box` origin or a changed attribute needs the vector). Each part is a
+ * direct child of the drawing, or inside untransformed groups; the bake checks it.
+ */
+export const CUT_OUTS: Record<string, { parts: readonly string[]; demos: readonly string[] }> = {
+  flamingo: { parts: ['cq__flamingo-body', 'cq__flamingo-head'], demos: ['croquet'] },
+  hedgehog: { parts: ['cq__hedgehog-ball', 'cq__hedgehog-walk'], demos: ['croquet'] },
+  'gardener/two': { parts: ['cq__brush'], demos: ['croquet'] },
+  'gardener/five': { parts: ['cq__brush'], demos: ['croquet'] },
+  'gardener/seven': { parts: ['cq__brush'], demos: ['croquet'] },
+  hatter: { parts: ['hatter__hat'], demos: ['witnesses'] },
+  'guinea-pig': { parts: ['guinea-pig__paw'], demos: ['witnesses'] },
+  'tortoise-master': { parts: ['art__cane'], demos: ['mock-turtle'] },
+};
+
+/**
+ * Demos that give a baked figure colours of their own, through the custom
+ * properties its drawing reads (`--bl-lizard`, `--lq-gryphon`): a picture baked
+ * with the drawing's defaults would be the wrong colour there, so the vector stays.
+ * A unit test derives this list from the demos' stylesheets.
+ */
+export const OWN_COLOURS: Record<string, readonly string[]> = {
+  bill: ['rabbit-house'],
+  gryphon: ['lobster-quadrille'],
 };

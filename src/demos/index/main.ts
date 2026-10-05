@@ -1,6 +1,6 @@
 /**
  * The demo index. Cards on a table that lean toward the pointer, the choice of
- * which Alice walks through them, and the trial of how they are drawn; the page
+ * which Alice walks through them, and of how they are drawn; the page
  * itself falls away like a dropped card when one is chosen (see shell.css).
  */
 
@@ -48,11 +48,11 @@ for (const choice of choices) {
 }
 
 // --- How the figures are drawn (docs/art-trials.md): the same head script applies
-// the remembered choice as `data-art`; flat, the default, sets nothing.
+// the remembered choice as `data-art`; engraved, the default, sets nothing.
 const artChoices = [...document.querySelectorAll<HTMLButtonElement>('.demos__art-choice')];
 const chooseArt = (value: string | undefined, remember: boolean): void => {
   const style = parseArtStyle(value);
-  if (style === 'flat') {
+  if (style === 'engraved') {
     delete document.documentElement.dataset.art;
   } else {
     document.documentElement.dataset.art = style;

@@ -395,13 +395,13 @@ export const MUSHROOM_SVG = `
 <svg viewBox="0 0 400 320" focusable="false">
   <path d="M150 320 L160 170 L240 170 L250 320 Z" fill="var(--paper-warm)"/>
   <path d="M160 200 q40 -14 80 0" stroke="var(--paper-aged)" stroke-width="6" fill="none"/>
-  <ellipse cx="200" cy="150" rx="200" ry="70" fill="var(--ct-mushroom, var(--sepia-dark))"/>
-  <path d="M0 150 Q200 -60 400 150 Z" fill="var(--ct-mushroom, var(--sepia-dark))"/>
+  <ellipse cx="200" cy="150" rx="200" ry="70" fill="var(--ct-mushroom, var(--sepia-mid))"/>
+  <path d="M0 150 Q200 -60 400 150 Z" fill="var(--ct-mushroom, var(--sepia-mid))"/>
   <ellipse cx="200" cy="150" rx="200" ry="70" fill="oklch(from var(--ink-primary) l c h / 0.12)"/>
-  <ellipse cx="120" cy="70" rx="26" ry="14" fill="var(--ct-mushroom-spot, var(--paper-base))"/>
-  <ellipse cx="240" cy="40" rx="20" ry="11" fill="var(--ct-mushroom-spot, var(--paper-base))"/>
-  <ellipse cx="320" cy="100" rx="24" ry="12" fill="var(--ct-mushroom-spot, var(--paper-base))"/>
-  <ellipse cx="60" cy="126" rx="16" ry="8" fill="var(--ct-mushroom-spot, var(--paper-base))"/>
+  <ellipse cx="120" cy="70" rx="26" ry="14" fill="var(--ct-mushroom-spot, var(--paper-warm))"/>
+  <ellipse cx="240" cy="40" rx="20" ry="11" fill="var(--ct-mushroom-spot, var(--paper-warm))"/>
+  <ellipse cx="320" cy="100" rx="24" ry="12" fill="var(--ct-mushroom-spot, var(--paper-warm))"/>
+  <ellipse cx="60" cy="126" rx="16" ry="8" fill="var(--ct-mushroom-spot, var(--paper-warm))"/>
 </svg>`;
 
 /** A pigeon at the reader's face: wings on their own groups so they can beat. */
@@ -484,12 +484,12 @@ export const FLAMINGO_SVG = `
   <path d="M60 420 L60 320 Q80 230 180 250 L180 420 Z" fill="var(--alice-dress)"/>
   <path d="M170 420 Q160 320 230 300 L260 300 L260 420 Z" fill="var(--alice-skin)"/>
   <g class="cq__flamingo-body">
-    <ellipse cx="170" cy="300" rx="90" ry="46" fill="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))"/>
-    <path d="M90 310 q-30 20 -20 50 M110 330 q-20 30 0 60" stroke="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))" stroke-width="10" fill="none" stroke-linecap="round"/>
-    <path d="M230 280 q20 -60 -10 -120 q-20 -50 -60 -60" stroke="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))" stroke-width="26" fill="none" stroke-linecap="round"/>
+    <ellipse cx="170" cy="300" rx="90" ry="46" fill="var(--cq-flamingo, color-mix(in oklch, var(--wonder-red-faded), var(--paper-warm) 45%))"/>
+    <path d="M90 310 q-30 20 -20 50 M110 330 q-20 30 0 60" stroke="var(--cq-flamingo, color-mix(in oklch, var(--wonder-red-faded), var(--paper-warm) 45%))" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M230 280 q20 -60 -10 -120 q-20 -50 -60 -60" stroke="var(--cq-flamingo, color-mix(in oklch, var(--wonder-red-faded), var(--paper-warm) 45%))" stroke-width="26" fill="none" stroke-linecap="round"/>
   </g>
   <g class="cq__flamingo-head">
-    <circle cx="160" cy="100" r="30" fill="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))"/>
+    <circle cx="160" cy="100" r="30" fill="var(--cq-flamingo, color-mix(in oklch, var(--wonder-red-faded), var(--paper-warm) 45%))"/>
     <path d="M138 108 L96 132 L140 122 Z" fill="var(--ink-primary)"/>
     <circle class="cq__flamingo-eye" cx="166" cy="92" r="6" fill="var(--paper-base)"/>
     <circle class="cq__flamingo-eye" cx="167" cy="92" r="3" fill="var(--ink-primary)"/>
@@ -500,14 +500,14 @@ export const FLAMINGO_SVG = `
     head that can turn to eye whoever is leaning too close. */
 export const FLAMINGO_TUCKED_SVG = `
 <svg viewBox="0 0 200 160" focusable="false">
-  <path d="M72 134 L62 158 M102 134 L108 158" stroke="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))" stroke-width="7" stroke-linecap="round"/>
-  <path d="M40 100 q-26 -6 -34 16 q20 2 36 -4 z" fill="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))"/>
-  <ellipse cx="90" cy="110" rx="56" ry="28" fill="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))"/>
+  <path d="M72 134 L62 158 M102 134 L108 158" stroke="var(--cq-flamingo, color-mix(in oklch, var(--wonder-red-faded), var(--paper-warm) 45%))" stroke-width="7" stroke-linecap="round"/>
+  <path d="M40 100 q-26 -6 -34 16 q20 2 36 -4 z" fill="var(--cq-flamingo, color-mix(in oklch, var(--wonder-red-faded), var(--paper-warm) 45%))"/>
+  <ellipse cx="90" cy="110" rx="56" ry="28" fill="var(--cq-flamingo, color-mix(in oklch, var(--wonder-red-faded), var(--paper-warm) 45%))"/>
   <path d="M60 104 q30 -12 60 0" stroke="var(--paper-warm)" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.6"/>
   <g class="dc__tucked-reach">
-  <path class="dc__tucked-neck" d="M136 100 q28 -18 14 -56" stroke="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <path class="dc__tucked-neck" d="M136 100 q28 -18 14 -56" stroke="var(--cq-flamingo, color-mix(in oklch, var(--wonder-red-faded), var(--paper-warm) 45%))" stroke-width="14" fill="none" stroke-linecap="round"/>
   <g class="dc__tucked-head">
-    <circle cx="150" cy="36" r="17" fill="var(--cq-flamingo, color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm)))"/>
+    <circle cx="150" cy="36" r="17" fill="var(--cq-flamingo, color-mix(in oklch, var(--wonder-red-faded), var(--paper-warm) 45%))"/>
     <path d="M138 42 L104 50 L140 48 Z" fill="var(--ink-primary)"/>
     <path class="dc__tucked-jaw" d="M140 48 L106 52 L140 53 Z" fill="var(--ink-primary)"/>
     <circle cx="154" cy="31" r="4.5" fill="var(--paper-base)"/>

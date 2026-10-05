@@ -91,8 +91,6 @@
         "demoArtEngravedNote",
         "demoArtPaper",
         "demoArtPaperNote",
-        "demoArtBaked",
-        "demoArtBakedNote",
         "demoScrollHint",
         "demoTechRabbitHole",
         "demoTechDormouse",
@@ -492,12 +490,12 @@
         "demoArtTitle": {
           "type": "string",
           "minLength": 1,
-          "description": "Index: heading of the art-style trial picker."
+          "description": "Index: heading of the picker of how the figures are drawn (engraved, the default; flat; cut paper)."
         },
         "demoArtFlat": {
           "type": "string",
           "minLength": 1,
-          "description": "Index: art style, the figures as drawn now."
+          "description": "Index: art style, the figures in flat tints, as first drawn."
         },
         "demoArtFlatNote": {
           "type": "string",
@@ -507,7 +505,7 @@
         "demoArtEngraved": {
           "type": "string",
           "minLength": 1,
-          "description": "Index: art style, ink line and hatching."
+          "description": "Index: art style, ink line and hatching; the chosen look and the default."
         },
         "demoArtEngravedNote": {
           "type": "string",
@@ -523,16 +521,6 @@
           "type": "string",
           "minLength": 1,
           "description": "Index: note under the cut-paper art style."
-        },
-        "demoArtBaked": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Index: art style, the figures as transparent images."
-        },
-        "demoArtBakedNote": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Index: note under the baked-image art style."
         },
         "demoAuto": {
           "type": "string",

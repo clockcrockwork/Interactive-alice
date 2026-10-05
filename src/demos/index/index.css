@@ -124,9 +124,10 @@
     --alice-band: #2f4272;
   }
 
-  /* The drawing trial: the same figure in each style, whatever the root says
-     (docs/art-trials.md). The filters are on this page always (main.ts). */
-  /* Four in a row where there is room; on a phone they stack like the Alices. */
+  /* How the figures are drawn: the same figure in each style, whatever the root
+     says (docs/art-trials.md). The filters are on this page always (main.ts).
+     Engraved is shown as it is delivered, the baked picture. */
+  /* Three in a row where there is room; on a phone they stack like the Alices. */
   @media (min-width: 64rem) {
     .demos__art .demos__art-choice {
       inline-size: 14.5rem;
@@ -138,20 +139,26 @@
     inline-size: 3.2rem;
   }
 
-  .demos__art-figure[data-art-style="engraved"] .art > svg {
-    filter: url("#art-engraved");
+  .demos__art-figure[data-art-style="engraved"] .art--baked > svg {
+    display: none;
+  }
+
+  .demos__art-figure[data-art-style="engraved"] .art__image--baked {
+    display: block;
   }
 
   .demos__art-figure[data-art-style="paper"] .art > svg {
     filter: url("#art-paper");
   }
 
-  .demos__art-figure[data-art-style="baked"] .art--baked > svg {
-    display: none;
+  /* The two Alices are drawn the way the page is: they are vectors (each in her
+     own colours), so the engraving is the runtime filter here. */
+  :root:not([data-art="flat"], [data-art="paper"]) .demos__alice-figure .art > svg {
+    filter: url("#art-engraved-alice");
   }
 
-  .demos__art-figure[data-art-style="baked"] .art__image--baked {
-    display: block;
+  :root[data-art="paper"] .demos__alice-figure .art > svg {
+    filter: url("#art-paper");
   }
 
   .demos__alice-name {

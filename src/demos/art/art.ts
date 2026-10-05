@@ -15,19 +15,27 @@
  * Colour for Alice's two looks comes from tokens for vectors (`--alice-*`) and from
  * a file per variant for images; the page's `data-alice` picks either way.
  *
- * The drawing trial (docs/art-trials.md) proves that contract today: in the pictures
- * style (`data-art="baked"`) a vector entry with a baked picture (baked.ts) gets the
- * picture beside its vector, and art.css shows one.
+ * The engraved look (docs/art-trials.md) is delivered through that contract today: a
+ * vector entry with a baked picture (baked.ts) gets the picture beside its vector,
+ * and art.css shows one by the page's `data-art`; a figure whose parts the demo
+ * moves gets its cut-outs, one picture per part, where they were baked.
  */
 
-import { BAKED } from './baked.ts';
-import { ART, type ArtEntry, type ImageSource, LIVE_PARTS } from './registry.ts';
+import { BAKED, BAKED_PARTS } from './baked.ts';
+import {
+  ART,
+  type ArtEntry,
+  CUT_OUTS,
+  type ImageSource,
+  LIVE_PARTS,
+  OWN_COLOURS,
+} from './registry.ts';
 import { type ArtStyle, artStyle } from './treatments.ts';
 
 export type AliceVariant = 'blue' | 'yellow';
 type Sources = Partial<Record<AliceVariant | 'any', ImageSource>>;
 
-/** Outside a browser (the build renders the index) the drawing is flat. */
+/** Outside a browser (the build renders the index) the drawing is flat unless asked. */
 const inBrowser = typeof document !== 'undefined';
 const pageStyle = (): ArtStyle => (inBrowser ? artStyle() : 'flat');
 const pageDemo = (): string | undefined => (inBrowser ? document.body?.dataset.demo : undefined);
@@ -44,9 +52,19 @@ const entryOf = (id: string): ArtEntry => {
 export const aliceVariant = (): AliceVariant =>
   document.documentElement.dataset.alice === 'blue' ? 'blue' : 'yellow';
 
+/** Only the page's own Alice is put on a page: a hidden <img> would still be fetched. */
+const forThisPage = (sources: Sources): Sources => {
+  if (inBrowser && !sources.any) {
+    const variant = aliceVariant();
+    return { [variant]: sources[variant] };
+  }
+  return sources;
+};
+
 /**
- * The baked pictures a figure shows, if any: only when the page shows pictures, a
- * picture was baked for it, and the demo does not move the figure's own parts.
+ * The baked picture a figure shows, if any: only in the engraved style, where a
+ * picture was baked for it, the demo does not move the figure's own parts and does
+ * not give it colours of its own.
  */
 export function bakedFor(
   id: string,
@@ -54,16 +72,38 @@ export function bakedFor(
   demo: string | undefined = pageDemo(),
 ): Sources | undefined {
   const sources = BAKED[id];
-  if (!sources || style !== 'baked' || (demo && LIVE_PARTS[id]?.includes(demo))) {
+  if (
+    !sources ||
+    style !== 'engraved' ||
+    (demo && (LIVE_PARTS[id]?.includes(demo) || OWN_COLOURS[id]?.includes(demo)))
+  ) {
     return undefined;
   }
-  // A page keeps its Alice (the choice is made on the index), so in a browser only
-  // her picture is put on it: a hidden <img> would still be fetched.
-  if (inBrowser && !sources.any) {
-    const variant = aliceVariant();
-    return { [variant]: sources[variant] };
+  return forThisPage(sources);
+}
+
+export interface CutOuts {
+  base: Sources;
+  parts: [string, Sources][];
+}
+
+/**
+ * The cut-outs a figure shows, if any: in the engraved style, on a page whose demo
+ * moves the figure's parts, where the parts were baked one picture each.
+ */
+export function cutOutsFor(
+  id: string,
+  style: ArtStyle = pageStyle(),
+  demo: string | undefined = pageDemo(),
+): CutOuts | undefined {
+  const baked = BAKED_PARTS[id];
+  if (!baked || style !== 'engraved' || !demo || !CUT_OUTS[id]?.demos.includes(demo)) {
+    return undefined;
   }
-  return sources;
+  return {
+    base: forThisPage(baked.base),
+    parts: Object.entries(baked.parts).map(([part, sources]) => [part, forThisPage(sources)]),
+  };
 }
 
 const imgTags = (sources: Sources, className: string): string =>
@@ -83,14 +123,37 @@ const imageTags = (sources: Sources, className: string, width: number, height: n
     .join('');
 
 /**
+ * The cut-outs as the drawing's own SVG: the same root (so its viewBox, and any
+ * transform a demo puts on a part about a point in it, still hold), the picture of
+ * everything that does not move, and each part's picture in a group with its class.
+ */
+function cutOutSvg(entry: Extract<ArtEntry, { kind: 'vector' }>, cut: CutOuts): string {
+  const [w, h] = entry.box;
+  const root = entry.markup.match(/<svg[^>]*>/)?.[0] ?? `<svg viewBox="0 0 ${w} ${h}">`;
+  const parts = cut.parts
+    .map(([part, sources]) => `<g class="${part}">${imageTags(sources, 'art__image', w, h)}</g>`)
+    .join('');
+  return `${root}${imageTags(cut.base, 'art__image', w, h)}${parts}</svg>`;
+}
+
+/**
  * A figure for an HTML context: a box with the drawing inside. The box carries the
  * id, so a stylesheet can address `[data-art="alice/falling"]` whatever is inside.
  */
-export function figure(id: string, className = '', style: ArtStyle = pageStyle()): string {
+export function figure(
+  id: string,
+  className = '',
+  style: ArtStyle = pageStyle(),
+  demo: string | undefined = pageDemo(),
+): string {
   const entry = entryOf(id);
   if (entry.kind === 'vector') {
+    const cut = cutOutsFor(id, style, demo);
+    if (cut) {
+      return `<span class="art art--cut ${className}" data-art="${id}">${cutOutSvg(entry, cut)}</span>`;
+    }
     // A baked picture rides beside the vector; art.css shows one by `data-art`.
-    const baked = bakedFor(id, style);
+    const baked = bakedFor(id, style, demo);
     if (baked) {
       return `<span class="art art--baked ${className}" data-art="${id}">${entry.markup}${imgTags(baked, 'art__image art__image--baked')}</span>`;
     }
@@ -129,7 +192,7 @@ const imageCache = new Map<string, Promise<HTMLImageElement | undefined>>();
 
 /**
  * A figure for a Canvas context: the cut-out image for the current Alice (an image
- * entry, or a baked picture in the pictures style), or nothing, in which case the
+ * entry, or a baked picture in the engraved style), or nothing, in which case the
  * canvas draws its own vector stand-in. Resolved once.
  */
 export function loadArtImage(id: string): Promise<HTMLImageElement | undefined> {

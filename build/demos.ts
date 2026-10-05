@@ -27,13 +27,14 @@ const PROJECT_NAME = 'Interactive Alice';
 /**
  * Which Alice the visitor chose, and which drawing (docs/art-trials.md), applied
  * before first paint so the figures never flash the other one. The keys are the
- * demos' own; the pickers on the index write them. Flat drawing and the yellow
- * Alice are the defaults and set nothing.
+ * demos' own; the pickers on the index write them. The engraved drawing and the
+ * yellow Alice are the defaults and set nothing; so does any other stored value,
+ * such as the trial's `baked`, which was the engraved pictures.
  */
 const ALICE_SCRIPT =
   '<script>try{var d=document.documentElement,a=localStorage.getItem("alice-demos:alice"),' +
   'r=localStorage.getItem("alice-demos:art");if(a==="blue")d.dataset.alice=a;' +
-  'if(r==="engraved"||r==="paper"||r==="baked")d.dataset.art=r}catch(e){}</script>';
+  'if(r==="flat"||r==="paper")d.dataset.art=r}catch(e){}</script>';
 
 /** Order the index lists them in, and the order "next scene" follows. */
 export const DEMO_ORDER = [
@@ -248,8 +249,6 @@ const UI_FOR_SCRIPT = [
   'demoArtEngravedNote',
   'demoArtPaper',
   'demoArtPaperNote',
-  'demoArtBaked',
-  'demoArtBakedNote',
   'demoGrabJar',
   'demoJarTucked',
   'demoPinch',
@@ -346,7 +345,7 @@ function renderDemo(project: DemoProject, demo: ExperienceConceptDemoFile): stri
     <script type="module" src="${root}demos/${demo.id}/main.ts"></script>
     <script type="application/json" id="demo-ui">${escapeHtml(JSON.stringify(forScript)).replace(/&quot;/g, '"')}</script>
   </head>
-  <body class="demo-body" data-demo="${demo.id}">
+  <body class="demo-body" data-demo="${demo.id}"${demo.ground ? ` data-ground="${demo.ground}"` : ''}>
     <main class="demo demo--${demo.id}" id="demo" data-demo="${demo.id}">
       <header class="demo__bar">
         <a class="demo__back" href="../">${escapeHtml(ui.demoBack)}</a>
@@ -408,12 +407,11 @@ const ART_PREVIEW = 'white-rabbit/herald';
 export const pageRelativeArt = (html: string, root: string): string =>
   html.replace(/file:\/\/[^"]*?\/src\/assets\//g, `${root}assets/`);
 
-/** The drawing trial's choices, in the order the index offers them. */
+/** How the figures can be drawn, in the order the index offers them: the default first. */
 const ART_CHOICES = [
-  ['flat', 'demoArtFlat', 'demoArtFlatNote'],
   ['engraved', 'demoArtEngraved', 'demoArtEngravedNote'],
+  ['flat', 'demoArtFlat', 'demoArtFlatNote'],
   ['paper', 'demoArtPaper', 'demoArtPaperNote'],
-  ['baked', 'demoArtBaked', 'demoArtBakedNote'],
 ] as const;
 
 function renderIndex(project: DemoProject): string {
@@ -466,7 +464,7 @@ function renderIndex(project: DemoProject): string {
         <legend class="demos__alice-title">${escapeHtml(ui.demoArtTitle)}</legend>
 ${ART_CHOICES.map(
   ([style, name, note]) =>
-    `        <button class="demos__alice-choice demos__art-choice" type="button" data-art-style="${style}" aria-pressed="${style === 'flat'}">
+    `        <button class="demos__alice-choice demos__art-choice" type="button" data-art-style="${style}" aria-pressed="${style === 'engraved'}">
           <span class="demos__art-figure" data-art-style="${style}" aria-hidden="true">${pageRelativeArt(figure(ART_PREVIEW, '', style), root)}</span>
           <span class="demos__alice-name">${escapeHtml(ui[name])}</span>
           <span class="demos__alice-note">${escapeHtml(ui[note])}</span>

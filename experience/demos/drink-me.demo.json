@@ -1,6 +1,7 @@
 {
   "id": "drink-me",
   "titleChapter": 1,
+  "ground": "dark",
   "titleSection": "drink-me",
   "joinsPrevious": true,
   "shots": [

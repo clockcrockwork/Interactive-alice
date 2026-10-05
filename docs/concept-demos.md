@@ -138,9 +138,12 @@ page's `data-alice` showing one), `svgFigure()` for a figure placed inside anoth
 SVG (an `<image>` per variant), and `loadArtImage()` for a Canvas, which draws its
 own vector stand-in until an image is registered. Alice's two looks come from tokens
 for vectors and from a file per variant for images; the picker changes nothing else.
-The index also offers a trial of drawing treatments for the same figures (flat, engraved,
-cut paper, and baked pictures that exercise this image path), with their cost: see
-[`art-trials.md`](art-trials.md).
+The figures are drawn **engraved**, the look chosen after a trial of treatments, and it
+is delivered through this image path: baked pictures where a figure has one, cut-outs
+(one picture per moving part) where a demo moves its parts, and the engraved filter at
+runtime only for what is left; a demo on a dark ground (`"ground": "dark"` in its file)
+gives its figures a paper rim. The index still offers flat and cut paper for now. The
+decision, its reasons and what remains open: [`art-trials.md`](art-trials.md).
 
 **One Cat, one pair of hands.** A figure that appears in more than one demo is
 drawn once. The Cheshire Cat's face (`catFace()` in `art/vectors.ts`: ears, face,

@@ -88,25 +88,38 @@ describe('the concept-demo pages', () => {
     }
   });
 
-  it('applies the remembered drawing before first paint and offers the four, flat pressed', () => {
+  it('applies the remembered drawing before first paint and offers the three, engraved pressed', () => {
     for (const page of pages) {
       expect(page.html, page.path).toContain('localStorage.getItem("alice-demos:art")');
+      // Only flat and cut paper are written to the root; engraved, and the trial's
+      // old `baked`, leave it absent, which is engraved.
+      expect(page.html, page.path).toContain('if(r==="flat"||r==="paper")d.dataset.art=r');
+      expect(page.html, page.path).not.toContain('"baked"');
     }
     const index = pages.find((page) => page.path === 'demos/index.html')?.html ?? '';
     const styles = [
       ...index.matchAll(/<button[^>]*data-art-style="([a-z]+)" aria-pressed="(\w+)"/g),
     ];
     expect(styles.map((match) => [match[1], match[2]])).toEqual([
-      ['flat', 'true'],
-      ['engraved', 'false'],
+      ['engraved', 'true'],
+      ['flat', 'false'],
       ['paper', 'false'],
-      ['baked', 'false'],
     ]);
-    // The pictures preview carries its baked image, relative to the page, never a file URL.
+    // The engraved preview carries its baked image, relative to the page, never a file URL.
     expect(index).toMatch(
       /<img class="art__image art__image--baked"[^>]*src="\.\.\/\.\.\/assets\/images\/figures\//,
     );
     expect(index).not.toContain('file:');
+  });
+
+  it('marks a dark ground on the page when the demo file says so', () => {
+    for (const demo of project.demos) {
+      const page = pages.find((candidate) => candidate.path === `demos/${demo.id}/index.html`);
+      const body = page?.html.match(/<body[^>]*>/)?.[0] ?? '';
+      expect(body.includes('data-ground="dark"'), demo.id).toBe(demo.ground === 'dark');
+    }
+    const dark = project.demos.filter((demo) => demo.ground === 'dark').map((demo) => demo.id);
+    expect(dark).toEqual(expect.arrayContaining(['cheshire-cat', 'witnesses', 'trial']));
   });
 
   it('turns a baked picture file URL into a path relative to the page', () => {

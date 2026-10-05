@@ -5,8 +5,8 @@
       "file": "figures/alice--falling.yellow.webp",
       "what": "Registry figure alice/falling (yellow Alice), engraved treatment, at 2x its 120x200 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 12010
     },
@@ -14,8 +14,8 @@
       "file": "figures/alice--falling.blue.webp",
       "what": "Registry figure alice/falling (blue Alice), engraved treatment, at 2x its 120x200 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 13250
     },
@@ -23,8 +23,8 @@
       "file": "figures/alice--running-away.yellow.webp",
       "what": "Registry figure alice/running-away (yellow Alice), engraved treatment, at 2x its 120x220 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 17088
     },
@@ -32,8 +32,8 @@
       "file": "figures/alice--running-away.blue.webp",
       "what": "Registry figure alice/running-away (blue Alice), engraved treatment, at 2x its 120x220 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 17118
     },
@@ -41,8 +41,8 @@
       "file": "figures/alice--from-behind.yellow.webp",
       "what": "Registry figure alice/from-behind (yellow Alice), engraved treatment, at 2x its 120x220 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 19564
     },
@@ -50,8 +50,8 @@
       "file": "figures/alice--from-behind.blue.webp",
       "what": "Registry figure alice/from-behind (blue Alice), engraved treatment, at 2x its 120x220 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 20998
     },
@@ -59,8 +59,8 @@
       "file": "figures/alice--looking-down.yellow.webp",
       "what": "Registry figure alice/looking-down (yellow Alice), engraved treatment, at 2x its 400x220 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 15658
     },
@@ -68,8 +68,8 @@
       "file": "figures/alice--looking-down.blue.webp",
       "what": "Registry figure alice/looking-down (blue Alice), engraved treatment, at 2x its 400x220 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 23704
     },
@@ -77,8 +77,8 @@
       "file": "figures/alice--foot.yellow.webp",
       "what": "Registry figure alice/foot (yellow Alice), engraved treatment, at 2x its 200x260 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 5388
     },
@@ -86,8 +86,8 @@
       "file": "figures/alice--foot.blue.webp",
       "what": "Registry figure alice/foot (blue Alice), engraved treatment, at 2x its 200x260 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 5386
     },
@@ -95,8 +95,8 @@
       "file": "figures/alice--hand-left.yellow.webp",
       "what": "Registry figure alice/hand-left (yellow Alice), engraved treatment, at 2x its 120x200 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 10464
     },
@@ -104,8 +104,8 @@
       "file": "figures/alice--hand-left.blue.webp",
       "what": "Registry figure alice/hand-left (blue Alice), engraved treatment, at 2x its 120x200 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 12012
     },
@@ -113,8 +113,8 @@
       "file": "figures/alice--hand-right.yellow.webp",
       "what": "Registry figure alice/hand-right (yellow Alice), engraved treatment, at 2x its 120x200 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 10394
     },
@@ -122,8 +122,8 @@
       "file": "figures/alice--hand-right.blue.webp",
       "what": "Registry figure alice/hand-right (blue Alice), engraved treatment, at 2x its 120x200 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 11872
     },
@@ -131,8 +131,8 @@
       "file": "figures/alice--standing.yellow.webp",
       "what": "Registry figure alice/standing (yellow Alice), engraved treatment, at 2x its 80x110 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 7374
     },
@@ -140,8 +140,8 @@
       "file": "figures/alice--standing.blue.webp",
       "what": "Registry figure alice/standing (blue Alice), engraved treatment, at 2x its 80x110 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 7940
     },
@@ -149,8 +149,8 @@
       "file": "figures/alice--kneeling.yellow.webp",
       "what": "Registry figure alice/kneeling (yellow Alice), engraved treatment, at 2x its 230x230 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 19026
     },
@@ -158,8 +158,8 @@
       "file": "figures/alice--kneeling.blue.webp",
       "what": "Registry figure alice/kneeling (blue Alice), engraved treatment, at 2x its 230x230 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 19952
     },
@@ -167,8 +167,8 @@
       "file": "figures/alice--filling.yellow.webp",
       "what": "Registry figure alice/filling (yellow Alice), engraved treatment, at 2x its 720x330 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 25716
     },
@@ -176,8 +176,8 @@
       "file": "figures/alice--filling.blue.webp",
       "what": "Registry figure alice/filling (blue Alice), engraved treatment, at 2x its 720x330 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 42490
     },
@@ -185,8 +185,8 @@
       "file": "figures/white-rabbit--herald.any.webp",
       "what": "Registry figure white-rabbit/herald, engraved treatment, at 2x its 140x220 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 13324
     },
@@ -194,8 +194,8 @@
       "file": "figures/white-rabbit--garden.any.webp",
       "what": "Registry figure white-rabbit/garden, engraved treatment, at 2x its 60x80 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 3696
     },
@@ -203,8 +203,8 @@
       "file": "figures/queen-of-hearts.any.webp",
       "what": "Registry figure queen-of-hearts, engraved treatment, at 2x its 160x240 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 26726
     },
@@ -212,8 +212,8 @@
       "file": "figures/king-of-hearts.any.webp",
       "what": "Registry figure king-of-hearts, engraved treatment, at 2x its 160x240 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 17920
     },
@@ -221,8 +221,8 @@
       "file": "figures/knave-of-hearts.any.webp",
       "what": "Registry figure knave-of-hearts, engraved treatment, at 2x its 140x220 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 11240
     },
@@ -230,8 +230,8 @@
       "file": "figures/card-soldier.any.webp",
       "what": "Registry figure card-soldier, engraved treatment, at 2x its 120x220 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 9028
     },
@@ -239,8 +239,8 @@
       "file": "figures/card-arch.any.webp",
       "what": "Registry figure card-arch, engraved treatment, at 2x its 200x140 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 9388
     },
@@ -248,8 +248,8 @@
       "file": "figures/duchess.any.webp",
       "what": "Registry figure duchess, engraved treatment, at 2x its 240x260 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 25576
     },
@@ -257,8 +257,8 @@
       "file": "figures/cook.any.webp",
       "what": "Registry figure cook, engraved treatment, at 2x its 200x260 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 13412
     },
@@ -266,8 +266,8 @@
       "file": "figures/march-hare.any.webp",
       "what": "Registry figure march-hare, engraved treatment, at 2x its 160x260 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 17818
     },
@@ -275,8 +275,8 @@
       "file": "figures/dormouse.any.webp",
       "what": "Registry figure dormouse, engraved treatment, at 2x its 140x110 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 8174
     },
@@ -284,8 +284,8 @@
       "file": "figures/mock-turtle.any.webp",
       "what": "Registry figure mock-turtle, engraved treatment, at 2x its 240x220 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 28834
     },
@@ -293,8 +293,8 @@
       "file": "figures/gryphon.any.webp",
       "what": "Registry figure gryphon, engraved treatment, at 2x its 240x220 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 24082
     },
@@ -302,8 +302,8 @@
       "file": "figures/lobster.any.webp",
       "what": "Registry figure lobster, engraved treatment, at 2x its 160x120 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 16236
     },
@@ -311,8 +311,8 @@
       "file": "figures/alices-sister.any.webp",
       "what": "Registry figure alices-sister, engraved treatment, at 2x its 300x200 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 14284
     },
@@ -320,8 +320,8 @@
       "file": "figures/bill.any.webp",
       "what": "Registry figure bill, engraved treatment, at 2x its 120x100 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 5876
     },
@@ -329,8 +329,8 @@
       "file": "figures/guinea-pigs.any.webp",
       "what": "Registry figure guinea-pigs, engraved treatment, at 2x its 400x120 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 7816
     },
@@ -338,8 +338,8 @@
       "file": "figures/rose-tree.any.webp",
       "what": "Registry figure rose-tree, engraved treatment, at 2x its 320x360 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
       "bytes": 32182
     },
@@ -347,10 +347,280 @@
       "file": "figures/mushroom.any.webp",
       "what": "Registry figure mushroom, engraved treatment, at 2x its 400x320 box.",
       "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
-      "intent": "Prove the raster cut-out path of the art registry and measure its cost, with the drawing the project already owns.",
-      "date": "2026-10-04",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
       "edits": "none",
-      "bytes": 52134
+      "bytes": 44772
+    },
+    {
+      "file": "figures/hedgehog.any.webp",
+      "what": "Registry figure hedgehog, engraved treatment, at 2x its 140x110 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 12338
+    },
+    {
+      "file": "figures/pig-baby.any.webp",
+      "what": "Registry figure pig-baby, engraved treatment, at 2x its 200x200 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 15398
+    },
+    {
+      "file": "figures/pig--trotting.any.webp",
+      "what": "Registry figure pig/trotting, engraved treatment, at 2x its 200x140 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 10502
+    },
+    {
+      "file": "figures/crab.any.webp",
+      "what": "Registry figure crab, engraved treatment, at 2x its 200x120 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 17424
+    },
+    {
+      "file": "figures/conger-eel.any.webp",
+      "what": "Registry figure conger-eel, engraved treatment, at 2x its 300x200 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 24388
+    },
+    {
+      "file": "figures/dancer--seal.any.webp",
+      "what": "Registry figure dancer/seal, engraved treatment, at 2x its 140x140 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 6842
+    },
+    {
+      "file": "figures/dancer--turtle.any.webp",
+      "what": "Registry figure dancer/turtle, engraved treatment, at 2x its 140x140 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 10118
+    },
+    {
+      "file": "figures/dancer--salmon.any.webp",
+      "what": "Registry figure dancer/salmon, engraved treatment, at 2x its 140x140 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 4826
+    },
+    {
+      "file": "figures/dancer--whiting.any.webp",
+      "what": "Registry figure dancer/whiting, engraved treatment, at 2x its 140x140 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 5062
+    },
+    {
+      "file": "figures/dancer--snail.any.webp",
+      "what": "Registry figure dancer/snail, engraved treatment, at 2x its 140x140 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 8380
+    },
+    {
+      "file": "figures/dancer--porpoise.any.webp",
+      "what": "Registry figure dancer/porpoise, engraved treatment, at 2x its 140x140 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 8272
+    },
+    {
+      "file": "figures/flamingo~base.yellow.webp",
+      "what": "Registry figure flamingo, without its moving parts (yellow Alice), engraved treatment, at 2x its 300x420 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 5350
+    },
+    {
+      "file": "figures/flamingo~base.blue.webp",
+      "what": "Registry figure flamingo, without its moving parts (blue Alice), engraved treatment, at 2x its 300x420 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 19766
+    },
+    {
+      "file": "figures/flamingo~cq__flamingo-body.any.webp",
+      "what": "Registry figure flamingo, its part .cq__flamingo-body, engraved treatment, at 2x its 300x420 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 15362
+    },
+    {
+      "file": "figures/flamingo~cq__flamingo-head.any.webp",
+      "what": "Registry figure flamingo, its part .cq__flamingo-head, engraved treatment, at 2x its 300x420 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 5194
+    },
+    {
+      "file": "figures/hedgehog~base.any.webp",
+      "what": "Registry figure hedgehog, without its moving parts, engraved treatment, at 2x its 140x110 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 684
+    },
+    {
+      "file": "figures/hedgehog~cq__hedgehog-ball.any.webp",
+      "what": "Registry figure hedgehog, its part .cq__hedgehog-ball, engraved treatment, at 2x its 140x110 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 9860
+    },
+    {
+      "file": "figures/hedgehog~cq__hedgehog-walk.any.webp",
+      "what": "Registry figure hedgehog, its part .cq__hedgehog-walk, engraved treatment, at 2x its 140x110 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 9166
+    },
+    {
+      "file": "figures/gardener--two~base.any.webp",
+      "what": "Registry figure gardener/two, without its moving parts, engraved treatment, at 2x its 120x220 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 6114
+    },
+    {
+      "file": "figures/gardener--two~cq__brush.any.webp",
+      "what": "Registry figure gardener/two, its part .cq__brush, engraved treatment, at 2x its 120x220 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 1874
+    },
+    {
+      "file": "figures/gardener--five~base.any.webp",
+      "what": "Registry figure gardener/five, without its moving parts, engraved treatment, at 2x its 120x220 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 7228
+    },
+    {
+      "file": "figures/gardener--five~cq__brush.any.webp",
+      "what": "Registry figure gardener/five, its part .cq__brush, engraved treatment, at 2x its 120x220 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 1874
+    },
+    {
+      "file": "figures/gardener--seven~base.any.webp",
+      "what": "Registry figure gardener/seven, without its moving parts, engraved treatment, at 2x its 120x220 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 7964
+    },
+    {
+      "file": "figures/gardener--seven~cq__brush.any.webp",
+      "what": "Registry figure gardener/seven, its part .cq__brush, engraved treatment, at 2x its 120x220 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 1874
+    },
+    {
+      "file": "figures/hatter~base.any.webp",
+      "what": "Registry figure hatter, without its moving parts, engraved treatment, at 2x its 160x260 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 20378
+    },
+    {
+      "file": "figures/hatter~hatter__hat.any.webp",
+      "what": "Registry figure hatter, its part .hatter__hat, engraved treatment, at 2x its 160x260 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 8464
+    },
+    {
+      "file": "figures/guinea-pig~base.any.webp",
+      "what": "Registry figure guinea-pig, without its moving parts, engraved treatment, at 2x its 120x104 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 6298
+    },
+    {
+      "file": "figures/guinea-pig~guinea-pig__paw.any.webp",
+      "what": "Registry figure guinea-pig, its part .guinea-pig__paw, engraved treatment, at 2x its 120x104 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 1634
+    },
+    {
+      "file": "figures/tortoise-master~base.any.webp",
+      "what": "Registry figure tortoise-master, without its moving parts, engraved treatment, at 2x its 200x240 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 25024
+    },
+    {
+      "file": "figures/tortoise-master~art__cane.any.webp",
+      "what": "Registry figure tortoise-master, its part .art__cane, engraved treatment, at 2x its 200x240 box.",
+      "generator": "none: rendered by scripts/bake-art.mjs in headless Chromium from the project’s own vector in src/demos/art/vectors.ts",
+      "intent": "Deliver the engraved look as pictures, with the drawing the project already owns, so it costs nothing at runtime.",
+      "date": "2026-10-05",
+      "edits": "none",
+      "bytes": 4942
     }
   ]
 }

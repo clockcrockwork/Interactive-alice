@@ -1,6 +1,7 @@
 {
   "id": "cheshire-cat",
   "titleChapter": 6,
+  "ground": "dark",
   "titleSection": "cheshire-puss",
   "joinsPrevious": true,
   "shots": [

@@ -1,6 +1,7 @@
 {
   "id": "trial",
   "titleChapter": 12,
+  "ground": "dark",
   "joinsPrevious": true,
   "shots": [
     {

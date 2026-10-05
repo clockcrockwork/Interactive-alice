@@ -1,25 +1,29 @@
 /**
- * The drawing treatments the index offers as a trial (docs/art-trials.md): the same
- * registry figures drawn flat (as they are), as an engraved plate, as cut paper, or
- * as baked pictures. The visitor's choice is `data-art` on the root, applied before
- * first paint by the head script beside `data-alice`.
+ * How the registry's figures are drawn (docs/art-trials.md). Engraved is the chosen
+ * look and the default: an old book's engraved plate, delivered as pictures baked
+ * through the engraved filter ahead of time (scripts/bake-art.mjs), with the same
+ * filter applied at runtime only to the figures that could not be baked. Flat (the
+ * vectors as drawn) and cut paper stay selectable on the index for now. The
+ * visitor's choice is `data-art` on the root, applied before first paint by the
+ * head script beside `data-alice`; engraved sets nothing.
  *
- * Engraved and cut paper are SVG filters defined once per page and applied by
- * art.css to the drawing inside each figure box; baked needs no filter at all, its
- * images were rendered through the engraved filter ahead of time (scripts/bake-art.mjs),
- * and only the figures it could not bake are filtered at runtime.
+ * Engraved, the paper rim of dark grounds, and cut paper are SVG filters defined
+ * once per page and applied by art.css to the drawing inside each figure box.
  * Every colour a filter paints is a token, set from art.css on the flood primitives.
  */
 
-export const ART_STYLES = ['flat', 'engraved', 'paper', 'baked'] as const;
+export const ART_STYLES = ['engraved', 'flat', 'paper'] as const;
 export type ArtStyle = (typeof ART_STYLES)[number];
 
 /** Where the choice is remembered; the demos' own localStorage namespace. */
 export const ART_KEY = 'alice-demos:art';
 
-/** A stored or attribute value as a style, flat for anything unknown. */
+/**
+ * A stored or attribute value as a style. Anything else is engraved: no value, an
+ * unknown one, and `baked`, the trial's name for the engraved pictures.
+ */
 export const parseArtStyle = (value: string | null | undefined): ArtStyle =>
-  ART_STYLES.find((style) => style === value) ?? 'flat';
+  ART_STYLES.find((style) => style === value) ?? 'engraved';
 
 /** The style the page is showing: the head script set it before first paint. */
 export const artStyle = (): ArtStyle => parseArtStyle(document.documentElement.dataset.art);
@@ -103,6 +107,19 @@ const PAPER_FILTER = `<filter id="art-paper" x="-6%" y="-6%" width="116%" height
   <feMerge><feMergeNode in="shadow"/><feMergeNode in="rim"/><feMergeNode in="grained"/></feMerge>
 </filter>`;
 
+/**
+ * A paper rim round the whole figure, for a dark ground (`data-ground="dark"` on the
+ * page): the shape grown by a pixel and a half and filled with the paper, under the
+ * figure, so a hatched figure keeps its edge against the night wood or the court's
+ * red. Applied after the engraving, or alone on a baked picture.
+ */
+const RIM_FILTER = `<filter id="art-rim" x="-6%" y="-6%" width="112%" height="112%" color-interpolation-filters="sRGB">
+  <feMorphology in="SourceAlpha" operator="dilate" radius="1.5" result="rim-shape"/>
+  <feFlood class="art-fx-rim" result="rim-colour"/>
+  <feComposite in="rim-colour" in2="rim-shape" operator="in" result="rim"/>
+  <feMerge><feMergeNode in="rim"/><feMergeNode in="SourceGraphic"/></feMerge>
+</filter>`;
+
 /** Engraving settings: Alice keeps more of her own colours than Wonderland does. */
 export const ENGRAVINGS: readonly Engraving[] = [
   { id: 'art-engraved', tint: 0.6, hatch: [0.4, 0.6, 0.8] },
@@ -111,12 +128,11 @@ export const ENGRAVINGS: readonly Engraving[] = [
 
 /** The filter definitions as one hidden SVG, for a page or for the bake script. */
 export const artFilterDefs = (): string =>
-  `<svg class="art-defs" aria-hidden="true" focusable="false" width="0" height="0"><defs>${ENGRAVINGS.map(engravedFilter).join('')}${PAPER_FILTER}</defs></svg>`;
+  `<svg class="art-defs" aria-hidden="true" focusable="false" width="0" height="0"><defs>${ENGRAVINGS.map(engravedFilter).join('')}${RIM_FILTER}${PAPER_FILTER}</defs></svg>`;
 
 /**
- * Puts the filters on the page once, when a style that uses them is chosen (the
- * pictures style uses the engraving for the figures it could not bake), or always,
- * where the visitor can switch styles live. A flat page is left exactly as it was.
+ * Puts the filters on the page once, unless the page is flat, or always, where the
+ * visitor can switch styles live. A flat page is left exactly as it was.
  */
 export function installArtTreatments(always = false): void {
   if (!always && artStyle() === 'flat') {

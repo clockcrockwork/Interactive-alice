@@ -156,6 +156,10 @@ export interface ExperienceConceptDemoFile {
    */
   titleSection?: string;
   /**
+   * Optional: the ground the figures stand on, light when absent. A dark ground (the night wood, the court) gives the engraved figures a paper rim so they keep their edge; see docs/art-trials.md.
+   */
+  ground?: 'light' | 'dark';
+  /**
    * Optional: true when this demo's first frame is the previous demo's last, one moment of the book across two pages (see docs/concept-demos.md, Joins). The index deals such cards over the card before.
    */
   joinsPrevious?: boolean;
@@ -686,11 +690,11 @@ export interface LocaleUIStrings {
      */
     demoStruck: string;
     /**
-     * Index: heading of the art-style trial picker.
+     * Index: heading of the picker of how the figures are drawn (engraved, the default; flat; cut paper).
      */
     demoArtTitle: string;
     /**
-     * Index: art style, the figures as drawn now.
+     * Index: art style, the figures in flat tints, as first drawn.
      */
     demoArtFlat: string;
     /**
@@ -698,7 +702,7 @@ export interface LocaleUIStrings {
      */
     demoArtFlatNote: string;
     /**
-     * Index: art style, ink line and hatching.
+     * Index: art style, ink line and hatching; the chosen look and the default.
      */
     demoArtEngraved: string;
     /**
@@ -713,14 +717,6 @@ export interface LocaleUIStrings {
      * Index: note under the cut-paper art style.
      */
     demoArtPaperNote: string;
-    /**
-     * Index: art style, the figures as transparent images.
-     */
-    demoArtBaked: string;
-    /**
-     * Index: note under the baked-image art style.
-     */
-    demoArtBakedNote: string;
     /**
      * Toggle at the end of a demo: when on, the page goes to the next scene by itself after a pause at the end.
      */

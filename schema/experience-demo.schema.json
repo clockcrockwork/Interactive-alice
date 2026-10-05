@@ -79,6 +79,13 @@
       "pattern": "^[a-z0-9-]+$",
       "description": "Optional: a story section of titleChapter whose localized title names this demo instead of the chapter's, for a second demo drawn from the same chapter."
     },
+    "ground": {
+      "enum": [
+        "light",
+        "dark"
+      ],
+      "description": "Optional: the ground the figures stand on, light when absent. A dark ground (the night wood, the court) gives the engraved figures a paper rim so they keep their edge; see docs/art-trials.md."
+    },
     "joinsPrevious": {
       "type": "boolean",
       "description": "Optional: true when this demo's first frame is the previous demo's last, one moment of the book across two pages (see docs/concept-demos.md, Joins). The index deals such cards over the card before."

@@ -7,7 +7,7 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -144,6 +144,46 @@ describe('the gate enforces the language standard', () => {
     const missing = check(dir, 'check-text.py');
     expect(missing.status).toBe(1);
     expect(missing.output).toContain(`${translation}/realia.json is missing`);
+  });
+
+  it('fails when a locale writes yes and no with the same mark', () => {
+    const dir = fixture();
+    const path = join(dir, 'text', 'locales', registry.baseLocale, 'realia.json');
+    const file = readJson<{ realia: { marks: { yes: string; no: string } } }>(path);
+    file.realia.marks.no = file.realia.marks.yes;
+    writeFileSync(path, JSON.stringify(file));
+    const result = check(dir, 'check-text.py');
+    expect(result.status).toBe(1);
+    expect(result.output).toContain('marks: yes and no are both');
+  });
+
+  it('fails when a demo writes italic itself instead of the shell’s speech tokens', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'alice-frontend-'));
+    scratch.push(dir);
+    cpSync(join(root, 'scripts', 'check-frontend.py'), join(dir, 'scripts', 'check-frontend.py'));
+    cpSync(join(root, 'text', 'locales.json'), join(dir, 'text', 'locales.json'));
+    cpSync(join(root, 'experience', 'scenes'), join(dir, 'experience', 'scenes'), {
+      recursive: true,
+    });
+    for (const file of ['.nvmrc', 'package.json']) {
+      cpSync(join(root, file), join(dir, file));
+    }
+    mkdirSync(join(dir, 'src', 'demos', 'example'), { recursive: true });
+    const sheet = join(dir, 'src', 'demos', 'example', 'example.css');
+    cpSync(
+      join(root, 'src', 'demos', 'shell', 'shell.css'),
+      join(dir, 'src', 'demos', 'shell', 'shell.css'),
+    );
+    writeFileSync(sheet, '.demo--example .line[data-speaker="cat"] {\n  font-style: italic;\n}\n');
+    const slanted = check(dir, 'check-frontend.py');
+    expect(slanted.status).toBe(1);
+    expect(slanted.output).toContain('example.css:2: [locale-profile]');
+    writeFileSync(
+      sheet,
+      '.demo--example .line[data-speaker="cat"] {\n  --demo-say-style: italic;\n}\n' +
+        '.demo--example .ribbon {\n  font-style: var(--demo-italic);\n}\n',
+    );
+    expect(check(dir, 'check-frontend.py').status).toBe(0);
   });
 
   it('fails when the locale profile is incomplete', () => {

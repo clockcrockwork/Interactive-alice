@@ -129,25 +129,29 @@ that locale's `ui.json`.
   entries onto the page as `data-realia` and the stage reads them with
   `shell.realia(id)`. The Cat's *pig, or fig?* (`cat-mishearing`: a lid where the
   rhyme for pig is a lid), the things the Dormouse's sisters drew in the order the
-  sentence lists them (`m-things`), and the measure the Caterpillar's tape reads in
-  (`height`: inches, or fingers). No demo file names a locale.
+  sentence lists them (`m-things`), the measure the Caterpillar's tape reads in
+  (`height`: inches, or fingers), and the marks the jury writes on its slates for yes
+  and no (`marks`: a tick and a cross, or a circle and a cross where a tick reads as
+  wrong). No demo file names a locale.
 
 **Typography keyed on the profile, not the language.** Captions are the same paper
 slips in every language. What differs is read from the root's profile:
 `data-significant-spaces="true"` breaks lines only at the authored spaces
 (`word-break: keep-all`, with `overflow-wrap: anywhere` so an over-long run breaks
 rather than overflows) and the registry's `lineBreak` sets the kinsoku strictness;
-`data-glyph-width="full"` sets a slightly smaller caption size, line-height 1.7, a
-little letter-spacing and a smaller phone bar; `data-emphasis="slip"` forbids a
-synthesised italic (`font-synthesis-style: none`) and stands speech and thought on a
-warmer slip (`--demo-slip-say`) in the softer ink instead of slanting. The font
+`data-glyph-width="full"` sets a slightly smaller caption size, line-height 1.7 and a
+little letter-spacing; `data-emphasis="slip"` forbids a synthesised italic
+(`font-synthesis-style: none`), sets no line in italic whatever its speaker asks, and
+stands speech and thought on a warmer slip (`--demo-slip-say`) in the softer ink
+instead of slanting. The font
 stacks are the one thing set per script, in one `:lang()` rule in `shell.css`'s
 tokens: Japanese is set in the reader's own system fonts (no web font, so no bytes),
 a textbook face where the system has one (UD Digi Kyokasho), else a Mincho
 (Hiragino, Yu, Noto Serif CJK, IPA), as `--demo-serif`, and the display face
-(`--demo-display`, Georgia for Latin) falls back to it. On a phone, in any language, a
-bar label that does not fit breaks where its language allows inside its own pill, so
-the bar stays one row.
+(`--demo-display`, Georgia for Latin) falls back to it. On a phone, in any language,
+the bar keeps its labels at the chrome's floor and wraps to a second row when they do
+not fit one (§3). A quoted run in a caption is held on one line, so a name set apart
+such as the Caucus-race's never breaks inside its brackets.
 
 **Reading words out of the page, in any script.** Every place a demo takes something
 from its sentences reads it by punctuation and case, by the methods the page's
@@ -261,6 +265,17 @@ Captions have a default behaviour (fade in over a beat's first third, out over i
 last sixth, the last beat holds) and a demo may take a beat over: the rabbit hole
 makes its captions fly up out of the depth.
 
+**Captions fit their frame.** A beat's stack of slips must lie between the bar and the
+frame's foot in every language and at every width. The shell measures each stack where
+its demo placed it and, where it does not fit, steps its slips down a size, then
+another, then tightens their leading, then moves the stack inside the frame; a stack
+placed from the edge it crosses keeps its size and is moved, and is set smaller only
+where the move alone cannot fit it. A beat may name a narrower
+band to stay clear of a figure (`--demo-fit-top`, `--demo-fit-foot`), and a demo whose
+captions move by themselves keeps them further in (`--demo-fit-margin`). What still does
+not fit is reported, as `data-fit="over"`, a console warning and the seam's
+`captionFit()`, never clipped in silence ([`text-experience-binding.md`](text-experience-binding.md) §9.6).
+
 Motion that runs by itself (dust, breathing, drips, trembling cards) goes on the
 shell's `ambient` timeline or on a CSS animation gated by `[data-paused]`, so the
 one **Pause motion** button stops all of it; scroll-driven motion is the visitor's
@@ -278,8 +293,11 @@ the first frame, and each demo substitutes a designed still version for each eff
 **Captions are slips of paper.** Every sentence is set on its own slip of the book's
 paper (`--demo-slip`), in ink, so it reads the same over a night wood, a red court or
 a paper sky; the measured contrast no longer depends on the picture behind it.
-Speech and thought are in italic and a softer ink (`--demo-say`; in Japanese a warmer
-slip instead of the italic, §1 Locales), the court and its
+Speech and thought are marked and in a softer ink (`--demo-say`): in italic where the
+profile's emphasis is italic, on a warmer slip where it is a slip (§1 Locales). A demo
+marks a speaker, or narration it sets apart, with `--demo-say-style`, and draws a word
+in italic with `var(--demo-italic)`; only the shell turns either into a font style, so
+no demo can slant a line on a page whose script has no italic. The court and its
 Rabbit speak in Wonderland red (`--demo-say-red`), and Alice's own lines carry her
 dress colour as a mark at the start, so either Alice is recognised in her own words.
 A demo may restyle a speaker (the Dormouse's and the tea-table's speech bubbles), but
@@ -326,8 +344,12 @@ shown; it is the reader's record of having played, not a score.
 reader did is a small slip at the foot of the frame, under the captions and clear of
 the props at the top; it shows for a few seconds and then fades, keeping its text for
 assistive technology, and it speaks only for what the reader did, never for what the
-story does by itself. On a phone the bar stays one row: smaller type, tighter
-buttons, the title kept for assistive technology only. Under reduced motion each
+story does by itself. Every pill in the bar is at least a 24-by-24 pixel target with
+a label of 12 pixels or more (the pause control is one of them); on a phone the title
+is kept for assistive technology only, and when the pills do not fit one row at that
+size the bar wraps to a second row, in any language, rather than shrink them. The
+shell measures the bar and writes its height as `--demo-bar-height`, so the props and
+captions placed under the bar move down with it. Under reduced motion each
 beat's sentences are there for the whole of the beat: their cut is placed just
 before the head rather than just after it.
 
@@ -349,7 +371,13 @@ visitor turns sound on, and are held while motion is paused.
 
 `window.__aliceDemo` is the test seam: progress, active beat, paused, reduced, a
 per-demo `mode` (the rabbit hole reports `webgl` or `flat`), and the page's locale,
-its profile as the shell read it, and the realia it carries, all serialisable.
+its profile as the shell read it, and the realia it carries, all serialisable; the
+last caption fit step each beat needed (`captionFit()`); and `seek(progress)`, which
+scrolls to a progress and lands the scrubbed timeline there at once. `settled()`
+counts a timeline within a hair of the scroll as settled once its ease has ended or
+it has held still for three frames, and the browser helper that waits on it lands a
+crawling ease through `seek` after a few seconds, so a loaded machine is slower, never
+a timeout.
 
 The shell also hands every demo the page's **locale profile** (`shell.profile`),
 number formatting in its locale (`shell.locale.numberFormat()`) and its **realia**
@@ -470,6 +498,8 @@ CSS rings that scale with the fall, the page says so, and the seam reports `flat
 
 **Looking at a map.** While the shelves pass, from *Maps and pictures hung on little pegs* to the cupboard she tucks the jar into, a map on the wall can be looked at: tap one, or press *Look at the map*, and it comes up close and holds still in front, drawn large, a sea with waves, two coasts, a river, hills, a dotted route to a mark and a compass rose, pictures only, while the well goes on falling behind it. *Look away*, a tap on the map, or scrolling out of those beats in either direction puts it back on the wall, with a rustle of paper each way; it works the same over the flat well. Under reduced motion the map fades in and out in place, with no zoom.
 
+A sentence leaving flies up as well as out, so a slip growing as it nears the camera keeps the stack's foot inside the frame.
+
 ### Drink Me: scale is the parallax
 
 The hall of doors is a round room in CSS 3D: a checkered floor, a ceiling with the
@@ -536,6 +566,8 @@ left in the join.
 
 **Peeking behind the curtain.** From the beat where she sees the low curtain until the key beat finds the door, the curtain can be lifted early: tap or hold the curtain, rest a mouse on it, or press *Peek behind the curtain*. Alice steps closer and stoops, the curtain gathers up with a paper rustle and a sway, and the little door shows with the garden's light glowing through its keyhole; it drops back a moment after it is let go, or the instant the scroll moves to another beat. Pressing the button again keeps it up, and pressing once more drops it. The story lifts the curtain itself when the key fits, and from then on the peek does nothing: the two lifts are separate numbers and the story's always wins, so finding the door early changes nothing about how the story finds it. Under reduced motion the curtain and the stoop are cuts with a short fade, with no sway and no glow animation.
 
+A label set on two lines breaks after a pause (a comma or a stop) by preference, and never inside a quoted run.
+
 ### The Pool of Tears: the swell is the parallax
 
 A 2D Canvas draws the hall from a giant's eye, with a horizon that climbs as she
@@ -577,6 +609,8 @@ tears is a still under the water, the sentences clear; a tear shed by hand lands
 still with its splash.
 
 **Tilting the water.** While Alice is in the pool the water can be tilted: on desktop the surface leans toward the mouse, and on a phone with *Steer by tilting* on it follows the phone, by up to six degrees. The water stands higher on the low side, the swimmers and the stir rings drift downhill, and the captions tip with the surface; a splash sounds when the slop reaches the edge. *Lean left* and *Lean right* tip it the same way for a couple of seconds and then let it level, so the lean needs neither a mouse nor a tilt sensor, and scrolling never needs it at all. Under reduced motion the water cuts to the leaned angle and back without the slop, and the buttons still work.
+
+Because the captions ride the swell, the pool keeps them further inside the frame (`--demo-fit-margin`), and a stack that is too long in a language, the Mouse's six slips about cats in Japanese, is set smaller by the shell's caption fit rather than run off the foot.
 
 ### A Caucus-Race: rotation is the parallax
 
@@ -660,6 +694,8 @@ last beat tightens on the house front, drawn in the house demo's own tokens and
 markup, until it is the frame the house opens on; the house begins outside, on that
 same front over its garden, and goes in through the door to the room during its first
 beat.
+
+Where the page's spaces are phrase spaces, the tail parts each verse at its commas and splits each part evenly, so the Japanese verses read seven and five down the tail; where they are word spaces the groups are the book's, counted in words. The tail is held to the caption fit budget: it is fitted to the room between where it starts and the buttons at the frame's foot, plus as far as the camera may pan down the bank without taking its first verse, or the Mouse, up under the bar; where its finest groups do not fit, two neighbouring groups of a line stand side by side on one row, and only then is the type set smaller (`layTail`, `chunks.ts`). The camera leads each new verse down rather than following it, and on a narrow frame the two buttons stand side by side at the very foot.
 
 ### Growing in the House: zoom is the parallax
 
@@ -753,6 +789,8 @@ neck holds straight; the Pigeon's wings are spread and do not beat.
 **The strength of the puff.** Hold *Blow a smoke ring*, or press and hold the Caterpillar, and it draws in: the coal of the hookah glows brighter and its body swells for up to a second and a half, and on letting go the ring's size, pace and lifetime follow the hold, from the small quick ring of a tap to a big slow one that hangs low over her and wobbles. The keyboard charges the same way, Space or Enter held on the button; the first time the button appears the status line says *Hold to blow a bigger ring*, and a whoosh scales with the strength when sound is on. Under reduced motion the charge is a step rather than a swell and the ring appears at its final size and fades where it is, without drifting.
 
 **The tape-measure and the leaves.** A paper tape-measure down the frame's left edge (a meter named by `demoHeight`) reads her height as it changes, in the unit the page's sentences use (the locale's realia `height`, its name printed under the reading from `demoHeightUnit`: inches in English, fingers in Japanese, where three inches is ゆび 一本ぶん), with a notch where the text says she stands; landing on exactly three again makes the Caterpillar come up out of the grass and nod. While it asks her to explain herself, it leans in and its smoke comes out as question marks. Above the trees her hands are far below; *Dip into the leaves*, or a drag down from where her neck leaves the frame, takes her head down among them, and the Pigeon bursts up out of them into her face. For the neck beats the captions stand at the top so the shoulders far below are seen. At the end she looks down at her feet, and the mushroom by her shoe is a toy. Under reduced motion the nod is a still, bowed, and the dip is a still of the Pigeon at her face.
+
+The tape has no ticks below zero. On a narrow frame the five slips of *what size* go up under the smoke ring's button, between it and the Caterpillar's head (`--demo-fit-top`, `--demo-fit-foot`).
 
 ### Pig and Pepper: the kitchen comes at you
 
@@ -957,6 +995,8 @@ the blur is lighter; the teapot ending shrinks without spinning; the door's beat
 seen as it ends, the table gone and the tree's door open and near; the bucket is a
 still on the sentence with its drips; a stir is a turn of the cup held for a moment.
 
+On a wide frame the song's column at the right starts below the two buttons that share its corner and grows down, and the watch's dates are written in the page's own numerals.
+
 ### The Queen's Croquet-Ground: a walk across a garden in CSS 3D
 
 A ground of ridges and furrows the camera slides along, in one `perspective`, with
@@ -990,6 +1030,8 @@ flamingo does not look up, so every strike lands; the red flash without the shak
 **The flamingo's mood.** From the beat she first holds it until the game breaks up, the flamingo drifts toward sulking while it is left alone, about twelve seconds from content to sulk: the head turns away from the ball a little more each second and the neck twists, until it looks straight up into her face and no blow is possible; a strike then swings wide, misses the hedgehog, and the status says so once. Draw the pointer along its neck and head, or press *Stroke the flamingo*, and it comes round with a small nod and a chime. The mood holds while the motion is paused, and the story's own looks, the escape and the catch happen at their beats as before. Under reduced motion the mood changes the pose in three cuts, content, wary and sulking, with no continuous twist and no nod.
 
 **By suit, and the head out of reach.** The procession comes by suit: soldiers of clubs carrying clubs, courtiers covered in diamonds, and the royal children with hearts, hand in hand, with the Knave carrying the crown on its crimson cushion. At "And who are these?" the gardeners lie on their faces showing the back of the pack, and *Turn a card over* (or a tap on one) turns it face up. The flamingo stays in her hands, looking up puzzled, for its own sentence, and goes off across the garden while they quarrel. *Stir up the quarrel* (or a tap on the ground) sets the Queen off. The executioner swings his axe through the empty air under the head, which bobs just out of reach, then goes for the Duchess and comes back with her. Under reduced motion the puzzled look and the swing held under the bobbing head are the settled pictures.
+
+Scrolling back before the moment the cards can be turned lays every gardener face down again, keyed on the edge of that moment, so it holds however far one frame of the scrub jumps.
 
 ### A Moral in Everything: the walk is the parallax
 
@@ -1097,6 +1139,8 @@ ledge fades and the two step down onto the shingle to exactly the places and siz
 quadrille's ring gives them, the sun goes, and the Mock Turtle draws breath. The
 quadrille's first frame is that breath, and its first sigh is the breath let go.
 
+On a narrow frame the five slips about uglifying keep their foot above the Mock Turtle on his ledge (`--demo-fit-foot`).
+
 ### The Lobster Quadrille: a dance the reader joins
 
 A shore in layers: sky, a sea in three swells that breathes on the ambient timeline,
@@ -1140,6 +1184,8 @@ holds; the lines stand still, and the settled advance shows them advanced with t
 lobsters already changed; no dancing, no streaming shore, and the dancers are gone at
 a cut when the run begins; the sung words are there lit; the somersault is a blink;
 the lobster's arc is a short lift and a splash.
+
+On a narrow frame a full-width page sets the verses a little smaller and closer, so a verse ends above the sea line and clear of the dancers' leaps.
 
 ### Who Stole the Tarts?: the court through a slit, then the witnesses
 
@@ -1203,6 +1249,8 @@ are one arrival. The last beat, "that saves a world of trouble", holds the court
 a mile up, Alice enormous at the right of the frame with her head out of the top and
 the clouds below her shoulders, and the trial opens on that same frame, the
 same numbers on the same court, so the two demos are one trial.
+
+The jury mark their slates in the marks the page's language writes for yes and no (realia `marks`): a tick and a cross in English, a circle and a cross in Japanese, drawn a little larger than before.
 
 ### Sentence First: the pack flies, the leaves fall, her sister's dream
 
@@ -1275,11 +1323,15 @@ carrying its locale's profile, and each locale's realia written onto a page for 
 the ids its demo reads. `shell/words.test.ts` and `mouse-tale/chunks.test.ts` run the
 word readers, `units()` and the tail's grouping against every locale's own sentences,
 and against a sample written without spaces and one written right to left;
-`words.test.ts` also holds the gate's set-apart rules to the Python checker's.
+`words.test.ts` also holds the gate's set-apart rules to the Python checker's, and
+checks that a pause of either width is the stronger break and that no quoted run is
+ever split; `chunks.test.ts` checks that the tail's groups in a word-space locale are
+the book's and that in a phrase-space locale no group runs on past a pause;
+`shell/fit.test.ts` holds the caption fit's arithmetic.
 `src/demos/realia.test.ts` draws and measures every locale's realia, and
 `build/locale-standard.test.ts` breaks a copy of the data (a translation's quotation
-marks, a letter, a moral, a cry, a realia file, the profile) and expects the gate to
-fail on it.
+marks, a letter, a moral, a cry, a realia file, the jury's marks, the profile) or of a
+demo's sheet (an italic written into it) and expects the gate to fail on it.
 
 Gate, `scripts/check-experience.py`: every demo file against its schema, and its
 staging contract (`reads`) in every locale that publishes it, by that locale's profile
@@ -1327,10 +1379,21 @@ Japanese index and its language switch both ways, the Mock Turtle's quoted subje
 the sand, the Dormouse's お, the Cat's lid in the moon (read from realia), the Duchess's
 ribbons with and without a colon, and the tale's words down the tail.
 `tests/play/locale-profile.spec.ts` checks, in every locale, the profile on the root
-of every page (story and demos), the profile the shell reads back and speech never
-slanted where the script has no italic, the tape reading in the realia's unit and
-landing on its notch, the Cat's second answer and the Dormouse's things from
-realia in their order, and a phone bar that stays one row at 320 pixels.
+of every page (story and demos), the profile the shell reads back, the tape reading in
+the realia's unit and landing on its notch, the Cat's second answer and the Dormouse's
+things from realia in their order, the jury's marks from realia, a phone bar that
+keeps the chrome's floor (24-pixel pills, 12-pixel labels, a second row rather than a
+smaller one) at 320, 390 and 430 pixels with and without a touch screen, and, where
+the profile's emphasis is a slip, no element with text in italic on any demo page, at
+any beat, at either width (and speech in italic where it is italic). `tests/caption-fit.spec.ts` holds the caption fit budget:
+every demo in every locale, every beat at three points, at desktop and at 390 pixels,
+every visible sentence inside the stage, below the bar and off the buttons shown, and
+nothing the shell reports it could not fit; where a beat's sentences are drawn
+elsewhere (the tale down the tail), every drawn sentence on screen is held to the same
+frame. `tests/play/japanese.spec.ts` also checks
+that the Japanese cards carry no Latin letters, that a name in corner brackets stays on
+one line on a phone, and that no group of the tale runs on past a comma; a test in
+`tests/demos.spec.ts` starves the court's frames and still sees a scroll settle.
 
 What costs frames, and what was done about it, is in
 [`performance-budget.md`](performance-budget.md) §2: a drop-shadow filter on many

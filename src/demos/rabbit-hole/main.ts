@@ -43,7 +43,9 @@ function depthCaption(
   if (beat.index !== last) {
     master.to(
       beat.lines,
-      { opacity: 0, z: 520, y: -60, duration: 0.2, ease: 'power2.in' },
+      // Up as well as out: a slip nearing the camera grows, and rising as it grows
+      // keeps the stack's foot inside the frame on its way past.
+      { opacity: 0, z: 520, y: -260, duration: 0.2, ease: 'power2.in' },
       t + 0.8,
     );
   }

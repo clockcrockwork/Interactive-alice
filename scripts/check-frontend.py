@@ -14,7 +14,9 @@ own, listed in CLAUDE.md, and each one has already been stated in a document:
   bfcache          nothing listens for unload, which would disqualify the page
   locale-profile   code and styles read the locale profile, never a language's name:
                    no :lang() rule, no locale id literal, no branch on the page's
-                   lang, no splitting a line at spaces outside units()
+                   lang, no splitting a line at spaces outside units(), and no
+                   italic written in a demo's sheet: the shell applies the speech
+                   tokens (--demo-say-style, --demo-italic) by the profile
   node-pin         .nvmrc and package.json agree on one Node major
 
 A line may opt out with a trailing comment naming the rule and a reason (a CSS
@@ -61,6 +63,11 @@ LANG_READ = re.compile(r"documentElement\.lang\b|\blang\s*[!=]==|startsWith\(\s*
 # Splitting a line of text at spaces: a language may write no spaces, so lines are
 # split by units() in src/demos/shell/words.ts, which reads the profile.
 SPACE_SPLIT = re.compile(r"\.split\(\s*(?:'\s'|\"\s\"|' '|\" \"|/\(?\\s)")
+# An italic written into a demo's own sheet: it would slant a line, a digit in it,
+# on a page whose script has no italic. Demos set the shell's tokens instead.
+ITALIC = re.compile(r"font-style\s*:\s*(?:italic|oblique)")
+DEMOS_DIR = REPO_ROOT / "src" / "demos"
+SHELL_SHEET = DEMOS_DIR / "shell" / "shell.css"
 WORDS_MODULE = REPO_ROOT / "src" / "demos" / "shell" / "words.ts"
 LOCALES_FILE = REPO_ROOT / "text" / "locales.json"
 
@@ -129,6 +136,15 @@ def check_code(
                 report(problems, path, number, "locale-profile",
                        "key the rule on the locale profile (data-* on the root), not :lang(); "
                        "only the font-stack rule in shell.css names a language")
+            if (
+                path.suffix == ".css"
+                and path.is_relative_to(DEMOS_DIR)
+                and path != SHELL_SHEET
+                and ITALIC.search(line)
+            ):
+                report(problems, path, number, "locale-profile",
+                       "set --demo-say-style on a line or use var(--demo-italic); the shell "
+                       "applies italic only where the profile's emphasis is italic")
             if path.suffix == ".ts" and (LANG_READ.search(line) or locales.search(line)):
                 report(problems, path, number, "locale-profile",
                        "read the locale profile (pageProfile(), shell.profile), not the language")

@@ -64,10 +64,22 @@
     --demo-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
     /* A heavier display face for a word drawn big (a cry, a subject on the sand). */
     --demo-display: Georgia, "Times New Roman", serif;
-    --demo-bar-height: 3.25rem;
+    /* One row of the bar. The bar may wrap to a second row on a narrow phone
+       rather than shrink its labels; the shell then writes the height it measures
+       as --demo-bar-height on the page, so whatever sits under the bar moves down. */
+    --demo-bar-row: 3.25rem;
+    --demo-bar-height: var(--demo-bar-row);
+    /* The floor of the chrome's type scale: no pill smaller than a 24-pixel target,
+       no label smaller than 12 pixels, in any language (hard rule 10: the pause
+       control is one of them). */
+    --demo-target-min: 1.5rem;
+    --demo-label-min: 0.75rem;
     --demo-caption-size: clamp(1.15rem, 1rem + 1.2vw, 1.75rem);
     /* Speech and thought on a slip of their own, where the script has no italic. */
     --demo-slip-say: oklch(from var(--paper-warm) l c h / 0.92);
+    /* An italic a demo draws with (a moral on a ribbon, a word on the sand):
+       upright where the script has none (below). Never write italic itself. */
+    --demo-italic: italic;
     --demo-ease: cubic-bezier(0.22, 1, 0.36, 1);
     --demo-quick: 220ms;
     --demo-calm: 600ms;
@@ -108,6 +120,10 @@
       "UD Digi Kyokasho NK-R", "UD Digi Kyokasho N-R", "Hiragino Mincho ProN", "Yu Mincho",
       YuMincho, "Noto Serif CJK JP", "Noto Serif JP", "IPAexMincho", "IPAMincho", serif;
     --demo-display: var(--demo-serif);
+  }
+
+  :root[data-emphasis="slip"] {
+    --demo-italic: normal;
   }
 
   /* Full-width glyphs fill the em box, so a caption line holds fewer of them at a
@@ -156,7 +172,7 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    block-size: var(--demo-bar-height);
+    min-block-size: var(--demo-bar-row);
     padding-inline: var(--space-2);
     background: linear-gradient(to bottom, var(--demo-glass), transparent);
     font-family: system-ui, sans-serif;
@@ -191,6 +207,16 @@
     padding: 0.35em 0.9em;
     background: var(--demo-glass);
     cursor: pointer;
+  }
+
+  .demo__back,
+  .demo__motion,
+  .demo__sound,
+  .demo__tilt,
+  .demo__next,
+  .demo__auto {
+    min-block-size: var(--demo-target-min);
+    min-inline-size: var(--demo-target-min);
   }
 
   .demo__sound[aria-pressed="true"],
@@ -279,6 +305,22 @@
     visibility: visible;
   }
 
+  /* The caption fit budget (shell.ts, fitCaptions): a stack that does not fit
+     its frame as placed steps its slips down a size, then another, then tightens
+     their leading, then is moved inside the frame by the shell. The size is a
+     factor on whatever size the demo set, so a demo's own scale survives. */
+  .demo-beat[data-fit="small"] {
+    --demo-fit-size: 0.9;
+  }
+
+  .demo-beat:is([data-fit="smaller"], [data-fit="tight"], [data-fit="over"]) {
+    --demo-fit-size: 0.8;
+  }
+
+  .demo-beat[data-fit-shift] {
+    transform: translateY(var(--demo-fit-shift, 0));
+  }
+
   /* On the last beat the captions lift clear of the link to the next demo, which
      is pinned to the bottom of the stage. */
   .demo[data-attached] .demo__captions {
@@ -290,12 +332,17 @@
   }
 
   /* The slip: ink on the book's paper, one per sentence. Speech and thought are
-     in italic and a softer ink; the court and its Rabbit speak in Wonderland red;
-     Alice's own lines carry her dress colour as a mark at the start. A demo may
-     restyle a speaker, but keeps the slip under it. */
+     marked (in italic where the script has one) and in a softer ink; the court and
+     its Rabbit speak in Wonderland red; Alice's own lines carry her dress colour as
+     a mark at the start. A demo may restyle a speaker, but keeps the slip under it.
+     Speech marking belongs to the shell: a line says whether it is marked with
+     `--demo-say-style` (a demo sets it for a speaker, or for narration it sets
+     apart), and the shell alone turns that into a font style, by the profile. */
   .line {
     justify-self: center;
     margin: 0;
+    font-size: calc(var(--demo-fit-size, 1) * 1em);
+    font-style: var(--demo-say-style, normal);
     padding: 0.04em 0.5em 0.1em;
     border-radius: 0.3em;
     background: var(--demo-slip);
@@ -307,7 +354,7 @@
 
   .line[data-kind="dialogue"],
   .line[data-kind="thought"] {
-    font-style: italic;
+    --demo-say-style: italic;
     color: var(--demo-say);
   }
 
@@ -323,6 +370,14 @@
   .line[data-speaker="alice"] {
     border-inline-start: 0.22em solid var(--alice-dress);
     padding-inline-start: 0.42em;
+  }
+
+  /* A quoted run is held together (shell.ts, holdQuotedRuns): it moves to the
+     next line whole rather than breaking inside, and only a run longer than the
+     slip itself wraps within. */
+  .demo__held {
+    display: inline-block;
+    max-inline-size: 100%;
   }
 
   .line[data-kind="sound"] {
@@ -350,17 +405,32 @@
     padding-block: 0.1em 0.14em;
   }
 
+  /* The caption fit's third step tightens the leading; full-width glyphs still
+     keep more of it than a Latin line. */
+  :root[data-glyph-width="full"] .demo-body {
+    --demo-fit-leading: 1.45;
+  }
+
+  .demo-beat:is([data-fit="tight"], [data-fit="over"]) .line {
+    line-height: var(--demo-fit-leading, 1.25);
+  }
+
   /* Where the script has no italic, a slanted one is a fault, so nothing may
-     synthesise one: speech and thought keep the softer ink and stand on a warmer
-     slip instead. As specific as the italic rule above and no more, so a demo that
-     restyles a speaker (a bubble, a tint) still wins over this. */
+     synthesise one, and no line is set in italic whatever its speaker asks: a
+     digit or a Latin letter in the line would otherwise slant in a fallback face.
+     Speech and thought keep the softer ink and stand on a warmer slip instead; the
+     slip is as specific as the speech rule above and no more, so a demo that
+     restyles a speaker (a bubble, a tint) still wins over it. */
   :root[data-emphasis="slip"] .demo-body {
     font-synthesis-style: none;
   }
 
+  :root[data-emphasis="slip"] .demo-body :is(.line, .line *) {
+    font-style: normal;
+  }
+
   :where(:root[data-emphasis="slip"] .demo-body)
     .line:is([data-kind="dialogue"], [data-kind="thought"]) {
-    font-style: normal;
     background: var(--demo-slip-say);
   }
 
@@ -475,12 +545,18 @@
     transition-duration: var(--demo-quick);
   }
 
-  /* A phone's bar stays one row: smaller type, tighter buttons, and the title
-     kept for assistive technology only. */
+  /* A phone's bar: the title kept for assistive technology only, tighter
+     buttons, and type at the chrome's floor and never under it. In any language,
+     when the pills do not fit one row at that size the bar wraps to a second row,
+     right-aligned under the first; a label never breaks inside its pill and never
+     shrinks to fit. */
   @media (max-width: 600px) {
     .demo__bar {
-      gap: var(--space-1, 4px);
-      font-size: 0.72rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 6px var(--space-1, 4px);
+      padding-block: 6px;
+      font-size: var(--demo-label-min);
     }
 
     .demo__title {
@@ -492,33 +568,20 @@
       white-space: nowrap;
     }
 
-    /* In any language, a label that does not fit breaks at a space (or wherever
-       its language allows a break) inside its own pill, so the bar stays one row
-       on the narrowest phone; the browser measures, not a list of languages. A
-       label that fits stays on one line: a pill only shrinks when the row is full. */
     .demo__back,
     .demo__motion,
     .demo__sound,
     .demo__tilt {
-      padding: 0.3em 0.6em;
-      overflow-wrap: normal;
-      line-height: 1.15;
-      text-align: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.3em 0.7em;
+      line-height: 1.2;
+      white-space: nowrap;
     }
 
     .demo__back {
       margin-inline-end: auto;
-    }
-
-    /* Full-width glyphs make long labels: a little smaller, and tighter pills. */
-    :root[data-glyph-width="full"] .demo__bar {
-      gap: 3px;
-      padding-inline: var(--space-1, 4px);
-      font-size: 0.66rem;
-    }
-
-    :root[data-glyph-width="full"] :is(.demo__back, .demo__motion, .demo__sound, .demo__tilt) {
-      padding-inline: 0.5em;
     }
   }
 

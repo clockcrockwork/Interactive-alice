@@ -54,7 +54,7 @@
   }
 
   .demo--duchess .line[data-speaker="duchess"] {
-    font-style: italic;
+    --demo-say-style: italic;
     color: var(--wonder-red-dark);
   }
 
@@ -568,7 +568,7 @@
     color: var(--ink-primary);
     font-family: var(--demo-serif);
     font-size: clamp(0.74rem, 0.62rem + 0.42vw, 0.98rem);
-    font-style: italic;
+    font-style: var(--demo-italic);
     line-height: 1.25;
     text-align: center;
     text-wrap: balance;

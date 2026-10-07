@@ -52,9 +52,12 @@
 }
 
 @layer scene {
-  /* Captions sit high here, clear of the link to the next demo already. */
+  /* Captions sit high here, clear of the link to the next demo already. They
+     ride the swell (main.ts, --bob and --tilt), so the shell's caption fit keeps
+     them this far inside the frame and a crest never carries a slip out. */
   .demo--pool-of-tears {
     --demo-end-lift: 0px;
+    --demo-fit-margin: 2.5rem;
   }
 
   .demo--pool-of-tears .demo-beat {
@@ -70,7 +73,7 @@
   }
 
   .demo--pool-of-tears .line[data-speaker="mouse"] {
-    font-style: italic;
+    --demo-say-style: italic;
   }
 
   /* Under the water for a moment: the water's own blue, and the sentences ripple. */
@@ -294,8 +297,11 @@
       --demo-end-lift: 5.5rem;
     }
 
+    /* Grown up from the foot, a long stack is kept below the swimmers by the
+       shell's caption fit: set smaller rather than moved up over them. */
     .demo--pool-of-tears .demo-beat,
     .demo--pool-of-tears .demo-beat[data-cue="shore"] {
+      --demo-fit-top: 46%;
       inset-block-start: auto;
       inset-block-end: 3vh;
     }

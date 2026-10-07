@@ -66,13 +66,17 @@ export const TEAPOT_SVG = `
   </g>
 </svg>`;
 
-/** The watch that tells the day of the month: a ring of dates and one hand. */
-export function watchSvg(): string {
+/**
+ * The watch that tells the day of the month: a ring of dates and one hand. The
+ * dates are numbers on display, so they are written by the page's own number
+ * format (`shell.locale.numberFormat()`), handed in.
+ */
+export function watchSvg(format: (n: number) => string = String): string {
   const dates = Array.from({ length: 31 }, (_, i) => {
     const a = ((i + 1) / 31) * Math.PI * 2 - Math.PI / 2;
     const x = 200 + Math.cos(a) * 150;
     const y = 200 + Math.sin(a) * 150 + 6;
-    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="${i % 5 === 4 ? 20 : 14}" text-anchor="middle">${i + 1}</text>`;
+    return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="${i % 5 === 4 ? 20 : 14}" text-anchor="middle">${format(i + 1)}</text>`;
   }).join('');
   return `
 <svg viewBox="0 0 400 440" focusable="false">

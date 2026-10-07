@@ -22,6 +22,7 @@ import {
   namedWords,
   pageProfile,
   quoted,
+  quotedSpans,
   setApart,
   units,
 } from './words.ts';
@@ -44,6 +45,7 @@ const profileOf = (locale: string): LocaleProfile => {
     wordUnit: settings.wordUnit,
     emphasis: settings.emphasis,
     glyphWidth: settings.glyphWidth,
+    significantSpaces: settings.significantSpaces,
     tag: settings.numbers,
   };
 };
@@ -169,6 +171,7 @@ describe('the locale profile, read from the page', () => {
           wordUnit: expected.wordUnit,
           emphasis: expected.emphasis,
           glyphWidth: expected.glyphWidth,
+          significantSpaces: String(expected.significantSpaces),
           numbers: expected.tag,
         }),
       );
@@ -184,6 +187,7 @@ describe('the locale profile, read from the page', () => {
       wordUnit: 'spaces',
       emphasis: 'italic',
       glyphWidth: 'half',
+      significantSpaces: false,
       tag: 'xx',
     });
     expect(pageProfile(root('', 'rtl', { wordUnit: 'nonsense' })).wordUnit).toBe('spaces');
@@ -195,11 +199,11 @@ describe('a line in units, by the profile', () => {
 
   it('splits at spaces, and after a full-width comma, keeping the line whole', () => {
     expect(units('Will you, won’t you  join?', spaced)).toEqual([
-      { text: 'Will', glue: ' ' },
-      { text: 'you,', glue: ' ' },
-      { text: 'won’t', glue: ' ' },
-      { text: 'you', glue: '  ' },
-      { text: 'join?', glue: '' },
+      { text: 'Will', glue: ' ', pause: false },
+      { text: 'you,', glue: ' ', pause: true },
+      { text: 'won’t', glue: ' ', pause: false },
+      { text: 'you', glue: '  ', pause: false },
+      { text: 'join?', glue: '', pause: true },
     ]);
     expect(units('ＡＡ、ＢＢ Ｃ', spaced).map((unit) => unit.text)).toEqual([
       'ＡＡ、',
@@ -207,6 +211,41 @@ describe('a line in units, by the profile', () => {
       'Ｃ',
     ]);
     expect(units('', spaced)).toEqual([]);
+  });
+
+  it('marks a pause, of either width, as the stronger break after a unit', () => {
+    const pauses = (line: string) =>
+      units(line, spaced).map((unit) => (unit.pause ? `${unit.text}|` : unit.text));
+    expect(pauses('ＡＡ、ＢＢ ＣＣ。')).toEqual(['ＡＡ、|', 'ＢＢ', 'ＣＣ。|']);
+    expect(pauses('one, two; three: four.')).toEqual(['one,|', 'two;|', 'three:|', 'four.|']);
+    // A closing mark after the pause still ends on it; an apostrophe is not a pause.
+    expect(pauses('「ＡＡ。」 won’t')).toEqual(['「ＡＡ。」|', 'won’t']);
+  });
+
+  it('never breaks inside a quoted run, in any kind of quotation mark', () => {
+    const texts = (line: string, profile = spaced as Parameters<typeof units>[1]) =>
+      units(line, profile).map((unit) => unit.text);
+    // The Caucus-race's name, quoted with a space inside, stays one unit.
+    expect(texts('ＡＡ 「ＢＢ ＣＣ」ＥＥ ＤＤ')).toEqual(['ＡＡ', '「ＢＢ ＣＣ」ＥＥ', 'ＤＤ']);
+    expect(texts('a “b, c d” e')).toEqual(['a', '“b, c d”', 'e']);
+    // A comma inside the quote is no break either.
+    expect(texts('「ＡＡ、ＢＢ」')).toEqual(['「ＡＡ、ＢＢ」']);
+    // An unclosed mark holds nothing; an apostrophe opens nothing.
+    expect(texts('「ＡＡ ＢＢ')).toEqual(['「ＡＡ', 'ＢＢ']);
+    expect(texts('it’s a b')).toEqual(['it’s', 'a', 'b']);
+    // Where units are words the segmenter finds, the quoted run is still one.
+    const thai = units('พูดว่า “หมู ป่า” นะ', { wordUnit: 'segmenter', tag: 'th' });
+    expect(thai.map((unit) => unit.text)).toContain('“หมู ป่า”');
+    expect(joinUnits(thai)).toBe('พูดว่า “หมู ป่า” นะ');
+  });
+
+  it('finds the quoted runs of a sentence as spans of its marks', () => {
+    expect(quotedSpans('ab 「cd」 e “f „g“ h”')).toEqual([
+      [3, 6],
+      [10, 18],
+    ]);
+    expect(quotedSpans('"a" b "c')).toEqual([[0, 2]]);
+    expect(quotedSpans('no quotes’ here')).toEqual([]);
   });
 
   for (const locale of locales) {

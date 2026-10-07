@@ -422,11 +422,13 @@ function mount(shell: DemoShell): void {
   master.to(dormouse, { '--sleep': 0, duration: d(0.3) }, iSilence);
   move(iSilence + 0.1, { z: -900, pitch: 12, yaw: 0 }, 0.6);
 
-  // --- The watch: a big close-up, shaken, buttered, dipped in tea.
+  // --- The watch: a big close-up, shaken, buttered, dipped in tea. Its dates in
+  // the page's own numerals.
+  const dates = shell.locale.numberFormat({ maximumFractionDigits: 0 });
   const watchLayer = shell.layer('tp__watch-layer');
   watchLayer.innerHTML =
     `<div class="tp__cup tp__cup--back">${CUP_BACK_SVG}</div>` +
-    `<div class="tp__watch">${watchSvg()}</div>` +
+    `<div class="tp__watch">${watchSvg((n) => dates.format(n))}</div>` +
     `<div class="tp__cup tp__cup--front">${CUP_FRONT_SVG}</div>` +
     `<div class="tp__knife">${KNIFE_SVG}</div>` +
     `<button type="button" class="tp__butter-pat" aria-label="${shell.ui.demoButterWatch ?? ''}">${BUTTER_SVG}</button>`;

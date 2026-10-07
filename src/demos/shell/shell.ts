@@ -16,9 +16,10 @@ import '../art/art.css';
 import { installArtTreatments } from '../art/treatments.ts';
 import './shell.css';
 import type { LocaleRealia } from '../../types/schema.ts';
+import { cssPixels, FIT_MARGIN, FIT_STEPS, type FitStep, fitShift } from './fit.ts';
 import { createSound, type DemoSound } from './sound.ts';
 import { installTransitions } from './transitions.ts';
-import { type LocaleProfile, pageProfile } from './words.ts';
+import { type LocaleProfile, pageProfile, quotedSpans } from './words.ts';
 
 installTransitions();
 installArtTreatments();
@@ -165,6 +166,13 @@ declare global {
       overrun(): number;
       /** Whether the scrubbed timeline has caught up with the scroll. */
       settled(): boolean;
+      /**
+       * Test seam: scrolls to a progress and lands the scrubbed timeline there at
+       * once, so a test can sample many points without waiting for the ease.
+       */
+      seek(progress: number): void;
+      /** The last caption fit step each beat needed, by beat index; beats that fit as placed are absent. */
+      captionFit(): Record<number, FitStep>;
       auto(): boolean;
     };
   }
@@ -201,6 +209,9 @@ function readRealia(root: HTMLElement): Partial<Realia> {
  */
 export const REDUCED_SETTLE = 0.7;
 
+/** Frames a timeline within a hair of the scroll must hold still to count as settled. */
+const SETTLE_FRAMES = 3;
+
 /** The time the timeline shows, under reduced motion, for a scroll progress. */
 export function reducedTimeFor(progress: number, beats: number): number {
   const index = Math.min(beats - 1, Math.max(0, Math.floor(progress * beats + 1e-6)));
@@ -217,6 +228,40 @@ export function captionEntry(reduced: boolean, t: number): { at: number; duratio
     return { at: t + 0.05, duration: 0.3 };
   }
   return t === 0 ? { at: 0, duration: 0 } : { at: t - 0.02, duration: 0.02 };
+}
+
+/**
+ * A quoted run in a caption is held together: a name or a word set apart (a race's
+ * name, the words on a label) never breaks inside, in any language. The run, its
+ * marks included, goes in a `.demo__held` span the stylesheet keeps on one line
+ * where it fits; the line's text is unchanged.
+ */
+export function holdQuotedRuns(line: HTMLElement): void {
+  const only = line.firstChild;
+  if (line.childNodes.length !== 1 || only?.nodeType !== Node.TEXT_NODE) {
+    return;
+  }
+  const value = only.textContent ?? '';
+  const spans = quotedSpans(value);
+  if (spans.length === 0) {
+    return;
+  }
+  const nodes: Node[] = [];
+  let at = 0;
+  for (const [open, close] of spans) {
+    if (open > at) {
+      nodes.push(document.createTextNode(value.slice(at, open)));
+    }
+    const held = document.createElement('span');
+    held.className = 'demo__held';
+    held.textContent = value.slice(open, close + 1);
+    nodes.push(held);
+    at = close + 1;
+  }
+  if (at < value.length) {
+    nodes.push(document.createTextNode(value.slice(at)));
+  }
+  line.replaceChildren(...nodes);
 }
 
 export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
@@ -238,12 +283,16 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   const beats: Beat[] = [];
   for (const shot of track.querySelectorAll<HTMLElement>('.demo-shot')) {
     for (const el of shot.querySelectorAll<HTMLElement>('.demo-beat')) {
+      const lines = [...el.querySelectorAll<HTMLElement>('.line')];
+      for (const line of lines) {
+        holdQuotedRuns(line);
+      }
       beats.push({
         index: beats.length,
         el,
         cue: el.dataset.cue,
         shot: shot.dataset.shot ?? '',
-        lines: [...el.querySelectorAll<HTMLElement>('.line')],
+        lines,
       });
       captions.append(el);
     }
@@ -346,7 +395,16 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   setActive(0);
 
   const frameFns = new Set<(dt: number, elapsed: number) => void>();
+  // How many frames in a row the scrubbed timeline has held still: the seam's
+  // settled() accepts a timeline within a hair of the scroll that has stopped
+  // moving, even where the scrub's ease has not formally ended (a loaded machine
+  // stretches its last frames).
+  let stillFrames = 0;
+  let lastTime = Number.NaN;
   gsap.ticker.add((time, deltaMs) => {
+    const now = master.time();
+    stillFrames = Math.abs(now - lastTime) < 1e-4 ? stillFrames + 1 : 0;
+    lastTime = now;
     if (paused) {
       return;
     }
@@ -516,6 +574,216 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     note(ui.demoReducedMotion);
   }
 
+  // --- The caption fit budget. Every beat's stack of slips must fit between the
+  // bar and the frame's foot, in every language and at every width: the shell
+  // measures each stack where its demo placed it and, where it does not fit, steps
+  // its slips down a size, then another, then tightens their leading, then moves
+  // the stack inside the frame; what still does not fit is reported, never clipped
+  // in silence. Layout is read here, on attach, when the fonts arrive and on a
+  // resize; never per frame.
+  const fitted = new Map<number, FitStep>();
+  const fitCaptions = (): void => {
+    const rem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    const captionStyle = getComputedStyle(captions);
+    const em = Number.parseFloat(captionStyle.fontSize) || rem;
+    const endLift = cssPixels(
+      captionStyle.getPropertyValue('--demo-end-lift') || '4.25rem',
+      rem,
+      em,
+    );
+    // A demo whose captions move by themselves (riding a swell) keeps them further in.
+    const margin = Math.max(
+      FIT_MARGIN,
+      cssPixels(captionStyle.getPropertyValue('--demo-fit-margin'), rem, em),
+    );
+    const top = (bar?.getBoundingClientRect().bottom ?? 0) + margin;
+    const foot = stage.clientHeight - margin;
+    // Where a stack sits in the stage, by layout: transforms (a line flying in, the
+    // last beat lifting clear of the next link) are not part of the fit.
+    const offsetIn = (el: HTMLElement): number => {
+      let y = 0;
+      for (let node: HTMLElement | null = el; node && node !== stage; ) {
+        y += node.offsetTop;
+        node = node.offsetParent as HTMLElement | null;
+      }
+      return y;
+    };
+    const extent = (beat: Beat): { top: number; bottom: number } | undefined => {
+      // A beat drawn elsewhere keeps its sentences in a one-pixel box for assistive
+      // technology only: nothing to fit.
+      if (beat.el.offsetWidth <= 1 || beat.el.offsetHeight <= 1 || beat.lines.length === 0) {
+        return undefined;
+      }
+      let first = Number.POSITIVE_INFINITY;
+      let last = Number.NEGATIVE_INFINITY;
+      for (const line of beat.lines) {
+        if (line.offsetHeight === 0) {
+          continue;
+        }
+        const y = offsetIn(line);
+        first = Math.min(first, y);
+        last = Math.max(last, y + line.offsetHeight);
+      }
+      if (!Number.isFinite(first)) {
+        return undefined;
+      }
+      // The last beat is lifted clear of the next link: it must fit lifted. A
+      // stack the fit has moved is where the move put it.
+      const lift = beat.index === beats.length - 1 ? endLift : 0;
+      const moved =
+        beat.el.dataset.fitShift === undefined
+          ? 0
+          : Number.parseFloat(beat.el.style.getPropertyValue('--demo-fit-shift')) || 0;
+      return { top: first - lift + moved, bottom: last - lift + moved };
+    };
+    // A beat may keep its stack inside a narrower band than the frame, to stay
+    // clear of a figure it is about: `--demo-fit-top` and `--demo-fit-foot`, in
+    // px, rem or a percentage of the frame.
+    const frameHeight = stage.clientHeight;
+    const band = new Map(
+      beats.map((beat) => {
+        const style = getComputedStyle(beat.el);
+        const ownTop = cssPixels(style.getPropertyValue('--demo-fit-top'), rem, em, frameHeight);
+        const ownFoot = cssPixels(style.getPropertyValue('--demo-fit-foot'), rem, em, frameHeight);
+        return [
+          beat.index,
+          { top: Math.max(top, ownTop), foot: ownFoot > 0 ? Math.min(foot, ownFoot) : foot },
+        ];
+      }),
+    );
+    const overflows = (beat: Beat): boolean => {
+      const box = extent(beat);
+      const limits = band.get(beat.index) ?? { top, foot };
+      return box !== undefined && (box.bottom > limits.foot || box.top < limits.top);
+    };
+    for (const beat of beats) {
+      delete beat.el.dataset.fit;
+      delete beat.el.dataset.fitShift;
+      beat.el.style.removeProperty('--demo-fit-shift');
+    }
+    fitted.clear();
+    const limitsOf = (beat: Beat) => band.get(beat.index) ?? { top, foot };
+    const shiftInto = (beat: Beat): void => {
+      const box = extent(beat);
+      if (!box) {
+        return;
+      }
+      const limits = limitsOf(beat);
+      const shift = fitShift(box.top, box.bottom, limits.top, limits.foot);
+      beat.el.style.setProperty('--demo-fit-shift', `${Math.round(shift)}px`);
+      beat.el.dataset.fitShift = '';
+      fitted.set(beat.index, 'shift');
+    };
+    const unshift = (beat: Beat): void => {
+      delete beat.el.dataset.fitShift;
+      beat.el.style.removeProperty('--demo-fit-shift');
+    };
+    const sizes = FIT_STEPS.filter((step) => step !== 'shift');
+    // 1. Smaller, then smaller again, then tighter, for a stack that grows towards
+    // the edge it crosses: each step pulls that edge in. A stack placed from the
+    // very edge it crosses only gets shorter away from it; it is set aside.
+    let pending = beats.filter(overflows);
+    const anchored: Beat[] = [];
+    const sized = new Map<number, FitStep>();
+    for (const step of sizes) {
+      if (pending.length === 0) {
+        break;
+      }
+      const before = new Map(pending.map((beat) => [beat.index, extent(beat)]));
+      for (const beat of pending) {
+        beat.el.dataset.fit = step;
+      }
+      for (const beat of pending) {
+        const was = before.get(beat.index);
+        const now = extent(beat);
+        const limits = limitsOf(beat);
+        const helped =
+          was !== undefined &&
+          now !== undefined &&
+          ((was.bottom > limits.foot && now.bottom < was.bottom - 0.5) ||
+            (was.top < limits.top && now.top > was.top + 0.5));
+        if (helped) {
+          sized.set(beat.index, step);
+          fitted.set(beat.index, step);
+          continue;
+        }
+        const kept = sized.get(beat.index);
+        if (kept) {
+          beat.el.dataset.fit = kept;
+        } else {
+          delete beat.el.dataset.fit;
+        }
+        anchored.push(beat);
+      }
+      pending = pending.filter((beat) => !anchored.includes(beat) && overflows(beat));
+    }
+    // 2. What still crosses an edge is moved inside its band. A stack set aside is
+    // moved at its own size where that is enough, and only otherwise set smaller
+    // until it is no taller than its band, then moved.
+    for (const beat of pending) {
+      shiftInto(beat);
+    }
+    for (const beat of anchored) {
+      shiftInto(beat);
+      if (!overflows(beat)) {
+        continue;
+      }
+      unshift(beat);
+      for (const step of sizes) {
+        beat.el.dataset.fit = step;
+        fitted.set(beat.index, step);
+        const box = extent(beat);
+        const limits = limitsOf(beat);
+        if (box && box.bottom - box.top <= limits.foot - limits.top) {
+          break;
+        }
+      }
+      shiftInto(beat);
+    }
+    pending = [...pending, ...anchored].filter(overflows);
+    for (const beat of pending) {
+      fitted.set(beat.index, 'over');
+      beat.el.dataset.fit = 'over';
+      console.warn(
+        `captions of beat ${beat.index}${beat.cue ? ` (${beat.cue})` : ''} do not fit the frame`,
+      );
+    }
+  };
+  let fitQueued = 0;
+  const queueFit = (): void => {
+    cancelAnimationFrame(fitQueued);
+    fitQueued = requestAnimationFrame(fitCaptions);
+  };
+  // The bar may wrap to a second row rather than shrink its labels below the
+  // chrome's floor: what sits under it reads the height it really has.
+  let barHeight = 0;
+  const watchSizes = new ResizeObserver(() => {
+    const height = Math.ceil(bar?.getBoundingClientRect().height ?? 0);
+    if (bar && height !== barHeight) {
+      barHeight = height;
+      root.style.setProperty('--demo-bar-height', `${height}px`);
+    }
+    queueFit();
+  });
+  watchSizes.observe(stage);
+  if (bar) {
+    watchSizes.observe(bar);
+  }
+  // A demo moves its captions by a state on the page (under the water, the words
+  // on the sand): fit them again where that state puts them.
+  new MutationObserver((records) => {
+    const changed = records.some(
+      (record) =>
+        record.attributeName !== 'style' &&
+        record.attributeName !== null &&
+        record.oldValue !== root.getAttribute(record.attributeName),
+    );
+    if (changed) {
+      queueFit();
+    }
+  }).observe(root, { attributes: true, attributeOldValue: true });
+  document.fonts?.ready.then(queueFit, () => undefined);
+
   const shell: DemoShell = {
     root,
     stage,
@@ -634,14 +902,30 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     realia: () => realia,
     overrun: () => master.duration() - beats.length,
     auto: () => auto,
+    captionFit: () => Object.fromEntries(fitted),
+    seek: (progress) => {
+      const clamped = Math.min(1, Math.max(0, progress));
+      window.scrollTo(0, trigger.start + (trigger.end - trigger.start) * clamped);
+      ScrollTrigger.update();
+      if (reducedMotion) {
+        showReduced(trigger.progress);
+      } else {
+        trigger.getTween?.()?.progress(1);
+      }
+    },
     settled: () => {
       if (reducedMotion) {
         return Math.abs(master.time() - reducedTimeFor(trigger.progress, beats.length)) < 1e-3;
       }
-      // With a smoothed scrub this is the tween easing the timeline after the scroll.
+      // With a smoothed scrub this is the tween easing the timeline after the
+      // scroll: settled once it is within a hair of the scroll and has either
+      // finished or held still for a few frames.
+      if (Math.abs(master.progress() - trigger.progress) >= 0.002) {
+        return false;
+      }
       const tween = trigger.getTween?.() as { isActive?: () => boolean } | undefined;
       const easing = typeof tween?.isActive === 'function' && tween.isActive();
-      return !easing && Math.abs(master.progress() - trigger.progress) < 0.002;
+      return !easing || stillFrames >= SETTLE_FRAMES;
     },
   };
   // A tween placed past the last beat stretches the timeline, and then the scroll

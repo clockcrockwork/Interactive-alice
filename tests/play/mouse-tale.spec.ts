@@ -50,64 +50,84 @@ test.describe("the Mouse's tale", () => {
         .locator('.mt__tail text')
         .evaluateAll((nodes) => nodes.map((node) => Number(node.getAttribute('font-size'))));
       expect(Math.min(...sizes)).toBeGreaterThanOrEqual(11);
-      // The camera has followed the words down, and the last of them is in frame.
-      await expect
-        .poll(() => customProperty(page, '.demo__stage', '--mt-pan'), { timeout: 8000 })
-        .toBeGreaterThan(0);
-      // Each line's own box (before its small lean), where its transform puts it.
-      const boxes = await page.locator('.mt__tail text').evaluateAll((nodes) =>
+      // The camera has followed the words down as far as it needs to, never so far
+      // that the first verse goes up under the bar, and the last words are in frame.
+      await page.waitForTimeout(1200);
+      // Each group's own box (before its small lean), where its transforms put it: on
+      // its row's place, and across the row where a row holds two groups.
+      const placed = await page.locator('.mt__tail text').evaluateAll((nodes) =>
         nodes.map((node) => {
           const box = (node as SVGTextElement).getBBox();
-          const [, tx, ty] =
-            /translate\(([-\d.]+) ([-\d.]+)\)/.exec(node.getAttribute('transform') ?? '') ?? [];
+          const transform = node.getAttribute('transform') ?? '';
+          const [, tx, ty, angle] =
+            /translate\(([-\d.]+) ([-\d.]+)\) rotate\(([-\d.]+)\)/.exec(transform) ?? [];
+          const [, dx] = /\) translate\(([-\d.]+) 0\)/.exec(transform) ?? [];
+          const x = Number(tx) + Number(dx ?? 0);
           return {
-            left: Number(tx) + box.x,
-            right: Number(tx) + box.x + box.width,
+            y: Number(ty),
+            angle: Number(angle),
+            size: Number(node.getAttribute('font-size')),
+            left: x + box.x,
+            right: x + box.x + box.width,
             top: Number(ty) + box.y,
             bottom: Number(ty) + box.y + box.height,
           };
         }),
       );
-      // Never squeezed: each line sits at least a line's height below the last, and
-      // leans only a little, so a bend cannot tip one line into the next.
-      const placed = await page.locator('.mt__tail text').evaluateAll((nodes) =>
-        nodes.map((node) => {
-          const [, y, angle] =
-            /translate\([-\d.]+ ([-\d.]+)\) rotate\(([-\d.]+)\)/.exec(
-              node.getAttribute('transform') ?? '',
-            ) ?? [];
-          return {
-            y: Number(y),
-            angle: Number(angle),
-            size: Number(node.getAttribute('font-size')),
-          };
-        }),
-      );
-      for (let i = 1; i < placed.length; i += 1) {
-        const a = placed[i - 1];
-        const b = placed[i];
+      // Rows: the groups that share a place down the tail.
+      const rows: (typeof placed)[] = [];
+      for (const piece of placed) {
+        const row = rows.at(-1);
+        if (row && Math.abs((row[0]?.y ?? 0) - piece.y) < 0.5) {
+          row.push(piece);
+        } else {
+          rows.push([piece]);
+        }
+      }
+      // Never squeezed: each row sits at least a line's height below the last, and
+      // leans only a little, so a bend cannot tip one row into the next.
+      for (let i = 1; i < rows.length; i += 1) {
+        const a = rows[i - 1]?.[0];
+        const b = rows[i]?.[0];
         if (a && b) {
-          expect(b.y - a.y, `line ${i} below line ${i - 1}`).toBeGreaterThanOrEqual(
+          expect(b.y - a.y, `row ${i} below row ${i - 1}`).toBeGreaterThanOrEqual(
             1.25 * Math.max(a.size, b.size),
           );
           expect(Math.abs(b.angle)).toBeLessThanOrEqual(6);
         }
       }
       const pan = await customProperty(page, '.demo__stage', '--mt-pan');
-      const last = boxes[boxes.length - 1];
-      expect((last?.bottom ?? 0) - pan).toBeLessThanOrEqual(await page.evaluate(() => innerHeight));
-      for (let i = 1; i < boxes.length; i += 1) {
-        const a = boxes[i - 1];
-        const b = boxes[i];
+      const bar = await page.evaluate(
+        () => document.querySelector('.demo__bar')?.getBoundingClientRect().bottom ?? 0,
+      );
+      const bottom = Math.max(...placed.map((piece) => piece.bottom));
+      const top = Math.min(...placed.map((piece) => piece.top));
+      expect(bottom - pan).toBeLessThanOrEqual(await page.evaluate(() => innerHeight));
+      expect(top - pan).toBeGreaterThanOrEqual(bar);
+      // Side by side on a row, groups keep apart; rows that share any width may
+      // touch by a hair, never cover each other.
+      for (const row of rows) {
+        for (let j = 1; j < row.length; j += 1) {
+          expect((row[j]?.left ?? 0) - (row[j - 1]?.right ?? 0)).toBeGreaterThan(0);
+        }
+      }
+      const spans = rows.map((row) => ({
+        left: Math.min(...row.map((piece) => piece.left)),
+        right: Math.max(...row.map((piece) => piece.right)),
+        top: Math.min(...row.map((piece) => piece.top)),
+        bottom: Math.max(...row.map((piece) => piece.bottom)),
+      }));
+      for (let i = 1; i < spans.length; i += 1) {
+        const a = spans[i - 1];
+        const b = spans[i];
         if (!a || !b) {
           continue;
         }
         const across = Math.min(a.right, b.right) - Math.max(a.left, b.left);
         const down = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
         const height = Math.min(a.bottom - a.top, b.bottom - b.top);
-        // Lines that share any width may touch by a hair, never cover each other.
         if (across > 0) {
-          expect(down, `line ${i} into line ${i - 1}`).toBeLessThan(height * 0.15);
+          expect(down, `row ${i} into row ${i - 1}`).toBeLessThan(height * 0.15);
         }
       }
       // The Mouse walks off with it, and the camera comes back up.
@@ -115,6 +135,27 @@ test.describe("the Mouse's tale", () => {
       await expect
         .poll(() => customProperty(page, '.demo__stage', '--mt-pan'), { timeout: 8000 })
         .toBe(0);
+    });
+  }
+
+  for (const size of [
+    { name: 'desktop', width: 1280, height: 720 },
+    { name: 'phone', width: 390, height: 780 },
+  ]) {
+    test(`the base locale's tail keeps the book's groups at full size, one to a row (${size.name})`, async ({
+      browser,
+    }) => {
+      const context = await browser.newContext({
+        viewport: { width: size.width, height: size.height },
+      });
+      const page = await context.newPage();
+      await page.goto(demo?.url ?? '');
+      await atCue(page, 'fury-four', 0.95);
+      const tail = page.locator('.mt__tail');
+      await expect(tail).toHaveAttribute('data-level', '0');
+      await expect(tail).toHaveAttribute('data-scale', '1.00');
+      await expect(tail).not.toHaveAttribute('data-over', '');
+      await context.close();
     });
   }
 

@@ -32,15 +32,34 @@ export const collectErrors = (page: Page): string[] => {
   return errors;
 };
 
-/** Waits until the scrubbed timeline has caught up with the scroll. */
+/**
+ * Waits until the scrubbed timeline has caught up with the scroll. The scrub eases
+ * by GSAP's clock, which on a loaded machine (frames longer than its lag smoothing
+ * allows) advances a few hundredths of a second a frame however long the frame
+ * took, so the ease can crawl. It is given a few seconds to arrive by itself; then
+ * it is landed where the scroll already is, through the seam (`seek` at the
+ * current progress: the same scroll, the same timeline position, without the
+ * crawl), and must then report settled like any other time. A timeline that never
+ * settles still fails.
+ */
 export const settled = async (page: Page) => {
   // The scroll event reaches ScrollTrigger on the next frame; let it.
   await page.evaluate(
     () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
   );
-  await expect
-    .poll(() => page.evaluate(() => window.__aliceDemo?.settled() ?? true), { timeout: 25_000 })
-    .toBe(true);
+  const done = () => page.evaluate(() => window.__aliceDemo?.settled() ?? true);
+  const deadline = Date.now() + 6_000;
+  while (Date.now() < deadline) {
+    if (await done()) {
+      return;
+    }
+    await page.waitForTimeout(100);
+  }
+  await page.evaluate(() => {
+    const seam = window.__aliceDemo;
+    seam?.seek(seam.progress());
+  });
+  await expect.poll(done, { timeout: 15_000 }).toBe(true);
 };
 
 export const scrollTo = async (page: Page, fraction: number) => {

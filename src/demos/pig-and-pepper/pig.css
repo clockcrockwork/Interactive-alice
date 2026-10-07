@@ -83,13 +83,13 @@
 
   .demo--pig-and-pepper .line[data-speaker="duchess"] {
     color: var(--wonder-red-dark);
-    font-style: italic;
+    --demo-say-style: italic;
   }
 
   .demo--pig-and-pepper .line[data-speaker="fish-footman"],
   .demo--pig-and-pepper .line[data-speaker="frog-footman"] {
     color: var(--world-leaf-deep);
-    font-style: italic;
+    --demo-say-style: italic;
   }
 
   .demo--pig-and-pepper .line[data-speaker="cook"] {

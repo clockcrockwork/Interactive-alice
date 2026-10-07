@@ -9,6 +9,7 @@
       { "picture": "knot" },
       { "picture": "muchness" }
     ],
-    "height": { "unit": "inch", "perInch": 1, "notch": 3 }
+    "height": { "unit": "inch", "perInch": 1, "notch": 3 },
+    "marks": { "yes": "check", "no": "cross" }
   }
 }

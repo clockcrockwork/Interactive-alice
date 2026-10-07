@@ -58,7 +58,7 @@
 
   .demo--caterpillar .line[data-speaker="caterpillar"] {
     --blur: 0;
-    font-style: italic;
+    --demo-say-style: italic;
     color: var(--ink-secondary);
     filter: blur(calc(var(--blur) * 1px));
   }
@@ -571,11 +571,13 @@
     mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
   }
 
+  /* Ticks from twenty above the reading down to zero and no further: a tape
+     has no marks below its own end (--floor is the whole part of the reading). */
   .ct__tape-ticks {
     position: absolute;
     inset-inline: 0;
     inset-block-start: calc(50% - 20 * var(--step));
-    block-size: calc(40 * var(--step));
+    block-size: calc(clamp(0, 20 + var(--floor, 20), 40) * var(--step) + 1.5px);
     translate: 0 calc(var(--frac) * var(--step));
     background:
       repeating-linear-gradient(
@@ -666,6 +668,17 @@
   @media (max-width: 700px) {
     .demo--caterpillar .demo-beat {
       inset-inline-start: 2rem;
+    }
+
+    /* "What size do you want to be?": five slips from the foot of a narrow frame
+       would stand over her and the Caterpillar on the mushroom. They go up under
+       the smoke ring's button, and the shell's caption fit keeps them between the
+       button (a bar of two rows included, and the drift up as they go) and the
+       Caterpillar's head. */
+    .demo--caterpillar .demo-beat[data-cue="size"] {
+      --demo-fit-top: 11rem;
+      --demo-fit-foot: 59%;
+      inset-block: calc(var(--demo-bar-height) + 7rem) auto;
     }
 
     .ct__tape-read {

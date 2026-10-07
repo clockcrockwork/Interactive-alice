@@ -62,6 +62,12 @@ test.describe('the demos in Japanese', () => {
     await expect(page.locator('html')).toHaveAttribute('lang', baseIndex?.locale ?? '-');
     await page.locator(`.demos__languages a[lang="${LOCALE}"]`).click();
     await expect(page).toHaveURL(new RegExp(`/demos/${LOCALE}/$`));
+    // The cards are read by early readers: no technical words in Latin letters.
+    const cards = await page.locator('.demos__card').allTextContents();
+    expect(cards.length).toBeGreaterThan(10);
+    for (const card of cards) {
+      expect(card).not.toMatch(/[A-Za-z]/);
+    }
     // And a card leads to that demo in Japanese.
     await page.locator('.demos__card[data-demo="riverbank"] a').click();
     await expect(page).toHaveURL(new RegExp(`/demos/${LOCALE}/riverbank/$`));
@@ -149,6 +155,30 @@ test.describe('the demos in Japanese', () => {
     expect(words.map((w) => w.trim())).toEqual(expected.map((moral) => moral.text.trim()));
   });
 
+  test.describe('on a phone', () => {
+    test.use({ viewport: { width: 390, height: 780 } });
+
+    test('a name set apart in corner brackets never breaks inside', async ({ page }) => {
+      const race = ja('caucus-race');
+      test.skip(!race, 'no Japanese caucus-race page');
+      await page.goto(race?.url ?? '');
+      await atCue(page, 'proposal', 0.6);
+      const held = page.locator('.demo-beat[data-cue="proposal"] .line .demo__held');
+      expect(await held.count()).toBeGreaterThan(0);
+      for (const run of await held.all()) {
+        await expect(run).toHaveText(new RegExp(`^${OPEN}.+${CLOSE}$`));
+        // One line box: the run moved to the next line whole, or fitted where it was.
+        expect(await run.evaluate((el) => el.getClientRects().length)).toBe(1);
+        const tops = await run.evaluate((el) => {
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          return [...new Set([...range.getClientRects()].map((rect) => Math.round(rect.top)))];
+        });
+        expect(tops).toHaveLength(1);
+      }
+    });
+  });
+
   test("the Mouse's tale is the verses' own words, every one of them, down the tail", async ({
     page,
   }) => {
@@ -160,7 +190,11 @@ test.describe('the demos in Japanese', () => {
     const tail = await page.locator('.mt__tail text').allTextContents();
     const squash = (parts: string[]) => parts.join('').replace(/\s+/g, '');
     expect(squash(tail)).toBe(squash(verses));
-    // In groups of a few phrases, not one line per sentence.
+    // In groups of a few phrases, not one line per sentence, and every group ends
+    // where a phrase does: no group runs on past a comma (seven, then five).
     expect(tail.length).toBeGreaterThan(verses.length);
+    for (const group of tail) {
+      expect(group.trim().slice(0, -1), group).not.toMatch(/[、，。]/u);
+    }
   });
 });

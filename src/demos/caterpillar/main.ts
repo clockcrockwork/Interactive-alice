@@ -369,6 +369,7 @@ function mount(shell: DemoShell): void {
     const floor = Math.floor(h);
     if (floor !== tapeFloor) {
       tapeFloor = floor;
+      tapeEl.style.setProperty('--floor', String(floor));
       tapeNumbers.forEach((el, i) => {
         const n = floor - Math.floor(NUMBERS / 2) + i;
         el.style.setProperty('--n', String(n));

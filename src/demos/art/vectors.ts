@@ -227,6 +227,20 @@ export const SOLDIER_SVG = `
   <path d="M100 30 l-8 22 h16 z" fill="var(--sepia-light)"/>
 </svg>`;
 
+/** The shapes a juror marks a slate with: a tick, a circle, a cross (realia `marks`). */
+export type MarkShape = 'check' | 'circle' | 'cross';
+
+/** A slate mark's path, centred on (`x`, `y`), about sixteen units across. */
+export function slateMark(shape: MarkShape, x: number, y: number): string {
+  if (shape === 'circle') {
+    return `M${x - 7} ${y} a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0`;
+  }
+  if (shape === 'cross') {
+    return `M${x - 7} ${y - 7} l14 14 M${x + 7} ${y - 7} l-14 14`;
+  }
+  return `M${x - 8} ${y} l5.5 6 l10.5 -13`;
+}
+
 export const JURY_SVG = `
 <svg viewBox="0 0 480 220" focusable="false">
   <rect x="0" y="120" width="480" height="100" fill="var(--sepia-dark)"/>
@@ -242,7 +256,7 @@ export const JURY_SVG = `
         : i % 3 === 1
           ? `<path d="M${x - 14} ${y - 8} l-10 -16 M${x + 14} ${y - 8} l10 -16" stroke="${ear}" stroke-width="4" stroke-linecap="round"/>`
           : `<path d="M${x} ${y - 16} l-6 -18 l12 0 z" fill="${ear}"/>`;
-    return `${ears}<circle cx="${x}" cy="${y}" r="16" fill="${coat}"/><circle cx="${x - 5}" cy="${y - 2}" r="2" fill="var(--ink-primary)"/><circle cx="${x + 5}" cy="${y - 2}" r="2" fill="var(--ink-primary)"/><g class="tr__slate" data-juror="${i}"><rect x="${x - 10}" y="${y + 20}" width="20" height="26" rx="3" fill="var(--paper-base)"/><path class="tr__scribble" d="M${x - 6} ${y + 27} h12 M${x - 6} ${y + 33} h9 M${x - 6} ${y + 39} h11" stroke="var(--ink-secondary)" stroke-width="1.6" stroke-linecap="round" pathLength="1"/><path class="tr__mark tr__mark--yes" d="M${x - 5} ${y + 34} l4 4 l7 -9" stroke="var(--world-leaf-deep)" stroke-width="2.2" fill="none" stroke-linecap="round" pathLength="1"/><path class="tr__mark tr__mark--no" d="M${x - 5} ${y + 27} l10 12 M${x + 5} ${y + 27} l-10 12" stroke="var(--wonder-red)" stroke-width="2.2" stroke-linecap="round" pathLength="1"/></g>`;
+    return `${ears}<circle cx="${x}" cy="${y}" r="16" fill="${coat}"/><circle cx="${x - 5}" cy="${y - 2}" r="2" fill="var(--ink-primary)"/><circle cx="${x + 5}" cy="${y - 2}" r="2" fill="var(--ink-primary)"/><g class="tr__slate" data-juror="${i}" data-x="${x}" data-y="${y + 34}"><rect x="${x - 12}" y="${y + 19}" width="24" height="30" rx="3" fill="var(--paper-base)"/><path class="tr__scribble" d="M${x - 8} ${y + 26} h16 M${x - 8} ${y + 33} h12 M${x - 8} ${y + 40} h14" stroke="var(--ink-secondary)" stroke-width="1.6" stroke-linecap="round" pathLength="1"/><path class="tr__mark tr__mark--yes" data-shape="check" d="${slateMark('check', x, y + 34)}" stroke="var(--world-leaf-deep)" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round" pathLength="1"/><path class="tr__mark tr__mark--no" data-shape="cross" d="${slateMark('cross', x, y + 34)}" stroke="var(--wonder-red)" stroke-width="2.8" fill="none" stroke-linecap="round" pathLength="1"/></g>`;
   }).join('')}
 </svg>`;
 

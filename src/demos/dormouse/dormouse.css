@@ -212,7 +212,7 @@
     background: var(--demo-slip);
     box-shadow: none;
     color: var(--ink-secondary);
-    font-style: italic;
+    --demo-say-style: italic;
     text-align: center;
   }
 

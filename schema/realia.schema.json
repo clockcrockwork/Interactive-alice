@@ -17,7 +17,7 @@
     },
     "realia": {
       "type": "object",
-      "required": ["cat-mishearing", "m-things", "height"],
+      "required": ["cat-mishearing", "m-things", "height", "marks"],
       "additionalProperties": false,
       "properties": {
         "cat-mishearing": {
@@ -72,6 +72,24 @@
               "type": "number",
               "exclusiveMinimum": 0,
               "description": "The height, in this unit, the text names as hers: the reading a stage marks with a notch (three inches; one finger)."
+            }
+          }
+        },
+        "marks": {
+          "type": "object",
+          "required": ["yes", "no"],
+          "additionalProperties": false,
+          "description": "The marks this language's readers write for yes and for no, as the jury writes them on their slates (important, unimportant): a tick and a cross, or a circle and a cross where a tick reads as wrong. Shapes a stage draws, never letters.",
+          "properties": {
+            "yes": {
+              "type": "string",
+              "enum": ["check", "circle", "cross"],
+              "description": "The shape for yes: a tick, a circle, or a cross."
+            },
+            "no": {
+              "type": "string",
+              "enum": ["check", "circle", "cross"],
+              "description": "The shape for no: a tick, a circle, or a cross."
             }
           }
         }

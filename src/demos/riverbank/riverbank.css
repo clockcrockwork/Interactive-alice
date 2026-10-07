@@ -39,7 +39,7 @@
   }
 
   .demo--riverbank .line[data-speaker="white-rabbit"] {
-    font-style: italic;
+    --demo-say-style: italic;
     color: var(--wonder-red-dark);
   }
 

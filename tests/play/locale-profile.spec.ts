@@ -84,6 +84,7 @@ for (const locale of Object.keys(registry.locales)) {
         wordUnit: settings.wordUnit,
         emphasis: settings.emphasis,
         glyphWidth: settings.glyphWidth,
+        significantSpaces: settings.significantSpaces,
         tag: settings.numbers,
       });
       const style = await page
@@ -91,6 +92,30 @@ for (const locale of Object.keys(registry.locales)) {
         .first()
         .evaluate((line) => getComputedStyle(line).fontStyle);
       expect(style).toBe(settings.emphasis === 'italic' ? 'italic' : 'normal');
+    });
+
+    test("the jury marks its slates with this language's yes and no", async ({ page }) => {
+      const trial = at('trial');
+      test.skip(!trial, `no trial page in ${locale}`);
+      await page.goto(trial?.url ?? '');
+      const shapes = (verdict: string) =>
+        page
+          .locator(`.tr__mark--${verdict}`)
+          .evaluateAll((marks) => [
+            ...new Set(marks.map((mark) => mark.getAttribute('data-shape'))),
+          ]);
+      expect(await shapes('yes')).toEqual([realia.marks.yes]);
+      expect(await shapes('no')).toEqual([realia.marks.no]);
+      // Drawn as shapes, a little larger than the scribble's line, never lettering.
+      const box = await page
+        .locator('.tr__mark--yes')
+        .first()
+        .evaluate((mark) => {
+          const { width, height } = (mark as SVGGraphicsElement).getBBox();
+          return { width, height };
+        });
+      expect(Math.max(box.width, box.height)).toBeGreaterThanOrEqual(13);
+      await expect(page.locator('.tr__slate text')).toHaveCount(0);
     });
 
     test("the tape reads her height in the text's own unit, and lands on its notch", async ({
@@ -162,36 +187,131 @@ for (const locale of Object.keys(registry.locales)) {
     });
   });
 
-  test.describe(`${locale}: on a phone`, () => {
-    test.use({ viewport: { width: 320, height: 640 } });
+  if (settings.emphasis !== 'italic') {
+    // Where the script has no italic, nothing on any demo page is set in one: not a
+    // speaker's line, not a narrator's, not a word a demo draws. Every element of the
+    // page, every beat, both widths.
+    for (const viewport of [
+      { name: 'desktop', width: 1280, height: 720 },
+      { name: 'phone', width: 390, height: 780 },
+    ]) {
+      test.describe(`${locale}: no italic at ${viewport.name}`, () => {
+        test.use({ viewport: { width: viewport.width, height: viewport.height } });
+        for (const entry of demos.filter((candidate) => candidate.locale === locale)) {
+          test(`${entry.demo}`, async ({ page }) => {
+            await page.goto(entry.url);
+            await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
+            const count = await page.locator('.demo__stage .demo-beat').count();
+            const slanted = new Set<string>();
+            for (let beat = 0; beat < count; beat += 1) {
+              for (const found of await page.evaluate(
+                ([index, total]) => {
+                  window.__aliceDemo?.seek((index + 0.6) / total);
+                  return (
+                    [...document.querySelectorAll<HTMLElement>('body *')]
+                      // Elements that set text of their own; an empty <i> drawn as a
+                      // twinkle has no letters to slant.
+                      .filter((el) =>
+                        [...el.childNodes].some(
+                          (node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim(),
+                        ),
+                      )
+                      .filter((el) => getComputedStyle(el).fontStyle !== 'normal')
+                      .map((el) =>
+                        `${el.tagName.toLowerCase()} ${el.getAttribute('class') ?? ''} ${
+                          el.dataset.segment ?? ''
+                        }`.trim(),
+                      )
+                  );
+                },
+                [beat, count] as const,
+              )) {
+                slanted.add(found);
+              }
+            }
+            expect([...slanted]).toEqual([]);
+          });
+        }
+      });
+    }
+  }
 
-    test('the bar stays one row, and every label fits inside its own pill', async ({ page }) => {
-      const demo = at('mock-turtle');
-      test.skip(!demo, `no mock-turtle page in ${locale}`);
-      await page.goto(demo?.url ?? '');
-      const bar = await page.locator('.demo__bar').boundingBox();
-      const pills = page.locator(
-        '.demo__bar :is(.demo__back, .demo__motion, .demo__sound, .demo__tilt):visible',
-      );
-      expect(await pills.count()).toBeGreaterThan(1);
-      for (const box of await pills.evaluateAll((nodes) =>
-        nodes.map((node) => {
-          const r = node.getBoundingClientRect();
-          return {
-            left: r.left,
-            right: r.right,
-            top: r.top,
-            bottom: r.bottom,
-            over: node.scrollWidth - node.clientWidth,
-          };
-        }),
-      )) {
-        expect(box.left).toBeGreaterThanOrEqual(0);
-        expect(box.right).toBeLessThanOrEqual(320);
-        expect(box.top).toBeGreaterThanOrEqual((bar?.y ?? 0) - 1);
-        expect(box.bottom).toBeLessThanOrEqual((bar?.y ?? 0) + (bar?.height ?? 0) + 1);
-        expect(box.over).toBeLessThanOrEqual(1);
+  test.describe(`${locale}: the phone bar`, () => {
+    // The chrome's floor: every pill a 24-pixel target with a label of 12 pixels or
+    // more, and a bar that wraps to a second row rather than shrink below it.
+    for (const width of [320, 390, 430]) {
+      for (const touch of [false, true]) {
+        test(`at ${width} pixels${touch ? ', on a touch screen' : ''}, every pill keeps the floor`, async ({
+          browser,
+        }) => {
+          const demo = at('mock-turtle');
+          test.skip(!demo, `no mock-turtle page in ${locale}`);
+          const context = await browser.newContext({
+            viewport: { width, height: 700 },
+            hasTouch: touch,
+            isMobile: touch,
+          });
+          const page = await context.newPage();
+          await page.goto(demo?.url ?? '');
+          await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
+          const bar = await page.locator('.demo__bar').evaluate((el) => {
+            const r = el.getBoundingClientRect();
+            return { top: r.top, bottom: r.bottom };
+          });
+          const pills = await page
+            .locator(
+              '.demo__bar :is(.demo__back, .demo__motion, .demo__sound, .demo__tilt):visible',
+            )
+            .evaluateAll((nodes) =>
+              nodes.map((node) => {
+                const r = node.getBoundingClientRect();
+                return {
+                  label: node.textContent ?? '',
+                  left: r.left,
+                  right: r.right,
+                  top: r.top,
+                  bottom: r.bottom,
+                  font: Number.parseFloat(getComputedStyle(node).fontSize),
+                  over: node.scrollWidth - node.clientWidth,
+                };
+              }),
+            );
+          expect(pills.length).toBeGreaterThan(2);
+          if (touch) {
+            // The tilt control is offered on a touch screen: four pills.
+            expect(pills).toHaveLength(4);
+          }
+          for (const pill of pills) {
+            expect(pill.right - pill.left, pill.label).toBeGreaterThanOrEqual(24);
+            expect(pill.bottom - pill.top, pill.label).toBeGreaterThanOrEqual(24);
+            expect(pill.font, pill.label).toBeGreaterThanOrEqual(12);
+            expect(pill.over, pill.label).toBeLessThanOrEqual(1);
+            expect(pill.left, pill.label).toBeGreaterThanOrEqual(0);
+            expect(pill.right, pill.label).toBeLessThanOrEqual(width);
+            expect(pill.top, pill.label).toBeGreaterThanOrEqual(bar.top - 1);
+            expect(pill.bottom, pill.label).toBeLessThanOrEqual(bar.bottom + 1);
+            // A label stays on one line: no pill is taller than one line of it.
+            expect(pill.bottom - pill.top, pill.label).toBeLessThan(pill.font * 2.4);
+          }
+          // No two pills overlap: a full row wraps instead.
+          for (const [i, a] of pills.entries()) {
+            for (const b of pills.slice(i + 1)) {
+              const apart =
+                a.right <= b.left + 1 ||
+                b.right <= a.left + 1 ||
+                a.bottom <= b.top + 1 ||
+                b.bottom <= a.top + 1;
+              expect(apart, `${a.label} / ${b.label}`).toBe(true);
+            }
+          }
+          // What sits under the bar knows how tall it is.
+          const declared = await page
+            .locator('.demo')
+            .evaluate((el) => Number.parseFloat(el.style.getPropertyValue('--demo-bar-height')));
+          expect(Math.abs(declared - (bar.bottom - bar.top))).toBeLessThanOrEqual(1);
+          await context.close();
+        });
       }
-    });
+    }
   });
 }

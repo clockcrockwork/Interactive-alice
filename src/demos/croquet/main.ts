@@ -377,8 +377,10 @@ function mount(shell: DemoShell): void {
     } else {
       turnButton.hide();
     }
-    if (master.time() < iThese) {
-      // Back before the question: nobody has been turned yet.
+    if (master.time() < turnFrom) {
+      // Back before the question: nobody has been turned yet. Keyed on the window's
+      // own edge, which the playhead has always crossed when this runs going back,
+      // so the reset does not depend on how far one frame of the scrub jumped.
       turnCount = 0;
       turns.forEach((state, index) => {
         gsap.killTweensOf(state);

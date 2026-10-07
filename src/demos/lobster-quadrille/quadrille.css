@@ -60,7 +60,7 @@
 
   /* The cry from the distance: small and spaced, in the court's own red. */
   .demo--lobster-quadrille .line[data-speaker="white-rabbit"] {
-    font-size: 0.8em;
+    font-size: calc(0.8em * var(--demo-fit-size, 1));
     letter-spacing: 0.08em;
   }
 
@@ -712,6 +712,17 @@
         [data-cue="run"]
       ) {
       font-size: clamp(0.95rem, 0.85rem + 1vw, 1.1rem);
+    }
+
+    /* Full-width glyphs make a verse taller rather than wider: on a narrow frame
+       it keeps less leading and a closer stack, so it ends above the sea line and
+       the dancers' leaps stay clear of it. */
+    :root[data-glyph-width="full"]
+      .demo--lobster-quadrille
+      .demo-beat:is([data-cue="verse-one"], [data-cue="verse-two"], [data-cue="verse-three"]) {
+      font-size: clamp(0.9rem, 0.8rem + 1vw, 1.02rem);
+      line-height: 1.42;
+      gap: 0.2em;
     }
 
     .lq__swimmer {

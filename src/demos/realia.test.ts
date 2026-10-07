@@ -9,6 +9,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import type { LocaleRealia } from '../types/schema.ts';
+import { slateMark } from './art/vectors.ts';
 import { INCHES, notchInches, onNotch, reading, THREE } from './caterpillar/measure.ts';
 import { MOON_PICTURES, moonPicture } from './cheshire-cat/figures.ts';
 import { isMThing, M_PICTURES } from './dormouse/figures.ts';
@@ -49,6 +50,16 @@ describe('every locale’s realia are drawable and measurable', () => {
           expect(M_PICTURES[thing]).not.toContain('<text');
         }
       }
+    });
+
+    it(`${locale}: the jury's yes and no are marks the slates draw, and tell apart`, () => {
+      const { yes, no } = realia.marks;
+      expect(yes).not.toBe(no);
+      for (const shape of [yes, no]) {
+        // A path the slate draws, centred where it is asked.
+        expect(slateMark(shape, 50, 50)).toMatch(/^M\d/);
+      }
+      expect(slateMark(yes, 50, 50)).not.toBe(slateMark(no, 50, 50));
     });
 
     it(`${locale}: the tape reads her height in the text's unit, and its notch is where she stands`, () => {

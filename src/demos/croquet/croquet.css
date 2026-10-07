@@ -43,7 +43,7 @@
   }
 
   .demo--croquet .line[data-speaker="cheshire-cat"] {
-    font-style: italic;
+    --demo-say-style: italic;
     color: var(--ink-secondary);
   }
 

@@ -892,7 +892,7 @@
     background: var(--demo-slip);
     box-shadow: none;
     color: var(--ink-primary);
-    font-style: italic;
+    --demo-say-style: italic;
   }
 
   .demo--tea-party .line[data-speaker="alice"] {
@@ -916,7 +916,7 @@
   .demo--tea-party .line[data-speaker="dormouse"] {
     justify-self: end;
     background: var(--tp-bubble-dormouse);
-    font-style: italic;
+    --demo-say-style: italic;
   }
 
   .demo--tea-party .line[data-speaker="queen-of-hearts"] {
@@ -939,8 +939,11 @@
     }
 
     /* The song: all of it at the right, so the Dormouse singing in its sleep
-       and the bats the reader sends up stay in the clear. */
+       and the bats the reader sends up stay in the clear. The column starts below
+       the beat's own buttons, which share its corner, and grows down; the shell's
+       caption fit keeps its foot in the frame. */
     .demo--tea-party .demo-beat[data-cue="twinkle"] {
+      inset-block: calc(var(--demo-bar-height) + 8rem) auto;
       max-inline-size: 96vw;
     }
 

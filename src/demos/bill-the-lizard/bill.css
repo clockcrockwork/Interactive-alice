@@ -65,7 +65,7 @@
 
   .demo--bill-the-lizard .line[data-speaker="bill"] {
     color: var(--world-leaf-deep);
-    font-style: italic;
+    --demo-say-style: italic;
   }
 
   /* The world moves; the camera is Bill. Each layer follows the camera at its

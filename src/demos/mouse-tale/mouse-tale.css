@@ -46,7 +46,7 @@
   }
 
   .demo--mouse-tale .line[data-speaker="mouse"] {
-    font-style: italic;
+    --demo-say-style: italic;
   }
 
   /* The verses are drawn on the tail; their sentences stay in the caption layer,
@@ -213,7 +213,7 @@
     background: var(--demo-slip);
     color: var(--ink-primary);
     font-size: clamp(1.3rem, 1.1rem + 1vw, 1.7rem);
-    font-style: italic;
+    font-style: var(--demo-italic);
     white-space: nowrap;
     translate: calc(var(--lx) * 1px - 50%) calc(var(--ly) * 1px - 100%);
     box-shadow: 0 6px 16px var(--cr-shadow);
@@ -320,6 +320,18 @@
 
   .mt__prop--undo {
     inset-block-end: calc(5vh + 6.3rem);
+  }
+
+  /* A narrow frame: the tail swings across the whole width, so its two buttons
+     stand side by side at the very foot, under the room the tail is fitted to. */
+  @media (max-width: 700px) {
+    .mt__prop:is(.mt__prop--read, .mt__prop--pull) {
+      inset-block-end: 0.75rem;
+    }
+
+    .mt__prop--read {
+      inset-inline: 1.25rem auto;
+    }
   }
 
   /* The excuses. The Magpie's scarf winds on; the Canary comes out to call, and

@@ -547,6 +547,19 @@ export interface LocaleRealia {
        */
       notch: number;
     };
+    /**
+     * The marks this language's readers write for yes and for no, as the jury writes them on their slates (important, unimportant): a tick and a cross, or a circle and a cross where a tick reads as wrong. Shapes a stage draws, never letters.
+     */
+    marks: {
+      /**
+       * The shape for yes: a tick, a circle, or a cross.
+       */
+      yes: 'check' | 'circle' | 'cross';
+      /**
+       * The shape for no: a tick, a circle, or a cross.
+       */
+      no: 'check' | 'circle' | 'cross';
+    };
   };
 }
 

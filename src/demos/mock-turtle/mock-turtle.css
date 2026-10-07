@@ -21,7 +21,7 @@
   }
 
   .demo--mock-turtle .line[data-speaker="mock-turtle"] {
-    font-style: italic;
+    --demo-say-style: italic;
     color: var(--lq-say-turtle);
   }
 
@@ -779,7 +779,7 @@
     --w: clamp(0, calc(var(--wash) * 1.7 - var(--i) * 0.09), 1);
     display: inline-block;
     font-family: var(--demo-display);
-    font-style: italic;
+    font-style: var(--demo-italic);
     font-weight: 700;
     font-size: clamp(1rem, 3.4vmin, 1.7rem);
     letter-spacing: 0.06em;
@@ -1035,7 +1035,10 @@
       font-size: clamp(0.95rem, 0.85rem + 1vw, 1.1rem);
     }
 
+    /* Five slips on a narrow frame: the shell's caption fit keeps their foot
+       above the Mock Turtle on his ledge. */
     .demo--mock-turtle[data-words] .demo-beat[data-cue="uglify"] {
+      --demo-fit-foot: 46%;
       font-size: 0.95rem;
     }
 

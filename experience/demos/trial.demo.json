@@ -3,6 +3,7 @@
   "titleChapter": 12,
   "ground": "dark",
   "joinsPrevious": true,
+  "realia": ["marks"],
   "shots": [
     {
       "id": "sentence-before-verdict",

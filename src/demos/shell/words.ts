@@ -26,6 +26,11 @@ export interface LocaleProfile {
   emphasis: 'italic' | 'slip';
   /** Whether the script's glyphs fill the em box. */
   glyphWidth: 'half' | 'full';
+  /**
+   * Whether the language's spaces are authored content: phrase spaces, the edges of
+   * the units a young reader reads as one, rather than word spaces.
+   */
+  significantSpaces: boolean;
   /** The Intl tag numbers and word segmentation use. */
   tag: string;
 }
@@ -55,6 +60,7 @@ export function pageProfile(root: HTMLElement = document.documentElement): Local
     wordUnit: pick(data.wordUnit, ['spaces', 'segmenter'], 'spaces'),
     emphasis: pick(data.emphasis, ['italic', 'slip'], 'italic'),
     glyphWidth: pick(data.glyphWidth, ['half', 'full'], 'half'),
+    significantSpaces: data.significantSpaces === 'true',
     tag: data.numbers || root.lang || 'und',
   };
 }
@@ -64,7 +70,16 @@ export interface Unit {
   text: string;
   /** The whitespace that followed it, or nothing; `text + glue` of every unit is the line. */
   glue: string;
+  /**
+   * Whether the unit ends on a pause (a comma or a stop, of either width): a
+   * stronger place to break after than a space, which a regrouping prefers.
+   */
+  pause: boolean;
 }
+
+/** A pause at a unit's end: a comma or a stop of either width, before any closing marks. */
+const PAUSE = /[、，,;；:：。．.!！?？…‥][\p{Pe}\p{Pf}"'」』]*$/u;
+const endsOnPause = (text: string): boolean => PAUSE.test(text);
 
 type Segmenter = {
   segment(text: string): Iterable<{ segment: string; isWordLike?: boolean }>;
@@ -121,7 +136,11 @@ function spaceUnits(text: string): Unit[] {
   for (const match of text.matchAll(/(\S+)(\s*)/gu)) {
     const parts = (match[1] ?? '').split(COMMA_SPLIT);
     parts.forEach((part, i) => {
-      units.push({ text: part, glue: i < parts.length - 1 ? '' : (match[2] ?? '') });
+      units.push({
+        text: part,
+        glue: i < parts.length - 1 ? '' : (match[2] ?? ''),
+        pause: endsOnPause(part),
+      });
     });
   }
   return units;
@@ -144,7 +163,7 @@ function segmentedUnits(text: string, segmenter: Segmenter): Unit[] {
         lead += segment;
       }
     } else if (isWordLike) {
-      units.push({ text: lead + segment, glue: '' });
+      units.push({ text: lead + segment, glue: '', pause: false });
       lead = '';
     } else if (last?.glue !== '' || lead || /^[\p{Ps}\p{Pi}]/u.test(segment)) {
       lead += segment;
@@ -153,9 +172,40 @@ function segmentedUnits(text: string, segmenter: Segmenter): Unit[] {
     }
   }
   if (lead) {
-    units.push({ text: lead, glue: '' });
+    units.push({ text: lead, glue: '', pause: false });
+  }
+  for (const unit of units) {
+    unit.pause = endsOnPause(unit.text);
   }
   return units;
+}
+
+/**
+ * Units joined across every place a quoted run would be cut: a run inside paired
+ * quotation marks is one unit, whatever spaces or words it holds, so a name set
+ * apart (a race's name, a word on a label) is never broken between two groups.
+ */
+function holdQuoted(line: string, parts: Unit[]): Unit[] {
+  const spans = quotedSpans(line);
+  if (spans.length === 0) {
+    return parts;
+  }
+  const held: Unit[] = [];
+  let at = 0;
+  for (const part of parts) {
+    const start = at;
+    at += part.text.length + part.glue.length;
+    const last = held.at(-1);
+    // The boundary before this unit lies inside a quoted run: join it on.
+    if (last && spans.some(([open, close]) => open < start && start <= close)) {
+      last.text += last.glue + part.text;
+      last.glue = part.glue;
+      last.pause = endsOnPause(last.text);
+    } else {
+      held.push({ ...part });
+    }
+  }
+  return held;
 }
 
 /**
@@ -175,10 +225,10 @@ export function units(
   if (profile.wordUnit === 'segmenter') {
     const segmenter = segmenterFor(profile.tag, 'word');
     if (segmenter) {
-      return segmentedUnits(line, segmenter);
+      return holdQuoted(line, segmentedUnits(line, segmenter));
     }
   }
-  return spaceUnits(line);
+  return holdQuoted(line, spaceUnits(line));
 }
 
 /** Units joined back into a run of text, without the last unit's trailing glue. */
@@ -191,6 +241,32 @@ export const joinUnits = (group: readonly Unit[]): string =>
 /** Opening and closing quotation marks, paired by position. */
 const OPEN = '「『“‘«‹„"';
 const CLOSE = '」』”’»›“"';
+
+/**
+ * Where a sentence's quoted runs are, as `[open, close]` indices of their marks:
+ * the outermost pairs only, each closed in the sentence. A mark that both opens
+ * and closes (`"`, or “ inside „) closes when it is the one awaited; a closing mark
+ * nobody opened (an apostrophe) is passed over.
+ */
+export function quotedSpans(text: string): [number, number][] {
+  const spans: [number, number][] = [];
+  const awaited: { close: string; at: number }[] = [];
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text.charAt(i);
+    if (awaited.length > 0 && char === awaited.at(-1)?.close) {
+      const open = awaited.pop();
+      if (open && awaited.length === 0) {
+        spans.push([open.at, i]);
+      }
+      continue;
+    }
+    const which = OPEN.indexOf(char);
+    if (which >= 0) {
+      awaited.push({ close: CLOSE.charAt(which), at: i });
+    }
+  }
+  return spans;
+}
 
 /** Every run of words a sentence puts inside quotation marks, in order. */
 export function quoted(text: string): string[] {

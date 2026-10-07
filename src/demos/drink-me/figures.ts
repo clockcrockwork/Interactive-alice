@@ -14,7 +14,8 @@ const words = (label: string): string =>
 /**
  * Words of full-width glyphs that would be squeezed thin on one line are set on
  * two instead, broken between the units nearest the middle (`units()`: at a space,
- * or between words where the language writes none), at a size that fits. A label
+ * or between words where the language writes none; after a pause by preference,
+ * and never inside a quoted run), at a size that fits. A label
  * narrow enough for one line (any capitals) is left to the caller.
  */
 function twoLines(label: string, layout: LabelLayout): [string, string] | undefined {
@@ -25,17 +26,19 @@ function twoLines(label: string, layout: LabelLayout): [string, string] | undefi
   if (parts.length < 2) {
     return undefined;
   }
-  // Where each unit ends in the label, the last one excepted.
+  // Where each unit ends in the label, the last one excepted, and whether it ends
+  // on a pause: a comma or a stop is the stronger break, so it wins over a space
+  // unless it lies a quarter of the label further from the middle.
   let end = 0;
   const breaks = parts.slice(0, -1).map((part) => {
     end += part.text.length + part.glue.length;
-    return end;
+    return { index: end, pause: part.pause };
   });
   const middle = label.length / 2;
-  const at = breaks.reduce((best, index) =>
-    Math.abs(index - middle) < Math.abs(best - middle) ? index : best,
-  );
-  return [label.slice(0, at).trim(), label.slice(at).trim()];
+  const cost = (at: { index: number; pause: boolean }): number =>
+    Math.abs(at.index - middle) - (at.pause ? label.length / 4 : 0);
+  const at = breaks.reduce((best, candidate) => (cost(candidate) < cost(best) ? candidate : best));
+  return [label.slice(0, at.index).trim(), label.slice(at.index).trim()];
 }
 
 /** The label's `<text>`: one line fitted to `fit` units, or two lines when it reads better. */

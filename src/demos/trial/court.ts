@@ -9,6 +9,7 @@
 
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
+import { type MarkShape, slateMark } from '../art/vectors.ts';
 import type { DemoShell } from '../shell/shell.ts';
 import { seeded } from '../shell/shell.ts';
 import { TARTS_SVG, WITNESS_BOX_SVG } from './figures.ts';
@@ -152,6 +153,33 @@ export function mountCamera(
   };
 }
 
+/** The marks where a page carries none: a tick for yes, a cross for no. */
+export const TICK_AND_CROSS: { yes: MarkShape; no: MarkShape } = { yes: 'check', no: 'cross' };
+
+/**
+ * Each slate's two marks in the shapes the page's language writes for yes and no
+ * (its realia `marks`: a tick, or a circle where a tick reads as wrong).
+ */
+export function drawMarks(
+  slates: readonly SVGGElement[],
+  shapes: { yes: MarkShape; no: MarkShape },
+): void {
+  for (const slate of slates) {
+    const x = Number(slate.dataset.x);
+    const y = Number(slate.dataset.y);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) {
+      continue;
+    }
+    for (const verdict of ['yes', 'no'] as const) {
+      const mark = slate.querySelector<SVGPathElement>(`.tr__mark--${verdict}`);
+      mark?.setAttribute('d', slateMark(shapes[verdict], x, y));
+      if (mark) {
+        mark.dataset.shape = shapes[verdict];
+      }
+    }
+  }
+}
+
 export interface Jury {
   piece: HTMLElement | null;
   slates: SVGGElement[];
@@ -175,6 +203,7 @@ export function mountJury(
   const { master, reducedMotion } = shell;
   const piece = court.querySelector<HTMLElement>('.tr__jury');
   const slates = [...court.querySelectorAll<SVGGElement>('.tr__slate')];
+  drawMarks(slates, shell.realia('marks') ?? TICK_AND_CROSS);
   const marks = seeded(23);
   const buttons = options.buttons
     ? slates.map((slate, i) => {

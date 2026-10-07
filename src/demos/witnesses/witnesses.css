@@ -31,7 +31,7 @@
   .demo--witnesses .line[data-speaker="cook"],
   .demo--witnesses .line[data-speaker="knave-of-hearts"],
   .demo--witnesses .line[data-speaker="dormouse"] {
-    font-style: italic;
+    --demo-say-style: italic;
   }
 
   /* The accusation, read off the herald's scroll: the slip is the scroll, a

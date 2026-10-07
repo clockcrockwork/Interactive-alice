@@ -119,7 +119,10 @@ apart, and realia* below). Names are fixed across
 the book and the site's own labels: 白うさぎ, 女王さま, 王さま, ぼうしや, 三月うさぎ,
 ヤマネ, こうしゃくふじん, コック, チェシャねこ, にせウミガメ, グリフォン.
 Measures become things a child can picture (three inches is ゆび 一本ぶん) or metric
-(a mile is 1キロ), and money is in 円.
+(a mile is 1キロ), and money is in 円. In a verse, a comma (、) parts its phrases: a
+stage that regroups a line (the Mouse's tail) breaks there by preference, so write the
+seven and the five between commas; a run in 「」 is never broken by a stage or a
+caption.
 
 ### Set apart, and realia
 
@@ -135,7 +138,7 @@ Two things a translation decides that a stage depends on, both checked by the ga
 - **Realia** (`text/locales/<locale>/realia.json`) name the things a sentence is
   *about* when a stage draws or measures them: what the Cat hears instead of a pig,
   the things the sisters drew in the order the sentence lists them, the measure
-  Alice's height is given in. When a translation's joke lands on a different thing,
+  Alice's height is given in, the marks the language's readers write for yes and no. When a translation's joke lands on a different thing,
   change its realia to name that thing, so the stage draws the language's joke and
   not the English one. A thing no stage draws yet has to be drawn first; the unit test
   in `src/demos/realia.test.ts` says which. Realia hold ids and numbers, never words:

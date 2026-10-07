@@ -27,7 +27,7 @@ import {
 } from '../caucus-race/figures.ts';
 import { DISTANT_HOUSE, HOUSE_FRONT_SVG } from '../rabbit-house/front.ts';
 import { attachDemo, type Beat, type DemoShell, mix } from '../shell/shell.ts';
-import { chunksOf, isWide } from './chunks.ts';
+import { chunksOf, emWidth, isWide, layTail, type TailLayout, type TailPiece } from './chunks.ts';
 import '../caucus-race/caucus.css';
 import '../rabbit-house/house.css';
 import './mouse-tale.css';
@@ -56,9 +56,13 @@ interface Member {
 interface Chunk {
   el: SVGTextElement;
   beat: Beat;
-  /** Position down the plain tail, in px, before any pull. */
+  /** Position down the plain tail, in px, before any pull: its row's. */
   s: number;
   size: number;
+  /** Across its row, from the row's middle, where a row holds more than one group. */
+  dx: number;
+  /** The whole row's width, in px. */
+  row: number;
   /** Where it was last laid out, in the tail's own px (the stage's, before the pan). */
   x: number;
   y: number;
@@ -307,12 +311,12 @@ function mount(shell: DemoShell): void {
     return part;
   });
   const chunks: Chunk[] = [];
+  const pieces: TailPiece[] = [];
   const verses = shell.beats.filter(isVerse);
   // The book's lines grow smaller down the tail; these stop where reading would.
   const baseSize = lite ? 16 : 20;
   const floorSize = lite ? 11 : 12.5;
-  const shrink = 0.955;
-  let s = 26;
+  let lineNumber = 0;
   for (const beat of verses) {
     for (const line of beat.lines) {
       for (const words of chunksOf(
@@ -325,16 +329,57 @@ function mount(shell: DemoShell): void {
         el.dataset.segment = line.dataset.segment ?? '';
         el.dataset.cue = beat.cue ?? '';
         el.textContent = words;
-        const size = Math.max(floorSize, baseSize * shrink ** chunks.length);
-        el.setAttribute('font-size', size.toFixed(2));
         svg.append(el);
-        const pitch = isWide(words) ? PITCH_WIDE : PITCH;
-        s += size * pitch * 0.5;
-        chunks.push({ el, beat, s, size, x: 0, y: 0 });
-        s += size * pitch * 0.5;
+        pieces.push({ text: words, line: lineNumber });
+        chunks.push({ el, beat, s: 0, size: baseSize, dx: 0, row: 0, x: 0, y: 0 });
       }
+      lineNumber += 1;
     }
   }
+  // The tail fits the frame below where it starts, in every language: its finest
+  // groups at the book's sizes where they fit, else a line's neighbouring groups
+  // side by side on fewer rows, else those rows smaller (layTail, chunks.ts).
+  const tailMeasure = {
+    base: baseSize,
+    floor: floorSize,
+    shrink: 0.955,
+    lead: 26,
+    pitch: (words: string) => (isWide(words) ? PITCH_WIDE : PITCH),
+    glyphWidth: shell.profile.glyphWidth,
+    rowEms: lite ? 16.5 : 20,
+    rowPieces: 2,
+    minScale: 0.75,
+  };
+  let tailPlan: TailLayout = layTail(pieces, Number.POSITIVE_INFINITY, tailMeasure);
+  const applyPlan = (plan: TailLayout): void => {
+    tailPlan = plan;
+    plan.rows.forEach((row, r) => {
+      const { s: rowS, size } = plan.at[r] ?? { s: 0, size: baseSize };
+      // Side by side, centred on the row's place on the tail, a space apart.
+      const widths = row.map(
+        (k) => emWidth(pieces[k]?.text ?? '', shell.profile.glyphWidth) * size,
+      );
+      const gap = size * 0.5;
+      const whole = widths.reduce((sum, w) => sum + w, 0) + gap * (row.length - 1);
+      let from = -whole / 2;
+      row.forEach((k, j) => {
+        const chunk = chunks[k];
+        const w = widths[j] ?? 0;
+        if (chunk) {
+          chunk.s = rowS;
+          chunk.size = size;
+          chunk.dx = from + w / 2;
+          chunk.row = whole;
+          chunk.el.setAttribute('font-size', size.toFixed(2));
+        }
+        from += w + gap;
+      });
+    });
+    tailLayer.dataset.level = String(plan.level);
+    tailLayer.dataset.scale = plan.scale.toFixed(2);
+    tailLayer.toggleAttribute('data-over', !plan.fits);
+  };
+  applyPlan(tailPlan);
   const bend = document.createElementNS(SVG, 'circle');
   bend.classList.add('mt__bend');
   bend.setAttribute('r', lite ? '12' : '18');
@@ -342,9 +387,8 @@ function mount(shell: DemoShell): void {
   tailLayer.append(svg);
 
   const bends = lite ? 3.5 : 3;
-  const last = chunks[chunks.length - 1];
-  /** The tail's natural height: the chunks stacked at their own pitch, never squeezed. */
-  const natural = (last?.s ?? 0) + (last?.size ?? 0) * 2;
+  /** The tail's natural height: its rows stacked at their own pitch, never squeezed. */
+  let natural = tailPlan.height;
   const fitTail = (start: Point, width: number): [Point[], Point[]] => {
     const amplitude = Math.min(width * (lite ? 0.2 : 0.11), 84);
     return [
@@ -389,7 +433,13 @@ function mount(shell: DemoShell): void {
   const view = { v: 0 };
   let pans = [0, 0, 0, 0, 0, 0, 0, 0];
   let stageHeight = 760;
+  let stageWidth = 1280;
   let mouseTop = 300;
+  /** The Mouse's middle: the camera never pans it up under the bar. */
+  let mouseMiddle = 350;
+  /** How far the camera may pan before the tail's first verse or the party goes under the bar. */
+  let tailCeiling = Number.POSITIVE_INFINITY;
+  let barFoot = 0;
   let pan = 0;
   const applyPan = (): void => {
     const i = Math.min(pans.length - 2, Math.max(0, Math.floor(view.v)));
@@ -412,6 +462,7 @@ function mount(shell: DemoShell): void {
     for (let i = Math.floor(SAMPLES * KNOT_FROM); i <= Math.ceil(SAMPLES * KNOT_TO); i += 1) {
       knotY = Math.max(knotY, knotted[i]?.[1] ?? 0);
     }
+    // The tail's first verse never goes up under the bar, however far it pans.
     pans = [
       0,
       ...verseEnds,
@@ -419,7 +470,7 @@ function mount(shell: DemoShell): void {
       // The knot is the picture of its beat: the party may slip up under the captions.
       Math.min(keepMouse + 60, Math.max(0, knotY + 30 - room)),
       0,
-    ];
+    ].map((value) => Math.min(value, tailCeiling));
     applyPan();
   };
 
@@ -427,20 +478,30 @@ function mount(shell: DemoShell): void {
     for (const chunk of chunks) {
       const slide = slides.get(chunk.beat)?.v ?? 0;
       const index = indexAt(chunk.s + pull.v + slide);
-      const [x, y] = pointAt(index);
+      const [px, y] = pointAt(index);
       const [x0, y0] = pointAt(index - 1.5);
       const [x1, y1] = pointAt(index + 1.5);
       // Each chunk reads left to right, leaning a little the way the tail bends
       // below it, never so much that it reaches into the next line.
       const lean = (Math.atan2(x1 - x0, Math.max(0.01, y1 - y0)) * 180) / Math.PI;
-      const angle = Math.max(-5, Math.min(5, lean * 0.25));
-      chunk.x = x;
+      // A long row leans less, so its ends never reach the rows above and below.
+      const most = Math.min(
+        5,
+        (Math.atan((chunk.size * 0.3) / Math.max(1, chunk.row / 2)) * 180) / Math.PI,
+      );
+      const angle = Math.max(-most, Math.min(most, lean * 0.25));
+      // And a row stays inside the frame, however far the tail swings.
+      const half = chunk.row / 2 + 8;
+      const x = half * 2 < stageWidth ? Math.min(stageWidth - half, Math.max(half, px)) : px;
+      // Where the group itself stands, for the reading-glass: across its row.
+      chunk.x = x + chunk.dx;
       chunk.y = y;
       // The line under the reading-glass swells a little where it lies.
       const swell = chunk === near ? ' scale(1.25)' : '';
+      const across = chunk.dx ? ` translate(${chunk.dx.toFixed(1)} 0)` : '';
       chunk.el.setAttribute(
         'transform',
-        `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${angle.toFixed(1)})${swell}`,
+        `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${angle.toFixed(1)})${across}${swell}`,
       );
     }
     body.forEach((part, k) => {
@@ -454,7 +515,7 @@ function mount(shell: DemoShell): void {
       part.setAttribute('d', d);
       part.setAttribute(
         'stroke-width',
-        mix(baseSize * 1.7, floorSize * 1.2, k / (BODY_PARTS - 1)).toFixed(1),
+        (mix(baseSize * 1.7, floorSize * 1.2, k / (BODY_PARTS - 1)) * tailPlan.scale).toFixed(1),
       );
     });
     const [bx, by] = pointAt(SAMPLES * (4.5 / (2 * bends)));
@@ -475,12 +536,28 @@ function mount(shell: DemoShell): void {
     const box = shell.stage.getBoundingClientRect();
     const r = mouse.el.getBoundingClientRect();
     stageHeight = box.height;
+    stageWidth = box.width;
     mouseTop = r.top - box.top + pan;
+    mouseMiddle = mouseTop + r.height / 2;
     // Just below the Mouse's own tail, never so near the edge that the words spill.
     const start: Point = [
       Math.max(lite ? 76 : 104, r.left - box.left + r.width * 0.12),
       r.top - box.top + pan + r.height * 0.82,
     ];
+    // The room the tail has: from where it starts to the foot of the frame, above
+    // the buttons there, plus as far as the camera may pan down the bank after it:
+    // never so far that the tail's first verse goes up under the bar, nor more than
+    // the top half of the Mouse at the head of the party.
+    barFoot = shell.root.querySelector('.demo__bar')?.getBoundingClientRect().bottom ?? 0;
+    const firstRow = (plan: TailLayout): number =>
+      start[1] + (plan.at[0]?.s ?? 0) - (plan.at[0]?.size ?? 0);
+    const panRoom = (plan: TailLayout): number =>
+      Math.max(0, Math.min(firstRow(plan) - barFoot - 8, mouseMiddle - barFoot));
+    // The first row sits at the same place whatever the plan, near enough.
+    const roomFor = panRoom(tailPlan);
+    applyPlan(layTail(pieces, stageHeight - (lite ? 76 : 56) - start[1] + roomFor, tailMeasure));
+    natural = tailPlan.height;
+    tailCeiling = panRoom(tailPlan);
     [plain, knotted] = fitTail(start, box.width);
     measurePans();
     mark();
@@ -531,10 +608,12 @@ function mount(shell: DemoShell): void {
         );
       }
     }
+    // The camera leads the newest line down rather than following it, so a line
+    // never shows below the room the tail is fitted to while the camera catches up.
     master.to(
       view,
-      { v: k + 1, duration: quick(0.75), ease: 'power1.inOut', onUpdate: applyPan },
-      reducedMotion ? before(t) : t + 0.1,
+      { v: k + 1, duration: quick(0.4), ease: 'power2.out', onUpdate: applyPan },
+      reducedMotion ? before(t) : t + 0.02,
     );
     master.call(
       () => (master.time() >= t + 0.05 ? shell.sound.play('paper', 0.25) : undefined),

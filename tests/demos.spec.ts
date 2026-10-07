@@ -1844,3 +1844,29 @@ test('the link to the next scene joins the tab order only on the last beat', asy
   await expect(page.locator('.demo__end')).not.toHaveAttribute('inert', '');
   await expect(page.locator('.demo__next')).toBeVisible();
 });
+
+test('a scroll settles on a starved machine: frames longer than the ease allows still land the timeline', async ({
+  page,
+}) => {
+  // Every frame here takes seconds; the test is about not timing out, not speed.
+  test.setTimeout(180_000);
+  // The court: CSS 3D and many pieces, the heaviest frames of the timeouts seen.
+  const demo = baseDemos.find((candidate) => candidate.demo === 'witnesses');
+  test.skip(!demo, 'no witnesses demo in this build');
+  await page.goto(demo?.url ?? '');
+  await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
+  // Frames of most of a second, longer than GSAP's lag smoothing lets its clock
+  // follow: the scrub's ease advances a few hundredths of its time per frame and
+  // would crawl for half a minute (measured: 38 s at this rate).
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 60 });
+  await scrollTo(page, 0.62);
+  const state = await page.evaluate(() => {
+    const seam = window.__aliceDemo;
+    return { settled: seam?.settled(), beat: seam?.beat(), progress: seam?.progress() };
+  });
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
+  expect(state.settled).toBe(true);
+  const beats = await page.locator('.demo__stage .demo-beat').count();
+  expect(state.beat).toBe(Math.floor((state.progress ?? 0) * beats + 1e-6));
+});

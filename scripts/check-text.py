@@ -162,6 +162,10 @@ def check_realia(config: dict, errors: list[str]) -> None:
         for key in realia:
             if key not in reference:
                 errors.append(f"{label}: {key!r} is not an id {base} defines")
+        marks = realia.get("marks")
+        if isinstance(marks, dict) and marks.get("yes") == marks.get("no"):
+            errors.append(f"{label} marks: yes and no are both {marks.get('yes')!r}; a reader "
+                          "must tell them apart")
 
 
 def check_profile(config: dict, errors: list[str]) -> None:

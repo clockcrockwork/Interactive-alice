@@ -920,7 +920,7 @@ through the middle of the frame along the lines of the tale, dripping treacle on
 words. At *muchness* a floating letter pressed, or *Draw something with an M*, becomes
 one of the things the sisters drew: a mouse-trap, the moon, or memory as a knot in a
 string. The Japanese things begin with お and are the same things (おとしわな, おつきさま,
-おもいで, おおさ), so the same three pictures serve. The cup's own layers take no pointer, so every one of these reaches it.
+おもいで, おんなじさ), so the same three pictures serve. The cup's own layers take no pointer, so every one of these reaches it.
 
 The tea-party and the croquet-ground join. When Alice walks off, the tea-table pulls
 back and away and a tree stands in a dark wood with a door in its trunk; the door

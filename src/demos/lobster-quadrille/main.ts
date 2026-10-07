@@ -27,7 +27,7 @@ import {
   mix,
   seeded,
 } from '../shell/shell.ts';
-import { exclaims } from '../shell/words.ts';
+import { exclaims, type LocaleProfile, pageProfile, units } from '../shell/words.ts';
 import { COURT_DOORS, HANDS_WITH_LOBSTER, JELLY_SVG, TUREEN_SVG } from './figures.ts';
 import './quadrille.css';
 import './shore.css';
@@ -67,19 +67,16 @@ interface Dancer {
   opposite: number;
 }
 
-/** A sung line as a run of word spans, so each word can be lit as it is sung.
-    The words and the spaces between them stay the line's own text. */
-function wordsOf(line: HTMLElement): HTMLElement[] {
-  const parts = (line.textContent ?? '').split(/(\s+)/).filter((part) => part !== '');
+/** A sung line as a run of word spans, so each unit can be lit as it is sung: the
+    units the page's language splits a line into (`units()`, by its profile). The
+    units and the spaces between them stay the line's own text. */
+function wordsOf(line: HTMLElement, profile: LocaleProfile): HTMLElement[] {
   line.replaceChildren(
-    ...parts.map((part) => {
-      if (/^\s+$/.test(part)) {
-        return document.createTextNode(part);
-      }
+    ...units(line.textContent ?? '', profile).flatMap((unit) => {
       const word = document.createElement('span');
       word.className = 'lq__word';
-      word.textContent = part;
-      return word;
+      word.textContent = unit.text;
+      return unit.glue ? [word, document.createTextNode(unit.glue)] : [word];
     }),
   );
   return [...line.querySelectorAll<HTMLElement>('.lq__word')];
@@ -107,9 +104,12 @@ function sungCaption(
     { opacity: 1, y: 0, duration: reduced ? entry.duration : 0.2, stagger: reduced ? 0 : 0.02 },
     entry.at,
   );
+  // The caption is composed before the shell is handed over, so the profile is
+  // read from the page here, as the shell reads it.
+  const profile = pageProfile();
   const words = beat.lines
     .filter((line) => line.dataset.speaker === 'mock-turtle')
-    .flatMap((line) => wordsOf(line));
+    .flatMap((line) => wordsOf(line, profile));
   if (words.length > 0) {
     if (reduced) {
       master.fromTo(words, { '--lit': 0 }, { '--lit': 1, duration: 0.01 }, entry.at);

@@ -1,6 +1,7 @@
 {
   "id": "caterpillar",
   "titleChapter": 5,
+  "realia": ["height"],
   "shots": [
     {
       "id": "on-the-mushroom",

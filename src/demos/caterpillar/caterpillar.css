@@ -545,12 +545,14 @@
     visibility: visible;
   }
 
-  /* The tape-measure down the frame's left edge: paper, inch ticks and quarter
-     ticks in ink, the numbers sliding past a fixed mark as she changes size. */
+  /* The tape-measure down the frame's left edge: paper, a tick per unit and
+     quarter ticks in ink, the numbers sliding past a fixed mark as she changes
+     size. The unit is the page's (realia `height`): `--step` is one of it. */
   .ct__tape {
     --h: 3;
     --frac: 0;
-    --inch: clamp(1.8rem, 6vmin, 3rem);
+    --notch: 3;
+    --step: clamp(1.8rem, 6vmin, 3rem);
     position: absolute;
     inset-inline-start: 0;
     inset-block: calc(var(--demo-bar-height) + 0.5rem) 34%;
@@ -572,20 +574,20 @@
   .ct__tape-ticks {
     position: absolute;
     inset-inline: 0;
-    inset-block-start: calc(50% - 20 * var(--inch));
-    block-size: calc(40 * var(--inch));
-    translate: 0 calc(var(--frac) * var(--inch));
+    inset-block-start: calc(50% - 20 * var(--step));
+    block-size: calc(40 * var(--step));
+    translate: 0 calc(var(--frac) * var(--step));
     background:
       repeating-linear-gradient(
         to bottom,
         var(--ink-primary) 0 1.5px,
-        transparent 1.5px var(--inch)
+        transparent 1.5px var(--step)
       )
       0 0 / 62% 100% no-repeat,
       repeating-linear-gradient(
         to bottom,
         var(--ink-faded) 0 1px,
-        transparent 1px calc(var(--inch) / 4)
+        transparent 1px calc(var(--step) / 4)
       )
       0 0 / 30% 100% no-repeat;
   }
@@ -595,20 +597,21 @@
     position: absolute;
     inset-inline-end: 0.25rem;
     inset-block-start: 50%;
-    translate: 0 calc((var(--h) - var(--n)) * var(--inch) - 50%);
+    translate: 0 calc((var(--h) - var(--n)) * var(--step) - 50%);
     font-family: system-ui, sans-serif;
     font-size: 0.62rem;
     color: var(--ink-primary);
   }
 
-  /* The notch at three inches: cut into the tape's edge. */
+  /* The notch where the text says she stands (three inches; one finger): cut
+     into the tape's edge. */
   .ct__tape-notch {
     position: absolute;
     inset-inline-end: 0;
     inset-block-start: 50%;
     inline-size: 0.55rem;
     aspect-ratio: 1 / 1.4;
-    translate: 0 calc((var(--h) - 3) * var(--inch) - 50%);
+    translate: 0 calc((var(--h) - var(--notch)) * var(--step) - 50%);
     background: var(--world-night);
     clip-path: polygon(100% 0, 0 50%, 100% 100%);
   }
@@ -639,8 +642,22 @@
     transition: box-shadow var(--demo-calm) var(--demo-ease);
   }
 
-  /* On three exactly, the notch is at the mark and the reading glows gold. */
-  .ct__tape[data-three] .ct__tape-read {
+  /* The unit's name under the number, smaller: a line of its own, so no
+     language's order of number and unit is assumed. */
+  .ct__tape-value,
+  .ct__tape-unit {
+    display: block;
+    text-align: center;
+  }
+
+  .ct__tape-unit {
+    font-size: 0.62em;
+    line-height: 1.1;
+    color: var(--ink-secondary);
+  }
+
+  /* On the notch exactly, the notch is at the mark and the reading glows gold. */
+  .ct__tape[data-notch] .ct__tape-read {
     box-shadow: 0 0 0 2px var(--ix-gold);
   }
 

@@ -83,7 +83,7 @@ test('the caterpillar: a tape-measure reads her height, and landing on three mak
   await expect(tape).toHaveAttribute('aria-valuenow', '5.1', { timeout: 15_000 });
   await page.locator('.ct__bit--right').click();
   await expect(tape).toHaveAttribute('aria-valuenow', '3.0', { timeout: 15_000 });
-  await expect(page.locator('.ct__tape')).toHaveAttribute('data-three', '');
+  await expect(page.locator('.ct__tape')).toHaveAttribute('data-notch', '');
   await expect(page.locator('.ct__peek')).toHaveAttribute('data-nod', '');
   // The story takes the nibbles back at its next change of size.
   await atCue(page, 'shrink', 0.5);

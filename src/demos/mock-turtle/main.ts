@@ -21,7 +21,7 @@
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
-import { namedWords } from '../shell/words.ts';
+import { graphemes, type LocaleProfile, namedWords } from '../shell/words.ts';
 import { GRYPHON_PAWS, SHORE_HTML, schoolMarkup, TURTLE_FLAPPERS } from './figures.ts';
 import '../lobster-quadrille/shore.css';
 import './mock-turtle.css';
@@ -29,15 +29,17 @@ import './mock-turtle.css';
 /**
  * The subject names in what the Mock Turtle says in a beat, in order, once each:
  * the words his sentences set apart, quoted or capitalised (Reeling),
- * whichever his language does (shell/words.ts).
+ * whichever his language does: the methods its profile declares (shell/words.ts).
+ * The demo file lists these sentences under `reads.setApart`, so a translation that
+ * sets none apart fails the gate rather than writing nothing on the sand.
  */
-function subjectsIn(lines: HTMLElement[]): string[] {
+function subjectsIn(lines: HTMLElement[], methods: LocaleProfile['setApart']): string[] {
   const found: string[] = [];
   for (const line of lines) {
     if (line.dataset.speaker !== 'mock-turtle') {
       continue;
     }
-    for (const word of namedWords(line.textContent ?? '')) {
+    for (const word of namedWords(line.textContent ?? '', 5, methods)) {
       if (!found.includes(word)) {
         found.push(word);
       }
@@ -47,13 +49,14 @@ function subjectsIn(lines: HTMLElement[]): string[] {
 }
 
 /** Every word a beat sets apart, whoever says it. */
-function namedIn(lines: HTMLElement[]): string[] {
-  return lines.flatMap((line) => namedWords(line.textContent ?? ''));
+function namedIn(lines: HTMLElement[], methods: LocaleProfile['setApart']): string[] {
+  return lines.flatMap((line) => namedWords(line.textContent ?? '', 5, methods));
 }
 
-/** A word as a run of letter spans, so each letter can writhe on its own. */
+/** A word as a run of letter spans (graphemes, so an accent stays on its letter),
+    so each letter can writhe on its own. */
 function letters(word: string): string {
-  return [...word]
+  return graphemes(word)
     .map((letter, index) => `<span class="mt__letter" style="--l: ${index}">${letter}</span>`)
     .join('');
 }
@@ -541,7 +544,7 @@ function mount(shell: DemoShell): void {
   const groups: WordGroup[] = [];
   const shotEnd = (subjectBeats.at(-1)?.index ?? iGrief) + 1;
   for (const beat of subjectBeats) {
-    const words = subjectsIn(beat.lines);
+    const words = subjectsIn(beat.lines, shell.profile.setApart);
     if (words.length === 0) {
       continue;
     }
@@ -705,7 +708,7 @@ function mount(shell: DemoShell): void {
     master.call(wordsShown, [], group.washAt + 0.3);
   }
   // Never heard of uglifying: the word the beat itself argues about writhes by itself.
-  const argued = namedIn(shell.beats[iUglify]?.lines ?? []);
+  const argued = namedIn(shell.beats[iUglify]?.lines ?? [], shell.profile.setApart);
   master.call(
     () => {
       if (master.time() < iUglify + 0.35) {

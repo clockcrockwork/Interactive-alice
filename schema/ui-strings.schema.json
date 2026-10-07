@@ -58,7 +58,8 @@
         "demoHoldHead",
         "demoCatchBill",
         "demoDipLeaves",
-        "demoHeightInches",
+        "demoHeight",
+        "demoHeightUnit",
         "demoOpenLetter",
         "demoLookCat",
         "demoCallPig",
@@ -358,10 +359,15 @@
           "minLength": 1,
           "description": "Caterpillar: dip her long neck down into the tree tops."
         },
-        "demoHeightInches": {
+        "demoHeight": {
           "type": "string",
           "minLength": 1,
-          "description": "Caterpillar: accessible name of the tape-measure that reads her height."
+          "description": "Caterpillar: accessible name of the tape-measure that reads her height, naming the unit the locale's realia measure it in (text/locales/<locale>/realia.json, height)."
+        },
+        "demoHeightUnit": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Caterpillar: the name of that unit, printed at the head of the tape: the unit of the locale's realia height, never a second choice of unit."
         },
         "demoOpenLetter": {
           "type": "string",

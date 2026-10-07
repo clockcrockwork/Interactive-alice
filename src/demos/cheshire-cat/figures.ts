@@ -22,8 +22,9 @@ export const SIGN_SVG = `
 </svg>`;
 
 /** Pig, or fig: what the moon shows for a moment, drawn into it like its own
-    markings. Pictures only. A locale whose rhyme for pig is another thing draws
-    that instead (the demo file's `pictures`): the lid is the Japanese one. */
+    markings. Pictures only. The second answer is the thing the page's language
+    hears instead of a pig (realia `cat-mishearing`), so every picture a locale's
+    realia may name is drawn here; a unit test holds every locale to that. */
 export const MOON_PICTURES: Record<'pig' | 'fig' | 'lid', string> = {
   pig: `
 <svg viewBox="0 0 100 100" focusable="false">
@@ -55,7 +56,7 @@ export const MOON_PICTURES: Record<'pig' | 'fig' | 'lid', string> = {
 
 const isMoonPicture = (name: string): name is keyof typeof MOON_PICTURES => name in MOON_PICTURES;
 
-/** The moon's picture for an answer, after the page's locale has had its say. */
+/** The moon's picture for a realia name, or the fallback when it is not one drawn here. */
 export const moonPicture = (name: string, fallback: 'pig' | 'fig'): keyof typeof MOON_PICTURES =>
   isMoonPicture(name) ? name : fallback;
 

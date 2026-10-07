@@ -79,7 +79,7 @@ palette, always inside the guide's own colours and always transiently:
   it is presented;
 - the house's little bottle glows mint while she drinks; Bill's launch flashes gold;
 - the Caterpillar's size changes blink lilac, the Pigeon's *Serpent!* is a warning
-  red, and the tape's reading rings gold on three inches;
+  red, and the tape's reading rings gold on its notch (three inches);
 - the kitchen's *Pig!* and *chop off her head* flash Wonderland red, the chorus words
   bounce in Wonderland red on their slips, and the fire is gold at rest;
 - the Cat's *we're all mad here* washes the wood with lilac for the beat, and the
@@ -98,9 +98,11 @@ palette, always inside the guide's own colours and always transiently:
 The demos are built in every language in `text/locales.json`. The base locale's
 pages keep the URLs they were first published at (`/demos/`, `/demos/<id>/`); every
 other locale's are one level down, `/demos/<locale>/` and `/demos/<locale>/<id>/`,
-mirroring the story's `/<locale>/` scheme without moving the English. Every page is
-`<html lang dir data-line-break data-significant-spaces>` from the registry, as the
-story's pages are, and every sentence on it is resolved by segment id at build time
+mirroring the story's `/<locale>/` scheme without moving the English. Every page
+carries its locale's profile on the root (`<html lang dir data-line-break
+data-significant-spaces data-set-apart data-word-unit data-emphasis data-glyph-width
+data-numbers>`), from the registry and written by the same function as the story's
+pages ([`text-experience-binding.md`](text-experience-binding.md) §9), and every sentence on it is resolved by segment id at build time
 in that language; titles, card descriptions (`demoTech*`) and every label come from
 that locale's `ui.json`.
 
@@ -121,31 +123,42 @@ that locale's `ui.json`.
   keepsakes are stored under the same keys for every language (`alice-demos:*`): they
   are the reader's choices and the reader's record of play, not the language's, so a
   daisy chain kept in English lies on the bank in Japanese too. No storage was added.
-- **Pictures that ride on a word.** Where a picture's sense rides on a word of the
-  text, a demo file may swap it per locale (`pictures` in the demo schema, written
-  onto the page as `data-pictures`, read with `shell.picture()`): the Cat's *pig, or
-  fig?* is ブタ, or フタ in Japanese, so the second answer is a lid there.
+- **Things that ride on a word: realia.** Where a picture or a measure rides on a word
+  of the text, the thing is the locale's, in `text/locales/<locale>/realia.json`, and
+  the demo file only says which ids it reads (`realia`); the build writes those
+  entries onto the page as `data-realia` and the stage reads them with
+  `shell.realia(id)`. The Cat's *pig, or fig?* (`cat-mishearing`: a lid where the
+  rhyme for pig is a lid), the things the Dormouse's sisters drew in the order the
+  sentence lists them (`m-things`), and the measure the Caterpillar's tape reads in
+  (`height`: inches, or fingers). No demo file names a locale.
 
-**Japanese typography.** Captions are the same paper slips, set in the reader's own
-system fonts (no web font, so no bytes): a textbook face where the system has one
-(UD Digi Kyokasho), else a Mincho (Hiragino, Yu, Noto Serif CJK, IPA), as
-`--demo-serif` under `:lang(ja)`, at a slightly smaller caption size since the glyphs
-are full width. Lines break only at the authored phrase spaces and by the strict
-kinsoku rules (`word-break: keep-all`, `line-break: strict`), with `overflow-wrap:
-anywhere` so an over-long run breaks rather than overflows; line-height 1.7 and a
-little letter-spacing. Kana have no italic, so these pages forbid a synthesised one
-(`font-synthesis-style: none`) and speech and thought stand on a warmer slip
-(`--demo-slip-say`) in the softer ink instead of slanting. On a phone the bar's
-labels are a little smaller and a label that still does not fit breaks at its phrase
-space inside its own pill, so the bar stays one row.
+**Typography keyed on the profile, not the language.** Captions are the same paper
+slips in every language. What differs is read from the root's profile:
+`data-significant-spaces="true"` breaks lines only at the authored spaces
+(`word-break: keep-all`, with `overflow-wrap: anywhere` so an over-long run breaks
+rather than overflows) and the registry's `lineBreak` sets the kinsoku strictness;
+`data-glyph-width="full"` sets a slightly smaller caption size, line-height 1.7, a
+little letter-spacing and a smaller phone bar; `data-emphasis="slip"` forbids a
+synthesised italic (`font-synthesis-style: none`) and stands speech and thought on a
+warmer slip (`--demo-slip-say`) in the softer ink instead of slanting. The font
+stacks are the one thing set per script, in one `:lang()` rule in `shell.css`'s
+tokens: Japanese is set in the reader's own system fonts (no web font, so no bytes),
+a textbook face where the system has one (UD Digi Kyokasho), else a Mincho
+(Hiragino, Yu, Noto Serif CJK, IPA), as `--demo-serif`, and the display face
+(`--demo-display`, Georgia for Latin) falls back to it. On a phone, in any language, a
+bar label that does not fit breaks where its language allows inside its own pill, so
+the bar stays one row.
 
 **Reading words out of the page, in any script.** Every place a demo takes something
-from its sentences reads it by punctuation and case, never by language
-(`shell/words.ts`): words set apart in quotation marks of any kind first, capitals
-second; an exclamation in either width; widths in ems where full-width glyphs count
-one and the rest a half. Japanese sets apart in 「」 exactly what English capitalises
-(`text-pipeline.md` §3), so the same code finds both. Each demo's use is described in
-its own section below.
+from its sentences reads it by punctuation and case, by the methods the page's
+profile declares, never by language (`shell/words.ts`): words set apart in quotation
+marks of any kind, or by capitals; a line split into units by `units()` (its spaces,
+or `Intl.Segmenter` words for a language without spaces); characters counted as
+graphemes; an exclamation in either width; widths in ems where full-width glyphs
+count one and the rest a half. Japanese sets apart in 「」 exactly what English
+capitalises (`text-pipeline.md` §3), so the same code finds both. What a stage reads is
+declared in its demo file (`reads`), and the gate checks it in every language that
+publishes the demo. Each demo's use is described in its own section below.
 
 ## 2. What they share with the story, and what they do not
 
@@ -334,8 +347,14 @@ Mock Turtle and the quadrille), `bubble` (the cauldron, while the kitchen is on)
 `murmur` (the court's crowd, until the pack rises). All of them are nothing until the
 visitor turns sound on, and are held while motion is paused.
 
-`window.__aliceDemo` is the test seam: progress, active beat, paused, reduced, and a
-per-demo `mode` (the rabbit hole reports `webgl` or `flat`).
+`window.__aliceDemo` is the test seam: progress, active beat, paused, reduced, a
+per-demo `mode` (the rabbit hole reports `webgl` or `flat`), and the page's locale,
+its profile as the shell read it, and the realia it carries, all serialisable.
+
+The shell also hands every demo the page's **locale profile** (`shell.profile`),
+number formatting in its locale (`shell.locale.numberFormat()`) and its **realia**
+(`shell.realia(id)`, for the ids the demo file declares), so no demo reads the
+page's language itself ([`text-experience-binding.md`](text-experience-binding.md) §9).
 
 **Joins.** The demos are viewed in the book's order, and where two adjacent demos are
 one moment of the book they join: the end of the first is staged so that it leads
@@ -733,7 +752,7 @@ neck holds straight; the Pigeon's wings are spread and do not beat.
 
 **The strength of the puff.** Hold *Blow a smoke ring*, or press and hold the Caterpillar, and it draws in: the coal of the hookah glows brighter and its body swells for up to a second and a half, and on letting go the ring's size, pace and lifetime follow the hold, from the small quick ring of a tap to a big slow one that hangs low over her and wobbles. The keyboard charges the same way, Space or Enter held on the button; the first time the button appears the status line says *Hold to blow a bigger ring*, and a whoosh scales with the strength when sound is on. Under reduced motion the charge is a step rather than a swell and the ring appears at its final size and fades where it is, without drifting.
 
-**The tape-measure and the leaves.** A paper tape-measure down the frame's left edge (a meter named *Her height, in inches*) reads her height as it changes, with a notch at three; landing on exactly three again makes the Caterpillar come up out of the grass and nod. While it asks her to explain herself, it leans in and its smoke comes out as question marks. Above the trees her hands are far below; *Dip into the leaves*, or a drag down from where her neck leaves the frame, takes her head down among them, and the Pigeon bursts up out of them into her face. For the neck beats the captions stand at the top so the shoulders far below are seen. At the end she looks down at her feet, and the mushroom by her shoe is a toy. Under reduced motion the nod is a still, bowed, and the dip is a still of the Pigeon at her face.
+**The tape-measure and the leaves.** A paper tape-measure down the frame's left edge (a meter named by `demoHeight`) reads her height as it changes, in the unit the page's sentences use (the locale's realia `height`, its name printed under the reading from `demoHeightUnit`: inches in English, fingers in Japanese, where three inches is ゆび 一本ぶん), with a notch where the text says she stands; landing on exactly three again makes the Caterpillar come up out of the grass and nod. While it asks her to explain herself, it leans in and its smoke comes out as question marks. Above the trees her hands are far below; *Dip into the leaves*, or a drag down from where her neck leaves the frame, takes her head down among them, and the Pigeon bursts up out of them into her face. For the neck beats the captions stand at the top so the shoulders far below are seen. At the end she looks down at her feet, and the mushroom by her shoe is a toy. Under reduced motion the nod is a still, bowed, and the dip is a still of the Pigeon at her face.
 
 ### Pig and Pepper: the kitchen comes at you
 
@@ -808,8 +827,8 @@ they begin. *Call the pig* brings the pig back to stand beside her, hop and grun
 before it trots on into the wood; a tap on the pig makes it hop. At *Did you say pig,
 or fig?* two props, *Pig* and *Fig*, answer: the thing chosen shows for a moment in the
 moon, drawn into it like its markings, and the grin widens. In Japanese the rhyme is
-ブタ, or フタ, so the second answer is a lid and the moon draws a pot lid (the demo
-file's `pictures`).
+ブタ, or フタ, so the second answer is a lid and the moon draws a pot lid (the
+locale's realia, `cat-mishearing`).
 
 It opens on the bough Pig and Pepper ended looking up at, close, with the grin
 already on it; over the first beat the bough settles to its place in the wood and the
@@ -918,9 +937,11 @@ to stir it*, which is also the stir's button for the keyboard. At the drawing,
 *Draw up some treacle* pulls the sisters' little bucket up the spiral on its rope,
 through the middle of the frame along the lines of the tale, dripping treacle on the
 words. At *muchness* a floating letter pressed, or *Draw something with an M*, becomes
-one of the things the sisters drew: a mouse-trap, the moon, or memory as a knot in a
-string. The Japanese things begin with お and are the same things (おとしわな, おつきさま,
-おもいで, おんなじさ), so the same three pictures serve. The cup's own layers take no pointer, so every one of these reaches it.
+one of the things the sisters drew, in the order the sentence lists them (the locale's
+realia, `m-things`): a mouse-trap, the moon, memory as a knot in a string, and a
+muchness, which is an empty frame. The Japanese things begin with お and are its own
+list, so its realia name its own pictures: the same trap, moon and empty frame, and a
+rice ball where the English has memory. The cup's own layers take no pointer, so every one of these reaches it.
 
 The tea-party and the croquet-ground join. When Alice walks off, the tea-table pulls
 back and away and a tree stands in a dark wood with a door in its trunk; the door
@@ -1249,10 +1270,20 @@ relative URLs, and a refusal when a segment has no text in the base locale; for 
 other locale, its pages under `demos/<locale>/`, all nineteen in Japanese with
 `lang="ja"` and the Japanese sentence (never the English) for every segment, "Next
 scene" inside the locale, the language switch on every index, a demo with a missing
-sentence left out, carded as pending and skipped in the ring, and the Cat's lid
-written onto the Japanese page only. `shell/words.test.ts` and
-`mouse-tale/chunks.test.ts` run the word readers and the tail's grouping against every
-locale's own sentences.
+sentence left out, carded as pending and skipped in the ring, every page's root
+carrying its locale's profile, and each locale's realia written onto a page for just
+the ids its demo reads. `shell/words.test.ts` and `mouse-tale/chunks.test.ts` run the
+word readers, `units()` and the tail's grouping against every locale's own sentences,
+and against a sample written without spaces and one written right to left;
+`words.test.ts` also holds the gate's set-apart rules to the Python checker's.
+`src/demos/realia.test.ts` draws and measures every locale's realia, and
+`build/locale-standard.test.ts` breaks a copy of the data (a translation's quotation
+marks, a letter, a moral, a cry, a realia file, the profile) and expects the gate to
+fail on it.
+
+Gate, `scripts/check-experience.py`: every demo file against its schema, and its
+staging contract (`reads`) in every locale that publishes it, by that locale's profile
+([`text-experience-binding.md`](text-experience-binding.md) §9.3).
 
 Browser, `tests/demos.spec.ts`, desktop Chromium on the production build: every demo
 page loads without console, page or request errors; carries its sentences in order
@@ -1293,8 +1324,13 @@ still wears. The generic page checks run for every locale's pages (the sentences
 shown are that locale's, and the next link stays in its directory), the tail's
 readability check runs in each language, and `tests/play/japanese.spec.ts` covers the
 Japanese index and its language switch both ways, the Mock Turtle's quoted subjects on
-the sand, the Dormouse's お, the Cat's lid in the moon, the Duchess's ribbons with and
-without a colon, and the tale's words down the tail.
+the sand, the Dormouse's お, the Cat's lid in the moon (read from realia), the Duchess's
+ribbons with and without a colon, and the tale's words down the tail.
+`tests/play/locale-profile.spec.ts` checks, in every locale, the profile on the root
+of every page (story and demos), the profile the shell reads back and speech never
+slanted where the script has no italic, the tape reading in the realia's unit and
+landing on its notch, the Cat's second answer and the Dormouse's things from
+realia in their order, and a phone bar that stays one row at 320 pixels.
 
 What costs frames, and what was done about it, is in
 [`performance-budget.md`](performance-budget.md) §2: a drop-shadow filter on many

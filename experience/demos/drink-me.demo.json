@@ -4,6 +4,7 @@
   "ground": "dark",
   "titleSection": "drink-me",
   "joinsPrevious": true,
+  "reads": { "setApart": ["ch01.s0990", "ch01.s1250"] },
   "shots": [
     {
       "id": "through-the-trapdoor",

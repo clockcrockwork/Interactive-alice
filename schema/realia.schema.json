@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/clockcrockwork/Interactive-alice/schema/realia.schema.json",
+  "title": "Locale realia",
+  "description": "The things a joke or a sentence is ABOUT, in one language, which a stage draws or measures: what the Cat hears instead of a pig, the things that begin with the sisters' letter, the measure Alice's height is given in. Text layer: keyed by stable ids, it may name a thing but never a scene, shot, beat or demo. Required for every locale in full, like ui.json, and ids are added only when a stage needs one. A demo declares the ids it reads (realia in its demo file); the build writes this locale's entries for just those ids onto the page. See docs/text-experience-binding.md, Language differences.",
+  "type": "object",
+  "required": ["locale", "realia"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional editor hint; not part of the data."
+    },
+    "locale": {
+      "type": "string",
+      "description": "Must equal the directory name, so a copied file cannot silently claim another language."
+    },
+    "realia": {
+      "type": "object",
+      "required": ["cat-mishearing", "m-things", "height"],
+      "additionalProperties": false,
+      "properties": {
+        "cat-mishearing": {
+          "type": "object",
+          "required": ["picture"],
+          "additionalProperties": false,
+          "description": "The thing the Cheshire Cat hears instead of a pig: the word in this language's text that rhymes with or nearly sounds like its word for pig.",
+          "properties": {
+            "picture": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[a-z][a-z0-9/-]*$",
+              "description": "A figure id in the art registry, or a figure name the stage that draws it knows."
+            }
+          }
+        },
+        "m-things": {
+          "type": "array",
+          "minItems": 1,
+          "description": "The things the Dormouse's sisters drew, all beginning with this language's letter, in the order the sentence lists them.",
+          "items": {
+            "type": "object",
+            "required": ["picture"],
+            "additionalProperties": false,
+            "properties": {
+              "picture": {
+                "type": "string",
+                "minLength": 1,
+                "pattern": "^[a-z][a-z0-9/-]*$",
+                "description": "A figure id in the art registry, or a figure name the stage that draws it knows."
+              }
+            }
+          }
+        },
+        "height": {
+          "type": "object",
+          "required": ["unit", "perInch", "notch"],
+          "additionalProperties": false,
+          "description": "The measure this language's text gives Alice's height in. Its label is UI copy (demoHeightUnit); numbers are formatted with the locale profile's numbers tag.",
+          "properties": {
+            "unit": {
+              "type": "string",
+              "pattern": "^[a-z][a-z-]*$",
+              "description": "A stable name for the unit, for tests and the page; never shown."
+            },
+            "perInch": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "How many of this unit make one inch."
+            },
+            "notch": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "The height, in this unit, the text names as hers: the reading a stage marks with a notch (three inches; one finger)."
+            }
+          }
+        }
+      }
+    }
+  }
+}

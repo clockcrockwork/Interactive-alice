@@ -15,13 +15,18 @@ import '../../styles/base.css';
 import '../art/art.css';
 import { installArtTreatments } from '../art/treatments.ts';
 import './shell.css';
+import type { LocaleRealia } from '../../types/schema.ts';
 import { createSound, type DemoSound } from './sound.ts';
 import { installTransitions } from './transitions.ts';
+import { type LocaleProfile, pageProfile } from './words.ts';
 
 installTransitions();
 installArtTreatments();
 
 gsap.registerPlugin(ScrollTrigger);
+
+/** The realia a demo may read, by id. */
+export type Realia = LocaleRealia['realia'];
 
 export interface Beat {
   index: number;
@@ -54,11 +59,19 @@ export interface DemoShell {
   /** Beat indices whose lines are said by this speaker. */
   spokenBy(speaker: string): Beat[];
   /**
-   * The picture to draw for one the code names: itself, unless this page's locale
-   * swaps it for another because its word lands on a different thing (the demo
-   * file's `pictures`, written onto the page by the build).
+   * The page's locale profile (`text/locales.json`, written on the root by the
+   * build): how its language sets words apart, splits a line into units, sets
+   * speech apart, how wide its glyphs are. Read this, never the language's name.
    */
-  picture(name: string): string;
+  profile: LocaleProfile;
+  /** The locale's Intl tag, and number formatting in it. */
+  locale: { tag: string; numberFormat(options?: Intl.NumberFormatOptions): Intl.NumberFormat };
+  /**
+   * A thing this page's sentences are about (`text/locales/<locale>/realia.json`),
+   * for an id the demo file declares under `realia`. Undefined when the page carries
+   * none, so a stage falls back to its own default rather than drawing nothing.
+   */
+  realia<K extends keyof Realia>(id: K): Realia[K] | undefined;
   /** Scrubbed by the scroll; duration is the beat count, one unit of time per beat. */
   master: gsap.core.Timeline;
   /** Self-running motion: loops that the visitor can pause. */
@@ -144,6 +157,10 @@ declare global {
       mode(): string;
       /** The page's locale, as its root element declares it. */
       locale(): string;
+      /** The page's locale profile, as the shell read it from the root. */
+      profile(): LocaleProfile;
+      /** The realia the page carries, by id. */
+      realia(): Partial<Realia>;
       /** The master timeline's length against the beat count: they must agree. */
       overrun(): number;
       /** Whether the scrubbed timeline has caught up with the scroll. */
@@ -165,10 +182,12 @@ function readUi(): Record<string, string> {
   }
 }
 
-function readPictures(root: HTMLElement): Record<string, string> {
+function readRealia(root: HTMLElement): Partial<Realia> {
   try {
-    const parsed: unknown = JSON.parse(root.dataset.pictures ?? '{}');
-    return typeof parsed === 'object' && parsed !== null ? (parsed as Record<string, string>) : {};
+    const parsed: unknown = JSON.parse(root.dataset.realia ?? '{}');
+    return typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)
+      ? (parsed as Partial<Realia>)
+      : {};
   } catch {
     return {};
   }
@@ -207,7 +226,8 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     return undefined;
   }
   const ui = readUi();
-  const pictures = readPictures(root);
+  const realia = readRealia(root);
+  const profile = pageProfile();
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Stage first, captions on top; the beats move in keeping their order.
@@ -505,7 +525,19 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     cue,
     spokenBy: (speaker) =>
       beats.filter((beat) => beat.lines.some((line) => line.dataset.speaker === speaker)),
-    picture: (name) => pictures[name] ?? name,
+    profile,
+    locale: {
+      tag: profile.tag,
+      numberFormat: (options) => {
+        try {
+          return new Intl.NumberFormat(profile.tag, options);
+        } catch {
+          // A tag the browser does not know formats in its own default rather than throwing.
+          return new Intl.NumberFormat(undefined, options);
+        }
+      },
+    },
+    realia: (id) => realia[id],
     master,
     ambient,
     reducedMotion,
@@ -597,7 +629,9 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     paused: () => paused,
     reduced: () => reducedMotion,
     mode: () => root.dataset.mode ?? '',
-    locale: () => document.documentElement.lang,
+    locale: () => profile.lang,
+    profile: () => ({ ...profile, setApart: [...profile.setApart] }),
+    realia: () => realia,
     overrun: () => master.duration() - beats.length,
     auto: () => auto,
     settled: () => {

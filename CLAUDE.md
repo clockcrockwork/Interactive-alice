@@ -38,7 +38,8 @@ Baseline Widely available as of 2026-09-01
 Fixed on purpose, so the target does not move underneath the project; change it
 deliberately in `docs/frontend-architecture.md` §6. Documented exceptions, used as
 progressive enhancement only: cross-document View Transitions, the Speculation
-Rules API, and any WebGL or device-motion work a Shot introduces.
+Rules API, `Intl.Segmenter` (for a script written without spaces; spaces are the
+fallback), and any WebGL or device-motion work a Shot introduces.
 
 Chrome's Modern Web Guidance skills are expected to be installed alongside this
 repository for evergreen platform knowledge. They advise on the platform; the

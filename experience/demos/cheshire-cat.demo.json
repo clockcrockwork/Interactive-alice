@@ -4,7 +4,7 @@
   "ground": "dark",
   "titleSection": "cheshire-puss",
   "joinsPrevious": true,
-  "pictures": { "ja": { "fig": "lid" } },
+  "realia": ["cat-mishearing"],
   "shots": [
     {
       "id": "on-a-bough",

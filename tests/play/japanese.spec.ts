@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { expect, test } from '@playwright/test';
 import { lonelyLetter, namedWords } from '../../src/demos/shell/words.ts';
+import type { LocaleRealia } from '../../src/types/schema.ts';
 import { atCue, collectErrors, demos, pages } from '../demo-helpers.ts';
 
 /**
@@ -22,6 +23,15 @@ const ui = (
     ),
   ) as { strings: Record<string, string> }
 ).strings;
+/** The things this language's sentences are about, as the text layer gives them. */
+const realia = (
+  JSON.parse(
+    readFileSync(
+      join(import.meta.dirname, '..', '..', 'text', 'locales', LOCALE, 'realia.json'),
+      'utf8',
+    ),
+  ) as LocaleRealia
+).realia;
 const OPEN = '「';
 const CLOSE = '」';
 
@@ -93,7 +103,9 @@ test.describe('the demos in Japanese', () => {
     await expect(page.locator('.dm__prop-m')).toHaveText(ui.demoDrawM ?? '-');
   });
 
-  test('the Cheshire Cat: the second answer is a lid, drawn in the moon', async ({ page }) => {
+  test('the Cheshire Cat: the second answer is the thing its realia name, drawn in the moon', async ({
+    page,
+  }) => {
     const cat = ja('cheshire-cat');
     test.skip(!cat, 'no Japanese cheshire-cat page');
     await page.goto(cat?.url ?? '');
@@ -105,8 +117,9 @@ test.describe('the demos in Japanese', () => {
     const asked = await page.locator('.demo-beat[data-cue="again"]').textContent();
     expect(asked).toContain(`${OPEN}${ui.demoFig}${CLOSE}`);
     await second.click();
+    // The thing drawn is the one this language's Cat hears: its realia, not a name in code.
     const moon = page.locator('.cc__moon-picture');
-    await expect(moon).toHaveAttribute('data-picture', 'lid');
+    await expect(moon).toHaveAttribute('data-picture', realia['cat-mishearing'].picture);
     await expect(moon.locator('svg')).toHaveCount(1);
     await expect(moon.locator('text')).toHaveCount(0);
   });

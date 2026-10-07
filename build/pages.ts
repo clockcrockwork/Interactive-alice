@@ -9,7 +9,14 @@
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { overlapsOf, planScene, type ScenePlan } from '../src/runtime/pacing.ts';
-import { chaptersOf, loadProject, type Part, type Project, type SegmentMeta } from './project.ts';
+import {
+  chaptersOf,
+  type LocaleSettings,
+  loadProject,
+  type Part,
+  type Project,
+  type SegmentMeta,
+} from './project.ts';
 
 export interface GeneratedPage {
   /** Path relative to the generated root, e.g. "ja/rabbit-hole/index.html". */
@@ -26,6 +33,21 @@ export const escapeHtml = (value: string): string =>
 const span = (value: number): string => value.toFixed(6);
 
 const up = (depth: number): string => '../'.repeat(depth);
+
+/**
+ * The root element of every generated page in a locale: its language, direction and
+ * locale profile from `text/locales.json`, so the stylesheets and the runtime read
+ * what the language IS (how it breaks lines, sets words apart, splits a line into
+ * units, sets speech apart, how wide its glyphs are, how it writes numbers) and never
+ * infer it from the language's name. One function for the story's pages and the
+ * demos' alike. See docs/text-experience-binding.md, Language differences.
+ */
+export const htmlOpen = (locale: string, settings: LocaleSettings): string =>
+  `<html lang="${locale}" dir="${settings.dir}" data-line-break="${settings.lineBreak}" ` +
+  `data-significant-spaces="${settings.significantSpaces}" ` +
+  `data-set-apart="${settings.setApart.join(' ')}" data-word-unit="${settings.wordUnit}" ` +
+  `data-emphasis="${settings.emphasis}" data-glyph-width="${settings.glyphWidth}" ` +
+  `data-numbers="${escapeHtml(settings.numbers)}">`;
 
 /** Chapters a part's scenes stage, in order. */
 function chaptersOfPart(project: Project, scenes: readonly string[]): number[] {
@@ -191,7 +213,7 @@ function renderPart(project: Project, partId: string, locale: string, scenes: st
   // Two directories deep: <locale>/<part>/index.html
   const root = up(3);
   return `<!doctype html>
-<html lang="${locale}" dir="${settings.dir}" data-line-break="${settings.lineBreak}" data-significant-spaces="${settings.significantSpaces}">
+${htmlOpen(locale, settings)}
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -273,7 +295,7 @@ function renderLocaleEntry(
     .join('\n');
 
   return `<!doctype html>
-<html lang="${locale}" dir="${settings.dir}" data-line-break="${settings.lineBreak}" data-significant-spaces="${settings.significantSpaces}">
+${htmlOpen(locale, settings)}
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -338,8 +360,10 @@ function renderHome(
     })
     .join('\n');
 
+  // The home page speaks in the base locale (its one sentence is the demos link), so
+  // it carries the base locale's profile like every other page.
   return `<!doctype html>
-<html lang="en">
+${htmlOpen(project.baseLocale, base)}
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

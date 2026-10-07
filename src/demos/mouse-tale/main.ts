@@ -315,7 +315,12 @@ function mount(shell: DemoShell): void {
   let s = 26;
   for (const beat of verses) {
     for (const line of beat.lines) {
-      for (const words of chunksOf(line.textContent ?? '', lite ? 3 : 4, lite ? 9 : 12.5)) {
+      for (const words of chunksOf(
+        line.textContent ?? '',
+        lite ? 3 : 4,
+        lite ? 9 : 12.5,
+        shell.profile,
+      )) {
         const el = document.createElementNS(SVG, 'text');
         el.dataset.segment = line.dataset.segment ?? '';
         el.dataset.cue = beat.cue ?? '';

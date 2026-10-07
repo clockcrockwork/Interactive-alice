@@ -1,52 +1,47 @@
 /**
- * The Mouse's tale set as a tail: each line of a verse in short groups of words,
- * the way the book sets it. A group is at most a few words and at most about as
- * wide as the book's own lines, measured in ems, so a script whose words are
- * wide (Japanese phrases, full-width glyphs) makes groups of fewer words. A
- * phrase may also break after a comma that has no space after it (the Japanese
- * 、), since the comma is a pause in any script. Nothing here knows any
- * language's words.
+ * The Mouse's tale set as a tail: each line of a verse in short groups of units,
+ * the way the book sets it. A unit is what the page's language splits a line into
+ * (`units()` in shell/words.ts: its spaces, a full-width comma, or the words
+ * `Intl.Segmenter` finds where the language writes no spaces). A group is at most a
+ * few units and at most about as wide as the book's own lines, measured in ems, so
+ * a script whose units are wide (Japanese phrases, full-width glyphs) makes groups
+ * of fewer of them. Nothing here knows any language's words.
  */
 
-import { emWidth, isWide } from '../shell/words.ts';
+import {
+  emWidth,
+  isWide,
+  joinUnits,
+  type LocaleProfile,
+  type Unit,
+  units,
+} from '../shell/words.ts';
 
 export { emWidth, isWide };
 
-interface Token {
-  text: string;
-  /** What joins it to the next token: the space it had, or nothing after a comma. */
-  glue: string;
-}
-
-const tokens = (text: string): Token[] =>
-  text
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .flatMap((word) => {
-      const parts = word.split(/(?<=[、，])/u).filter(Boolean);
-      return parts.map((part, i) => ({ text: part, glue: i < parts.length - 1 ? '' : ' ' }));
-    });
-
-const joined = (group: readonly Token[]): string =>
-  group
-    .map((token) => token.text + token.glue)
-    .join('')
-    .trim();
+/** What grouping needs to know about the page's language: its profile. */
+export type ChunkProfile = Pick<LocaleProfile, 'wordUnit' | 'tag' | 'glyphWidth'>;
+const SPACED: ChunkProfile = { wordUnit: 'spaces', tag: 'und', glyphWidth: 'half' };
 
 /**
- * The words of a line in groups of at most `perChunk` words and `maxEms` ems.
- * The last group is never a single word when it can join the one before
+ * The units of a line in groups of at most `perChunk` units and `maxEms` ems.
+ * The last group is never a single unit when it can join the one before
  * without growing much past the measure.
  */
-export function chunksOf(text: string, perChunk: number, maxEms: number): string[] {
-  const groups: Token[][] = [];
-  let current: Token[] = [];
-  for (const token of tokens(text)) {
-    const next = [...current, token];
-    if (current.length > 0 && (next.length > perChunk || emWidth(joined(next)) > maxEms)) {
+export function chunksOf(
+  text: string,
+  perChunk: number,
+  maxEms: number,
+  profile: ChunkProfile = SPACED,
+): string[] {
+  const width = (group: readonly Unit[]): number => emWidth(joinUnits(group), profile.glyphWidth);
+  const groups: Unit[][] = [];
+  let current: Unit[] = [];
+  for (const unit of units(text, profile)) {
+    const next = [...current, unit];
+    if (current.length > 0 && (next.length > perChunk || width(next) > maxEms)) {
       groups.push(current);
-      current = [token];
+      current = [unit];
     } else {
       current = next;
     }
@@ -56,14 +51,9 @@ export function chunksOf(text: string, perChunk: number, maxEms: number): string
   }
   const last = groups.at(-1);
   const before = groups.at(-2);
-  if (
-    last &&
-    before &&
-    last.length === 1 &&
-    emWidth(joined([...before, ...last])) <= maxEms * 1.25
-  ) {
+  if (last && before && last.length === 1 && width([...before, ...last]) <= maxEms * 1.25) {
     groups.pop();
     groups[groups.length - 1] = [...before, ...last];
   }
-  return groups.map(joined);
+  return groups.map(joinUnits);
 }

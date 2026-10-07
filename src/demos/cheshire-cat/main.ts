@@ -402,7 +402,7 @@ function mount(shell: DemoShell): void {
   // --- "Did you say pig, or fig?": the reader answers. The thing chosen shows
   // for a moment in the moon, drawn into it like its markings, and the grin
   // widens: its own amount, on top of the pointer's and the story's. Which thing
-  // the second answer is depends on the page's language (a lid, in Japanese).
+  // the second answer is comes from the page's realia (cat-mishearing).
   const moonPicture = wood.querySelector<HTMLElement>('.cc__moon-picture');
   const more = { v: 0 };
   const applyMore = (): void => grin?.style.setProperty('--more', more.v.toFixed(3));
@@ -410,7 +410,10 @@ function mount(shell: DemoShell): void {
   let widening: gsap.core.Animation | undefined;
   const answer = (which: 'pig' | 'fig'): void => {
     if (moonPicture) {
-      const drawn = pictureFor(shell.picture(which), which);
+      // The second answer is whatever this language's Cat hears instead of a
+      // pig: the page's realia, never its language's name.
+      const heard = shell.realia('cat-mishearing')?.picture;
+      const drawn = which === 'pig' ? 'pig' : pictureFor(heard ?? 'fig', 'fig');
       moonPicture.innerHTML = MOON_PICTURES[drawn];
       moonPicture.dataset.picture = drawn;
       moonPicture.setAttribute('data-shown', '');

@@ -17,7 +17,8 @@ this text is a separate contract, documented in
 | Structure | `text/story/chNN.structure.json` | Story-section order, segment order, speaker, segment kind. No visible text | Authored once per chapter |
 | Text | `text/locales/<locale>/chNN.json` | One short sentence per segment id, plus chapter and section titles | Adapter / translator |
 | UI copy | `text/locales/<locale>/ui.json` | The words the site says about itself, not the story's words | Adapter / translator |
-| Config | `text/locales.json` | The locale list: role, reading level, per-sentence budget, writing direction, line-break keyword, whether spaces are content | Maintainer |
+| Realia | `text/locales/<locale>/realia.json` | The things this language's sentences are about, which a stage draws or measures (§3, Realia) | Adapter / translator |
+| Config | `text/locales.json` | The locale list and each language's profile: role, reading level, per-sentence budget, writing direction, line-break keyword, whether spaces are content, how it sets a word apart, how a line splits into units, its emphasis, its glyph width, its number locale | Maintainer |
 | Registry | `text/characters.json` | Every speaker a structure file may name | Maintainer |
 
 The split matters because of the product rule that scene logic and visible text
@@ -110,13 +111,35 @@ text, not formatting, so they are stored in the JSON and the locale entry sets
 
 Speech is not wrapped in 「」: speakers are told apart by style. 「」 is kept for
 words set apart as words — something written on an object, a word being named or
-argued about — so a page that shows such words reads them the way it reads the
-capitals of the English (`src/demos/shell/words.ts`, used by every demo that reads
-a word out of a sentence). Names are fixed across
+argued about — which is what the locale profile declares (`"setApart": ["quotes"]`),
+so a page that shows such words reads them the way it reads the capitals of the
+English (`src/demos/shell/words.ts`, used by every demo that reads a word out of a
+sentence), and the gate checks every sentence a stage reads that way (see *Set
+apart, and realia* below). Names are fixed across
 the book and the site's own labels: 白うさぎ, 女王さま, 王さま, ぼうしや, 三月うさぎ,
 ヤマネ, こうしゃくふじん, コック, チェシャねこ, にせウミガメ, グリフォン.
 Measures become things a child can picture (three inches is ゆび 一本ぶん) or metric
 (a mile is 1キロ), and money is in 円.
+
+### Set apart, and realia
+
+Two things a translation decides that a stage depends on, both checked by the gate
+(the standard is [`text-experience-binding.md`](text-experience-binding.md) §9):
+
+- **A word on display is set apart the way the locale declares** (`setApart` in
+  `text/locales.json`): in quotation marks of any kind, or by capitals. A demo file
+  lists the sentences its stage reads a word, a letter, a moral or a cry out of
+  (`reads`), and `npm run check:experience` fails a translation of one of them that
+  no longer gives the stage what it reads, naming the segment. Keep the mark when
+  rewording such a sentence.
+- **Realia** (`text/locales/<locale>/realia.json`) name the things a sentence is
+  *about* when a stage draws or measures them: what the Cat hears instead of a pig,
+  the things the sisters drew in the order the sentence lists them, the measure
+  Alice's height is given in. When a translation's joke lands on a different thing,
+  change its realia to name that thing, so the stage draws the language's joke and
+  not the English one. A thing no stage draws yet has to be drawn first; the unit test
+  in `src/demos/realia.test.ts` says which. Realia hold ids and numbers, never words:
+  the name of a unit is UI copy.
 
 ### One sentence per segment, with one exception
 
@@ -132,10 +155,20 @@ the set stays small and visible; there are four per language today.
    explain itself.
 2. Add an entry to `text/locales.json` with its name, `role: "translation"`, a
    `maxChars` budget, its writing direction and line-break keyword, whether its
-   spaces are content, and a note about the intended reading level.
-3. Create `text/locales/<locale>/chNN.json` for each finished chapter, copying
+   spaces are content, a note about the intended reading level, and the rest of its
+   **locale profile**: how it sets a word apart (`setApart`), whether a line splits
+   at its spaces or needs a segmenter (`wordUnit`), whether its script has an italic
+   (`emphasis`), whether its glyphs fill the em (`glyphWidth`), and its number locale
+   (`numbers`). What each means, and what reads it:
+   [`text-experience-binding.md`](text-experience-binding.md) §9.
+3. Add `text/locales/<locale>/realia.json` with every id the schema requires, each
+   naming what this language's sentence is about (§3, *Set apart, and realia*).
+4. Create `text/locales/<locale>/chNN.json` for each finished chapter, copying
    the segment ids from the chapter structure.
-4. Run `npm run check:text`.
+5. Run `npm run check:data`. The text checker verifies the profile, the UI copy
+   and the realia; the experience checker verifies, demo by demo, that every
+   sentence a stage reads gives it what it reads, by this language's profile, and
+   names the segment when one does not.
 
 The checker reports an untranslated chapter as a `todo:` line rather than an
 error, so a language can ship chapter by chapter.
@@ -231,8 +264,10 @@ npm run check:text
 ```
 
 It verifies the raw files against their checksums, the structure's ids and
-ordering, section and segment parity between every locale and the structure, and
-that each line of text is a single sentence within budget.
+ordering, section and segment parity between every locale and the structure, that
+each line of text is a single sentence within budget, that every locale has its
+UI copy and its realia in full (the realia shaped as the base locale's), and the
+locale profile's own integrity.
 
 Both checkers validate every file against its schema in `schema/` before
 applying their own rules. `scripts/check-experience.py` covers the other side of

@@ -4,6 +4,8 @@
 Checks performed:
   * every registry, structure and locale file matches its schema in schema/
   * every locale has complete UI copy: the site's own words are never half translated
+  * every locale has its realia (the things its sentences are about, which a stage
+    draws or measures) with every id the base locale's has, in the same shape
   * every raw chapter file still matches the checksum recorded in its manifest
   * each chapter structure has unique, ascending segment ids, known sections, and
     speakers that exist in the character registry
@@ -106,6 +108,68 @@ def check_ui(config: dict, errors: list[str]) -> None:
                 errors.append(f"{label} {key}: {len(text)} characters, budget is {budget}")
             if text != text.strip():
                 errors.append(f"{label} {key}: has leading or trailing space")
+
+
+def shape(value) -> str:
+    """A realia entry's shape, for comparing one locale's against the base locale's."""
+    if isinstance(value, list):
+        inner = sorted({key for item in value if isinstance(item, dict) for key in item})
+        return f"a list of {{{', '.join(inner)}}}"
+    if isinstance(value, dict):
+        return f"{{{', '.join(sorted(value))}}}"
+    return type(value).__name__
+
+
+def check_realia(config: dict, errors: list[str]) -> None:
+    """Every locale's realia, in full, shaped as the base locale's.
+
+    Realia are the things a joke or a sentence is about (the thing the Cat hears
+    instead of a pig, the things that begin with the sisters' letter, the measure of
+    Alice's height), which a stage draws or measures. Like the UI copy they are
+    required for every locale, because a stage that reads one must find it in every
+    language: a list stays a list (its length is the language's own), an object keeps
+    its keys, and every id the base locale defines is there.
+    """
+    schema = load(SCHEMA_DIR / "realia.schema.json")
+    base = config["baseLocale"]
+    docs: dict[str, dict] = {}
+    for locale in config["locales"]:
+        path = LOCALES_DIR / locale / "realia.json"
+        label = f"{locale}/realia.json"
+        if not path.exists():
+            errors.append(f"{label} is missing; every locale needs its realia, like its UI copy")
+            continue
+        doc = load(path)
+        schema_errors = validate(doc, schema, label)
+        if schema_errors:
+            errors += schema_errors
+            continue
+        if doc["locale"] != locale:
+            errors.append(f"{label}: locale field says {doc['locale']!r}")
+        docs[locale] = doc["realia"]
+    reference = docs.get(base)
+    if reference is None:
+        return
+    for locale, realia in docs.items():
+        label = f"{locale}/realia.json"
+        for key in reference:
+            if key not in realia:
+                errors.append(f"{label}: missing {key!r}, which {base} defines")
+            elif shape(realia[key]) != shape(reference[key]):
+                errors.append(
+                    f"{label} {key}: is {shape(realia[key])}, but {base}'s is {shape(reference[key])}"
+                )
+        for key in realia:
+            if key not in reference:
+                errors.append(f"{label}: {key!r} is not an id {base} defines")
+
+
+def check_profile(config: dict, errors: list[str]) -> None:
+    """The locale profile's own integrity, beyond what the schema can say."""
+    for locale, settings in config["locales"].items():
+        methods = settings["setApart"]
+        if len(set(methods)) != len(methods):
+            errors.append(f"text/locales.json {locale}: setApart names a method twice")
 
 
 def check_raw(errors: list[str]) -> None:
@@ -254,6 +318,8 @@ def main() -> int:
 
     check_registry(config, errors)
     check_ui(config, errors)
+    check_profile(config, errors)
+    check_realia(config, errors)
     check_raw(errors)
 
     structures = sorted(STORY_DIR.glob("ch*.structure.json"))
@@ -274,7 +340,7 @@ def main() -> int:
     if not args.quiet:
         print(
             f"ok: {len(structures)} chapter(s), {len(config['locales'])} locale(s), "
-            "UI copy complete"
+            "UI copy and realia complete"
         )
     return 0
 

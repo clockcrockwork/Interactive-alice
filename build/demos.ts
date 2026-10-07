@@ -16,10 +16,12 @@ import type {
   ChapterStructureFile,
   ExperienceConceptDemoFile,
   LocaleChapterFile,
+  LocaleRealia,
   LocaleRegistry,
   LocaleUIStrings,
 } from '../src/types/schema.ts';
-import { escapeHtml, type GeneratedPage } from './pages.ts';
+import { escapeHtml, type GeneratedPage, htmlOpen } from './pages.ts';
+import type { LocaleSettings } from './project.ts';
 import { assertValid } from './schema.ts';
 
 const PROJECT_NAME = 'Interactive Alice';
@@ -78,8 +80,10 @@ export interface DemoProject {
     sectionTitles: Map<number, Record<string, string>>;
   };
   dir: 'ltr' | 'rtl';
-  lineBreak: string;
-  significantSpaces: boolean;
+  /** The locale's profile from the registry, written onto every page's root. */
+  settings: LocaleSettings;
+  /** The things this locale's text is about, which a stage draws or measures. */
+  realia: LocaleRealia['realia'];
   demos: ExperienceConceptDemoFile[];
   ui: LocaleUIStrings['strings'];
   /** Chapter title by number, in the demo locale. */
@@ -112,6 +116,10 @@ export function loadDemoProject(root: string, locale?: string): DemoProject {
   const base = chosen === registry.baseLocale;
   const uiFile = read(root, 'text', 'locales', chosen, 'ui.json') as LocaleUIStrings;
   assertValid(uiFile, read(root, 'schema', 'ui-strings.schema.json'), `${chosen}/ui.json`);
+  // Required for every locale in full, like the UI copy: a stage that reads a thing
+  // must find it in every language (scripts/check-text.py checks the same).
+  const realiaFile = read(root, 'text', 'locales', chosen, 'realia.json') as LocaleRealia;
+  assertValid(realiaFile, read(root, 'schema', 'realia.schema.json'), `${chosen}/realia.json`);
 
   const demoDir = join(root, 'experience', 'demos');
   const schema = read(root, 'schema', 'experience-demo.schema.json');
@@ -122,11 +130,9 @@ export function loadDemoProject(root: string, locale?: string): DemoProject {
     if (name !== `${demo.id}.demo.json`) {
       throw new Error(`experience/demos/${name} says id ${demo.id}`);
     }
-    for (const pictureLocale of Object.keys(demo.pictures ?? {})) {
-      if (!registry.locales[pictureLocale]) {
-        throw new Error(
-          `experience/demos/${name} has pictures for unknown locale ${pictureLocale}`,
-        );
+    for (const id of demo.realia ?? []) {
+      if (!(id in realiaFile.realia)) {
+        throw new Error(`experience/demos/${name} reads realia ${id}, which ${chosen} lacks`);
       }
     }
     byId.set(demo.id, demo);
@@ -205,8 +211,8 @@ export function loadDemoProject(root: string, locale?: string): DemoProject {
       sectionTitles: fallback.sectionTitles,
     },
     dir: settings.dir,
-    lineBreak: settings.lineBreak,
-    significantSpaces: settings.significantSpaces,
+    settings,
+    realia: realiaFile.realia,
     demos,
     ui: uiFile.strings,
     titles: own.titles,
@@ -297,7 +303,8 @@ const UI_FOR_SCRIPT = [
   'demoHoldHead',
   'demoCatchBill',
   'demoDipLeaves',
-  'demoHeightInches',
+  'demoHeight',
+  'demoHeightUnit',
   'demoOpenLetter',
   'demoLookCat',
   'demoCallPig',
@@ -411,9 +418,24 @@ function renderTrack(project: DemoProject, demo: ExperienceConceptDemoFile): str
     .join('\n');
 }
 
-/** The root element's language attributes, from the locale registry, as the story writes them. */
-const htmlOpen = (project: DemoProject): string =>
-  `<html lang="${project.locale}" dir="${project.dir}" data-line-break="${project.lineBreak}" data-significant-spaces="${project.significantSpaces}">`;
+/**
+ * This locale's entries for just the realia ids a demo declares, for its page. The
+ * stage reads them with `shell.realia(id)` and never learns which language it is in.
+ */
+export function realiaFor(
+  project: DemoProject,
+  demo: ExperienceConceptDemoFile,
+): Partial<LocaleRealia['realia']> {
+  const realia = project.realia as Record<string, unknown>;
+  return Object.fromEntries(
+    (demo.realia ?? []).map((id) => {
+      if (!(id in realia)) {
+        throw new Error(`${demo.id}: realia ${id} is missing in ${project.locale}`);
+      }
+      return [id, realia[id]];
+    }),
+  );
+}
 
 /**
  * The demo after this one that has a page in the same locale, so "Next scene" and
@@ -439,12 +461,13 @@ function renderDemo(project: DemoProject, demo: ExperienceConceptDemoFile): stri
   // demos/<id>/index.html, or demos/<locale>/<id>/index.html, and one more up out
   // of the generated tree to src/, where styles, assets and the demo code live.
   const root = up(demoDir(project).split('/').length + 2);
-  // A picture whose sense rides on a word of the text, swapped where this
-  // locale's word lands on a different thing (the Cat's pig or fig).
-  const pictures = demo.pictures?.[project.locale];
-  const picturesAttr = pictures ? ` data-pictures="${escapeHtml(JSON.stringify(pictures))}"` : '';
+  // The things this locale's sentences are about, for the ids the demo reads (the
+  // thing the Cat hears instead of a pig, the measure of her height).
+  const realiaAttr = demo.realia?.length
+    ? ` data-realia="${escapeHtml(JSON.stringify(realiaFor(project, demo)))}"`
+    : '';
   return `<!doctype html>
-${htmlOpen(project)}
+${htmlOpen(project.locale, project.settings)}
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -456,7 +479,7 @@ ${htmlOpen(project)}
     <script type="application/json" id="demo-ui">${escapeHtml(JSON.stringify(forScript)).replace(/&quot;/g, '"')}</script>
   </head>
   <body class="demo-body" data-demo="${demo.id}"${demo.ground ? ` data-ground="${demo.ground}"` : ''}>
-    <main class="demo demo--${demo.id}" id="demo" data-demo="${demo.id}"${picturesAttr}>
+    <main class="demo demo--${demo.id}" id="demo" data-demo="${demo.id}"${realiaAttr}>
       <header class="demo__bar">
         <a class="demo__back" href="../">${escapeHtml(ui.demoBack)}</a>
         <h1 class="demo__title">${escapeHtml(title)}</h1>
@@ -592,7 +615,7 @@ function renderIndex(project: DemoProject, all: readonly DemoProject[] = [projec
     })
     .join('\n');
   return `<!doctype html>
-${htmlOpen(project)}
+${htmlOpen(project.locale, project.settings)}
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />

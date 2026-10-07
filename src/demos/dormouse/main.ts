@@ -13,7 +13,7 @@ import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import { lonelyLetter } from '../shell/words.ts';
-import { BUCKET_INNER, M_PICTURES, TEAPOT_SVG } from './figures.ts';
+import { BUCKET_INNER, isMThing, M_PICTURES, type MThing, TEAPOT_SVG } from './figures.ts';
 import './dormouse.css';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -426,14 +426,22 @@ function mount(shell: DemoShell): void {
 
   // --- Everything that begins with an M: the letter itself, taken from the page.
   // The letters float up through the cup at *muchness*; tap one, or press *Draw
-  // something with an M*, and it becomes one of the things the sisters drew: a
-  // mouse-trap, the moon, memory (a knot in a string). Pictures only.
+  // something with an M*, and it becomes one of the things the sisters drew, in
+  // the order the page's own sentence lists them (its realia, `m-things`): a
+  // mouse-trap, the moon, memory (a knot in a string), and muchness, an empty
+  // frame. Pictures only.
   // The letter the sisters drew everything with, read from the page: the one its
-  // sentences name as a letter (in English the M of "an M", in Japanese a kana
-  // set apart in quotation marks). A translation brings its own; none found, none shown.
+  // sentences name as a letter, set apart the way the page's language sets words
+  // apart (a capital alone, or one quoted character). The demo file declares the
+  // sentences (`reads.letter`), so a translation without one fails the gate.
   const letter = lonelyLetter(
     (shell.beats[iDoze]?.lines ?? []).map((line) => line.textContent ?? ''),
+    shell.profile.setApart,
   );
+  const things: MThing[] = (shell.realia('m-things') ?? [])
+    .map((thing) => thing.picture)
+    .filter(isMThing);
+  const drawable = things.length > 0 ? things : (Object.keys(M_PICTURES) as MThing[]);
   const letters = shell.layer('dm__letters');
   const sisterLetters = shell.layer('dm__sister-letters');
   const mButton = shell.prop(shell.ui.demoDrawM ?? '', 'dm__prop-left dm__prop-m');
@@ -455,8 +463,9 @@ function mount(shell: DemoShell): void {
     const floating = [...letters.querySelectorAll<HTMLElement>('.dm__letter')];
     let drawn = 0;
     const drawM = (span: HTMLElement): void => {
-      span.innerHTML = M_PICTURES[drawn % M_PICTURES.length] ?? '';
-      span.dataset.picture = String(drawn % M_PICTURES.length);
+      const thing = drawable[drawn % drawable.length] ?? 'trap';
+      span.innerHTML = M_PICTURES[thing];
+      span.dataset.picture = thing;
       drawn += 1;
       shell.sound.play('chime', 0.35);
     };

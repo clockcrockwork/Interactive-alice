@@ -1,7 +1,11 @@
 /** The key, the bottle and the cake. Their labels are filled in from the text
  * (label.ts reads them from the sentences that set them apart). */
 
-import { emWidth } from '../shell/words.ts';
+import { emWidth, type LocaleProfile, units } from '../shell/words.ts';
+
+/** What a label's layout needs to know about its language: the page's profile. */
+export type LabelLayout = Pick<LocaleProfile, 'wordUnit' | 'tag' | 'glyphWidth'>;
+const SPACED: LabelLayout = { wordUnit: 'spaces', tag: 'und', glyphWidth: 'half' };
 
 /** A label's words as SVG text: escaped, since they come from the page's own text. */
 const words = (label: string): string =>
@@ -9,19 +13,26 @@ const words = (label: string): string =>
 
 /**
  * Words of full-width glyphs that would be squeezed thin on one line are set on
- * two instead, broken at the space nearest the middle, at a size that fits.
- * A label narrow enough for one line (any capitals) is left to the caller.
+ * two instead, broken between the units nearest the middle (`units()`: at a space,
+ * or between words where the language writes none), at a size that fits. A label
+ * narrow enough for one line (any capitals) is left to the caller.
  */
-function twoLines(label: string): [string, string] | undefined {
-  if (emWidth(label) <= 5) {
+function twoLines(label: string, layout: LabelLayout): [string, string] | undefined {
+  if (emWidth(label, layout.glyphWidth) <= 5) {
     return undefined;
   }
-  const spaces = [...label.matchAll(/\s+/g)].map((match) => match.index ?? 0);
-  if (spaces.length === 0) {
+  const parts = units(label, layout);
+  if (parts.length < 2) {
     return undefined;
   }
+  // Where each unit ends in the label, the last one excepted.
+  let end = 0;
+  const breaks = parts.slice(0, -1).map((part) => {
+    end += part.text.length + part.glue.length;
+    return end;
+  });
   const middle = label.length / 2;
-  const at = spaces.reduce((best, index) =>
+  const at = breaks.reduce((best, index) =>
     Math.abs(index - middle) < Math.abs(best - middle) ? index : best,
   );
   return [label.slice(0, at).trim(), label.slice(at).trim()];
@@ -34,14 +45,16 @@ export const labelText = (
   y: number,
   size: number,
   fit: number,
+  layout: LabelLayout = SPACED,
 ): string => {
-  const lines = twoLines(label);
+  const lines = twoLines(label, layout);
   if (!lines) {
     return `<text class="dk__label-text" x="${x}" y="${y}" font-size="${size}" text-anchor="middle" textLength="${fit}" lengthAdjust="spacingAndGlyphs">${words(label)}</text>`;
   }
   // A little under the size that fills the measure, the pair centred where the
   // single line's middle would be.
-  const small = Math.min(size, fit / Math.max(...lines.map(emWidth))) * 0.9;
+  const small =
+    Math.min(size, fit / Math.max(...lines.map((line) => emWidth(line, layout.glyphWidth)))) * 0.9;
   const lead = small * 1.1;
   const first = y - size * 0.4 - lead / 2 + small * 0.35;
   return `<text class="dk__label-text" x="${x}" y="${first.toFixed(2)}" font-size="${small.toFixed(2)}" text-anchor="middle"><tspan x="${x}">${words(lines[0])}</tspan><tspan x="${x}" dy="${lead.toFixed(2)}">${words(lines[1])}</tspan></text>`;
@@ -49,10 +62,10 @@ export const labelText = (
 
 /** One side of the paper label round the bottle's neck: the words and nothing else,
  * stretched to fit whatever their length in whatever language. */
-export const labelFaceSvg = (label: string): string => `
+export const labelFaceSvg = (label: string, layout: LabelLayout = SPACED): string => `
 <svg viewBox="0 0 48 26" focusable="false">
   <rect x="1" y="1" width="46" height="24" rx="3" fill="var(--dk-label)" stroke="var(--sepia-dark)"/>
-  ${labelText(label, 24, 17.5, 11, 38)}
+  ${labelText(label, 24, 17.5, 11, 38, layout)}
 </svg>`;
 
 export const KEY_SVG = `
@@ -61,7 +74,7 @@ export const KEY_SVG = `
   <path d="M20 12 H56 M48 12 v8 M40 12 v6" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
 </svg>`;
 
-export const bottleSvg = (label: string): string => `
+export const bottleSvg = (label: string, layout: LabelLayout = SPACED): string => `
 <svg viewBox="0 0 60 140" focusable="false">
   <rect x="22" y="2" width="16" height="14" rx="3" fill="var(--sepia-dark)"/>
   <path d="M20 16 h20 v22 q14 8 14 30 v60 q0 10 -10 10 h-28 q-10 0 -10 -10 v-60 q0 -22 14 -30 z" fill="var(--dk-glass)" stroke="var(--dk-glass-edge)" stroke-width="2"/>
@@ -70,7 +83,7 @@ export const bottleSvg = (label: string): string => `
   </g>
   <rect x="6" y="52" width="48" height="26" rx="3" fill="var(--dk-label)" stroke="var(--sepia-dark)"/>
   <path d="M30 40 v12" stroke="var(--sepia-dark)" stroke-width="1.5"/>
-  ${labelText(label, 30, 70, 11, 40)}
+  ${labelText(label, 30, 70, 11, 40, layout)}
 </svg>`;
 
 /** The bottle in her hand, without its label: the label is a ring of paper the

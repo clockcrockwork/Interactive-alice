@@ -2,6 +2,8 @@
   "id": "dormouse",
   "titleChapter": 7,
   "joinsPrevious": true,
+  "reads": { "letter": ["ch07.s0780", "ch07.s0790"] },
+  "realia": ["m-things"],
   "shots": [
     {
       "id": "pinched-awake",

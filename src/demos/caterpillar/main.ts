@@ -22,10 +22,10 @@ import {
 } from '../shell/shell.ts';
 import './caterpillar.css';
 import { ASK_SVG, LEFT_BIT_SVG, RIGHT_BIT_SVG } from './figures.ts';
+import { INCHES, onNotch, reading, THREE } from './measure.ts';
 
-/** Her height in inches: three on the mushroom, one with her chin on her foot,
- * a few hundred above the trees, and thirty-six is her usual height. */
-const THREE = 3;
+/** Her height in inches: three on the mushroom (THREE, in measure.ts), one with her
+ * chin on her foot, a few hundred above the trees, and thirty-six is her usual height. */
 const CHIN_ON_FOOT = 1;
 const ABOVE_THE_TREES = 320;
 const USUAL = 36;
@@ -329,32 +329,43 @@ function mount(shell: DemoShell): void {
   const feet = shell.layer('ct__feet');
   feet.innerHTML = `<div class="ct__feet-self">${figure('alice/looking-down')}</div>`;
 
-  // --- The tape-measure down the frame's edge: her height in inches, read live
-  // at a mark, with a notch at three. A meter, for assistive technology.
+  // --- The tape-measure down the frame's edge: her height read live at a mark,
+  // with a notch where the text says she stands, in the unit the page's own
+  // sentences measure her in (its realia `height`: inches, or fingers), its name
+  // printed under the reading, its numbers in the page's own numerals. A meter,
+  // for assistive technology.
+  const measure = shell.realia('height') ?? INCHES;
   const tapeEl = document.createElement('div');
   tapeEl.className = 'ct__tape';
+  tapeEl.dataset.unit = measure.unit;
+  tapeEl.style.setProperty('--notch', String(measure.notch));
   tapeEl.setAttribute('role', 'meter');
-  tapeEl.setAttribute('aria-label', shell.ui.demoHeightInches ?? '');
+  tapeEl.setAttribute('aria-label', shell.ui.demoHeight ?? '');
   tapeEl.setAttribute('aria-valuemin', '0');
-  tapeEl.setAttribute('aria-valuemax', String(ABOVE_THE_TREES * 1.5));
+  tapeEl.setAttribute('aria-valuemax', reading(ABOVE_THE_TREES * 1.5, measure).toFixed(1));
   const NUMBERS = 15;
   tapeEl.innerHTML =
     '<div class="ct__tape-strip" aria-hidden="true"><div class="ct__tape-ticks"></div>' +
     Array.from({ length: NUMBERS }, () => '<span class="ct__tape-num"></span>').join('') +
     '<span class="ct__tape-notch"></span></div>' +
-    '<div class="ct__tape-mark" aria-hidden="true"><span class="ct__tape-read"></span></div>';
+    '<div class="ct__tape-mark" aria-hidden="true"><span class="ct__tape-read">' +
+    '<span class="ct__tape-value"></span><span class="ct__tape-unit"></span></span></div>';
   shell.stage.append(tapeEl);
   const tapeNumbers = [...tapeEl.querySelectorAll<HTMLElement>('.ct__tape-num')];
-  const tapeRead = tapeEl.querySelector<HTMLElement>('.ct__tape-read');
-  const lang = document.documentElement.lang || undefined;
-  const fine = new Intl.NumberFormat(lang, { maximumFractionDigits: 1 });
-  const whole = new Intl.NumberFormat(lang, { maximumFractionDigits: 0 });
+  const tapeRead = tapeEl.querySelector<HTMLElement>('.ct__tape-value');
+  const tapeUnit = tapeEl.querySelector<HTMLElement>('.ct__tape-unit');
+  if (tapeUnit) {
+    tapeUnit.textContent = shell.ui.demoHeightUnit ?? '';
+  }
+  const fine = shell.locale.numberFormat({ maximumFractionDigits: 1 });
+  const whole = shell.locale.numberFormat({ maximumFractionDigits: 0 });
   let tapeFloor = Number.NaN;
   let tapeText = '';
-  const tape = (h: number): void => {
+  const tape = (inches: number): void => {
+    const h = reading(inches, measure);
     tapeEl.style.setProperty('--h', h.toFixed(3));
     tapeEl.style.setProperty('--frac', (h - Math.floor(h)).toFixed(3));
-    tapeEl.toggleAttribute('data-three', Math.abs(h - THREE) < 0.01);
+    tapeEl.toggleAttribute('data-notch', onNotch(inches, measure));
     const floor = Math.floor(h);
     if (floor !== tapeFloor) {
       tapeFloor = floor;

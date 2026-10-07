@@ -62,8 +62,12 @@
     --demo-say: var(--ink-secondary);
     --demo-say-red: var(--wonder-red-dark);
     --demo-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    /* A heavier display face for a word drawn big (a cry, a subject on the sand). */
+    --demo-display: Georgia, "Times New Roman", serif;
     --demo-bar-height: 3.25rem;
     --demo-caption-size: clamp(1.15rem, 1rem + 1.2vw, 1.75rem);
+    /* Speech and thought on a slip of their own, where the script has no italic. */
+    --demo-slip-say: oklch(from var(--paper-warm) l c h / 0.92);
     --demo-ease: cubic-bezier(0.22, 1, 0.36, 1);
     --demo-quick: 220ms;
     --demo-calm: 600ms;
@@ -89,17 +93,27 @@
     --alice-shadow: oklch(38% 0.06 80);
   }
 
-  /* Japanese is set in the reader's own system fonts, never a downloaded one: a
+  /* Font stacks, one per script: a font stack is a property of a script, so this
+     is the one place a language is named in CSS, and the only `:lang()` rule the
+     front-end checker allows (check-frontend.py, locale-profile). Everything else
+     about a language (how it breaks, its emphasis, its glyph width) is keyed on
+     the profile the build writes on the root (data-*), never on its name.
+     Japanese is set in the reader's own system fonts, never a downloaded one: a
      textbook face where the system has one (the shapes a young reader learns
-     from), else a Mincho, the book face. Its glyphs are full-width, so a caption
-     line holds fewer of them at a slightly smaller size. */
+     from), else a Mincho, the book face; the display face has no kana, so it is
+     the book face too. */
   :root:lang(ja) {
+    /* check-frontend: allow locale-profile — font stacks are per script */
     --demo-serif:
       "UD Digi Kyokasho NK-R", "UD Digi Kyokasho N-R", "Hiragino Mincho ProN", "Yu Mincho",
       YuMincho, "Noto Serif CJK JP", "Noto Serif JP", "IPAexMincho", "IPAMincho", serif;
+    --demo-display: var(--demo-serif);
+  }
+
+  /* Full-width glyphs fill the em box, so a caption line holds fewer of them at a
+     slightly smaller size. */
+  :root[data-glyph-width="full"] {
     --demo-caption-size: clamp(1.05rem, 0.95rem + 1vw, 1.55rem);
-    /* Speech is told apart by a warmer slip rather than a slant (see .line). */
-    --demo-slip-say: oklch(from var(--paper-warm) l c h / 0.92);
   }
 
   /* The other Alice, the one everyone knows: blue dress, fair hair. Set on the
@@ -316,30 +330,36 @@
     letter-spacing: 0.08em;
   }
 
-  /* Japanese (docs/concept-demos.md, Locales). Lines break only at the authored
-     phrase spaces and by the strict kinsoku rules, and a run too long for its
-     slip may still break anywhere rather than overflow. Kana have no italic, and
-     a slanted one is a fault, so nothing on these pages may synthesise one:
-     speech and thought keep the softer ink and stand on a warmer slip instead. */
-  .demo-body:lang(ja) {
-    line-break: strict;
+  /* The locale profile (docs/text-experience-binding.md, Language differences),
+     written on the root by the build. Where a language's spaces are authored
+     content, lines break only at those spaces (and by its line-break keyword,
+     base.css), and a run too long for its slip may still break anywhere rather
+     than overflow. */
+  :root[data-significant-spaces="true"] .demo-body {
     word-break: keep-all;
     overflow-wrap: anywhere;
-    font-synthesis-style: none;
   }
 
-  .demo-body:lang(ja) .demo-beat {
+  /* Full-width glyphs want more leading and a little air between them. */
+  :root[data-glyph-width="full"] .demo-body .demo-beat {
     line-height: 1.7;
     letter-spacing: 0.04em;
   }
 
-  :where(.demo-body:lang(ja)) .line {
+  :where(:root[data-glyph-width="full"] .demo-body) .line {
     padding-block: 0.1em 0.14em;
   }
 
-  /* As specific as the italic rule above and no more, so a demo that restyles a
-     speaker (a bubble, a tint) still wins over this. */
-  :where(.demo-body:lang(ja)) .line:is([data-kind="dialogue"], [data-kind="thought"]) {
+  /* Where the script has no italic, a slanted one is a fault, so nothing may
+     synthesise one: speech and thought keep the softer ink and stand on a warmer
+     slip instead. As specific as the italic rule above and no more, so a demo that
+     restyles a speaker (a bubble, a tint) still wins over this. */
+  :root[data-emphasis="slip"] .demo-body {
+    font-synthesis-style: none;
+  }
+
+  :where(:root[data-emphasis="slip"] .demo-body)
+    .line:is([data-kind="dialogue"], [data-kind="thought"]) {
     font-style: normal;
     background: var(--demo-slip-say);
   }
@@ -472,33 +492,33 @@
       white-space: nowrap;
     }
 
+    /* In any language, a label that does not fit breaks at a space (or wherever
+       its language allows a break) inside its own pill, so the bar stays one row
+       on the narrowest phone; the browser measures, not a list of languages. A
+       label that fits stays on one line: a pill only shrinks when the row is full. */
     .demo__back,
     .demo__motion,
     .demo__sound,
     .demo__tilt {
       padding: 0.3em 0.6em;
-      white-space: nowrap;
+      overflow-wrap: normal;
+      line-height: 1.15;
+      text-align: center;
     }
 
     .demo__back {
       margin-inline-end: auto;
     }
 
-    /* Japanese labels are long runs of full-width glyphs: a little smaller, and
-       a label that still does not fit breaks at its phrase space inside its own
-       pill, so the bar stays one row on the narrowest phone. */
-    .demo-body:lang(ja) .demo__bar {
+    /* Full-width glyphs make long labels: a little smaller, and tighter pills. */
+    :root[data-glyph-width="full"] .demo__bar {
       gap: 3px;
       padding-inline: var(--space-1, 4px);
       font-size: 0.66rem;
     }
 
-    .demo-body:lang(ja) :is(.demo__back, .demo__motion, .demo__sound, .demo__tilt) {
+    :root[data-glyph-width="full"] :is(.demo__back, .demo__motion, .demo__sound, .demo__tilt) {
       padding-inline: 0.5em;
-      white-space: normal;
-      overflow-wrap: normal;
-      line-height: 1.15;
-      text-align: center;
     }
   }
 

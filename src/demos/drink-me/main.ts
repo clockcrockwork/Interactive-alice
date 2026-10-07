@@ -19,7 +19,14 @@ import { figure } from '../art/art.ts';
 import { TUNNEL_DOORS, trapdoorHtml } from '../rabbit-hole/trapdoor.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import './drink-me.css';
-import { BOTTLE_GLASS_SVG, bottleSvg, cakeSvg, KEY_SVG, labelFaceSvg } from './figures.ts';
+import {
+  BOTTLE_GLASS_SVG,
+  bottleSvg,
+  cakeSvg,
+  KEY_SVG,
+  type LabelLayout,
+  labelFaceSvg,
+} from './figures.ts';
 import { labelIn } from './label.ts';
 
 const EYE = 240;
@@ -72,6 +79,7 @@ function buildHall(
   bottleLabel: string,
   cakeLabel: string,
   tryLabel: string,
+  layout: LabelLayout,
 ): void {
   const panels = DOORS.map((shape, i) => {
     const door =
@@ -103,7 +111,7 @@ function buildHall(
     '</div>' +
     `<div class="dk__table">${legs}<div class="dk__table-top"></div>` +
     `<div class="dk__key">${KEY_SVG}</div>` +
-    `<div class="dk__bottle">${bottleSvg(bottleLabel)}</div>` +
+    `<div class="dk__bottle">${bottleSvg(bottleLabel, layout)}</div>` +
     `<div class="dk__cake">${cakeSvg(cakeLabel)}</div></div>`;
 }
 
@@ -128,14 +136,14 @@ function mount(shell: DemoShell): void {
   const iBite = cue('bite');
   const iRoof = cue('roof');
 
-  const bottleLabel = labelIn(shell.beats[iBottle]?.lines ?? []);
-  const cakeLabel = labelIn(shell.beats[iCake]?.lines ?? []);
+  const bottleLabel = labelIn(shell.beats[iBottle]?.lines ?? [], shell.profile.setApart);
+  const cakeLabel = labelIn(shell.beats[iCake]?.lines ?? [], shell.profile.setApart);
 
   const world = shell.layer('dk__world');
   const hall = document.createElement('div');
   hall.className = 'dk__hall';
   hall.style.setProperty('--dk-eye', `${EYE}px`);
-  buildHall(hall, bottleLabel, cakeLabel, shell.ui.demoTryDoor ?? '');
+  buildHall(hall, bottleLabel, cakeLabel, shell.ui.demoTryDoor ?? '', shell.profile);
   world.append(hall);
   // Over the hall, under everything of hers: the dim that takes the room toward the
   // pool's colours at the end, so the next page's first frame is the same room.
@@ -155,7 +163,8 @@ function mount(shell: DemoShell): void {
   // the same words.
   const labelFaces = Array.from(
     { length: 4 },
-    (_, i) => `<span class="dk__label-face" style="--k: ${i}">${labelFaceSvg(bottleLabel)}</span>`,
+    (_, i) =>
+      `<span class="dk__label-face" style="--k: ${i}">${labelFaceSvg(bottleLabel, shell.profile)}</span>`,
   ).join('');
   hands.innerHTML =
     `<div class="dk__hand dk__hand--bottle"><div class="dk__turn">${BOTTLE_GLASS_SVG}<div class="dk__label-ring">${labelFaces}</div></div></div>` +

@@ -185,10 +185,19 @@ nothing in this stack reads one: Vite owns the transform and Biome does not cons
 it. Adding one would be decoration that can silently disagree with the real target.
 
 Anything newer is progressive enhancement, and the documented exceptions are
-cross-document View Transitions, the Speculation Rules API, and any WebGL or
+cross-document View Transitions, the Speculation Rules API, `Intl.Segmenter`
+(see §9 of the binding doc; spaces are the fallback), and any WebGL or
 device-motion work a Shot introduces. The scene must stay complete when each is
 missing. Nothing in the guaranteed path may depend on a feature outside the
 Baseline target.
+
+`Intl.Segmenter` (Baseline 2024, so widely available only from mid-October 2026) is
+used the same way, by `units()` and `graphemes()` in `src/demos/shell/words.ts`
+(the locale profile, [`text-experience-binding.md`](text-experience-binding.md) §9):
+where it is missing, a line splits at its spaces and characters are counted as code
+points, which is exact for every language published today; only a language written
+without spaces would light whole phrases instead of words. When the pinned date moves
+past October 2026 it is simply inside the target.
 
 ## 7. What the runtime owns
 

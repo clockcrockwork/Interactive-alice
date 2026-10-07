@@ -52,6 +52,15 @@ switch), measured against the build before them. A Japanese demo page's HTML is 
 0.6 KB gzip larger than its English one (the dormouse: 4.9 KB against 4.2 KB). No font
 is downloaded (system fonts only, 0 bytes) and no storage key was added.
 
+The language-differences standard ([`text-experience-binding.md`](text-experience-binding.md)
+§9), measured against the build before it: the shared demo shell grew by 3.1 KB raw
+(1.4 KB gzip: the locale profile, `units()` with its segmenter, `graphemes()` and
+realia on the shell); the demos' styles by 0.4 KB raw (0.09 KB gzip); a demo page's
+HTML by about 0.1 KB gzip (the profile on the root, and the realia a demo reads: the
+Japanese caterpillar 5.81 → 5.94 KB). On the story, inside its budgets: `story.js`
+unchanged, `base.css` +40 B gzip (the emphasis rule), each part page +60 B gzip and
+the home page +90 B gzip (the profile on the root).
+
 Frame time was also measured for the demos, on the software renderer this project
 tests on (Chromium with SwiftShader, no GPU, 1280×760), holding each beat and taking
 the mean of a dozen frames; the numbers are large because there is no GPU, and their

@@ -164,13 +164,40 @@ export interface ExperienceConceptDemoFile {
    */
   joinsPrevious?: boolean;
   /**
-   * Optional: per locale, a picture to draw in place of another, for a picture whose sense rides on a word of that locale's text. Keyed by locale id, then by the name the demo's code knows the picture by; the value is the name of the picture to draw instead. The Cheshire Cat's pig, or fig: where a locale's rhyme for pig is a lid, the second picture is a lid. A locale without an entry draws the pictures the code names.
+   * Optional: the staging contract. What this demo's code reads out of its own sentences, per segment it stages, so a locale whose text does not provide it fails the gate instead of drawing nothing. scripts/check-experience.py verifies every listed segment, in every locale that publishes the demo, against that locale's profile in text/locales.json. See docs/text-experience-binding.md, Language differences.
    */
-  pictures?: {
-    [k: string]: {
-      [k: string]: string;
-    };
+  reads?: {
+    /**
+     * Segments in which the stage finds a word on display: each must set at least one run apart by a method its locale declares (setApart: quotes, capitals).
+     *
+     * @minItems 1
+     */
+    setApart?: [string, ...string[]];
+    /**
+     * Segments that name a letter as a letter: each must set apart a run of exactly one grapheme (a quoted character, or a capital standing alone where the locale sets apart by capitals).
+     *
+     * @minItems 1
+     */
+    letter?: [string, ...string[]];
+    /**
+     * Segments whose words after a colon are the thing the stage shows: each must hold a colon of either width followed by words.
+     *
+     * @minItems 1
+     */
+    moral?: [string, ...string[]];
+    /**
+     * Segments the stage draws as a noise, a grapheme at a time: each must be of kind sound in the chapter structure, and non-empty.
+     *
+     * @minItems 1
+     */
+    sound?: [string, ...string[]];
   };
+  /**
+   * Optional: the realia ids this demo reads (text/locales/<locale>/realia.json). The build writes the locale's entries for just these ids onto the page as data-realia, and the shell's realia(id) reads them.
+   *
+   * @minItems 1
+   */
+  realia?: [string, ...string[]];
 }
 
 // experience-scene.schema.json
@@ -397,7 +424,7 @@ export interface LocaleChapterFile {
 
 // locales.schema.json
 /**
- * The languages the experience can be read in, their authoring budgets, and the presentation facts a scene needs in order to lay their text out.
+ * The languages the experience can be read in, their authoring budgets, and the locale profile: what each language IS, declared once, so that build, CSS and runtime read these facts and never infer them from a language name. See docs/text-experience-binding.md, Language differences.
  */
 export interface LocaleRegistry {
   /**
@@ -434,7 +461,91 @@ export interface LocaleRegistry {
        * True when spaces inside a segment are authored content, as in the Japanese phrase spacing. Such text must never be trimmed, collapsed, or re-wrapped by a template or a minifier.
        */
       significantSpaces: boolean;
+      /**
+       * How this language marks a word that is on display (written on a thing, named as a word), in order of preference: 'quotes' is any paired quotation marks, corner brackets included; 'capitals' is an all-capitals run of two or more letters, a capitalised word of five or more letters, or a capital standing alone as a letter. scripts/check-experience.py verifies a demo's declared reads against exactly these methods.
+       *
+       * @minItems 1
+       */
+      setApart: ['quotes' | 'capitals', ...('quotes' | 'capitals')[]];
+      /**
+       * How a line is split into the units a stage lights or lays out one at a time (sung words, the tail's chunks, a label's two lines): 'spaces' when the language writes its units with spaces between them (phrase spaces count), 'segmenter' when it does not, so Intl.Segmenter finds the words. One helper implements both: units() in src/demos/shell/words.ts.
+       */
+      wordUnit: 'spaces' | 'segmenter';
+      /**
+       * How speech and thought are set apart from narration: 'italic' where the script has an italic, 'slip' (a warmer slip, never a synthesised slant) where it does not. Written to the page as data-emphasis.
+       */
+      emphasis: 'italic' | 'slip';
+      /**
+       * Whether the script's glyphs fill the em box ('full': CJK, kana, Hangul) or not ('half'). Drives the smaller caption size and the looser leading; written to the page as data-glyph-width. For a mixed run, isWide() in words.ts remains the per-character truth.
+       */
+      glyphWidth: 'half' | 'full';
+      /**
+       * The Intl locale tag numbers (and words, for the segmenter) are formatted with, e.g. 'en-GB', 'ja-JP'. A demo never passes the page's lang to Intl itself; it asks shell.locale.
+       */
+      numbers: string;
       notes?: string;
+    };
+  };
+}
+
+// realia.schema.json
+/**
+ * The things a joke or a sentence is ABOUT, in one language, which a stage draws or measures: what the Cat hears instead of a pig, the things that begin with the sisters' letter, the measure Alice's height is given in. Text layer: keyed by stable ids, it may name a thing but never a scene, shot, beat or demo. Required for every locale in full, like ui.json, and ids are added only when a stage needs one. A demo declares the ids it reads (realia in its demo file); the build writes this locale's entries for just those ids onto the page. See docs/text-experience-binding.md, Language differences.
+ */
+export interface LocaleRealia {
+  /**
+   * Optional editor hint; not part of the data.
+   */
+  $schema?: string;
+  /**
+   * Must equal the directory name, so a copied file cannot silently claim another language.
+   */
+  locale: string;
+  realia: {
+    /**
+     * The thing the Cheshire Cat hears instead of a pig: the word in this language's text that rhymes with or nearly sounds like its word for pig.
+     */
+    'cat-mishearing': {
+      /**
+       * A figure id in the art registry, or a figure name the stage that draws it knows.
+       */
+      picture: string;
+    };
+    /**
+     * The things the Dormouse's sisters drew, all beginning with this language's letter, in the order the sentence lists them.
+     *
+     * @minItems 1
+     */
+    'm-things': [
+      {
+        /**
+         * A figure id in the art registry, or a figure name the stage that draws it knows.
+         */
+        picture: string;
+      },
+      ...{
+        /**
+         * A figure id in the art registry, or a figure name the stage that draws it knows.
+         */
+        picture: string;
+      }[],
+    ];
+    /**
+     * The measure this language's text gives Alice's height in. Its label is UI copy (demoHeightUnit); numbers are formatted with the locale profile's numbers tag.
+     */
+    height: {
+      /**
+       * A stable name for the unit, for tests and the page; never shown.
+       */
+      unit: string;
+      /**
+       * How many of this unit make one inch.
+       */
+      perInch: number;
+      /**
+       * The height, in this unit, the text names as hers: the reading a stage marks with a notch (three inches; one finger).
+       */
+      notch: number;
     };
   };
 }
@@ -594,9 +705,13 @@ export interface LocaleUIStrings {
      */
     demoDipLeaves: string;
     /**
-     * Caterpillar: accessible name of the tape-measure that reads her height.
+     * Caterpillar: accessible name of the tape-measure that reads her height, naming the unit the locale's realia measure it in (text/locales/<locale>/realia.json, height).
      */
-    demoHeightInches: string;
+    demoHeight: string;
+    /**
+     * Caterpillar: the name of that unit, printed at the head of the tape: the unit of the locale's realia height, never a second choice of unit.
+     */
+    demoHeightUnit: string;
     /**
      * Pig and Pepper: unfold the Queen's invitation, as large as the Footman.
      */

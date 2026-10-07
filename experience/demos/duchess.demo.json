@@ -4,6 +4,7 @@
   "titleChapter": 9,
   "titleSection": "a-moral",
   "joinsPrevious": true,
+  "reads": { "moral": ["ch09.s0065", "ch09.s0110", "ch09.s0130", "ch09.s0140"] },
   "shots": [
     {
       "id": "arm-in-arm",

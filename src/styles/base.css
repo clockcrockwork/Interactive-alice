@@ -114,6 +114,19 @@
     color: var(--ink-soft);
   }
 
+  /*
+   * Where the locale profile says the script has no italic (data-emphasis="slip"),
+   * a slanted one is a fault: speech and thought stay upright in the softer ink, and
+   * nothing may synthesise a slant. The profile decides, not the language.
+   */
+  html[data-emphasis="slip"] {
+    font-synthesis-style: none;
+  }
+
+  html[data-emphasis="slip"] .line:is([data-kind="dialogue"], [data-kind="thought"]) {
+    font-style: normal;
+  }
+
   .beat {
     margin-block-end: var(--space-2);
   }

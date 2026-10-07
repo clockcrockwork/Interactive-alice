@@ -90,22 +90,42 @@
       "type": "boolean",
       "description": "Optional: true when this demo's first frame is the previous demo's last, one moment of the book across two pages (see docs/concept-demos.md, Joins). The index deals such cards over the card before."
     },
-    "pictures": {
+    "reads": {
       "type": "object",
-      "description": "Optional: per locale, a picture to draw in place of another, for a picture whose sense rides on a word of that locale's text. Keyed by locale id, then by the name the demo's code knows the picture by; the value is the name of the picture to draw instead. The Cheshire Cat's pig, or fig: where a locale's rhyme for pig is a lid, the second picture is a lid. A locale without an entry draws the pictures the code names.",
-      "propertyNames": {
-        "pattern": "^[a-z]{2,3}(-[a-z0-9]+)*$"
-      },
-      "additionalProperties": {
-        "type": "object",
-        "propertyNames": {
-          "pattern": "^[a-z][a-z0-9-]*$"
+      "additionalProperties": false,
+      "description": "Optional: the staging contract. What this demo's code reads out of its own sentences, per segment it stages, so a locale whose text does not provide it fails the gate instead of drawing nothing. scripts/check-experience.py verifies every listed segment, in every locale that publishes the demo, against that locale's profile in text/locales.json. See docs/text-experience-binding.md, Language differences.",
+      "properties": {
+        "setApart": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^ch[0-9]{2}\\.s[0-9]{4}$" },
+          "description": "Segments in which the stage finds a word on display: each must set at least one run apart by a method its locale declares (setApart: quotes, capitals)."
         },
-        "additionalProperties": {
-          "type": "string",
-          "pattern": "^[a-z][a-z0-9-]*$"
+        "letter": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^ch[0-9]{2}\\.s[0-9]{4}$" },
+          "description": "Segments that name a letter as a letter: each must set apart a run of exactly one grapheme (a quoted character, or a capital standing alone where the locale sets apart by capitals)."
+        },
+        "moral": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^ch[0-9]{2}\\.s[0-9]{4}$" },
+          "description": "Segments whose words after a colon are the thing the stage shows: each must hold a colon of either width followed by words."
+        },
+        "sound": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^ch[0-9]{2}\\.s[0-9]{4}$" },
+          "description": "Segments the stage draws as a noise, a grapheme at a time: each must be of kind sound in the chapter structure, and non-empty."
         }
       }
+    },
+    "realia": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+      "description": "Optional: the realia ids this demo reads (text/locales/<locale>/realia.json). The build writes the locale's entries for just these ids onto the page as data-realia, and the shell's realia(id) reads them."
     }
   }
 }

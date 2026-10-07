@@ -3,6 +3,19 @@
   "titleChapter": 9,
   "ground": "dark",
   "joinsPrevious": true,
+  "reads": {
+    "setApart": [
+      "ch09.s0670",
+      "ch09.s0680",
+      "ch09.s0690",
+      "ch09.s0700",
+      "ch09.s0770",
+      "ch09.s0780",
+      "ch09.s0790",
+      "ch09.s0810"
+    ],
+    "sound": ["ch09.s0500"]
+  },
   "shots": [
     {
       "id": "the-gryphon",

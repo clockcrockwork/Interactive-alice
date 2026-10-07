@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
   DEMO_ORDER,
+  demoDir,
   generateDemoPages,
   generateDemoPagesFrom,
   isPublishable,
@@ -9,8 +10,10 @@ import {
   loadDemoProjects,
   nextDemo,
   pageRelativeArt,
+  realiaFor,
   titleOf,
 } from './demos.ts';
+import { htmlOpen } from './pages.ts';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const project = loadDemoProject(root);
@@ -180,9 +183,7 @@ describe('the concept-demo pages in every other locale', () => {
     ]);
     for (const demo of ja.demos) {
       const html = pageAt(`demos/ja/${demo.id}/index.html`);
-      expect(html, demo.id).toContain(
-        '<html lang="ja" dir="ltr" data-line-break="strict" data-significant-spaces="true">',
-      );
+      expect(html, demo.id).toContain(htmlOpen('ja', ja.settings));
       expect(html).toContain(`<h1 class="demo__title">${titleOf(ja, demo)}</h1>`);
       expect(titleOf(ja, demo)).not.toBe(titleOf(project, demo));
       for (const id of demo.shots.flatMap((shot) => shot.beats.flatMap((beat) => beat.segments))) {
@@ -274,12 +275,51 @@ describe('the concept-demo pages in every other locale', () => {
     expect(card).toContain(ja.ui.partPending);
   });
 
-  it("writes a locale's own pictures onto its page, and none where it has none", () => {
-    const cat = project.demos.find((demo) => demo.id === 'cheshire-cat');
-    expect(cat?.pictures?.ja).toEqual({ fig: 'lid' });
-    expect(pageAt('demos/ja/cheshire-cat/index.html')).toContain(
-      'data-pictures="{&quot;fig&quot;:&quot;lid&quot;}"',
-    );
-    expect(pageAt('demos/cheshire-cat/index.html')).not.toContain('data-pictures');
+  it("writes each locale's realia for just the ids a demo reads, and none where it reads none", () => {
+    for (const each of projects) {
+      for (const demo of each.demos) {
+        if (!isPublishable(each, demo)) {
+          continue;
+        }
+        const html = pageAt(`${demoDir(each)}/${demo.id}/index.html`);
+        const attr = /data-realia="([^"]*)"/.exec(html)?.[1];
+        if (!demo.realia?.length) {
+          expect(attr, `${each.locale} ${demo.id}`).toBeUndefined();
+          continue;
+        }
+        const carried = JSON.parse((attr ?? '{}').replaceAll('&quot;', '"')) as Record<
+          string,
+          unknown
+        >;
+        expect(Object.keys(carried)).toEqual(demo.realia);
+        expect(carried).toEqual(realiaFor(each, demo));
+        for (const id of demo.realia) {
+          expect(carried[id]).toEqual((each.realia as Record<string, unknown>)[id]);
+        }
+      }
+    }
+    // Not one demo file says which locale draws what: the pictures field is gone.
+    for (const demo of project.demos) {
+      expect(Object.keys(demo)).not.toContain('pictures');
+    }
+  });
+
+  it("writes every page's locale profile on its root, from the registry, never inferred", () => {
+    for (const each of projects) {
+      const own = all.pages.filter((page) => page.path.startsWith(`${demoDir(each)}/`));
+      const pagesOf = each.base
+        ? own.filter((page) => !others.some((other) => page.path.startsWith(`${demoDir(other)}/`)))
+        : own;
+      expect(pagesOf.length).toBeGreaterThan(0);
+      for (const page of pagesOf) {
+        expect(page.html, page.path).toContain(htmlOpen(each.locale, each.settings));
+      }
+      const open = htmlOpen(each.locale, each.settings);
+      expect(open).toContain(`data-set-apart="${each.settings.setApart.join(' ')}"`);
+      expect(open).toContain(`data-word-unit="${each.settings.wordUnit}"`);
+      expect(open).toContain(`data-emphasis="${each.settings.emphasis}"`);
+      expect(open).toContain(`data-glyph-width="${each.settings.glyphWidth}"`);
+      expect(open).toContain(`data-numbers="${each.settings.numbers}"`);
+    }
   });
 });

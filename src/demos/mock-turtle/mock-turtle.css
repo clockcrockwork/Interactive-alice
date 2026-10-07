@@ -525,12 +525,14 @@
     pointer-events: none;
   }
 
+  /* The cry and the subjects are in the display face (shell.css tokens), which
+     is the book face for a script the display face does not have. */
   .mt__cry-word {
     position: absolute;
     inset-inline-start: 50%;
     inset-block-start: 27%;
     translate: -50% -50%;
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: var(--demo-display);
     font-weight: 900;
     font-size: clamp(3rem, 13vmin, 8rem);
     letter-spacing: 0.04em;
@@ -544,13 +546,6 @@
 
   .mt__letter {
     display: inline-block;
-  }
-
-  /* Georgia has no kana: a Japanese page writes the cry and the subjects in its
-     own book face (shell.css). */
-  .mt__cry-word:lang(ja),
-  .mt__subject:lang(ja) {
-    font-family: var(--demo-serif);
   }
 
   /* Each letter of the cry is drawn in turn, popping up out of nothing. */
@@ -783,7 +778,7 @@
     --s: clamp(0, calc(var(--show) * 2.2 - var(--i) * 0.16), 1);
     --w: clamp(0, calc(var(--wash) * 1.7 - var(--i) * 0.09), 1);
     display: inline-block;
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: var(--demo-display);
     font-style: italic;
     font-weight: 700;
     font-size: clamp(1rem, 3.4vmin, 1.7rem);

@@ -1,0 +1,692 @@
+/*
+ * Shared chrome for the concept demos: the bar, the sticky stage, the caption
+ * layer and the scroll track. Each demo brings its own sheet for its stage; this one
+ * owns only what every demo has. Layer names follow src/styles/base.css.
+ */
+
+/* Declared here as well as in base.css: whichever sheet the browser meets first
+   fixes the order, and on a demo page that can be this one. */
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  /* The palette of docs/visual-design.md: an old illustrated book. Every demo
+     draws from these; a demo that steps off them on purpose says so in its own
+     sheet and in docs/concept-demos.md. */
+  :root {
+    --paper-base: #f2e8d8;
+    --paper-warm: #e4d3ba;
+    --paper-aged: #cfb999;
+    --paper-shadow: #bda586;
+    --ink-primary: #2a211a;
+    --ink-secondary: #544538;
+    --ink-faded: #85715f;
+    --ink-ghost: #ad9984;
+    --sepia-light: #c8b398;
+    --sepia-mid: #a3886d;
+    --sepia-dark: #755d49;
+    --sepia-deep: #594536;
+    --wonder-red: #a74838;
+    --wonder-red-light: #c46d5b;
+    --wonder-red-dark: #7c3028;
+    --wonder-red-faded: #a66e61;
+    --ix-gold: #d6b557;
+    --ix-coral: #d9826d;
+    --ix-pink: #d790a4;
+    --ix-lilac: #9c88b5;
+    --ix-blue: #7f9fbc;
+    --ix-mint: #8daf9d;
+    /* The world's own tints, printed in the same aged inks: a sky, a night, water
+       and leaves that belong to the book rather than to a screen. */
+    --world-sky: #dfd2bc;
+    --world-sky-deep: #c6b399;
+    --world-night: #3a2e27;
+    --world-night-deep: #241c17;
+    --world-water: #7b8d8c;
+    --world-water-deep: #4e5f60;
+    --world-leaf: #9c9169;
+    --world-leaf-deep: #6a6147;
+    --world-glow: #e9d9a8;
+
+    --demo-ink: var(--paper-base);
+    --demo-ink-soft: var(--paper-aged);
+    --demo-ground: var(--world-night-deep);
+    --demo-paper: var(--paper-base);
+    --demo-paper-ink: var(--ink-primary);
+    --demo-accent: var(--ix-gold);
+    --demo-heart: var(--wonder-red);
+    --demo-glass: oklch(from var(--sepia-deep) l c h / 0.72);
+    /* Every sentence is set on a slip of the book's paper, so it reads the same
+       over a night wood, a red court or a paper sky. */
+    --demo-slip: oklch(from var(--paper-base) l c h / 0.9);
+    --demo-slip-ink: var(--ink-primary);
+    --demo-say: var(--ink-secondary);
+    --demo-say-red: var(--wonder-red-dark);
+    --demo-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    /* A heavier display face for a word drawn big (a cry, a subject on the sand). */
+    --demo-display: Georgia, "Times New Roman", serif;
+    /* One row of the bar. The bar may wrap to a second row on a narrow phone
+       rather than shrink its labels; the shell then writes the height it measures
+       as --demo-bar-height on the page, so whatever sits under the bar moves down. */
+    --demo-bar-row: 3.25rem;
+    --demo-bar-height: var(--demo-bar-row);
+    /* The floor of the chrome's type scale: no pill smaller than a 24-pixel target,
+       no label smaller than 12 pixels, in any language (hard rule 10: the pause
+       control is one of them). */
+    --demo-target-min: 1.5rem;
+    --demo-label-min: 0.75rem;
+    --demo-caption-size: clamp(1.15rem, 1rem + 1.2vw, 1.75rem);
+    /* Speech and thought on a slip of their own, where the script has no italic. */
+    --demo-slip-say: oklch(from var(--paper-warm) l c h / 0.92);
+    /* An italic a demo draws with (a moral on a ribbon, a word on the sand):
+       upright where the script has none (below). Never write italic itself. */
+    --demo-italic: italic;
+    --demo-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --demo-quick: 220ms;
+    --demo-calm: 600ms;
+    --demo-z-stage: 1;
+    --demo-z-captions: 5;
+    --demo-z-bar: 10;
+
+    /* Alice, as the design guide has her: yellow dress, brown hair, the most
+       stable colour in the book. */
+    --alice-hair: #68472d;
+    --alice-hair-deep: #513a2b;
+    --alice-hair-light: #8a6543;
+    --alice-dress: #d8b348;
+    --alice-dress-light: #e7ca70;
+    --alice-dress-deep: #b38a2f;
+    --alice-dress-shadow: #84631f;
+    --alice-apron: #f4efe5;
+    --alice-apron-shadow: #d8cec0;
+    --alice-skin: #f0d5be;
+    --alice-skin-shadow: #d8b69d;
+    --alice-shoes: #513a2b;
+    --alice-band: var(--wonder-red-faded);
+    --alice-shadow: oklch(38% 0.06 80);
+  }
+
+  /* Font stacks, one per script: a font stack is a property of a script, so this
+     is the one place a language is named in CSS, and the only `:lang()` rule the
+     front-end checker allows (check-frontend.py, locale-profile). Everything else
+     about a language (how it breaks, its emphasis, its glyph width) is keyed on
+     the profile the build writes on the root (data-*), never on its name.
+     Japanese is set in the reader's own system fonts, never a downloaded one: a
+     textbook face where the system has one (the shapes a young reader learns
+     from), else a Mincho, the book face; the display face has no kana, so it is
+     the book face too. */
+  :root:lang(ja) {
+    /* check-frontend: allow locale-profile — font stacks are per script */
+    --demo-serif:
+      "UD Digi Kyokasho NK-R", "UD Digi Kyokasho N-R", "Hiragino Mincho ProN", "Yu Mincho",
+      YuMincho, "Noto Serif CJK JP", "Noto Serif JP", "IPAexMincho", "IPAMincho", serif;
+    --demo-display: var(--demo-serif);
+  }
+
+  :root[data-emphasis="slip"] {
+    --demo-italic: normal;
+  }
+
+  /* Full-width glyphs fill the em box, so a caption line holds fewer of them at a
+     slightly smaller size. */
+  :root[data-glyph-width="full"] {
+    --demo-caption-size: clamp(1.05rem, 0.95rem + 1vw, 1.55rem);
+  }
+
+  /* The other Alice, the one everyone knows: blue dress, fair hair. Set on the
+     root by the picker on the demo index and remembered per visitor. */
+  :root[data-alice="blue"] {
+    --alice-hair: #d9b45a;
+    --alice-hair-deep: #b8933f;
+    --alice-hair-light: #ecd08a;
+    --alice-dress: #5a76b8;
+    --alice-dress-light: #7f96cc;
+    --alice-dress-deep: #435c98;
+    --alice-dress-shadow: #2f4272;
+    --alice-band: #2f4272;
+    --alice-shadow: oklch(34% 0.07 260);
+  }
+}
+
+@layer scene {
+  /* Every demo page shares one dark ground so the cross-document transition has
+     something stable to fade between. */
+  .demo-body {
+    background: var(--demo-ground);
+    color: var(--demo-ink);
+    font-family: var(--demo-serif);
+    overscroll-behavior: none;
+  }
+
+  .demo {
+    position: relative;
+    /* Scroll length: one viewport per beat, plus one to let the last beat settle.
+       Written by the shell from the number of beats it found. */
+    min-block-size: calc((var(--demo-beats, 12) + 1) * 100vh);
+  }
+
+  .demo__bar {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0;
+    z-index: var(--demo-z-bar);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: var(--demo-bar-row);
+    padding-inline: var(--space-2);
+    background: linear-gradient(to bottom, var(--demo-glass), transparent);
+    font-family: system-ui, sans-serif;
+    font-size: 0.85rem;
+  }
+
+  .demo__title {
+    flex: 1;
+    margin: 0;
+    font-family: var(--demo-serif);
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    view-transition-name: demo-title;
+  }
+
+  .demo__back,
+  .demo__motion,
+  .demo__sound,
+  .demo__tilt,
+  .demo__next,
+  .demo__auto,
+  .demo__prop {
+    color: inherit;
+    font: inherit;
+    text-decoration: none;
+    border: 1px solid oklch(from var(--demo-ink) l c h / 0.4);
+    border-radius: 999px;
+    padding: 0.35em 0.9em;
+    background: var(--demo-glass);
+    cursor: pointer;
+  }
+
+  .demo__back,
+  .demo__motion,
+  .demo__sound,
+  .demo__tilt,
+  .demo__next,
+  .demo__auto {
+    min-block-size: var(--demo-target-min);
+    min-inline-size: var(--demo-target-min);
+  }
+
+  .demo__sound[aria-pressed="true"],
+  .demo__auto[aria-pressed="true"],
+  .demo__motion[aria-pressed="true"] {
+    background: var(--demo-ink);
+    color: var(--demo-ground);
+  }
+
+  .demo__hint {
+    position: fixed;
+    inset-block-end: var(--space-2);
+    inset-inline: 0;
+    z-index: var(--demo-z-bar);
+    margin: 0;
+    text-align: center;
+    font-family: system-ui, sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--demo-ink-soft);
+    opacity: var(--demo-hint-opacity, 1);
+    transition: opacity var(--demo-calm) var(--demo-ease);
+    pointer-events: none;
+  }
+
+  /* A degraded mode says so at the foot of the first frame, above the scroll
+     hint, and goes with the hint once the reader is on their way: it never sits
+     on a prop. */
+  .demo__note {
+    position: fixed;
+    inset-block-end: calc(var(--space-2) + 1.6rem);
+    inset-inline: var(--space-2);
+    z-index: var(--demo-z-bar);
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    font-size: 0.75rem;
+    color: var(--demo-ink-soft);
+    text-align: center;
+    pointer-events: none;
+    opacity: var(--demo-hint-opacity, 1);
+    transition: opacity var(--demo-calm) var(--demo-ease);
+  }
+
+  /* The stage: pinned to the viewport for the whole scroll. Demos draw into it. */
+  .demo__stage {
+    position: sticky;
+    inset-block-start: 0;
+    block-size: 100dvh;
+    overflow: hidden;
+    z-index: var(--demo-z-stage);
+    isolation: isolate;
+  }
+
+  .demo__layer {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* The captions: the story's own sentences, moved into the stage by the shell. */
+  .demo__captions {
+    position: absolute;
+    inset: 0;
+    z-index: var(--demo-z-captions);
+    pointer-events: none;
+  }
+
+  .demo-beat {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 14vh;
+    display: grid;
+    gap: 0.35em;
+    max-inline-size: min(34rem, 88vw);
+    margin-inline: auto;
+    padding-inline: var(--space-2);
+    visibility: hidden;
+    text-align: center;
+    text-wrap: balance;
+    font-size: var(--demo-caption-size);
+    line-height: 1.45;
+    text-shadow: 0 1px 12px oklch(0% 0 0 / 0.6);
+  }
+
+  .demo-beat[data-active] {
+    visibility: visible;
+  }
+
+  /* The caption fit budget (shell.ts, fitCaptions): a stack that does not fit
+     its frame as placed steps its slips down a size, then another, then tightens
+     their leading, then is moved inside the frame by the shell. The size is a
+     factor on whatever size the demo set, so a demo's own scale survives. */
+  .demo-beat[data-fit="small"] {
+    --demo-fit-size: 0.9;
+  }
+
+  .demo-beat:is([data-fit="smaller"], [data-fit="tight"], [data-fit="over"]) {
+    --demo-fit-size: 0.8;
+  }
+
+  .demo-beat[data-fit-shift] {
+    transform: translateY(var(--demo-fit-shift, 0));
+  }
+
+  /* On the last beat the captions lift clear of the link to the next demo, which
+     is pinned to the bottom of the stage. */
+  .demo[data-attached] .demo__captions {
+    transition: translate 0.45s ease-out;
+  }
+
+  .demo[data-attached][data-ending] .demo__captions {
+    translate: 0 calc(-1 * var(--demo-end-lift, 4.25rem));
+  }
+
+  /* The slip: ink on the book's paper, one per sentence. Speech and thought are
+     marked (in italic where the script has one) and in a softer ink; the court and
+     its Rabbit speak in Wonderland red; Alice's own lines carry her dress colour as
+     a mark at the start. A demo may restyle a speaker, but keeps the slip under it.
+     Speech marking belongs to the shell: a line says whether it is marked with
+     `--demo-say-style` (a demo sets it for a speaker, or for narration it sets
+     apart), and the shell alone turns that into a font style, by the profile. */
+  .line {
+    justify-self: center;
+    margin: 0;
+    font-size: calc(var(--demo-fit-size, 1) * 1em);
+    font-style: var(--demo-say-style, normal);
+    padding: 0.04em 0.5em 0.1em;
+    border-radius: 0.3em;
+    background: var(--demo-slip);
+    color: var(--demo-slip-ink);
+    text-shadow: none;
+    opacity: var(--line-opacity, 1);
+    translate: 0 var(--line-rise, 0);
+  }
+
+  .line[data-kind="dialogue"],
+  .line[data-kind="thought"] {
+    --demo-say-style: italic;
+    color: var(--demo-say);
+  }
+
+  .line:is(
+    [data-speaker="queen-of-hearts"],
+    [data-speaker="king-of-hearts"],
+    [data-speaker="knave-of-hearts"],
+    [data-speaker="white-rabbit"]
+  ) {
+    color: var(--demo-say-red);
+  }
+
+  .line[data-speaker="alice"] {
+    border-inline-start: 0.22em solid var(--alice-dress);
+    padding-inline-start: 0.42em;
+  }
+
+  /* A quoted run is held together (shell.ts, holdQuotedRuns): it moves to the
+     next line whole rather than breaking inside, and only a run longer than the
+     slip itself wraps within. */
+  .demo__held {
+    display: inline-block;
+    max-inline-size: 100%;
+  }
+
+  .line[data-kind="sound"] {
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  /* The locale profile (docs/text-experience-binding.md, Language differences),
+     written on the root by the build. Where a language's spaces are authored
+     content, lines break only at those spaces (and by its line-break keyword,
+     base.css), and a run too long for its slip may still break anywhere rather
+     than overflow. */
+  :root[data-significant-spaces="true"] .demo-body {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+
+  /* Full-width glyphs want more leading and a little air between them. */
+  :root[data-glyph-width="full"] .demo-body .demo-beat {
+    line-height: 1.7;
+    letter-spacing: 0.04em;
+  }
+
+  :where(:root[data-glyph-width="full"] .demo-body) .line {
+    padding-block: 0.1em 0.14em;
+  }
+
+  /* The caption fit's third step tightens the leading; full-width glyphs still
+     keep more of it than a Latin line. */
+  :root[data-glyph-width="full"] .demo-body {
+    --demo-fit-leading: 1.45;
+  }
+
+  .demo-beat:is([data-fit="tight"], [data-fit="over"]) .line {
+    line-height: var(--demo-fit-leading, 1.25);
+  }
+
+  /* Where the script has no italic, a slanted one is a fault, so nothing may
+     synthesise one, and no line is set in italic whatever its speaker asks: a
+     digit or a Latin letter in the line would otherwise slant in a fallback face.
+     Speech and thought keep the softer ink and stand on a warmer slip instead; the
+     slip is as specific as the speech rule above and no more, so a demo that
+     restyles a speaker (a bubble, a tint) still wins over it. */
+  :root[data-emphasis="slip"] .demo-body {
+    font-synthesis-style: none;
+  }
+
+  :root[data-emphasis="slip"] .demo-body :is(.line, .line *) {
+    font-style: normal;
+  }
+
+  :where(:root[data-emphasis="slip"] .demo-body)
+    .line:is([data-kind="dialogue"], [data-kind="thought"]) {
+    background: var(--demo-slip-say);
+  }
+
+  /* Before the shell attaches, the track is a readable document. Once the beats have
+     moved into the stage the track is only scroll distance. */
+  .demo__track {
+    padding-block: calc(var(--demo-bar-height) + var(--space-3)) var(--space-3);
+    padding-inline: var(--space-2);
+    max-inline-size: var(--measure);
+    margin-inline: auto;
+  }
+
+  .demo[data-attached] .demo__track {
+    display: none;
+  }
+
+  .demo-shot {
+    margin-block-end: var(--space-3);
+  }
+
+  .demo__end {
+    position: relative;
+    z-index: var(--demo-z-captions);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+    padding-block: var(--space-3) var(--space-4);
+    font-family: system-ui, sans-serif;
+  }
+
+  .demo[data-attached] .demo__end {
+    /* Pinned to the end of the scroll, over the stage's last frame. */
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline: 0;
+    pointer-events: none;
+  }
+
+  .demo[data-attached] .demo__next,
+  .demo[data-attached] .demo__auto {
+    pointer-events: auto;
+  }
+
+  /* While going on by itself, the next link's border is a ring that fills as the
+     end is held, and empties again when the reader scrolls back. */
+  .demo__end[data-auto] .demo__next {
+    --demo-auto: 0;
+    border: 2px solid transparent;
+    background:
+      linear-gradient(var(--demo-glass), var(--demo-glass)) padding-box,
+      conic-gradient(
+        var(--demo-ink) calc(var(--demo-auto) * 360deg),
+        oklch(from var(--demo-ink) l c h / 0.3) 0
+      )
+      border-box;
+  }
+
+  /* Interactive props sit above the captions, are real buttons, and only appear
+     when the moment they belong to is on screen. */
+  .demo__prop {
+    position: absolute;
+    z-index: calc(var(--demo-z-captions) + 1);
+    font-family: system-ui, sans-serif;
+    font-size: 0.85rem;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--demo-quick) var(--demo-ease),
+      visibility 0s linear var(--demo-quick);
+  }
+
+  .demo__prop[data-shown] {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  /* What the reader just did, said at the foot of the frame on a slip, under the
+     captions and clear of the props at the top; above the end links on the
+     last beat. */
+  .demo__status {
+    position: absolute;
+    inset-block-end: var(--space-2);
+    inset-inline-start: 50%;
+    z-index: calc(var(--demo-z-captions) + 1);
+    max-inline-size: min(36rem, calc(100% - 2 * var(--space-2)));
+    margin: 0;
+    padding: 0.2em 0.7em;
+    border-radius: 999px;
+    background: var(--demo-slip);
+    color: var(--demo-slip-ink);
+    text-align: center;
+    font-family: system-ui, sans-serif;
+    font-size: 0.8rem;
+    translate: -50% 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--demo-calm) var(--demo-ease);
+  }
+
+  .demo:dir(rtl) .demo__status {
+    translate: 50% 0;
+  }
+
+  .demo[data-ending] .demo__status {
+    inset-block-end: calc(var(--demo-end-lift, 4.25rem) + var(--space-1));
+  }
+
+  .demo__status[data-shown] {
+    opacity: 1;
+    transition-duration: var(--demo-quick);
+  }
+
+  /* A phone's bar: the title kept for assistive technology only, tighter
+     buttons, and type at the chrome's floor and never under it. In any language,
+     when the pills do not fit one row at that size the bar wraps to a second row,
+     right-aligned under the first; a label never breaks inside its pill and never
+     shrinks to fit. */
+  @media (max-width: 600px) {
+    .demo__bar {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 6px var(--space-1, 4px);
+      padding-block: 6px;
+      font-size: var(--demo-label-min);
+    }
+
+    .demo__title {
+      position: absolute;
+      inline-size: 1px;
+      block-size: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .demo__back,
+    .demo__motion,
+    .demo__sound,
+    .demo__tilt {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.3em 0.7em;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .demo__back {
+      margin-inline-end: auto;
+    }
+  }
+
+  .sr-only {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* The screen itself turns. Which way depends on where it is going (see
+     transitions.ts): a well swallows it into a hole, a pool whirls it, a court
+     deals it like a card. Cross-document, so a progressive enhancement. */
+  @media (prefers-reduced-motion: no-preference) {
+    @view-transition {
+      navigation: auto;
+    }
+
+    ::view-transition-old(root) {
+      animation: demo-page-drop 480ms cubic-bezier(0.5, 0, 0.9, 0.4) both;
+      transform-origin: 50% 120%;
+    }
+
+    ::view-transition-new(root) {
+      animation: demo-page-iris 640ms var(--demo-ease) both;
+    }
+
+    :active-view-transition-type(hole) {
+      &::view-transition-old(root) {
+        animation: demo-page-hole 560ms cubic-bezier(0.6, 0, 0.9, 0.5) both;
+        transform-origin: 50% 50%;
+      }
+
+      &::view-transition-new(root) {
+        animation: demo-page-rise 640ms var(--demo-ease) both;
+      }
+    }
+
+    :active-view-transition-type(whirl) {
+      &::view-transition-old(root) {
+        animation: demo-page-whirl 640ms cubic-bezier(0.6, 0, 0.8, 0.4) both;
+        transform-origin: 50% 50%;
+      }
+
+      &::view-transition-new(root) {
+        animation: demo-page-unwhirl 700ms var(--demo-ease) both;
+        transform-origin: 50% 50%;
+      }
+    }
+  }
+
+  @keyframes demo-page-drop {
+    to {
+      transform: rotate(-14deg) translateY(30%) scale(0.85);
+      opacity: 0;
+    }
+  }
+
+  @keyframes demo-page-iris {
+    from {
+      clip-path: circle(0% at 50% 50%);
+    }
+    to {
+      clip-path: circle(80% at 50% 50%);
+    }
+  }
+
+  @keyframes demo-page-hole {
+    to {
+      transform: scale(0.1);
+      clip-path: circle(0% at 50% 50%);
+      opacity: 0.4;
+    }
+  }
+
+  @keyframes demo-page-rise {
+    from {
+      transform: scale(1.25);
+      opacity: 0;
+    }
+  }
+
+  @keyframes demo-page-whirl {
+    to {
+      transform: rotate(180deg) scale(0);
+      opacity: 0;
+    }
+  }
+
+  @keyframes demo-page-unwhirl {
+    from {
+      transform: rotate(-90deg) scale(1.4);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .demo__hint,
+    .demo__note,
+    .demo__prop,
+    .demo__status,
+    .demo[data-attached] .demo__captions {
+      transition: none;
+    }
+  }
+}

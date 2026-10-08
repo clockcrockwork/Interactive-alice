@@ -1,0 +1,281 @@
+# Art trials: one set of figures, four drawings
+
+> A prototype to help decide the illustration direction of the concept demos, and a proof
+> that raster cut-outs drop into the art registry as planned. The registry and its contract
+> are in [`concept-demos.md`](concept-demos.md) §2; the palette and the SVG-versus-raster
+> rules are in [`visual-design.md`](visual-design.md); asset intake is in
+> [`assets-and-audio.md`](assets-and-audio.md).
+
+## Decision (October 2026): engraved, delivered baked
+
+The owner tried the four drawings and chose **engraved**, for now. It is the default on
+every demo page, and it is delivered the way the trial's "pictures" choice was: a figure
+with a baked picture shows the picture (no runtime cost), a figure whose parts a demo
+moves shows **cut-outs** where they were baked (the drawing without the parts, and one
+picture per part, stacked in its box, §3), and only what is left is engraved by the
+runtime filter, so the page reads as one drawing. "Pictures" is no longer a separate
+choice: it is how engraved is delivered.
+
+Why: engraving is the look closest to the old-book goal of
+[`visual-design.md`](visual-design.md); baking removes its runtime cost (§4); and the
+baked path is the one generated illustration will take in through the asset-intake
+skill, so it is exercised every day instead of in a trial.
+
+Fixed with the decision: the trial's weak point, engraved figures losing their edge on
+dark grounds, is answered in the treatment. A demo whose figures stand on a dark ground
+says so in its file (`"ground": "dark"` in `experience/demos/<id>.demo.json`, which the
+build writes as `data-ground="dark"` on the page): there every engraved figure, picture,
+cut-outs or live vector, gets a 1.5 px rim in `--paper-base` (the `art-rim` filter), so a
+hatched coat keeps its outline against the court's red or the night wood. Flagged today:
+the Cheshire wood, the court (witnesses, trial), the Mock Turtle's sea and the hall of
+Drink Me.
+
+Still open:
+
+- the index keeps the drawing picker (engraved first and pressed, then flat and cut paper)
+  while the decision is "for now"; removing it is a later change;
+- figures still engraved at runtime somewhere: the Cheshire Cat in its three poses, the
+  Caterpillar and the Pigeon, the Cat's head over the croquet-ground, the jury, the
+  footmen, the baby in the kitchen, the Dormouse and the Hatter at the tea-party, the
+  Queen in the trial, the Caucus runners, and the figures that are listed in §3 as
+  unbaked;
+- a figure whose part turns about its own box (`transform-box: fill-box`, Bill's
+  guinea-pigs) or changes an attribute (the Hatter's eyes at the tea-party) cannot be cut
+  out as it is drawn: its part needs an origin in the drawing's units first;
+- the hatching of a baked picture is drawn at its 2× box, so a figure shown much smaller
+  than its box reads finer-hatched than the same figure engraved live;
+- AVIF and resized `srcset` widths (§2, end) are still to come with the intake step.
+
+The sections below describe the trial as it was run, with what changed noted where it
+matters.
+
+## 1. What it is
+
+The demo index offers a second picker beside the Alice picker: **Choose the drawing**, with
+four choices (three since the decision: engraved, flat, cut paper). Like the Alice choice, it is remembered in the visitor's browser under the
+demos' key (`alice-demos:art`), applied before first paint by the same head script, as
+`data-art` on the root, and it holds on every demo page. During the trial flat was the
+default; since the decision engraved is, and sets nothing, while `flat` and `paper` set
+`data-art`; a stored `baked` (the old pictures choice) and anything unknown read as
+engraved. A flat page is still pixel-identical to the page before the trial existed. The
+labels are UI copy in `ui.json` (`demoArt*`).
+
+| Choice | `data-art` | What the figures are |
+| --- | --- | --- |
+| Flat colour | none | the registry's vectors as drawn: flat tints in the book's inks |
+| Engraved | `engraved` | the same vectors through an SVG filter: an old book's engraved plate |
+| Cut paper | `paper` | the same vectors through an SVG filter: shapes cut from tinted paper |
+| Pictures | `baked` | transparent WebP images baked from the vectors, engraved at bake time; now how engraved is delivered |
+
+Only the registry's characters change. Scenery that a demo draws itself (rooms, tables,
+the court, the sea, the WebGL well, the pool's canvas) stays as it is in every choice, so
+the trial compares character treatments against the same ground.
+
+Nothing in the trial moves: the treatments are static, and reduced motion changes nothing
+about them.
+
+## 2. How each is made
+
+**Engraved.** One filter chain per page (`src/demos/art/treatments.ts`), defined once in a
+hidden SVG by the shell and applied by `art.css` to the drawing inside each figure box, so
+a demo's own filter on the box (a drop shadow, a blur) still applies on top:
+
+- the fills are washed toward the paper (`--paper-base`) and keep 60% of their tint, so
+  Wonderland red still reads as red;
+- the darkness of each pixel (one minus its luminance) gates three hatching layers: a
+  rising diagonal from 40% dark, a falling one (cross-hatching) from 60%, and a close rule
+  from 80%; the hatching is a tiled 6 px pattern used only for its alpha, inked in
+  `--ink-primary`;
+- an ink line is drawn at every edge between two tints (a Laplacian on luminance) and
+  round the figure's outline (its alpha less its alpha eroded by one pixel).
+
+Alice has her own setting (`art-engraved-alice`): she keeps 85% of her colours and is
+hatched only in her deepest shadows, so both the yellow and the blue Alice stay
+recognisable and she stays the most colourful thing on the page. The alternative
+considered, hatch overlays generated per figure from the vector markup, needs to know
+which shapes are shadows; the registry's drawings do not say, and a filter reads it from
+the colours for every figure at once.
+
+**Cut paper.** One filter (`art-paper`): a low-frequency noise displaces the drawing by a
+few pixels so every edge is slightly torn; a fine fractal noise multiplies a grain into
+the fills; the shape dilated by 1.4 px and filled with `--paper-base` shows the paper's
+pale core at the cut; and a blurred, offset copy of that shape in ink at 45% lifts the
+piece off the page.
+
+**Pictures (baked).** `npm run art:bake` (`scripts/bake-art.mjs`, run by hand, never by the
+build) draws each figure in its list from its registry vector, through the engraved filter,
+in headless Chromium at twice its box, screenshots it on a transparent ground, and encodes
+it as WebP with alpha through the browser's own `canvas.toBlob`. Alice figures get one
+picture per Alice variant, anyone else one `any` picture. It writes:
+
+- `src/assets/images/figures/<id>.<variant>.webp`, the pictures;
+- `src/demos/art/baked.ts`, generated, which names each picture with
+  `new URL('…', import.meta.url)` so Vite hashes it and the URL stays relative;
+- `src/assets/images/provenance.json`, one record per picture: made by this script from the
+  project's own vectors, not generated by a model.
+
+The registry serves them only in the pictures style (now: the engraved style): `figure()` puts the picture beside
+the vector (`.art--baked`) and `art.css` shows one by `data-art`; `svgFigure()` does the
+same with an SVG `<image>`; `loadArtImage()` returns the baked picture for a Canvas. On a
+demo page only the chosen Alice's picture is emitted, because a hidden `<img>` is still
+fetched. The index's preview of the pictures choice is rendered by the build, which turns
+the picture's file URL into a page-relative path that Vite hashes like any other image.
+
+A figure keeps its vector where a demo moves its parts (`LIVE_PARTS` in `registry.ts`): a
+single picture cannot lift the Hatter's hat. In the pictures style those vectors, and any
+figure without a picture, are drawn through the engraved filter at runtime, so the page
+reads as one drawing.
+
+AVIF is not produced: the browser can decode it but cannot encode it from a canvas, and no
+image library is installed. Producing it would mean adding `sharp` (libvips, prebuilt
+binaries) as a dev dependency, which would also do the resizing to the `srcset` widths that
+[`assets-and-audio.md`](assets-and-audio.md) §3 asks for; `@jsquash/avif` (WebAssembly) is
+the dependency-light alternative.
+
+## 3. What was baked, and what stays a vector
+
+*Since the decision.* Also baked whole: the hedgehog (the Duchess's walk), the pig-baby
+(the Duchess's sky), the pig trotting, the crab, the conger-eel and the six quadrille
+dancers (the Mock Turtle's school and the quadrille); the mushroom's defaults now match
+its only stage. Baked as **cut-outs** (`CUT_OUTS` in `registry.ts`; `BAKED_PARTS` in
+`baked.ts`), each where its demo moves the part: the flamingo in croquet (body, head; its
+base, Alice's arm and sleeve, one per Alice), the hedgehog (ball, walk) and the three
+gardeners (brush) in croquet, the Hatter's hat in the witnesses, the guinea-pig's paw in
+the witnesses, the Tortoise's cane. A picture that shows any of Alice's colours is now
+baked per Alice whatever its id. A demo that gives a baked figure colours of its own
+(`--bl-lizard` on the Rabbit's house, `--lq-gryphon` on the quadrille) keeps the vector
+there (`OWN_COLOURS`); a unit test derives that list from the demos' stylesheets. 69
+pictures, 1.0 MB in the repository. The list below is the trial's.
+
+Baked (39 pictures, 655 KB in the repository): Alice falling, running away, from behind,
+looking down, her foot and hands, standing, kneeling and filling the house (each twice); the
+White Rabbit as herald and in the garden; the Queen, King and Knave of Hearts; the card
+soldier and the card arch; the Duchess, the cook, the March Hare, the Dormouse, the Mock
+Turtle, the Gryphon, the lobster, Alice's sister, Bill, the guinea-pigs, the rose-tree and
+the mushroom. Pictures run from 3.6 KB (the Rabbit in the garden) to 50 KB (the mushroom,
+whose hatched cap is the largest dark area); hatching is high-frequency detail and costs
+bytes: a flat-colour bake would be smaller.
+
+Baked, but kept as vectors in the demos that move their parts: Alice falling in the rabbit
+hole (head, arms, legs), Alice running away on the riverbank (stride), the Queen in the
+trial (her mouth), the Mock Turtle in its own demo and the quadrille (tears), the Dormouse in
+its demo and at the tea-party (eyes, the snores), the cook in the kitchen (the throwing
+arm), Bill in his own demo (head).
+
+Not baked, because their parts move wherever they appear: the Cheshire Cat in all three
+poses (the parts that vanish, the grin, the wink), the Hatter (his eyes at the tea-party,
+his hat in court), the Caterpillar and the Pigeon, the flamingo, the hedgehog and the three
+gardeners (croquet), the tucked flamingo (the Duchess's walk), the baby, the pig and both
+footmen (the kitchen), the jury (their slates), the guinea-pig (its paw), the
+Tortoise-master (his cane), the eight Caucus-race runners, and Alice sitting on the bank.
+A raster version of any of these is a set of cut-outs, one per moving part, stacked in the
+same box.
+
+Not baked, because their colour comes from where a demo puts them (`currentColor`): Alice's
+silhouette, the White Rabbit running and diving, Dinah in both poses, and the bat. The bake
+script refuses them.
+
+Not baked for this trial's scope: the quadrille's dancers, the crab, the conger-eel, Pat,
+Alice from above. Alice and the Mouse swimming have no vector: the pool draws them on its
+own canvas, and that canvas is drawn the same in every choice.
+
+## 4. What it costs
+
+*Since the decision*, same method (SwiftShader, 1280×760, holding each beat, mean / worst
+beat, ms), engraved as delivered before and after the cut-outs and the rim, with flat
+alongside; the machine was lighter than in the trial, so compare within a row:
+
+```text
+                 pictures (before)   engraved (after)   flat
+croquet           69–77 / 185–200     51–55 / 121–133    52 / 114
+trial             43–47 / 100–112     45–47 / 103–117    45 /  86
+Pig and Pepper    40–43 / 180–205     37–40 / 173–174    32 / 161
+witnesses         45    /  82          45–46 /  85–89    40 /  68
+```
+
+Two runs each. Croquet's cost was the big flamingo, whose body breathes on a loop and
+was re-engraved every frame; as cut-outs it costs what flat costs. The dark-ground rim
+on the court did not move the trial or the witnesses beyond run-to-run noise.
+
+Bytes, per demo page, engraved after (before, as pictures): croquet 207 KB (142),
+the witnesses 174 KB (140), the Mock Turtle 162 KB (50), the Duchess 149 KB (122), the
+trial 147 KB (147), the caterpillar 85 KB, the quadrille 79 KB (60), Pig and Pepper 56 KB
+(45), the Rabbit's house 51 KB, the Cheshire Cat 10 KB (0); the rest 0–27 KB. The shared
+demo shell's JS grows from 42.7 KB to 46.1 KB gzip (the cut-out manifest, and the parts
+under 4 KB that Vite inlines as data URLs). Story pages are untouched.
+
+The trial's own numbers follow.
+
+**Frame time.** Per-beat mean frame time while holding each beat, on the software renderer
+this project tests on (Chromium with SwiftShader, no GPU, 1280×760, one run each on a
+lightly loaded machine; runs under load moved by 10 to 30%, the ranking did not). The first
+number is the mean over the demo's beats, the second its worst beat.
+
+```text
+                     flat        engraved     cut paper      pictures
+croquet              62 / 145    105 / 261    210 / 748      95 / 238   (61 / 130 without the
+                                                                         runtime engraving of
+                                                                         the unbaked figures)
+trial                57 / 105     78 / 171    155 / 976      59 / 148
+Pig and Pepper       40 / 227     47 / 156     66 / 286      55 / 245
+witnesses            48 /  83     55 / 145     72 / 335      55 / 106   (50 / 86, as above)
+```
+
+The pictures themselves cost what flat costs: with the runtime filter switched off for
+the figures that could not be baked, croquet and the witnesses measure the same as flat.
+What the pictures style still pays is the engraving of its live vectors, most in croquet,
+where the flamingos, hedgehogs, gardeners and the Cat all move their parts. Engraved costs
+up to about +70% on a mean beat and doubles the worst ones, where many figures are on
+screen. Cut paper is the most expensive by far: its two noise layers are recomputed for
+every pixel of every figure whenever the figure repaints, and the trial's giant Alice under
+the court (976 ms) and the croquet game (748 ms) show it; on that renderer the croquet
+walk, which follows the scroll with a little smoothing, took more than five seconds to
+catch up with a jump of one beat. On a phone with a GPU the absolute
+numbers are much smaller; the order is the same.
+
+**Bytes.** Pictures add images only in the pictures style; flat, engraved and cut paper
+load none. Measured per demo page (gzip does not apply to WebP):
+
+```text
+witnesses   10 pictures  140 KB        rabbit-house  4 (+3 inlined)  57 KB
+trial        9           147 KB        caterpillar   5               92 KB
+croquet      8           142 KB        mock-turtle   2               50 KB
+duchess      7           122 KB        pig-and-pepper 3              45 KB
+quadrille    4            60 KB        drink-me, riverbank, the pool, the rabbit hole,
+                                       tea-party, Bill: 1–2 each, 5–27 KB
+```
+
+Pictures under 4 KB are inlined by Vite as data URLs. The shared demo shell's JS grows
+from 37.3 KB to 42.7 KB gzip (+5.4 KB: the generated `baked.ts`, the filter definitions and
+the registry's baked path), the shared demo CSS from 3.1 KB to 3.2 KB gzip, the index's own
+JS by 0.1 KB. Story pages are untouched.
+
+## 5. What each does well and badly
+
+| | does well | does badly |
+| --- | --- | --- |
+| Flat colour | cheapest; crisp at any scale; recolourable; every part can move | reads as placeholder; least like an old book |
+| Engraved | closest to the old-book goal of `visual-design.md`; reads well on light grounds (the riverbank, croquet, the beach, the kitchen); red survives; dark figures gain shape | busy at small sizes and on crowds (the jury, the guinea-pigs); on dark grounds (the night wood, the court's red) the hatched figures lose contrast against the ground; costs frame time live |
+| Cut paper | the most legible on any ground, light or dark, because of the pale cut edge and the shadow; charming on the court's red and the night wood | heaviest at runtime by far; thin parts (whiskers, the Rabbit's ears, legs) tear into crumbs; the lift-off shadow fights demos that already draw a shadow at the feet |
+| Pictures | zero runtime cost for the look; the real delivery path for generated cut-outs, proved end to end (bake, provenance, hashing, both Alices, relative URLs, HTML and SVG contexts) | cannot move a part; a figure with moving parts needs one cut-out per part; bytes per page (50–150 KB) where flat had none; fixed resolution (2× its box) |
+
+Per kind of scene: the open daylight scenes (riverbank, croquet, the beach) suit engraving;
+the dark scenes (the Cheshire wood, the court, the trial's red) suit cut paper or flat; the
+crowded scenes (the jury, the Caucus ring) are clearest flat or as paper, and noisiest
+engraved.
+
+## 6. The open decision
+
+Two separate questions, which this trial keeps apart:
+
+1. **The look.** Flat, engraved, cut paper, or a generated illustration in one of these
+   directions. The contact sheets (the same beats in each style, both Alices) are the
+   evidence; they are produced from a running build and are not kept in the repository.
+2. **The delivery.** Runtime vectors with a treatment, or baked pictures.
+
+Recommendation: take the look from the contact sheets, leaning to engraving for daylight
+scenes, and whichever look is chosen, deliver it baked. The pictures style shows that
+baking removes the look's runtime cost entirely and that the registry's image contract
+holds without a demo changing; the runtime filters are best kept as a preview tool. Before
+generated art replaces these bakes, the figures listed in §3 as moving their parts need a
+cut-out per part, and the intake step should add AVIF and resized widths.

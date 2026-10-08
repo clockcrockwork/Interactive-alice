@@ -1,0 +1,372 @@
+/* The demo index: nineteen playing cards dealt on the table, each a door. Each
+   lies at its own small tilt (written per card by the build), and a card whose
+   scene picks up where the one before it ended lies over that card's edge, a
+   dealt run. On a phone, two columns of smaller cards. */
+
+@layer scene {
+  /* The table the cards lie on: deep sepia, not the demos' night. */
+  .demo-body:has(.demos) {
+    --demo-ground: var(--sepia-deep);
+  }
+
+  .demos {
+    min-block-size: 100dvh;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: var(--space-2);
+    padding-block: var(--space-4);
+    padding-inline: var(--space-2);
+    perspective: 1400px;
+  }
+
+  .demos__title {
+    margin: 0;
+    font-family: var(--demo-serif);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    view-transition-name: demo-title;
+  }
+
+  /* The language switch: each index linked to the others, each named in its
+     own language, a quiet row above the title. The page's own is marked. */
+  .demos__languages ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-1) var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: system-ui, sans-serif;
+    font-size: 0.9rem;
+  }
+
+  .demos__language {
+    color: var(--demo-ink-soft);
+    text-underline-offset: 0.25em;
+  }
+
+  .demos__language[aria-current="page"] {
+    color: var(--demo-ink);
+    text-decoration: none;
+    border-block-end: 1px solid currentColor;
+  }
+
+  .demos__intro {
+    margin: 0 0 var(--space-3);
+    color: var(--demo-ink-soft);
+    text-align: center;
+  }
+
+  /* The picker: two Alices side by side, each drawn in her own colours whatever
+     the page's current choice, so the visitor sees what they are choosing. */
+  .demos__alice {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-3);
+    padding: var(--space-2);
+    border: 1px solid oklch(from var(--demo-ink) l c h / 0.2);
+    border-radius: 1rem;
+  }
+
+  .demos__alice-title {
+    padding-inline: 0.5em;
+    font-family: system-ui, sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--demo-ink-soft);
+  }
+
+  .demos__alice-choice {
+    display: grid;
+    grid-template-columns: 4rem 1fr;
+    grid-template-rows: auto auto;
+    column-gap: var(--space-2);
+    align-items: center;
+    inline-size: min(20rem, 100%);
+    padding: var(--space-1) var(--space-2);
+    border: 2px solid transparent;
+    border-radius: 0.8rem;
+    background: oklch(from var(--demo-ink) l c h / 0.06);
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    transition: border-color var(--demo-quick) var(--demo-ease);
+  }
+
+  .demos__alice-choice[aria-pressed="true"] {
+    border-color: var(--demo-ink);
+  }
+
+  .demos__alice-choice:focus-visible {
+    outline: 2px solid var(--demo-accent);
+    outline-offset: 3px;
+  }
+
+  .demos__alice-figure {
+    grid-row: 1 / 3;
+    inline-size: 3.2rem;
+  }
+
+  .demos__alice-figure svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .demos__alice-figure .rh__alice-figure,
+  .demos__alice-figure .rh__hair,
+  .demos__alice-figure .rh__skirt {
+    animation: none;
+  }
+
+  /* Each picker figure in her own set whatever the root says. These are the
+     shell's two sets verbatim, since no token names the Alice not chosen. */
+  .demos__alice-figure[data-alice="yellow"] {
+    --alice-hair: #68472d;
+    --alice-hair-deep: #513a2b;
+    --alice-hair-light: #8a6543;
+    --alice-dress: #d8b348;
+    --alice-dress-light: #e7ca70;
+    --alice-dress-deep: #b38a2f;
+    --alice-dress-shadow: #84631f;
+    --alice-band: var(--wonder-red-faded);
+  }
+
+  .demos__alice-figure[data-alice="blue"] {
+    --alice-hair: #d9b45a;
+    --alice-hair-deep: #b8933f;
+    --alice-hair-light: #ecd08a;
+    --alice-dress: #5a76b8;
+    --alice-dress-light: #7f96cc;
+    --alice-dress-deep: #435c98;
+    --alice-dress-shadow: #2f4272;
+    --alice-band: #2f4272;
+  }
+
+  /* How the figures are drawn: the same figure in each style, whatever the root
+     says (docs/art-trials.md). The filters are on this page always (main.ts).
+     Engraved is shown as it is delivered, the baked picture. */
+  /* Three in a row where there is room; on a phone they stack like the Alices. */
+  @media (min-width: 64rem) {
+    .demos__art .demos__art-choice {
+      inline-size: 14.5rem;
+    }
+  }
+
+  .demos__art-figure {
+    grid-row: 1 / 3;
+    inline-size: 3.2rem;
+  }
+
+  .demos__art-figure[data-art-style="engraved"] .art--baked > svg {
+    display: none;
+  }
+
+  .demos__art-figure[data-art-style="engraved"] .art__image--baked {
+    display: block;
+  }
+
+  .demos__art-figure[data-art-style="paper"] .art > svg {
+    filter: url("#art-paper");
+  }
+
+  /* The two Alices are drawn the way the page is: they are vectors (each in her
+     own colours), so the engraving is the runtime filter here. */
+  :root:not([data-art="flat"], [data-art="paper"]) .demos__alice-figure .art > svg {
+    filter: url("#art-engraved-alice");
+  }
+
+  :root[data-art="paper"] .demos__alice-figure .art > svg {
+    filter: url("#art-paper");
+  }
+
+  .demos__alice-name {
+    font-family: var(--demo-serif);
+    font-size: 1.15rem;
+  }
+
+  .demos__alice-note {
+    font-family: system-ui, sans-serif;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: var(--demo-ink-soft);
+  }
+
+  .demos__cards {
+    /* How far a joined card lies over the one before it. */
+    --demos-run: 1.4rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3) var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    transform-style: preserve-3d;
+    max-inline-size: 62rem;
+  }
+
+  .demos__card {
+    /* Unitless, so a script can tween them as plain numbers. */
+    --tilt-x: 0;
+    --tilt-y: 0;
+    --lift: 0;
+    inline-size: min(12.75rem, 78vw);
+    aspect-ratio: 5 / 7;
+    transform-style: preserve-3d;
+    transform: translateZ(calc(var(--lift) * 1px)) rotateX(calc(var(--tilt-x) * 1deg))
+      rotateY(calc(var(--tilt-y) * 1deg)) rotate(var(--tilt, 0deg));
+    transition: transform var(--demo-calm) var(--demo-ease);
+  }
+
+  .demos__link {
+    display: grid;
+    align-content: end;
+    gap: var(--space-1);
+    block-size: 100%;
+    padding: var(--space-2);
+    border-radius: 1rem;
+    /* Paper, worn to sepia at the edges, on a table that throws an ink shadow. */
+    background:
+      radial-gradient(120% 90% at 50% 0%, var(--demo-paper), transparent 60%),
+      radial-gradient(90% 90% at 50% 50%, var(--demo-paper) 55%, var(--paper-aged)),
+      var(--demo-paper);
+    color: var(--demo-paper-ink);
+    text-decoration: none;
+    box-shadow:
+      0 30px 60px -20px oklch(from var(--world-night-deep) l c h / 0.8),
+      inset 0 0 0 1px var(--paper-shadow);
+    view-transition-name: var(--card-name);
+  }
+
+  .demos__pip {
+    position: absolute;
+    inset-block-start: var(--space-2);
+    inset-inline-start: var(--space-2);
+    inline-size: 2.4rem;
+    block-size: 2.4rem;
+    background: var(--demo-heart);
+    clip-path: path(
+      "M19 36 C19 36 2 24 2 12 A9 9 0 0 1 19 8 A9 9 0 0 1 36 12 C36 24 19 36 19 36 Z"
+    );
+    opacity: 0.85;
+  }
+
+  .demos__link {
+    position: relative;
+  }
+
+  .demos__card:nth-child(2n) .demos__pip {
+    background: var(--demo-paper-ink);
+    clip-path: path(
+      "M19 2 C24 12 34 14 34 22 A8 8 0 0 1 21 27 L24 36 L14 36 L17 27 A8 8 0 0 1 4 22 C4 14 14 12 19 2 Z"
+    );
+  }
+
+  .demos__card:nth-child(3) .demos__pip,
+  .demos__card:nth-child(5) .demos__pip {
+    background: var(--demo-heart);
+    clip-path: path("M19 2 L36 19 L19 36 L2 19 Z");
+  }
+
+  .demos__name {
+    font-family: var(--demo-serif);
+    font-size: 1.5rem;
+    line-height: 1.15;
+  }
+
+  .demos__tech {
+    font-family: system-ui, sans-serif;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: oklch(from var(--demo-paper-ink) l c h / 0.7);
+  }
+
+  .demos__link:hover,
+  .demos__link:focus-visible {
+    outline: 2px solid var(--demo-accent);
+    outline-offset: 4px;
+  }
+
+  /* A demo this language cannot show yet: the card lies face down, greyed,
+     its title in the language it has, the reason in this one. */
+  .demos__card[data-available="false"] .demos__link {
+    filter: grayscale(1);
+    opacity: 0.6;
+  }
+
+  /* A dealt run: the card lies over the edge of the one before, and that card
+     keeps its words clear of the overlap. */
+  .demos__card[data-joined] {
+    margin-inline-start: calc(-1 * (var(--space-2) + var(--demos-run)));
+  }
+
+  .demos__card:has(+ .demos__card[data-joined]) .demos__link {
+    padding-inline-end: calc(var(--space-2) + var(--demos-run));
+  }
+
+  /* A phone: two columns of smaller cards, still each at its tilt, side by
+     side rather than dealt over one another. */
+  @media (max-width: 600px) {
+    .demos {
+      padding-inline: var(--space-1);
+    }
+
+    .demos__cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-2) var(--space-1);
+      inline-size: 100%;
+    }
+
+    .demos__card {
+      inline-size: auto;
+      transform: translateZ(calc(var(--lift) * 1px)) rotate(calc(var(--tilt, 0deg) * 0.6));
+    }
+
+    .demos__card[data-joined] {
+      margin-inline-start: 0;
+    }
+
+    .demos__link,
+    .demos__card:has(+ .demos__card[data-joined]) .demos__link {
+      gap: 0.3rem;
+      padding: var(--space-1);
+      border-radius: 0.7rem;
+    }
+
+    .demos__pip {
+      inset-block-start: var(--space-1);
+      inset-inline-start: var(--space-1);
+      scale: 0.7;
+      transform-origin: 0 0;
+    }
+
+    .demos__name {
+      font-size: 1.05rem;
+    }
+
+    .demos__tech {
+      font-size: 0.7rem;
+      line-height: 1.3;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .demos__alice-choice {
+      transition: none;
+    }
+
+    /* The cards lie still at their tilts; nothing leans or lifts. */
+    .demos__card {
+      transition: none;
+      transform: rotate(var(--tilt, 0deg));
+    }
+  }
+}

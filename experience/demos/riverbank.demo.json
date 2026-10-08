@@ -1,0 +1,83 @@
+{
+  "id": "riverbank",
+  "titleChapter": 1,
+  "titleSection": "riverbank",
+  "shots": [
+    {
+      "id": "by-the-river",
+      "beats": [
+        {
+          "id": "the-book",
+          "cue": "book",
+          "segments": [
+            "ch01.s0010",
+            "ch01.s0020",
+            "ch01.s0030",
+            "ch01.s0040"
+          ]
+        },
+        {
+          "id": "no-good",
+          "cue": "good",
+          "segments": [
+            "ch01.s0050"
+          ]
+        },
+        {
+          "id": "sleepy",
+          "cue": "sleepy",
+          "segments": [
+            "ch01.s0060",
+            "ch01.s0070",
+            "ch01.s0080"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-white-rabbit",
+      "beats": [
+        {
+          "id": "a-rabbit",
+          "cue": "rabbit",
+          "segments": [
+            "ch01.s0090",
+            "ch01.s0100"
+          ]
+        },
+        {
+          "id": "late",
+          "cue": "late",
+          "segments": [
+            "ch01.s0110",
+            "ch01.s0120"
+          ]
+        },
+        {
+          "id": "the-watch",
+          "cue": "watch",
+          "segments": [
+            "ch01.s0130",
+            "ch01.s0140"
+          ]
+        },
+        {
+          "id": "on-her-feet",
+          "cue": "up",
+          "segments": [
+            "ch01.s0150",
+            "ch01.s0160",
+            "ch01.s0170"
+          ]
+        },
+        {
+          "id": "across-the-field",
+          "cue": "field",
+          "segments": [
+            "ch01.s0180"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,742 @@
+/* The Queen's Croquet-Ground: a garden in CSS 3D, ridges and furrows the camera
+   walks across, and flat card people standing on it. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    /* The garden as the book prints it: a paper sky over the world's leaf; the
+       roses paper until painted, and then the Queen's red; the flamingo a
+       printed sepia-pink; the paint-pot sepia. */
+    --cq-sky: var(--world-sky);
+    --cq-sky-low: var(--paper-base);
+    --cq-turf: var(--world-leaf);
+    --cq-turf-deep: var(--world-leaf-deep);
+    --cq-red: var(--wonder-red);
+    --cq-white: var(--paper-base);
+    --cq-flamingo: color-mix(in oklch, var(--wonder-red-faded), var(--paper-warm) 45%);
+    --cq-pot: var(--sepia-dark);
+    --cq-shadow: oklch(from var(--ink-primary) l c h / 0.35);
+    /* The Cat's head in the air: a sepia print with a paper grin. */
+    --cc-cat: var(--sepia-light);
+    --cc-cat-stripe: var(--sepia-dark);
+    --cc-grin: var(--paper-base);
+    /* The little door she came in by: the same tokens the Dormouse's tree door
+       and hall end on. */
+    --cq-door: color-mix(in oklch, var(--sepia-dark), var(--sepia-deep));
+    --cq-door-frame: var(--sepia-deep);
+    --cq-hall-wall-deep: var(--sepia-dark);
+    /* The Cat's head in the air: its size, and how far across the frame it floats. */
+    --cq-cat: clamp(9rem, 30vmin, 18rem);
+    --cq-cat-x: 62%;
+  }
+}
+
+@layer scene {
+  .demo--croquet .demo-beat {
+    inset-block-end: 9vh;
+  }
+
+  .demo--croquet .line[data-speaker="queen-of-hearts"] {
+    font-weight: 700;
+    color: var(--wonder-red-dark);
+  }
+
+  .demo--croquet .line[data-speaker="cheshire-cat"] {
+    --demo-say-style: italic;
+    color: var(--ink-secondary);
+  }
+
+  .cq__sky {
+    background: linear-gradient(
+      to bottom,
+      var(--cq-sky),
+      var(--cq-sky-low) 60%,
+      var(--cq-turf) 60.5%
+    );
+  }
+
+  /* The world: a perspective, and inside it the ground plane the camera slides along. */
+  .cq__world {
+    --cam-x: 0;
+    --cam-z: 0;
+    --tilt: 12;
+    --height: 0;
+    --zoom: 1;
+    perspective: 1000px;
+    perspective-origin: 50% 40%;
+    overflow: hidden;
+  }
+
+  .cq__ground {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 60%;
+    inline-size: 0;
+    block-size: 0;
+    transform-style: preserve-3d;
+    transform: scale(var(--zoom)) rotateX(calc(var(--tilt) * -1deg))
+      translate3d(calc(var(--cam-x) * -1px), calc(var(--height) * 1px), calc(var(--cam-z) * -1px));
+  }
+
+  .cq__turf {
+    position: absolute;
+    inset-inline-start: -3000px;
+    inset-block-start: -1400px;
+    inline-size: 6000px;
+    block-size: 2400px;
+    transform: rotateX(90deg);
+    transform-origin: 50% 58%;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        oklch(from var(--ink-primary) l c h / 0) 0 70px,
+        oklch(from var(--ink-primary) l c h / 0.12) 70px 110px,
+        oklch(from var(--paper-base) l c h / 0.08) 110px 140px
+      ),
+      linear-gradient(to bottom, var(--cq-turf-deep), var(--cq-turf) 30%, var(--cq-turf-deep));
+  }
+
+  /* A piece stands at (x, z) on the ground, feet down, and faces the camera,
+     turning about its feet; flat (`--flat`), it lies on its face on the ground
+     whatever the camera's tilt, a few degrees and a little way off it, clear of
+     the turf, which lies a few pixels above the line the feet stand on. */
+  .cq__piece {
+    --x: 0;
+    --z: 0;
+    --flat: 0;
+    --sink: 0;
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: var(--w, 12rem);
+    margin-inline-start: calc(var(--w, 12rem) / -2);
+    transform-style: preserve-3d;
+    transform: translate3d(calc(var(--x) * 1px), 0, calc(var(--z) * 1px))
+      translateY(calc(-100% + var(--sink) * 70%)) rotateX(calc(var(--tilt) * 1deg))
+      rotateX(calc(var(--flat) * (-86deg - var(--tilt) * 1deg)))
+      translateZ(calc(var(--flat) * -14px)) rotateY(calc(var(--turn, 0) * var(--flat) * 180deg));
+    transform-origin: 50% 100%;
+    pointer-events: none;
+  }
+
+  /* A pool of shadow at the feet, not a drop-shadow filter: the garden has many
+     pieces and a filter re-rasterises each on every frame of the walk. */
+  .cq__piece::after {
+    content: "";
+    position: absolute;
+    inset-inline: 6%;
+    inset-block-end: -2%;
+    block-size: 8%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 50%, var(--cq-shadow), transparent 72%);
+    z-index: -1;
+  }
+
+  .cq__piece .art,
+  .cq__piece svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .cq__back svg,
+  .cq__cushion svg,
+  .cq__exec-body svg,
+  .cq__flamingo .art,
+  .cq__flamingo svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .cq__cat .art,
+  .cq__cat svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* A gardener is a card: face down it shows the back of the pack, and turned
+     over (`--turn`, only while it lies flat) its face again. */
+  .cq__gardener .art,
+  .cq__back {
+    backface-visibility: hidden;
+  }
+
+  .cq__back {
+    position: absolute;
+    inset: 0;
+    transform: rotateY(180deg);
+  }
+
+  .cq__ground[data-turning] .cq__gardener {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  /* The Knave carries the King's crown on its cushion, in both hands. */
+  .cq__cushion {
+    position: absolute;
+    inset-inline: 16%;
+    inset-block-start: 50%;
+  }
+
+  .cq__queen[data-shouting] .art {
+    animation: cq-shout 0.35s ease-out 1;
+  }
+
+  .cq__rose-tree {
+    filter: drop-shadow(0 20px 20px var(--cq-shadow));
+  }
+
+  .cq__roses {
+    position: absolute;
+    inset: 0 0 20% 0;
+  }
+
+  /* Every rose is a button: white until painted, then red with a drip. */
+  .cq__rose {
+    --drip: 0;
+    position: absolute;
+    inset-inline-start: var(--rx);
+    inset-block-start: var(--ry);
+    inline-size: 9%;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, var(--cq-white), var(--paper-warm) 70%);
+    box-shadow: inset 0 -0.3em 0.4em oklch(from var(--ink-primary) l c h / 0.15);
+    cursor: pointer;
+    pointer-events: auto;
+    transition:
+      background-color var(--demo-quick) var(--demo-ease),
+      transform var(--demo-quick) var(--demo-ease);
+  }
+
+  .cq__rose::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 45%;
+    inset-block-start: 70%;
+    inline-size: 12%;
+    block-size: calc(var(--drip) * 90%);
+    border-radius: 0 0 50% 50%;
+    background: var(--cq-red);
+    opacity: 0;
+    transition: opacity var(--demo-calm) var(--demo-ease);
+  }
+
+  .cq__rose[aria-pressed="true"] {
+    background: radial-gradient(circle at 40% 35%, var(--wonder-red-light), var(--cq-red) 70%);
+    transform: scale(1.12);
+  }
+
+  .cq__rose[aria-pressed="true"]::after {
+    opacity: 1;
+  }
+
+  .cq__rose:focus-visible {
+    outline: 3px solid var(--ix-gold);
+    outline-offset: 3px;
+  }
+
+  .cq__brush {
+    transform-origin: 96px 100px;
+  }
+
+  /* They dab only while they are painting: a brush moving inside a card's
+     drawing repaints the card on every frame. */
+  .cq__ground[data-painting] .cq__brush {
+    animation: cq-dab 0.9s ease-in-out infinite alternate;
+  }
+
+  .cq__pot-shape {
+    inline-size: 100%;
+    aspect-ratio: 1 / 0.9;
+    background: linear-gradient(
+      to right,
+      oklch(from var(--cq-pot) calc(l - 0.06) c h),
+      var(--cq-pot) 40%,
+      oklch(from var(--cq-pot) calc(l - 0.1) c h)
+    );
+    clip-path: polygon(0 0, 100% 0, 100% 14%, 92% 14%, 84% 100%, 16% 100%, 8% 14%, 0 14%);
+  }
+
+  .cq__pot {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  /* The splash of paint on the glass. */
+  .cq__splash {
+    pointer-events: none;
+  }
+
+  .cq__dab {
+    position: absolute;
+    inset-inline-start: calc(var(--dx) * 1%);
+    inset-block-start: calc(var(--dy) * 1%);
+    inline-size: 9vmin;
+    aspect-ratio: 1;
+    background: var(--cq-red);
+    border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%;
+    opacity: 0.85;
+    animation: cq-splat 2.8s ease-out forwards;
+  }
+
+  /* Marchers step as they come; children skip. */
+  .cq__ground[data-marching] .cq__marcher .art {
+    animation: cq-step 0.5s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -80ms);
+  }
+
+  .cq__ground[data-marching] .cq__child .art {
+    animation: cq-skip 0.4s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -70ms);
+  }
+
+  .cq__fury {
+    background: var(--wonder-red);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* The game: arches, hedgehogs and players are hidden until places are taken. */
+  .cq__arch,
+  .cq__hedgehog,
+  .cq__player {
+    opacity: 0;
+  }
+
+  .cq__ground[data-running] .cq__player .art,
+  .cq__ground[data-quarrel] .cq__player .art {
+    animation: cq-run 0.32s ease-in-out infinite alternate;
+    animation-delay: calc(var(--x, 0) * -1ms);
+  }
+
+  .cq__ground[data-running] .cq__arch .art {
+    animation: cq-step 0.6s ease-in-out infinite alternate;
+  }
+
+  .cq__hedgehog {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .cq__hedgehog-walk {
+    opacity: 0;
+  }
+
+  .cq__hedgehog[data-walking] .cq__hedgehog-ball {
+    opacity: 0;
+  }
+
+  .cq__hedgehog[data-walking] .cq__hedgehog-walk {
+    opacity: 1;
+    animation: cq-waddle 0.5s ease-in-out infinite alternate;
+    transform-origin: 50% 100%;
+  }
+
+  /* The flamingo under her arm, big in the frame; its head turns to look up at you. */
+  .cq__hands {
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  /* Out of the game the flamingo is not in her hands, and not painted. */
+  .cq__hands[data-off] {
+    visibility: hidden;
+  }
+
+  /* The story raises and lowers the holder; the bird inside it is the
+     reader's to swing, and goes off across the garden on its own. */
+  .cq__hold {
+    position: absolute;
+    inset-inline-start: 56%;
+    inset-block-end: -4%;
+    inline-size: clamp(16rem, 56vmin, 34rem);
+  }
+
+  .cq__flamingo {
+    --mood: 1;
+    --nod: 0;
+    position: relative;
+    transform-origin: 50% 100%;
+    filter: drop-shadow(0 16px 24px oklch(from var(--ink-primary) l c h / 0.45));
+  }
+
+  /* The mood turns the head away from the ball and twists the neck up at her;
+     sulking (--mood near 0) it looks straight up in her face. A stroke nods it. */
+  .cq__flamingo-head {
+    --look-x: 0;
+    --sulk: calc(1 - var(--mood));
+    transform-origin: 160px 130px;
+    transform: rotate(calc(var(--sulk) * 150deg)) skewY(calc(var(--sulk) * -16deg))
+      translate(calc(var(--sulk) * -20px), calc(var(--sulk) * -10px + var(--nod) * 10px));
+    transition: transform var(--demo-calm) var(--demo-ease);
+  }
+
+  /* Where the neck and head are: a pointer drawn over it strokes the bird. */
+  .cq__stroke {
+    position: absolute;
+    inset-inline-start: 34%;
+    inset-block-start: 4%;
+    inline-size: 40%;
+    block-size: 62%;
+    pointer-events: none;
+  }
+
+  .cq__flamingo[data-mood-live] .cq__stroke {
+    pointer-events: auto;
+  }
+
+  .cq__flamingo[data-looking] .cq__flamingo-head,
+  .cq__flamingo[data-puzzled] .cq__flamingo-head {
+    transform: rotate(calc(150deg + var(--look-x) * 1deg)) translate(-20px, -10px);
+  }
+
+  .cq__flamingo-body {
+    transform-origin: 170px 300px;
+    animation: cq-breathe 2.6s ease-in-out infinite alternate;
+  }
+
+  .cq__ground-tap {
+    position: absolute;
+    inset: 22% 0 28% 0;
+    border: 0;
+    padding: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .cq__ground-tap[data-mode="strike"],
+  .cq__ground-tap[data-mode="shout"] {
+    pointer-events: auto;
+  }
+
+  .cq__prop--hide,
+  .cq__prop--turn,
+  .cq__prop--strike,
+  .cq__prop--stir,
+  .cq__prop--catch,
+  .cq__prop--stroke {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: -50% 0;
+  }
+
+  .cq__prop--stroke {
+    inset-block-start: calc(var(--demo-bar-height) + 3.6rem);
+  }
+
+  /* Stirring the quarrel goes on while the flamingo is caught and stroked: at
+     the right, out of their way. */
+  .cq__prop--stir {
+    inset-inline: auto 4%;
+    translate: none;
+  }
+
+  /* A head in the air, over the ground; its parts come and go on their own. */
+  .cq__air {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .cq__air[data-off],
+  .cq__executioner[data-off],
+  .cq__duchess[data-off] {
+    visibility: hidden;
+  }
+
+  .cq__cat {
+    --wobble: 0;
+    --blink: 0;
+    --bob: 0;
+    position: absolute;
+    inset-inline-start: var(--cq-cat-x);
+    inset-block-start: 14%;
+    inline-size: var(--cq-cat);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    pointer-events: auto;
+    transform: translateY(calc(var(--bob) * -10%)) rotate(calc(var(--wobble) * 8deg))
+      scale(calc(1 - var(--blink) * 0.15));
+    /* A close shadow, so the paper grin still reads against the paper sky. */
+    filter: drop-shadow(0 4px 8px oklch(from var(--ink-primary) l c h / 0.45));
+  }
+
+  .cq__cat:focus-visible {
+    outline: 3px solid var(--ix-gold);
+    outline-offset: 4px;
+  }
+
+  .cq__cat-pupils {
+    --px: 0;
+    --py: 0;
+    transform: translate(calc(var(--px) * 1px), calc(var(--py) * 1px));
+  }
+
+  .cq__cat-grin {
+    transform-origin: 120px 150px;
+    transform: scale(calc(1 + var(--blink) * 0.2));
+  }
+
+  /* The executioner, standing under the head with his hands where its neck
+     would be: the axe (`--swing`) goes from his side, over the top, to his
+     other side, through the air under the head. He walks in and out (`--in`),
+     and at the end runs up and down looking for it. */
+  .cq__executioner {
+    --in: 0;
+    --swing: 0;
+    --exec: calc(var(--cq-cat) * 0.34);
+    position: absolute;
+    inset-inline-start: calc(var(--cq-cat-x) + var(--cq-cat) * 0.2365);
+    inset-block-start: calc(14% + var(--cq-cat) * 0.92);
+    inline-size: var(--exec);
+    transform: translateX(calc((1 - var(--in)) * 45vw));
+  }
+
+  .cq__exec-body svg {
+    overflow: visible;
+  }
+
+  .cq__axe {
+    transform-origin: 93px 88px;
+    transform: rotate(calc(-20deg - var(--swing) * 160deg));
+  }
+
+  .cq__executioner[data-running] .cq__exec-body {
+    animation: cq-up-and-down 1.4s ease-in-out infinite alternate;
+  }
+
+  /* The Duchess, fetched by the executioner, at the end: the next scene's. */
+  .cq__duchess {
+    --in: 0;
+    position: absolute;
+    inset-inline-start: calc(var(--cq-cat-x) + var(--cq-cat) * 0.62);
+    inset-block-start: calc(14% + var(--cq-cat) * 0.873);
+    inline-size: calc(var(--cq-cat) * 0.62);
+    transform: translateX(calc((1 - var(--in)) * 40vw));
+  }
+
+  /* The doorway the garden is first seen through; the camera goes out through it. */
+  .cq__doorway {
+    pointer-events: none;
+    overflow: hidden;
+    perspective: 120vmin;
+    perspective-origin: 50% 40%;
+  }
+
+  .cq__door-frame {
+    --through: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    --frame-w: min(78vw, 70vmin);
+    inline-size: var(--frame-w);
+    block-size: calc(var(--frame-w) * 1.5);
+    translate: -50% -50%;
+    border: 3vmin solid var(--cq-door-frame);
+    border-block-end: 0;
+    border-radius: calc(var(--frame-w) / 2) calc(var(--frame-w) / 2) 0 0;
+    /* The hall's wall all round the opening: a shadow as wide as the screen. */
+    box-shadow: 0 0 0 200vmax var(--cq-hall-wall-deep);
+    transform-origin: 50% 50%;
+    transform: translateY(calc(var(--through) * 20vmin)) scale(calc(1 + var(--through) * 6));
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  .cq__door-leaf {
+    position: absolute;
+    inset: -3vmin -3vmin 0 -3vmin;
+    border: 3vmin solid var(--cq-door-frame);
+    border-block-end: 0;
+    border-radius: inherit;
+    background: repeating-linear-gradient(
+      to right,
+      var(--cq-door) 0 9vmin,
+      var(--cq-door-frame) 9vmin 10.2vmin
+    );
+    box-shadow: inset 0 0 6vmin oklch(from var(--ink-primary) l c h / 0.5);
+    transform-origin: 0 50%;
+    transform: rotateY(-100deg);
+  }
+
+  .demo[data-paused] .cq__executioner[data-running] .cq__exec-body,
+  .demo[data-paused] .cq__brush,
+  .demo[data-paused] .cq__marcher .art,
+  .demo[data-paused] .cq__child .art,
+  .demo[data-paused] .cq__player .art,
+  .demo[data-paused] .cq__arch .art,
+  .demo[data-paused] .cq__hedgehog-walk,
+  .demo[data-paused] .cq__flamingo-body,
+  .demo[data-paused] .cq__dab {
+    animation-play-state: paused;
+  }
+
+  @keyframes cq-dab {
+    from {
+      transform: rotate(-16deg);
+    }
+
+    to {
+      transform: rotate(18deg);
+    }
+  }
+
+  @keyframes cq-splat {
+    0% {
+      opacity: 0.9;
+      transform: scale(0.3);
+    }
+
+    20% {
+      opacity: 0.85;
+      transform: scale(1);
+    }
+
+    100% {
+      opacity: 0;
+      transform: scale(1.05) translateY(20px);
+    }
+  }
+
+  @keyframes cq-step {
+    from {
+      transform: translateY(0) rotate(-3deg);
+    }
+
+    to {
+      transform: translateY(-8%) rotate(3deg);
+    }
+  }
+
+  @keyframes cq-skip {
+    from {
+      transform: translateY(0);
+    }
+
+    to {
+      transform: translateY(-22%);
+    }
+  }
+
+  @keyframes cq-run {
+    from {
+      transform: translateX(-10%) rotate(-6deg);
+    }
+
+    to {
+      transform: translateX(10%) rotate(6deg);
+    }
+  }
+
+  @keyframes cq-shout {
+    0% {
+      transform: scale(1);
+    }
+
+    40% {
+      transform: scale(1.18) rotate(-4deg);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes cq-waddle {
+    from {
+      transform: rotate(-4deg);
+    }
+
+    to {
+      transform: rotate(4deg);
+    }
+  }
+
+  @keyframes cq-up-and-down {
+    from {
+      transform: translateX(-30vw) scaleX(-1);
+    }
+
+    49% {
+      transform: translateX(6vw) scaleX(-1);
+    }
+
+    51% {
+      transform: translateX(6vw);
+    }
+
+    to {
+      transform: translateX(-30vw);
+    }
+  }
+
+  @keyframes cq-breathe {
+    from {
+      transform: scaleY(1);
+    }
+
+    to {
+      transform: scaleY(1.04);
+    }
+  }
+
+  /* A phone: the head floats further left, so the executioner and the Duchess
+     fit beside it. */
+  @media (max-width: 700px) {
+    .demo--croquet {
+      --cq-cat-x: 30%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cq__executioner[data-running] .cq__exec-body,
+    .cq__ground[data-painting] .cq__brush,
+    .cq__flamingo-body,
+    .cq__queen[data-shouting] .art,
+    .cq__hedgehog[data-walking] .cq__hedgehog-walk,
+    .cq__ground[data-marching] .cq__marcher .art,
+    .cq__ground[data-marching] .cq__child .art,
+    .cq__ground[data-running] .cq__player .art,
+    .cq__ground[data-quarrel] .cq__player .art,
+    .cq__ground[data-running] .cq__arch .art {
+      animation: none;
+    }
+
+    .cq__dab {
+      animation: none;
+      opacity: 0.7;
+    }
+
+    .cq__rose,
+    .cq__rose::after,
+    .cq__flamingo-head {
+      transition: none;
+    }
+
+    /* The mood in three cuts: content, wary, sulking. */
+    .cq__flamingo[data-mood] .cq__flamingo-head {
+      transform: none;
+    }
+
+    .cq__flamingo[data-mood="wary"] .cq__flamingo-head {
+      transform: rotate(70deg) translate(-10px, -5px);
+    }
+
+    .cq__flamingo[data-mood="sulking"] .cq__flamingo-head,
+    .cq__flamingo[data-puzzled] .cq__flamingo-head {
+      transform: rotate(150deg) translate(-20px, -10px);
+    }
+  }
+}

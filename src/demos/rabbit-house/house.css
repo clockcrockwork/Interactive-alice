@@ -1,0 +1,487 @@
+/* The White Rabbit's house: a dollhouse cutaway in SVG. The camera starts inside
+   the tidy little room and pulls out as Alice fills it. */
+
+@layer tokens, base, layout, scene, utilities;
+
+/* The house front, its colours and `.hs__arrival`: shared with the pages that
+   only draw the front (the caucus-race). */
+@import "./front.css";
+
+@layer tokens {
+  :root {
+    /* The book's palette (docs/visual-design.md): paper skies, the room and
+       the bottle; the walls, roof, timber and garden are in front.css. Every
+       value here resolves from a shared token; the Bill demo repeats the roof,
+       timber and garden ones so its rooftop is this one. */
+    --hs-sky: var(--world-sky);
+    --hs-sky-low: var(--paper-base);
+    --hs-room: var(--paper-warm);
+    --hs-ceiling: var(--paper-base);
+    --hs-floor: var(--sepia-mid);
+    --hs-floor-line: var(--sepia-dark);
+    /* The unlabelled bottle: paper-white glass, a printed sepia draught. */
+    --hs-cork: var(--sepia-mid);
+    --hs-drink: color-mix(in oklch, var(--sepia-mid), var(--paper-base) 30%);
+    --hs-bottle-glass: oklch(from var(--paper-base) l c h / 0.45);
+    --hs-bottle-edge: oklch(from var(--paper-base) l c h / 0.9);
+    --hs-shade: oklch(from var(--ink-primary) l c h / 0.5);
+    --hs-soot: var(--ink-primary);
+    --bl-lizard: var(--world-leaf);
+  }
+}
+
+@layer scene {
+  .demo--rabbit-house .demo-beat {
+    inset-block-end: 6vh;
+  }
+
+  /* The tidy little room, from inside: Alice is the camera until she has grown
+     too big for it, and the front wall is where the reader is. */
+  .hs__room {
+    perspective: 800px;
+    perspective-origin: 50% 50%;
+    overflow: hidden;
+    background: var(--hs-room);
+  }
+
+  .hs__box {
+    --yaw: 0;
+    --pitch: 0;
+    --grow: 1;
+    --rise: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    inline-size: 0;
+    block-size: 0;
+    transform-style: preserve-3d;
+    transform: rotateX(calc(var(--pitch) * 1deg)) rotateY(calc(var(--yaw) * 1deg))
+      translate3d(0, calc(var(--rise) * 1px), 800px) scale3d(var(--grow), var(--grow), var(--grow));
+    transform-origin: 0 260px 800px;
+  }
+
+  .hs__face {
+    position: absolute;
+    inline-size: 1200px;
+    block-size: 700px;
+    inset-inline-start: -600px;
+    inset-block-start: -440px;
+    background: var(--hs-room);
+    background-image: repeating-linear-gradient(
+      to right,
+      transparent 0 78px,
+      oklch(from var(--ink-primary) l c h / 0.06) 78px 80px
+    );
+  }
+
+  .hs__face--back {
+    transform: translateZ(-600px);
+  }
+
+  .hs__face--left {
+    transform-origin: 0 50%;
+    transform: rotateY(90deg);
+  }
+
+  .hs__face--right {
+    inset-inline-start: 600px;
+    transform-origin: 0 50%;
+    transform: rotateY(-90deg) translateX(-1200px);
+  }
+
+  .hs__face--floor {
+    block-size: 1200px;
+    inset-block-start: 260px;
+    transform-origin: 50% 0;
+    transform: rotateX(-90deg) translateY(-600px) translateY(600px);
+    background: repeating-linear-gradient(
+      to right,
+      var(--hs-floor) 0 90px,
+      var(--hs-floor-line) 90px 100px
+    );
+  }
+
+  .hs__face--ceiling {
+    block-size: 1200px;
+    inset-block-start: -440px;
+    transform-origin: 50% 0;
+    /* Like the floor, it runs away from its near edge, over the whole room. */
+    transform: rotateX(-90deg);
+    background: var(--hs-ceiling);
+  }
+
+  .hs__glass {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 30%;
+    inline-size: 220px;
+    block-size: 300px;
+    translate: -50% 0;
+    border: 12px solid var(--hs-timber);
+    border-radius: 110px 110px 12px 12px;
+    background: linear-gradient(135deg, var(--world-sky), var(--world-sky-deep));
+  }
+
+  .hs__window-frame {
+    position: absolute;
+    inset-inline-start: 300px;
+    inset-block-start: 160px;
+    inline-size: 320px;
+    block-size: 300px;
+    border: 14px solid var(--hs-timber);
+    background:
+      linear-gradient(to right, transparent 48%, var(--hs-timber) 48% 52%, transparent 52%),
+      linear-gradient(to bottom, transparent 48%, var(--hs-timber) 48% 52%, transparent 52%),
+      linear-gradient(to bottom, var(--hs-sky), var(--hs-sky-low) 60%, var(--hs-grass) 61%);
+  }
+
+  .hs__room-table {
+    position: absolute;
+    inset-inline-start: 250px;
+    inset-block-start: 470px;
+    inline-size: 420px;
+    block-size: 14px;
+    background: var(--hs-timber);
+  }
+
+  .hs__room-table::before,
+  .hs__room-table::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 14px;
+    inline-size: 14px;
+    block-size: 160px;
+    background: var(--hs-timber);
+  }
+
+  .hs__room-table::before {
+    inset-inline-start: 20px;
+  }
+
+  .hs__room-table::after {
+    inset-inline-end: 20px;
+  }
+
+  .hs__room-bottle {
+    position: absolute;
+    inset-inline-start: 440px;
+    inset-block-start: 400px;
+    inline-size: 34px;
+    block-size: 70px;
+    border-radius: 6px 6px 4px 4px;
+    background: linear-gradient(to bottom, var(--hs-cork) 0 18%, var(--hs-drink) 18%);
+  }
+
+  .hs__room-door {
+    position: absolute;
+    inset-inline-start: 760px;
+    inset-block-start: 140px;
+    inline-size: 220px;
+    block-size: 560px;
+    border: 12px solid var(--hs-timber);
+    border-block-end: 0;
+    background: var(--hs-roof);
+    transform-origin: 0 50%;
+    transform: rotateY(calc(var(--rattle, 0) * -4deg));
+  }
+
+  .hs__room-door::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 170px;
+    inset-block-start: 280px;
+    inline-size: 16px;
+    block-size: 16px;
+    border-radius: 50%;
+    background: var(--hs-brass);
+  }
+
+  .hs__hand-bottle {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: -6%;
+    inline-size: clamp(8rem, 26vmin, 16rem);
+    translate: -50% 0;
+    transform-origin: 50% 100%;
+    opacity: 0;
+    pointer-events: none;
+    cursor: pointer;
+    filter: drop-shadow(0 20px 30px var(--hs-shade));
+  }
+
+  /* It takes a press only while it is in hand. */
+  .hs__hand-bottle[data-live] {
+    pointer-events: auto;
+  }
+
+  .hs__hand-bottle svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* While she drinks: a mint glint on the glass, the discovery's own colour,
+     gone with the bottle. */
+  .hs__hand-bottle[data-held] {
+    filter: drop-shadow(0 0 24px oklch(from var(--ix-mint) l c h / 0.75));
+  }
+
+  .hs__liquid {
+    transform-origin: 50% 100%;
+    transform: scaleY(var(--fill, 1));
+  }
+
+  .hs__ceiling-shadow {
+    background: radial-gradient(
+      ellipse 80% 40% at 50% 0%,
+      oklch(from var(--ink-primary) l c h / 0.7),
+      transparent 70%
+    );
+    opacity: 0;
+  }
+
+  .hs__flash {
+    background: var(--paper-base);
+    opacity: 0;
+  }
+
+  .hs__garden {
+    background: linear-gradient(
+      to bottom,
+      var(--hs-sky),
+      var(--hs-sky-low) 58%,
+      var(--hs-grass) 58.5%,
+      var(--hs-grass-deep)
+    );
+  }
+
+  .hs__svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .hs__wall {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    transform: scale(calc(1 + var(--bulge, 0) * 0.06), calc(1 + var(--bulge, 0) * 0.03));
+  }
+
+  .hs__roof {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    transform: translateY(calc(var(--bulge, 0) * -12px)) rotate(calc(var(--bulge, 0) * -1.5deg));
+  }
+
+  .hs__alice-pose {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    opacity: 0;
+  }
+
+  .hs__door {
+    transform-box: fill-box;
+    transform-origin: 0 50%;
+    transform: rotate(calc(var(--rattle, 0) * -3deg));
+  }
+
+  .hs__hand {
+    transform-box: fill-box;
+    transform-origin: 100% 0;
+    transform: rotate(calc(var(--snatch, 0) * 70deg));
+  }
+
+  .hs__rabbit {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+  }
+
+  .hs__above {
+    opacity: 0;
+  }
+
+  .hs__bill {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+  }
+
+  /* The cucumber-frame's glass: whole until the Rabbit goes in, then it bursts
+     up and out and comes down round the frame, where it stays. */
+  .hs__shard {
+    fill: oklch(from var(--paper-base) l c h / 0.9);
+    stroke: var(--ink-faded);
+    stroke-width: 1.2;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .hs__svg[data-crash] .hs__shard {
+    opacity: 1;
+    animation: hs-shard-burst 0.9s cubic-bezier(0.2, 0.6, 0.4, 1) forwards;
+  }
+
+  .hs__frame-hole {
+    opacity: 0;
+  }
+
+  .hs__svg[data-crash] .hs__frame-hole {
+    opacity: 1;
+  }
+
+  /* Her shoe out of the chimney's top, and the soot it kicks up. */
+  .hs__puff-bit {
+    fill: oklch(from var(--hs-soot) l c h / 0.85);
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .hs__flue[data-puff] .hs__puff-bit {
+    animation: hs-puff 1.3s ease-out forwards;
+  }
+
+  /* Pointer play inside the picture: the window and the chimney's top. */
+  .hs__window-hit,
+  .hs__foot-hit {
+    cursor: pointer;
+  }
+
+  .hs__fingers {
+    opacity: var(--snatch, 0);
+  }
+
+  /* Decoration over the house never takes the pointer. */
+  .hs__garden,
+  .hs__room,
+  .hs__ceiling-shadow,
+  .hs__hands,
+  .hs__flash,
+  .hs__rim {
+    pointer-events: none;
+  }
+
+  /* The garden from the chimney's rim, through Bill's eyes: the house's last
+     frame and Bill's first. `--rz` is the dive into his eyes. */
+  .hs__rim {
+    --rz: 1;
+    opacity: 0;
+    transform-origin: 50% 92%;
+    transform: scale(var(--rz));
+  }
+
+  .hs__rim-svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .hs__stage[data-shake] {
+    animation: hs-shake 0.45s linear 1;
+  }
+
+  .hs__prop {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: -50% 0;
+  }
+
+  .hs__prop--shake {
+    inset-inline-start: auto;
+    inset-inline-end: var(--space-2);
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: 0 0;
+  }
+
+  .hs__prop--wiggle {
+    inset-inline-start: var(--space-2);
+    translate: 0 0;
+  }
+
+  /* On a wide frame the captions step aside for the figures a beat is about:
+     left of the door while the Rabbit rattles it, right of the window and the
+     cucumber-frame for the snatch and the crash. The camera slides the other way
+     (WIDE_FRAME in figures.ts is the same query). */
+  @media (min-aspect-ratio: 1 / 1) and (min-width: 700px) {
+    .demo--rabbit-house .demo-beat[data-cue="door"] {
+      inset-inline: 3vw auto;
+      margin-inline: 0;
+      max-inline-size: min(28rem, 40vw);
+    }
+
+    .demo--rabbit-house .demo-beat:is([data-cue="snatch"], [data-cue="crash"]) {
+      inset-inline: auto 3vw;
+      margin-inline: 0;
+      max-inline-size: min(28rem, 40vw);
+    }
+  }
+
+  .demo[data-paused] :is(.hs__shard, .hs__puff-bit) {
+    animation-play-state: paused;
+  }
+
+  @keyframes hs-shake {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    25% {
+      transform: translate(-1%, 0.4%);
+    }
+    50% {
+      transform: translate(0.8%, -0.4%);
+    }
+    75% {
+      transform: translate(-0.5%, 0.2%);
+    }
+  }
+
+  @keyframes hs-shard-burst {
+    0% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    45% {
+      transform: translate(calc(var(--dx) * 0.7px), calc(var(--dy) * -1px))
+        rotate(calc(var(--spin) * 0.6deg));
+    }
+    100% {
+      transform: translate(calc(var(--dx) * 1px), calc(var(--land) * 1px))
+        rotate(calc(var(--spin) * 1deg));
+    }
+  }
+
+  @keyframes hs-puff {
+    0% {
+      opacity: 0.9;
+      transform: translate(0, 0) scale(0.5);
+    }
+    45% {
+      opacity: 0.75;
+      transform: translate(calc(var(--dx) * 0.6px), calc(var(--dy) * -0.6px)) scale(1.4);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(calc(var(--dx) * 1px), calc(var(--dy) * -1px)) scale(2.1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hs__stage[data-shake] {
+      animation: none;
+    }
+
+    /* The glass hangs in the air over the frame. */
+    .hs__svg[data-crash] .hs__shard {
+      animation: none;
+      transform: translate(calc(var(--dx) * 0.7px), calc(var(--dy) * -0.8px))
+        rotate(calc(var(--spin) * 0.5deg));
+    }
+
+    /* The soot stands still over the chimney's top, then goes. */
+    .hs__flue[data-puff] .hs__puff-bit {
+      animation: none;
+      opacity: 0.55;
+      transform: translate(calc(var(--dx) * 0.6px), calc(var(--dy) * -0.6px)) scale(1.2);
+    }
+  }
+}

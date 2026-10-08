@@ -1,0 +1,145 @@
+/* The art box: whatever is inside fills it. A cut-out image shows the file for
+   the page's Alice; a vector reads the --alice-* tokens instead. */
+
+/* Declared here as in base.css and shell.css: this sheet can be the first the
+   browser meets (the index and the demos share it), and the first fixes the order. */
+@layer tokens, base, layout, scene, utilities;
+
+@layer scene {
+  .art {
+    display: block;
+    inline-size: 100%;
+  }
+
+  /* Sized as HTML only: in an SVG, inline-size would set an <image>'s width and
+     undo the width and height it was placed with. */
+  .art > svg,
+  img.art__image {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .art__image {
+    display: none;
+  }
+
+  /* The yellow Alice is the default: the root carries data-alice="blue" only for
+     the other one (see the head script in build/demos.ts). */
+  .art__image[data-variant="any"],
+  :root:not([data-alice="blue"]) .art__image[data-variant="yellow"],
+  :root[data-alice="blue"] .art__image[data-variant="blue"] {
+    display: block;
+  }
+
+  svg .art__image[data-variant="any"],
+  :root:not([data-alice="blue"]) svg .art__image[data-variant="yellow"],
+  :root[data-alice="blue"] svg .art__image[data-variant="blue"] {
+    display: inline;
+  }
+
+  /* --- How the figures are drawn (docs/art-trials.md). Engraved is the default:
+     the root carries data-art only for flat or cut paper, and anything else reads
+     as engraved. The filters live in one hidden SVG per page (treatments.ts); they
+     go on the drawing inside the box, so a demo's own filter on the box (a shadow,
+     a blur) still applies on top. */
+  .art-defs {
+    position: absolute;
+    inline-size: 0;
+    block-size: 0;
+    overflow: hidden;
+  }
+
+  .art-fx-ink {
+    flood-color: var(--ink-primary);
+  }
+
+  .art-fx-paper,
+  .art-fx-rim {
+    flood-color: var(--paper-base);
+  }
+
+  .art-fx-shadow {
+    flood-color: oklch(from var(--ink-primary) l c h / 0.45);
+  }
+
+  /* Engraved, baked: the vector steps aside for its picture, which art.ts only
+     adds where one was baked and the demo does not move the figure's parts. */
+  .art__image--baked {
+    display: none;
+  }
+
+  :root:not([data-art="flat"], [data-art="paper"]) .art--baked > :is(svg, g) {
+    display: none;
+  }
+
+  :root:not([data-art="flat"], [data-art="paper"])
+    .art--baked
+    > .art__image--baked[data-variant="any"],
+  :root:not([data-art="flat"], [data-art="paper"]):not([data-alice="blue"])
+    .art--baked
+    > .art__image--baked[data-variant="yellow"],
+  :root:not([data-art="flat"], [data-art="paper"])[data-alice="blue"]
+    .art--baked
+    > .art__image--baked[data-variant="blue"] {
+    display: block;
+  }
+
+  :root:not([data-art="flat"], [data-art="paper"])
+    g.art--baked
+    > .art__image--baked[data-variant="any"],
+  :root:not([data-art="flat"], [data-art="paper"]):not([data-alice="blue"])
+    g.art--baked
+    > .art__image--baked[data-variant="yellow"],
+  :root:not([data-art="flat"], [data-art="paper"])[data-alice="blue"]
+    g.art--baked
+    > .art__image--baked[data-variant="blue"] {
+    display: inline;
+  }
+
+  /* On a demo page (.demo): the index draws its own previews of each style. A
+     figure with no picture here (its parts move and were not cut out, or none was
+     baked) is engraved at runtime by the same filter, so the page reads as one. */
+  :root:not([data-art="flat"], [data-art="paper"])
+    .demo
+    :is(.art:not(.art--baked, .art--cut) > svg, g.art:not(.art--baked) > g) {
+    filter: url("#art-engraved");
+  }
+
+  :root:not([data-art="flat"], [data-art="paper"])
+    .demo
+    :is(.art[data-art^="alice/"], .art[data-art="runner/alice"]):not(.art--baked, .art--cut)
+    > :is(svg, g) {
+    filter: url("#art-engraved-alice");
+  }
+
+  /* A dark ground (data-ground="dark" on the page, from the demo's file): every
+     engraved figure gets a paper rim, so its hatching keeps an edge against the
+     night or the court's red. On a picture or a set of cut-outs the rim is the
+     only filter; on a runtime vector it follows the engraving. */
+  :root:not([data-art="flat"], [data-art="paper"])
+    [data-ground="dark"]
+    .demo
+    :is(.art--baked > .art__image--baked, .art--cut > svg) {
+    filter: url("#art-rim");
+  }
+
+  :root:not([data-art="flat"], [data-art="paper"])
+    [data-ground="dark"]
+    .demo
+    :is(.art:not(.art--baked, .art--cut) > svg, g.art:not(.art--baked) > g) {
+    filter: url("#art-engraved") url("#art-rim");
+  }
+
+  :root:not([data-art="flat"], [data-art="paper"])
+    [data-ground="dark"]
+    .demo
+    :is(.art[data-art^="alice/"], .art[data-art="runner/alice"]):not(.art--baked, .art--cut)
+    > :is(svg, g) {
+    filter: url("#art-engraved-alice") url("#art-rim");
+  }
+
+  :root[data-art="paper"] .demo :is(.art > svg, g.art > g) {
+    filter: url("#art-paper");
+  }
+}

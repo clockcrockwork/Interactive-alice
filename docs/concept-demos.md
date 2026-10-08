@@ -177,7 +177,9 @@ chapter 9, the quadrille and its songs in chapter 10, the opening
 of the court in chapter 11, and the sentence-first climax, the waking and her sister's
 dream in chapter 12. The riverbank and Drink Me use chapter 1's existing text. The added chapter files are partial on purpose: they
 hold the sections the demos stage, with segment ids numbered to leave room before and
-after, so the rest of each chapter can be adapted later without renumbering.
+after, so the rest of each chapter can be adapted later without renumbering. Chapter 5 is the
+one exception: its Father William poem did not fit, and the chapter was renumbered once
+under the rule in `docs/text-pipeline.md` §2.
 `npm run check:text` treats them like any other chapter.
 
 **Shared: the hard rules.** No prose in code, relative paths only, scroll as the

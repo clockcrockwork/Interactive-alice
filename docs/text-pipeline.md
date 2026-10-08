@@ -56,6 +56,14 @@ Segment ids look like `ch01.s0420`:
   without renumbering anything or breaking other languages;
 - an id, once published, is permanent. Changing the wording of a segment keeps
   its id. Dropping a beat means deleting the id from every language at once.
+- the one exception is a renumber, allowed only when a whole passage must enter
+  where the free ids cannot hold it, every locale lives in this repository and is
+  renumbered in the same commit, and every experience reference is updated in the
+  same commit. The map is computed once by a script and applied to the structure,
+  every locale and every experience file alike, so no sentence changes its words
+  or its order. It has happened once: chapter 5 kept `s0010`–`s0180`, the
+  Caterpillar's *You are old, Father William* took `s0190`–`s0570`, and every
+  later id moved up by 390 (`s0190` became `s0580`).
 
 Each structure entry also carries:
 

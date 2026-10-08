@@ -17,6 +17,9 @@
     },
     {
       "id": "there-goes-bill"
+    },
+    {
+      "id": "the-puppy"
     }
   ],
   "segments": [
@@ -165,6 +168,59 @@
       "speaker": "white-rabbit"
     },
     {
+      "id": "ch04.s0461",
+      "section": "the-window",
+      "kind": "dialogue",
+      "speaker": "pat"
+    },
+    {
+      "id": "ch04.s0462",
+      "section": "the-window",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch04.s0463",
+      "section": "the-window",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch04.s0464",
+      "section": "the-window",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch04.s0465",
+      "section": "the-window",
+      "kind": "dialogue",
+      "speaker": "pat"
+    },
+    {
+      "id": "ch04.s0466",
+      "section": "the-window",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0467",
+      "section": "the-window",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch04.s0468",
+      "section": "the-window",
+      "kind": "dialogue",
+      "speaker": "pat"
+    },
+    {
+      "id": "ch04.s0469",
+      "section": "the-window",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
       "id": "ch04.s0470",
       "section": "bill-down-the-chimney",
       "kind": "narration"
@@ -262,6 +318,22 @@
       "id": "ch04.s0640",
       "section": "there-goes-bill",
       "kind": "narration"
+    },
+    {
+      "id": "ch04.s0650",
+      "section": "the-puppy",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0660",
+      "section": "the-puppy",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0670",
+      "section": "the-puppy",
+      "kind": "thought",
+      "speaker": "alice"
     }
   ]
 }

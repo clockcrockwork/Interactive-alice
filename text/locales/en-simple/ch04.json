@@ -8,7 +8,8 @@
     "growing": "Growing in the House",
     "the-window": "The Window",
     "bill-down-the-chimney": "Bill Down the Chimney",
-    "there-goes-bill": "There Goes Bill"
+    "there-goes-bill": "There Goes Bill",
+    "the-puppy": "The Puppy"
   },
   "segments": {
     "ch04.s0200": "In a tidy little room, a little bottle stood near the looking-glass.",
@@ -38,6 +39,15 @@
     "ch04.s0440": "She heard a little shriek, and a fall, and a crash of broken glass.",
     "ch04.s0450": "It had fallen into a cucumber-frame, or something of the sort.",
     "ch04.s0460": "Pat, where are you?",
+    "ch04.s0461": "Sure then, I am here, digging for apples, your honour!",
+    "ch04.s0462": "Digging for apples, indeed!",
+    "ch04.s0463": "Come here and help me out of this!",
+    "ch04.s0464": "Now tell me, Pat, what is that in the window?",
+    "ch04.s0465": "Sure, it is an arrum, your honour!",
+    "ch04.s0466": "That was how Pat said ARM.",
+    "ch04.s0467": "An arm, you goose, who ever saw one that fills the whole window?",
+    "ch04.s0468": "Sure it does, your honour, but it is an arm for all that.",
+    "ch04.s0469": "Well, it has no business there, so go and take it away!",
     "ch04.s0470": "At last came a rumbling of little cartwheels, and a good many voices.",
     "ch04.s0480": "Bill is to go down the chimney!",
     "ch04.s0490": "So Bill has got to come down the chimney, has he?",
@@ -55,6 +65,9 @@
     "ch04.s0610": "Well, I hardly know.",
     "ch04.s0620": "I am a deal too flustered to tell you.",
     "ch04.s0630": "Something comes at me like a Jack-in-the-box, and up I go like a sky-rocket!",
-    "ch04.s0640": "So you did, old fellow, said the others."
+    "ch04.s0640": "So you did, old fellow, said the others.",
+    "ch04.s0650": "Later, Alice shrank small again, ran out of the house, and hid in a thick wood.",
+    "ch04.s0660": "There an enormous puppy rushed at the stick she held out, and tumbled head over heels.",
+    "ch04.s0670": "It is very like having a game of play with a cart-horse!"
   }
 }

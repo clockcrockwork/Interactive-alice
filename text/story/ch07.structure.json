@@ -674,10 +674,28 @@
       "speaker": "dormouse"
     },
     {
+      "id": "ch07.s0835",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "dormouse"
+    },
+    {
       "id": "ch07.s0840",
       "section": "learning-to-draw",
       "kind": "dialogue",
       "speaker": "dormouse"
+    },
+    {
+      "id": "ch07.s0843",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch07.s0846",
+      "section": "learning-to-draw",
+      "kind": "dialogue",
+      "speaker": "hatter"
     },
     {
       "id": "ch07.s0850",

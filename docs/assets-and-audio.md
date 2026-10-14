@@ -1,6 +1,6 @@
 # Images, music and sound
 
-> Canonical document for how visual and audio assets enter the project, what they must satisfy, and how the experience plays them. Visual palette and SVG/raster selection rules live in [`visual-design.md`](visual-design.md); weight budgets live in [`performance-budget.md`](performance-budget.md); credits and provenance rules live in [`../CREDITS.md`](../CREDITS.md).
+> Canonical document for how visual and audio assets enter the project, what they must satisfy, and how the experience plays them. Visual palette and SVG/raster selection rules live in [`visual-design.md`](visual-design.md); the generated-illustration prompt grammar and consistency rules live in [`generated-art-style.md`](generated-art-style.md); weight budgets live in [`performance-budget.md`](performance-budget.md); credits and provenance rules live in [`../CREDITS.md`](../CREDITS.md).
 
 ## 1. Where assets come from
 

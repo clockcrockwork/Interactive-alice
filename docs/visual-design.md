@@ -2,7 +2,8 @@
 
 > Canonical visual direction for Interactive Alice. Product/experience principles live in
 > [`product-principles.md`](product-principles.md); asset provenance and delivery rules live in
-> [`assets-and-audio.md`](assets-and-audio.md); numeric budgets live in
+> [`assets-and-audio.md`](assets-and-audio.md); the canonical prompt grammar for generated
+> illustration lives in [`generated-art-style.md`](generated-art-style.md); numeric budgets live in
 > [`performance-budget.md`](performance-budget.md).
 
 ## 1. Visual goal

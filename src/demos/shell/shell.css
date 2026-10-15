@@ -61,7 +61,13 @@
     --demo-slip-ink: var(--ink-primary);
     --demo-say: var(--ink-secondary);
     --demo-say-red: var(--wonder-red-dark);
-    --demo-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    /* "Times New Roman" before the generic: where none of the book faces is
+       installed (a Linux machine), it names the same metric-compatible face to
+       every engine (Liberation Serif, through the system's aliases), where each
+       engine's own idea of `serif` differs and some are far wider. Captions are
+       fitted to a face of this width. */
+    --demo-serif:
+      "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
     /* A heavier display face for a word drawn big (a cry, a subject on the sand). */
     --demo-display: Georgia, "Times New Roman", serif;
     /* One row of the bar. The bar may wrap to a second row on a narrow phone

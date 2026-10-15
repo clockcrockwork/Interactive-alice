@@ -722,6 +722,23 @@
     .demo--duchess[data-side="left"] .demo-beat {
       inset-inline: 3vw auto;
     }
+
+    /* Through the morals the Shrug button stands under the Blow-away one at the
+       right, over the sentences' column: they keep below both, however tall a
+       browser's italic sets them (the shell's caption fit moves or sets them
+       smaller to stay in this band). */
+    .demo--duchess
+      .demo-beat:is(
+        [data-cue="chin"],
+        [data-cue="sense"],
+        [data-cue="bite"],
+        [data-cue="feather"],
+        [data-cue="mine"],
+        [data-cue="seem"],
+        [data-cue="think"]
+      ) {
+      --demo-fit-top: 10rem;
+    }
   }
 
   /* A phone's frame is tall and narrow: the ground comes up, so the two stand

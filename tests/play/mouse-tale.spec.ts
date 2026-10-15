@@ -170,10 +170,19 @@ test.describe("the Mouse's tale", () => {
     await atCue(page, 'fury-two', 0.9);
     await expect(read).toHaveAttribute('data-shown', '');
     // Drag along the tail: the glass shows the line under the finger.
+    // The line's middle through the SVG interface (its box in its own units, through
+    // its screen matrix): WebKit's box for a transformed, centred SVG <text> starts
+    // at its origin, half a line to the right of where it is drawn.
     const line = page.locator('.mt__tail text').nth(3);
-    const box = await line.boundingBox();
-    const x = (box?.x ?? 0) + (box?.width ?? 0) / 2;
-    const y = (box?.y ?? 0) + (box?.height ?? 0) / 2;
+    const { x, y } = await line.evaluate((node) => {
+      const text = node as SVGTextElement;
+      const box = text.getBBox();
+      const matrix = text.getScreenCTM() ?? new DOMMatrix();
+      const centre = new DOMPoint(box.x + box.width / 2, box.y + box.height / 2).matrixTransform(
+        matrix,
+      );
+      return { x: centre.x, y: centre.y };
+    });
     await page.mouse.move(x, y);
     await page.mouse.down();
     await page.mouse.move(x + 2, y + 2, { steps: 3 });

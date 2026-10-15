@@ -715,6 +715,16 @@ function mount(shell: DemoShell): void {
     }
   };
   backButton.addEventListener('click', putBack);
+  // Test seam: where the things on the shelves are in the frame now, in client
+  // pixels, so a test can tap one rather than search the frame for it.
+  window.__aliceShelves = () => {
+    const box = shell.stage.getBoundingClientRect();
+    return (well?.inFrame() ?? []).map(({ kind, x, y }) => ({
+      kind,
+      x: box.left + ((x + 1) / 2) * box.width,
+      y: box.top + ((1 - y) / 2) * box.height,
+    }));
+  };
 
   // --- Drag anywhere to tumble her: the spin keeps going and settles by itself.
   let spin = 0;
@@ -727,13 +737,15 @@ function mount(shell: DemoShell): void {
     }
     dragging = true;
     lastX = event.clientX;
-    downAt = { x: event.clientX, y: event.clientY, t: performance.now() };
+    // When the press happened, not when it was handled: on a slow page a long
+    // frame can hold the release's handler back past the tap's limit.
+    downAt = { x: event.clientX, y: event.clientY, t: event.timeStamp };
   });
   window.addEventListener('pointerup', (event) => {
     dragging = false;
     if (
       downAt &&
-      performance.now() - downAt.t < 300 &&
+      event.timeStamp - downAt.t < 300 &&
       Math.hypot(event.clientX - downAt.x, event.clientY - downAt.y) < 8
     ) {
       pickAt(event.clientX, event.clientY);
@@ -814,6 +826,13 @@ function mount(shell: DemoShell): void {
       }
       well.render();
     });
+  }
+}
+
+declare global {
+  interface Window {
+    /** Test seam: the shelves' things in frame, at client points. */
+    __aliceShelves?: () => { kind: string; x: number; y: number }[];
   }
 }
 

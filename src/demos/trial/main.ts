@@ -222,15 +222,38 @@ function mount(shell: DemoShell): void {
   const dodge = { lean: 0, held: 0, until: 0, count: 0, told: false };
   const flying = (): boolean => master.time() >= iAttack + 0.05 && master.time() < iLeaves;
   court.style.setProperty('--dodged', '0');
+  // The lean follows a pointer the reader moves while the pack flies. A pointer
+  // resting where it was before (a mouse parked at the edge while the wheel
+  // scrolls, a browser's own hover update after a scroll) is not a dodge: where it
+  // is first seen in the flight is where it rests, and it leans her once it has
+  // moved from there. The phone's tilt is always the reader's.
+  let rest: { x: number; y: number } | undefined;
+  let following = false;
+  const pointerLeads = (): boolean => {
+    const { pointer } = shell;
+    if (!pointer.active) {
+      return false;
+    }
+    if (pointer.tilt || following) {
+      return true;
+    }
+    if (!rest) {
+      rest = { x: pointer.x, y: pointer.y };
+    } else if (Math.hypot(pointer.x - rest.x, pointer.y - rest.y) > 0.02) {
+      following = true;
+    }
+    return following;
+  };
   shell.onFrame((dt) => {
     let target = 0;
-    if (flying()) {
-      if (performance.now() < dodge.until) {
-        target = dodge.held;
-      } else if (shell.pointer.active) {
-        const raw = Math.max(-1, Math.min(1, shell.pointer.x * 1.25));
-        target = reducedMotion ? (Math.abs(raw) > 0.45 ? Math.sign(raw) : 0) : raw;
-      }
+    if (!flying()) {
+      rest = undefined;
+      following = false;
+    } else if (performance.now() < dodge.until) {
+      target = dodge.held;
+    } else if (pointerLeads()) {
+      const raw = Math.max(-1, Math.min(1, shell.pointer.x * 1.25));
+      target = reducedMotion ? (Math.abs(raw) > 0.45 ? Math.sign(raw) : 0) : raw;
     }
     let next = reducedMotion ? target : dodge.lean + (target - dodge.lean) * Math.min(1, dt * 9);
     if (Math.abs(target - next) < 0.005) {

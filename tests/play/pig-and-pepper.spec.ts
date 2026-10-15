@@ -6,7 +6,7 @@
  */
 
 import { expect, type Page, test } from '@playwright/test';
-import { atCue, customProperty, demos } from '../demo-helpers.ts';
+import { atCue, customProperty, demos, tapAt } from '../demo-helpers.ts';
 
 const demo = demos.find((candidate) => candidate.demo === 'pig-and-pepper');
 
@@ -94,7 +94,7 @@ test('pig and pepper: the cat on the hearth grins wider and winks when looked at
   await expect(look).toHaveAttribute('data-shown', '');
   await expect(look).toHaveText(await label(page, 'demoLookCat'));
   const cat = await centreOf(page, '.pp__cat');
-  await page.mouse.click(cat.x, cat.y);
+  await tapAt(page, cat.x, cat.y);
   await expect(page.locator('.pp__cat')).toHaveAttribute('data-wink', '');
   await expect
     .poll(() => customProperty(page, '.pp__cat-grin', '--more'), { timeout: 3000 })
@@ -189,7 +189,9 @@ test('pig and pepper: the baby has its own prop, and the pig trots off along the
   const late = await pig();
   // To the left, into the wood, smaller as it goes, and on the ground all the way:
   // its feet stay in the lower part of the frame, never up in the canopy.
-  expect(late.x).toBeLessThan(early.x - 100);
+  // A good part of the frame's width, whatever that width is.
+  const frame = await page.evaluate(() => innerWidth);
+  expect(late.x).toBeLessThan(early.x - frame * 0.15);
   expect(late.width).toBeLessThan(early.width);
   expect(early.feet).toBeGreaterThan(0.55);
   expect(late.feet).toBeGreaterThan(0.55);

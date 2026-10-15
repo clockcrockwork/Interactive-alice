@@ -148,7 +148,11 @@ stacks are the one thing set per script, in one `:lang()` rule in `shell.css`'s
 tokens: Japanese is set in the reader's own system fonts (no web font, so no bytes),
 a textbook face where the system has one (UD Digi Kyokasho), else a Mincho
 (Hiragino, Yu, Noto Serif CJK, IPA), as `--demo-serif`, and the display face
-(`--demo-display`, Georgia for Latin) falls back to it. On a phone, in any language,
+(`--demo-display`, Georgia for Latin) falls back to it. The Latin stack names "Times
+New Roman" before the generic `serif`: where none of the book faces is installed,
+every engine then reaches the same metric-compatible face (Liberation Serif on
+Linux), where each engine's own `serif` differs and some are far wider, and captions
+fitted in one browser would wrap into the figures in another. On a phone, in any language,
 the bar keeps its labels at the chrome's floor and wraps to a second row when they do
 not fit one (§3). A quoted run in a caption is held on one line, so a name set apart
 such as the Caucus-race's never breaks inside its brackets.
@@ -309,7 +313,10 @@ keeps the slip under it.
 wind and paper, a tremolo'd sawtooth for a purr, sine plinks for drips, a few
 partials for a chime and for breaking glass. No file is fetched. It is off until the
 visitor presses *Sound on* in the bar, which is also the gesture browsers require,
-and it is held silent while motion is paused, so the one pause covers both. Each
+and it is held silent while motion is paused, so the one pause covers both. The
+button shows the visitor's choice at once; the audio device follows when it can (a
+machine with no output may never start it), and only a browser that refuses outright
+turns the button back. Each
 demo levels a continuous cue from its frame loop (wind with the fall, drips over the
 treacle, the purr as you near the Cat) and plays one-shots at its moments.
 
@@ -379,12 +386,23 @@ scrolls to a progress and lands the scrubbed timeline there at once. `settled()`
 counts a timeline within a hair of the scroll as settled once its ease has ended or
 it has held still for three frames, and the browser helper that waits on it lands a
 crawling ease through `seek` after a few seconds, so a loaded machine is slower, never
-a timeout.
+a timeout. A demo may add a seam of its own where a test needs to know what only the
+demo knows: Bill's state (`__aliceBill`), and where the things on the rabbit hole's
+shelves are in the frame (`__aliceShelves`), so a test taps one instead of searching
+the frame for a speck in a WebGL well.
 
 The shell also hands every demo the page's **locale profile** (`shell.profile`),
 number formatting in its locale (`shell.locale.numberFormat()`) and its **realia**
 (`shell.realia(id)`, for the ids the demo file declares), so no demo reads the
 page's language itself ([`text-experience-binding.md`](text-experience-binding.md) §9).
+
+**One clock, near real time.** Timelines, reactions and every demo's frame loop run
+on GSAP's clock, whose lag smoothing the shell sets to count frames of up to a second
+in full (and a longer one, such as a hidden tab coming back, as a quarter of a
+second). GSAP's default counts any frame over half a second as 33 ms, which on a
+machine whose frames are always that long ran every reaction at a twentieth of its
+speed. So a slow machine shows fewer frames of a two-second wink, not a forty-second
+one.
 
 **Joins.** The demos are viewed in the book's order, and where two adjacent demos are
 one moment of the book they join: the end of the first is staged so that it leads
@@ -1310,7 +1328,7 @@ fall without drifting; the dream's creatures stand still and swap without a fade
 giving is a run of cuts: the child beside the keepsake holding it, then both gone,
 then the child back.
 
-**Dodging the cards.** While the pack flies, her head leans with the pointer, or with the phone's tilt when *Steer by tilting* is on, and the court tilts with it. Every card has a lane, left or right of her face; lean away from a card's lane before it arrives and it whips past on the other side, bigger, with a whoosh, instead of hitting the glass, and the first miss says *Dodged*. *Dodge left* and *Dodge right* are the buttons for a reader with neither: a press leans her that way for about a second. The cards that still hit do what they always did, *Beat them off* still clears them, and the leaves fall whether or not she dodged. Under reduced motion the lean is a cut to the side and a dodged card simply never arrives: it fades out short of her, counted the same.
+**Dodging the cards.** While the pack flies, her head leans with the pointer, or with the phone's tilt when *Steer by tilting* is on, and the court tilts with it. The pointer leans her once it moves during the flight: one resting where it was before (a mouse parked at the frame's edge while the wheel scrolls, or a browser's own hover update after a scroll) is no dodge. Every card has a lane, left or right of her face; lean away from a card's lane before it arrives and it whips past on the other side, bigger, with a whoosh, instead of hitting the glass, and the first miss says *Dodged*. *Dodge left* and *Dodge right* are the buttons for a reader with neither: a press leans her that way for about a second. The cards that still hit do what they always did, *Beat them off* still clears them, and the leaves fall whether or not she dodged. Under reduced motion the lean is a cut to the side and a dodged card simply never arrives: it fades out short of her, counted the same.
 
 ## 5. Checks
 
@@ -1339,7 +1357,9 @@ Gate, `scripts/check-experience.py`: every demo file against its schema, and its
 staging contract (`reads`) in every locale that publishes it, by that locale's profile
 ([`text-experience-binding.md`](text-experience-binding.md) §9.3).
 
-Browser, `tests/demos.spec.ts`, desktop Chromium on the production build: every demo
+Browser, `tests/demos.spec.ts`, on the production build, desktop Chromium per pull
+request and the full matrix (Chromium desktop and phone, Firefox, WebKit) at
+milestones, every test in every project: every demo
 page loads without console, page or request errors; carries its sentences in order
 before and after the shell attaches; reaches its last beat by scrolling alone; the
 motion toggle pauses and resumes; under reduced motion the note shows and the end is
@@ -1396,6 +1416,20 @@ frame. `tests/play/japanese.spec.ts` also checks
 that the Japanese cards carry no Latin letters, that a name in corner brackets stays on
 one line on a phone, and that no group of the tale runs on past a comma; a test in
 `tests/demos.spec.ts` starves the court's frames and still sees a scroll settle.
+
+How these tests touch the page is held to the same matrix. A control on the pinned
+stage is pressed where it is (`press`, `tapAt` in `tests/demo-helpers.ts`: a touch tap
+on a touch screen, a click elsewhere, through the browser's own input), never by
+Playwright's `click`, which first scrolls the element "into view" and, for a control
+inside a sticky stage, can carry the page on into a beat where the control is gone. A
+point is chosen from the frame (a fraction of it, or where the figure is), never a
+desktop pixel. A pose that lasts a moment (a stretch, a roll) is watched on every
+frame from inside the page (`watchProperty`), not polled from outside, where on a
+slow machine it can come and go between two readings; a moving target is held still
+with the motion pause before it is tapped. Text on a path is located by its
+characters' extents, since a `tspan` on a `textPath` has no box the engines agree on.
+Hover is the one play a touch screen does not have: the curtain's hover test skips
+where there is no hovering pointer, and its button and its press are tested there.
 
 What costs frames, and what was done about it, is in
 [`performance-budget.md`](performance-budget.md) §2: a drop-shadow filter on many

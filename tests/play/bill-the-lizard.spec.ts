@@ -7,7 +7,7 @@
  */
 
 import { expect, type Page, test } from '@playwright/test';
-import { atCue, demos, scrollTo } from '../demo-helpers.ts';
+import { atCue, demos, press, scrollTo } from '../demo-helpers.ts';
 
 const bill = demos.find((candidate) => candidate.demo === 'bill-the-lizard');
 
@@ -115,8 +115,10 @@ test.describe('There Goes Bill', () => {
     await expect.poll(async () => (await billState(page)).outcome, { timeout: 8000 }).toBe('none');
     const step = page.locator('.bl__prop--catch');
     await expect(step).toBeVisible();
+    // Pressed where it is, as a reader's tap does: Playwright's own click scrolls the
+    // pinned stage's button "into view", which can carry the page past the landing.
     for (let i = 0; i < 3; i += 1) {
-      await step.click();
+      await press(page, step);
     }
     await expect
       .poll(async () => (await billState(page)).crowd, { timeout: 8000 })

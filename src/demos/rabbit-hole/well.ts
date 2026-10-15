@@ -51,6 +51,8 @@ export interface Well {
    * `keep` says so for its kind, in which case it is only looked at.
    */
   pick(ndcX: number, ndcY: number, keep?: (kind: ShelfThing) => boolean): Picked | undefined;
+  /** Test seam: the things on the shelves now in frame, at their screen points (-1..1). */
+  inFrame(): { kind: ShelfThing; x: number; y: number }[];
   dispose(): void;
 }
 
@@ -185,6 +187,15 @@ export function createWell(
   floorDepth: number,
   quality: 'full' | 'lite',
 ): Well | undefined {
+  // Ask first, on a canvas of its own: a browser without WebGL 2 (a machine with
+  // no GPU and software rendering turned off) is the flat well, quietly. Letting
+  // the renderer find out reports the failure as errors in the console.
+  const probe = document.createElement('canvas').getContext('webgl2');
+  if (!probe) {
+    return undefined;
+  }
+  // Released at once: a page holds only so many live contexts.
+  probe.getExtension('WEBGL_lose_context')?.loseContext();
   let renderer: THREE.WebGLRenderer;
   try {
     renderer = new THREE.WebGLRenderer({
@@ -403,6 +414,7 @@ export function createWell(
   const shakeRandom = seeded(3);
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
+  const projected = new THREE.Vector3();
   const fogColor = new THREE.Color();
   const lampColor = new THREE.Color();
   const lampWell = palette.lamp.clone();
@@ -527,6 +539,18 @@ export function createWell(
       best.mesh.instanceMatrix.needsUpdate = true;
       things.splice(things.indexOf(best), 1);
       return { kind: best.kind, color: picked };
+    },
+    inFrame() {
+      applyCamera();
+      camera.updateMatrixWorld();
+      const seen: { kind: ShelfThing; x: number; y: number }[] = [];
+      for (const thing of things) {
+        projected.set(thing.x, thing.y, thing.z).project(camera);
+        if (Math.abs(projected.x) < 0.85 && Math.abs(projected.y) < 0.85 && projected.z < 1) {
+          seen.push({ kind: thing.kind, x: projected.x, y: projected.y });
+        }
+      }
+      return seen;
     },
     dispose() {
       renderer.dispose();

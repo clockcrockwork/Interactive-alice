@@ -45,6 +45,10 @@ test('the trial: without any dodge, no card misses', async ({ page }) => {
   test.slow();
   await page.goto(trial?.url ?? '');
   await atCue(page, 'rise');
+  // A pointer parked at the edge before the flight, and left there, is no dodge:
+  // a reader scrolling with the wheel leaves the mouse wherever it was, and a
+  // browser's own hover update after a scroll reports it there again.
+  await page.mouse.move(4, 300);
   await page.waitForTimeout(600);
   await atCue(page, 'attack');
   await expect
@@ -53,6 +57,27 @@ test('the trial: without any dodge, no card misses', async ({ page }) => {
   // Let the whole flight land before reading the count.
   await page.waitForTimeout(5000);
   expect(await customProperty(page, '.tr__court', '--dodged')).toBe(0);
+});
+
+test('the trial: a pointer moved while the cards fly leans her, and some of them miss', async ({
+  page,
+}) => {
+  test.skip(!trial, 'no trial demo in this build');
+  test.slow();
+  await page.goto(trial?.url ?? '');
+  const size = await page.evaluate(() => ({ w: innerWidth, h: innerHeight }));
+  await atCue(page, 'rise');
+  await page.mouse.move(size.w / 2, size.h / 2);
+  await page.waitForTimeout(600);
+  await atCue(page, 'attack');
+  // Swept from one edge to the other and back while the pack is in the air.
+  for (let i = 0; i < 6; i += 1) {
+    await page.mouse.move(i % 2 ? size.w - 4 : 4, size.h / 2, { steps: 6 });
+    await page.waitForTimeout(300);
+  }
+  await expect
+    .poll(() => customProperty(page, '.tr__court', '--dodged'), { timeout: 8000 })
+    .toBeGreaterThanOrEqual(1);
 });
 
 const ui = (page: Parameters<typeof atCue>[0]) =>

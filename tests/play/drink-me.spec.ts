@@ -60,7 +60,32 @@ test.describe('Drink Me: the curtain', () => {
     await expect(page.locator(CURTAIN)).not.toHaveAttribute('data-peek', '', { timeout: 3000 });
   });
 
-  test('a pointer resting on the curtain lifts it; pressing holds it up until let go', async ({
+  test('a fine pointer resting on the curtain lifts it, and moving away lets it drop', async ({
+    page,
+  }) => {
+    await page.goto(demo?.url ?? '');
+    // Hover is play for a mouse: a touch screen has no resting pointer, and its way
+    // to the same peek is the button (above) and pressing the curtain (below).
+    test.skip(
+      !(await page.evaluate(() => matchMedia('(hover: hover) and (pointer: fine)').matches)),
+      'no hovering pointer on this device; the button and the press are its way',
+    );
+    await atCue(page, 'hall', 0.5);
+    const box = await page.locator(CURTAIN).boundingBox();
+    expect(box).not.toBeNull();
+    if (!box) {
+      return;
+    }
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.3);
+    await expect(page.locator(CURTAIN)).toHaveAttribute('data-peek', '');
+    await page.mouse.move(10, 10);
+    await expect(page.locator(CURTAIN)).not.toHaveAttribute('data-peek', '', { timeout: 6000 });
+    await expect
+      .poll(() => customProperty(page, CURTAIN, '--curtain-lift'), { timeout: 5000 })
+      .toBeLessThan(0.05);
+  });
+
+  test('pressing the curtain holds it up until let go, though she stoops under the finger', async ({
     page,
   }) => {
     await page.goto(demo?.url ?? '');
@@ -70,24 +95,11 @@ test.describe('Drink Me: the curtain', () => {
     if (!box) {
       return;
     }
-    // Hovering lifts it; moving well away lets it drop after the moment.
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.3);
-    await expect(page.locator(CURTAIN)).toHaveAttribute('data-peek', '');
-    await page.mouse.move(10, 10);
-    await expect(page.locator(CURTAIN)).not.toHaveAttribute('data-peek', '', { timeout: 6000 });
-    await expect
-      .poll(() => customProperty(page, CURTAIN, '--curtain-lift'), { timeout: 5000 })
-      .toBeLessThan(0.05);
-
     // Pressing and holding keeps it up though she stoops and the curtain moves on
-    // screen; letting go drops it. (She straightens up for a moment first.)
-    await page.waitForTimeout(1500);
-    const again = await page.locator(CURTAIN).boundingBox();
-    expect(again).not.toBeNull();
-    if (!again) {
-      return;
-    }
-    await page.mouse.move(again.x + again.width / 2, again.y + again.height * 0.3);
+    // screen; letting go drops it. The curtain listens for pointer events of any
+    // kind, and a held mouse button is the hold every engine can drive here, on
+    // the phone projects as well (no engine offers a held touch to a test).
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.3);
     await page.mouse.down();
     await expect(page.locator(CURTAIN)).toHaveAttribute('data-peek', '');
     await page.waitForTimeout(2500);

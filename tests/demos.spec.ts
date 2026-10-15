@@ -7,6 +7,8 @@ import {
   demos,
   scrollTo,
   settled,
+  starveFrames,
+  tapAt,
 } from './demo-helpers.ts';
 import { sentencesOf } from './manifest.ts';
 
@@ -100,7 +102,19 @@ for (const demo of demos) {
     const errors = collectErrors(page);
     await page.goto(demo.url);
     await expect(page.locator('.demo')).toHaveAttribute('data-motion', 'reduced');
-    await expect(page.locator('.demo__note')).not.toBeEmpty();
+    // The reduced-motion note, among any other the page shows (a browser without
+    // WebGL gets the flat well's note as well).
+    const reducedNote = await page.evaluate(
+      () =>
+        (
+          JSON.parse(document.getElementById('demo-ui')?.textContent ?? '{}') as Record<
+            string,
+            string
+          >
+        ).demoReducedMotion,
+    );
+    expect(reducedNote).toBeTruthy();
+    await expect(page.locator('.demo__note', { hasText: reducedNote })).toBeVisible();
     // A snapped beat shows its sentences: the first beat's are there at the head.
     await expect
       .poll(
@@ -480,7 +494,37 @@ test('the cheshire cat: a tap in the wood sends the Cat to the nearest bough', a
           .bough,
     );
   expect(await bough()).toBe('1');
-  await page.mouse.click(1100, 200);
+  // A point of the wood itself (not a button, not the Cat) nearer the third bough
+  // than any other, wherever the frame's width has put the boughs.
+  const spot = await page.evaluate(() => {
+    const boughs = [...document.querySelectorAll<HTMLElement>('.cc__bough')].map((el) => {
+      const box = el.getBoundingClientRect();
+      return { el, x: box.left + box.width / 2, y: box.top + box.height / 2 };
+    });
+    const target = boughs.find((b) => b.el.dataset.bough === '2');
+    if (!target) {
+      return undefined;
+    }
+    for (let ring = 0; ring < 12; ring += 1) {
+      for (let k = 0; k < 8; k += 1) {
+        const x: number = target.x + ring * 12 * Math.cos((k * Math.PI) / 4);
+        const y: number = target.y + ring * 12 * Math.sin((k * Math.PI) / 4);
+        const hit = document.elementFromPoint(x, y);
+        const distance = (b: { x: number; y: number }): number => Math.hypot(b.x - x, b.y - y);
+        const nearest = boughs.reduce((a, b) => (distance(b) < distance(a) ? b : a));
+        if (
+          hit?.closest('.cc__wood') &&
+          !hit.closest('button, .art[data-art="cheshire-cat/on-bough"]') &&
+          nearest === target
+        ) {
+          return { x, y };
+        }
+      }
+    }
+    return undefined;
+  });
+  expect(spot).toBeDefined();
+  await tapAt(page, spot?.x ?? 0, spot?.y ?? 0);
   await expect.poll(bough, { timeout: 5000 }).toBe('2');
   // The button does it too, for a keyboard.
   await page.locator('.cc__prop--call').click();
@@ -594,13 +638,23 @@ test('the rabbit hole: a tap on a passing shelf takes something into her hand', 
   test.skip((await page.evaluate(() => window.__aliceDemo?.mode())) !== 'webgl', 'no WebGL here');
   await scrollTo(page, 0.35);
   await page.waitForTimeout(1200);
-  let held = 0;
-  for (let i = 0; i < 40 && !held; i += 1) {
-    await page.mouse.click(100 + ((i * 197) % 1080), 80 + ((i * 131) % 600));
-    await page.waitForTimeout(120);
-    held = await page.evaluate(() => document.querySelector('.rh__held')?.innerHTML.length ?? 0);
-  }
-  expect(held).toBeGreaterThan(0);
+  // A thing on a shelf, tapped where the well says it is in the frame (its test
+  // seam) rather than searched for: a tap on a touch screen, a click elsewhere.
+  // The nearest of them, furthest from the vanishing point: one deep down the well
+  // sits under the sentences, a speck the tap is not meant to find.
+  const { things, centre } = await page.evaluate(() => ({
+    things: window.__aliceShelves?.() ?? [],
+    centre: { x: innerWidth / 2, y: innerHeight / 2 },
+  }));
+  const away = (p: { x: number; y: number }) => Math.hypot(p.x - centre.x, p.y - centre.y);
+  const thing = things
+    .filter((candidate) => candidate.kind !== 'map')
+    .sort((a, b) => away(b) - away(a))[0];
+  expect(thing, 'a thing on a shelf is in the frame').toBeDefined();
+  await tapAt(page, thing?.x ?? 0, thing?.y ?? 0);
+  await expect
+    .poll(() => page.evaluate(() => document.querySelector('.rh__held')?.innerHTML.length ?? 0))
+    .toBeGreaterThan(0);
   await expect(page.locator('.rh__prop-back')).toBeVisible();
   await page.locator('.rh__prop-back').click();
   await expect(page.locator('.demo__status')).not.toBeEmpty();
@@ -1855,17 +1909,17 @@ test('a scroll settles on a starved machine: frames longer than the ease allows 
   test.skip(!demo, 'no witnesses demo in this build');
   await page.goto(demo?.url ?? '');
   await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
-  // Frames of most of a second, longer than GSAP's lag smoothing lets its clock
-  // follow: the scrub's ease advances a few hundredths of its time per frame and
-  // would crawl for half a minute (measured: 38 s at this rate).
-  const cdp = await page.context().newCDPSession(page);
-  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 60 });
+  // Frames of over a second, longer than the shell's lag smoothing lets its clock
+  // follow: the scrub's ease advances a quarter of a second per frame and would
+  // crawl for many seconds. Starved from inside the page rather than by Chromium's
+  // CPU throttling, so every engine is starved the same way.
+  const release = await starveFrames(page, 1200);
   await scrollTo(page, 0.62);
   const state = await page.evaluate(() => {
     const seam = window.__aliceDemo;
     return { settled: seam?.settled(), beat: seam?.beat(), progress: seam?.progress() };
   });
-  await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
+  await release();
   expect(state.settled).toBe(true);
   const beats = await page.locator('.demo__stage .demo-beat').count();
   expect(state.beat).toBe(Math.floor((state.progress ?? 0) * beats + 1e-6));

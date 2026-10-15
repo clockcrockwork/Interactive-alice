@@ -15,8 +15,14 @@ export type OneShotCue = 'thud' | 'paper' | 'splash' | 'chime' | 'whoosh' | 'gla
 
 export interface DemoSound {
   readonly enabled: boolean;
-  /** Turns sound on or off; on needs a user gesture to have happened. */
-  toggle(): Promise<boolean>;
+  /**
+   * Turns sound on or off and returns the visitor's choice at once; on needs a user
+   * gesture to have happened. The audio device may take its time to start, or
+   * never start (a machine with no output): the choice does not wait for it.
+   * Where the browser refuses outright, sound goes off again and `onRefused`
+   * (given to `createSound`) says so.
+   */
+  toggle(): boolean;
   /** Mutes without turning off, for the motion pause. */
   hold(muted: boolean): void;
   play(cue: OneShotCue, strength?: number): void;
@@ -37,7 +43,7 @@ function noiseBuffer(context: AudioContext): AudioBuffer {
   return buffer;
 }
 
-export function createSound(): DemoSound {
+export function createSound(onRefused: () => void = () => undefined): DemoSound {
   let context: AudioContext | undefined;
   let master: GainNode | undefined;
   let enabled = false;
@@ -309,21 +315,22 @@ export function createSound(): DemoSound {
     get enabled() {
       return enabled;
     },
-    async toggle() {
+    toggle() {
       enabled = !enabled;
       const ctx = ensure();
-      if (!ctx || !master) {
+      const out = master;
+      if (!ctx || !out) {
         enabled = false;
         return false;
       }
       if (enabled && ctx.state === 'suspended') {
-        try {
-          await ctx.resume();
-        } catch {
+        ctx.resume().catch(() => {
           enabled = false;
-        }
+          out.gain.setTargetAtTime(0, ctx.currentTime, 0.1);
+          onRefused();
+        });
       }
-      master.gain.setTargetAtTime(enabled ? 0.8 : 0, ctx.currentTime, 0.1);
+      out.gain.setTargetAtTime(enabled ? 0.8 : 0, ctx.currentTime, 0.1);
       return enabled;
     },
     hold(muted) {

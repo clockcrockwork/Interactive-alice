@@ -89,6 +89,27 @@ or an opacity that made them invisible anyway. The scripts that took these numbe
 are not in the repository; the method is a `requestAnimationFrame` sampler run in
 the page while the test harness scrolls, beat by beat.
 
+The same sampler run in Firefox, also without a GPU (its software renderer), found
+two demos far slower there than in Chromium. The croquet-ground's lawn, a 6000 by
+2400 pixel plane in CSS 3D with a striped gradient, took most of a second a frame to
+rasterise (mean 493 ms on the flamingo beat); laid as a quarter-size plane scaled up
+four times, the same lawn costs a mean of 46 ms. The Dormouse's spiral of text, turned and
+zoomed by the camera, still costs 200 to 550 ms a frame in that renderer while
+anything moves over it (the drips at the drawing, the floating letters at *muchness*):
+the turned text is rasterised again each time. Making the text layer its own 3D plane
+(`transform-style: preserve-3d`) brings Firefox to about 30 ms, but Chromium then
+rasterises the zoomed text soft, so it was not done; this one is open.
+
+WebKit without a GPU (WPE, as the test matrix runs it) is slowest on the Cheshire Cat:
+600 to 750 ms a frame at the Cat's answers, because the Cat's swaying tail is animated
+inside the figure that carries the engraving and rim filters, so the filters are run
+again over the whole Cat every frame (stopping only the tail: 54 ms; dropping only the
+filters: about 180 ms). That is open too. What was fixed is the clock: GSAP's default
+lag smoothing counted every frame over half a second as 33 ms, so on such a page every
+reaction ran at a twentieth of its speed; the shell now counts frames of up to a second
+in full (§ the concept demos' shell, `concept-demos.md` §3). The browser tests are
+written so that these costs make them slower rather than wrong.
+
 These are starting budgets for the PoC, chosen to keep a scene loadable on a
 mid-range phone over mobile data. They may be raised deliberately, in a pull
 request that says which budget moved and what the scene gained. They may not be

@@ -25,6 +25,13 @@ installTransitions();
 installArtTreatments();
 
 gsap.registerPlugin(ScrollTrigger);
+// The clock follows real time on frames of up to a second. GSAP's default lag
+// smoothing counts any frame over half a second as 33 ms, which keeps a tab's
+// return from jumping but, on a machine whose frames are always that long (a
+// renderer without a GPU under a filtered figure), runs every reaction at a
+// twentieth of its speed: a two-second wink took forty. Past a second, a frame
+// still counts as a quarter of one, so a hidden tab coming back does not leap.
+gsap.ticker.lagSmoothing(1000, 250);
 
 /** The realia a demo may read, by id. */
 export type Realia = LocaleRealia['realia'];
@@ -476,19 +483,24 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   }
 
   // --- Sound: synthesised, off by default, and held while motion is paused.
-  const sound = createSound();
+  // The button shows the visitor's choice at once; the audio device follows when
+  // it can, and a browser that refuses outright turns the button back.
+  let soundButton: HTMLButtonElement | undefined;
+  const showSound = (on: boolean): void => {
+    soundButton?.setAttribute('aria-pressed', String(on));
+    if (soundButton) {
+      soundButton.textContent = on ? (ui.demoSoundOff ?? '') : (ui.demoSoundOn ?? '');
+    }
+  };
+  const sound = createSound(() => showSound(false));
   if (bar && ui.demoSoundOn) {
-    const soundButton = document.createElement('button');
+    soundButton = document.createElement('button');
     soundButton.type = 'button';
     soundButton.className = 'demo__sound';
     soundButton.setAttribute('aria-pressed', 'false');
     soundButton.textContent = ui.demoSoundOn;
     bar.append(soundButton);
-    soundButton.addEventListener('click', async () => {
-      const on = await sound.toggle();
-      soundButton.setAttribute('aria-pressed', String(on));
-      soundButton.textContent = on ? (ui.demoSoundOff ?? '') : (ui.demoSoundOn ?? '');
-    });
+    soundButton.addEventListener('click', () => showSound(sound.toggle()));
   }
 
   const button = root.querySelector<HTMLButtonElement>('.demo__motion');

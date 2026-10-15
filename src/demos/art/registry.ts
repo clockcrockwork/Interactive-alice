@@ -146,10 +146,33 @@ export const ART: Record<string, ArtEntry> = {
   'rose-tree': vector(ROSE_TREE_SVG, [320, 360]),
   gryphon: vector(GRYPHON_SVG, [240, 220]),
   'mock-turtle': vector(MOCK_TURTLE_SVG, [240, 220]),
-  lobster: vector(LOBSTER_SVG, [160, 120]),
+  lobster: {
+    ...vector(LOBSTER_SVG, [160, 120]),
+    generated: {
+      any: {
+        src: new URL('../../assets/images/figures/lobster.any.generated.webp', import.meta.url)
+          .href,
+        width: 576,
+        height: 432,
+        // Measured source baseline, scaled with the delivery canvas.
+        footY: 373.1270718232044,
+      },
+    },
+  },
   'tortoise-master': vector(TORTOISE_MASTER_SVG, [200, 240]),
   'conger-eel': vector(CONGER_EEL_SVG, [300, 200]),
-  crab: vector(CRAB_SVG, [200, 120]),
+  crab: {
+    ...vector(CRAB_SVG, [200, 120]),
+    generated: {
+      any: {
+        src: new URL('../../assets/images/figures/crab.any.generated.webp', import.meta.url).href,
+        width: 384,
+        height: 230,
+        // Measured source baseline, scaled with the delivery canvas.
+        footY: 208.91864057672504,
+      },
+    },
+  },
   ...Object.fromEntries(
     DANCERS.map((kind) => [`dancer/${kind}`, vector(dancerSvg(kind), [140, 140])]),
   ),

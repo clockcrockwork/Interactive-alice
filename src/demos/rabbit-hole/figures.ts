@@ -3,6 +3,8 @@
  * and the White Rabbit. Plain SVG markup, decorative, drawn once.
  */
 
+import { type ArtStyle, artStyle } from '../art/treatments.ts';
+
 /**
  * A map off the well's wall, drawn large enough to be looked at: a sea with waves,
  * two coasts, hills, a river, a dotted route and a compass rose. Pictures only; a
@@ -94,3 +96,15 @@ export const heldSvg = (kind: 'book' | 'jar' | 'map', color = 'var(--rh-book-1)'
   <path d="M22 24 h20 M22 32 h16" stroke="var(--paper-base)" stroke-width="2.5" stroke-linecap="round"/>
 </svg>`;
 };
+
+/** The opened sheet is a centred prop; the held and Three.js maps stay vector. */
+export function mapSheetMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return MAP_SVG;
+  const src = new URL('../../assets/images/figures/wall-map.any.generated.webp', import.meta.url)
+    .href;
+  // The generated paper is near-opaque. Back only its measured solid interior;
+  // the irregular paper edge and transparent exterior stay untouched.
+  return `<svg viewBox="0 0 400 300" focusable="false" data-generated-map=""><rect x="10" y="15" width="381" height="270" fill="var(--rh-paper)"/><image href="${src}" width="400" height="300" preserveAspectRatio="xMidYMid meet"/></svg>`;
+}

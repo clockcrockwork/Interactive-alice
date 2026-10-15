@@ -662,6 +662,76 @@
       "prompt": "Use case: background-extraction / identity-preserve. Extract and clean up ONLY the upright herald rabbit from the lower row of this reference sheet as one high-resolution transparent cut-out. Keep THIS reference's narrow natural rabbit face, tiny understated eye, slim muzzle, tall slightly angled ears, lightly engraved fur, lanky proportions, small feet, ruff, faded-red patterned coat and tabard, the scroll on the left and trumpet on the right. Preserve its existing three-quarter-front pose, clothing construction and delicate antique brown-black pen line. Do not turn it into a cute mascot, enlarge the eyes or round the cheeks. Remove all surrounding sheet content, labels, grid lines and paper background. Do not draw the other figures. Blank scroll surface without letters. Match the original sparse old-book hatching and restrained hand-colour. Entire rabbit, both ears, both feet and both props inside the frame with clean transparent margins. No floor, drop shadow, gradient, frame, caption or additional objects. The goal is faithful isolated asset extraction of the reference herald, not redesign or a new character. Portrait natural aspect ratio suited to logical 140x220 placement.\n",
       "styleSpecification": "IA-ENGRAVED-CUTOUT-V1; docs/generated-art-style.md at main 3eefd290e96059d3af1acba8d0379326bfd12ffb",
       "status": "Draft visual-review candidate, not final art acceptance; eye size and cheek volume remain review points."
+    },
+    {
+      "file": "figures/lobster.any.generated.webp",
+      "what": "Generated whole lobster cut-out for engraved demo rendering, preserving its existing logical box and whole-object animation.",
+      "generator": "OpenAI built-in image_gen; exact model identifier not exposed",
+      "intent": "Original antique pen-and-ink engraving with restrained hand-colour, complete isolated silhouette.",
+      "date": "2026-10-15",
+      "generatedAt": "2026-10-15T06:25:00Z–2026-10-15T06:31:00Z",
+      "edits": "Sharp aspect-preserving downsample from 1448x1086 to 576x432; WebP quality 92, alphaQuality 100, effort 6. No crop, repaint, recolour or manual alpha cleanup. Original PNG retained outside Git.",
+      "bytes": 91410,
+      "sha256": "5721115b79fa146f635e803dd9b644356ead968782856cb9a036ba2a342637d2",
+      "sourceSha256": "b325294076339450ad49986e0510266f8a3afee816b01ac3c1c167484745f7cd",
+      "width": 576,
+      "height": 432,
+      "footAnchor": {
+        "y": 373.1270718232044,
+        "basis": "Measured source alpha>32 lower edge y=938, scaled by delivery height/source height."
+      },
+      "prompt": "Use case: illustration-story. Asset: isolated book engraving cut-out. Style reference attached: follow its fine brown-black old engraved linework and restrained antique hand colouring, do not reproduce any character. One complete natural lobster in a strict right-facing side profile, alive and alert, one small understated visible eye. Long segmented tail and broad tail fan to the left, carapace and small pointed rostrum to the right, two clearly distinct large claws toward the lower-right, articulated walking legs on one horizontal baseline, long slender antennae arcing upward then sweeping back left above the body, entirely inside the canvas. Compact horizontal silhouette fitting 4:3 composition; body lower-middle and antennae open upper area. Restrained faded antique vermilion-red wash, brown-black fine engraved ink, broad light shell highlights. Sparse internal hatch so recognizable at 40–80 pixels wide. Natural lobster anatomy, no extra claws. No clothes, human face or hands, sea, sand, plate, scenery, lettering or shadow. Whole animal and every extremity visible with small genuinely transparent margins. Shell areas opaque. Fine nineteenth century book print, not glossy or cartoon, no thick vector edges.\n",
+      "styleSpecification": "IA-ENGRAVED-CUTOUT-V1",
+      "qualityReview": "Original and encoded previews visually compared side-by-side on ivory at lobster widths 40, 80, 192, 384px and crab widths 80, 128, 256px; anatomy, antennae and leg gaps retained. Scene review pending.",
+      "status": "Draft scene-integration candidate; no production deployment."
+    },
+    {
+      "file": "figures/crab.any.generated.webp",
+      "what": "Generated whole crab cut-out for engraved demo rendering, preserving its existing logical box and whole-object animation.",
+      "generator": "OpenAI built-in image_gen; exact model identifier not exposed",
+      "intent": "Original antique pen-and-ink engraving with restrained hand-colour, complete isolated silhouette.",
+      "date": "2026-10-15",
+      "generatedAt": "2026-10-15T06:25:00Z–2026-10-15T06:31:00Z",
+      "edits": "Sharp aspect-preserving downsample from 1619x971 to 384x230; WebP quality 92, alphaQuality 100, effort 6. No crop, repaint, recolour or manual alpha cleanup. Original PNG retained outside Git.",
+      "bytes": 40052,
+      "sha256": "ec33773263053dc14a5afadf31c2cad639dc623a711c92dc08e35b08b407dc9d",
+      "sourceSha256": "0caebe8a3836cf7dec7bfae40a77e697d8d81fdc8bf15a37cc7121874fc4eff0",
+      "width": 384,
+      "height": 230,
+      "footAnchor": {
+        "y": 208.91864057672504,
+        "basis": "Measured source alpha>32 lower edge y=882, scaled by delivery height/source height."
+      },
+      "prompt": "Use case: illustration-story. Match the attached reference only for restrained nineteenth-century book engraving medium: delicate brown-black ink, sparse fine hatching, opaque pale hand-colour. One complete natural shore crab, directly front-on at low eye level, broad low oval carapace, two small natural stalked eyes, two raised open pincers at upper left and upper right, articulated walking legs spread clearly to each side resting on the same horizontal ground line. Anatomically coherent crab, no extra pincers or melted limbs. Sober storybook character through posture only, no human face or cartoon smile. Wide horizontal 5:3 silhouette, body low, both pincers and every leg fully inside canvas. Restrained warm sepia shell #A3886D and #755D49, ivory highlights, brown-black linework. Sparse hatching so claws, eyes and leg gaps read at80 pixels wide. One isolated animal, no clothes, accessories, sand, water, plants, lettering or cast shadow. Truly transparent exterior and spaces between legs. Do not include reference characters. No glossy digital rendering, thick cartoon outlines or 3D.\n",
+      "styleSpecification": "IA-ENGRAVED-CUTOUT-V1",
+      "qualityReview": "Original and encoded previews visually compared side-by-side on ivory at lobster widths 40, 80, 192, 384px and crab widths 80, 128, 256px; anatomy, antennae and leg gaps retained. Scene review pending.",
+      "status": "Draft scene-integration candidate; no production deployment."
+    },
+    {
+      "file": "figures/wall-map.any.generated.webp",
+      "what": "Opened DOM wall map only, 400x300 logical sheet, engraved style. Held and Three.js maps remain vector.",
+      "generator": "OpenAI built-in image_gen; exact model identifier not exposed",
+      "intent": "Original pictorial map with no text, flat ivory paper and transparent exterior.",
+      "date": "2026-10-15",
+      "edits": "Imagegen v2 refinement. Sharp downsample 1448x1086 to1200x900, WebP quality92 alphaQuality100 effort6. No crop, repaint or manual alpha modification. SVG backing rect only inside near-opaque paper, logical x10 y15 width381 height270; exterior alpha preserved.",
+      "bytes": 394144,
+      "sha256": "c621cec808b98cfe985a3cb18577a0c9660ec93afaddaf85b32d9167ced9e6dc",
+      "sourceSha256": "3daf23941aaba8d0b8282c0621f6450a81af5d56d3149e7bfb7a427602465ead",
+      "width": 1200,
+      "height": 900,
+      "prompt": "Precise technical transparency correction of this map asset. Preserve exactly the same engraved map drawing, layout, sheet outline, colours, borders, compass, dimensions and framing. The entire rectangular PAPER SURFACE must be fully opaque (alpha255) including all pale ivory areas and coloured sea; never translucent. Keep only the space OUTSIDE the irregular paper sheet truly transparent. Do not add a background, shadow, new map features or text. Keep the original detailed antique hand-coloured engraving unchanged.\n",
+      "initialPrompt": "Use case: illustration-story. Create one production cut-out asset in the same fine nineteenth-century brown-black engraved printing style as the attached reference sheet (style reference only; do not include any characters or labels from it). One antique pictorial map printed on a single flat rectangular ivory sheet, seen exactly front-on, landscape 4:3. Fine brown-black engraved cartography: one winding coastline down the left side, a small separate coast in the lower right, quiet short wave marks, small hill groups, one winding river, sparse tiny tree symbols, a delicate dotted travel route, and a restrained compass rose in the upper-right quarter. A very fine rectangular cartographic rule just inside the paper edge, not a decorative picture frame. No place names, letters, numbers, compass letters or labels. Slightly irregular cut paper edge but all four corners fully visible, narrow safety margin. Paper #F2E8D8; muted faded blue-grey water and faint sepia land wash, ink dominant. Opaque sheet surface; genuinely transparent outside sheet. No curls, rolled corners, foreshortening, scenery, pegs, wall, cast shadow or strong stains. Fine restrained old engraving, no glossy digital shading or thick vector outlines. Entire map readable when displayed 328 by246 CSS pixels.\n",
+      "referenceSha256": "25d1192883e71381ffa54b10ed29664f3772b4665de2dfad9400e37867bc9af7",
+      "styleSpecification": "IA-ENGRAVED-CUTOUT-V1",
+      "paperBacking": {
+        "x": 10,
+        "y": 15,
+        "width": 381,
+        "height": 270,
+        "basis": "Inside measured source rectangle (32,52)-(1420,1036), whose 1365792 pixels all have alpha>=251. The small antialias/edge rim is not made artificially opaque."
+      },
+      "status": "Draft scene-integration candidate; no production deployment.",
+      "qualityReview": "Distribution WebP reviewed at594px width on white and dark backgrounds. The SVG-backed interior (222156 sampled pixels) has identical RGB on both backgrounds, with no backing rectangle exposed outside the paper edge. Static encoding review only; browser scene review is separate."
     }
   ]
 }

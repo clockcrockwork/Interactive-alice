@@ -26,9 +26,11 @@ import {
   HOUSE_SVG,
   hands,
   LETTER,
-  THINGS,
   TREE_SVG,
+  thingMarkup,
 } from './figures.ts';
+import { captionCeiling, safeGlassY } from './glass-placement.ts';
+import { resetThrowMotion } from './throw-motion.ts';
 
 /** The pig comes in stages: the baby, a grunt, a snout, and a pig. */
 const PIG = 3;
@@ -36,6 +38,7 @@ const PIG = 3;
 interface Thing {
   el: HTMLButtonElement;
   stuck: boolean;
+  glassY: number;
 }
 
 function mount(shell: DemoShell): void {
@@ -91,7 +94,7 @@ function mount(shell: DemoShell): void {
     `${LETTER.mid}</div><div class="pp__fold pp__fold--bottom"><div class="pp__fold-face">${LETTER.bottom}</div>` +
     `<div class="pp__fold-back">${LETTER.plain}</div></div><div class="pp__fold pp__fold--top">` +
     `<div class="pp__fold-face">${LETTER.top}</div><div class="pp__fold-back">${LETTER.outside}</div></div></div>` +
-    `<div class="pp__plate-flying">${THINGS.plate}</div>` +
+    `<div class="pp__plate-flying">${thingMarkup('plate')}</div>` +
     `<div class="pp__pig-run">${figure('pig/trotting')}</div>` +
     '<div class="pp__trees pp__trees--near"></div>' +
     '</div>';
@@ -155,7 +158,7 @@ function mount(shell: DemoShell): void {
   // --- The things the cook throws, and the glass they stick to.
   const flying = shell.layer('pp__flying');
   const glass = shell.layer('pp__glass');
-  glass.innerHTML = `<div class="pp__big-pan">${THINGS.saucepan}</div><div class="pp__pan-after">${THINGS['frying-pan']}</div>`;
+  glass.innerHTML = `<div class="pp__big-pan">${thingMarkup('saucepan')}</div><div class="pp__pan-after">${thingMarkup('frying-pan')}</div>`;
   const bigPan = glass.querySelector<HTMLElement>('.pp__big-pan');
   const panAfter = glass.querySelector<HTMLElement>('.pp__pan-after');
 
@@ -531,9 +534,9 @@ function mount(shell: DemoShell): void {
     el.setAttribute('aria-label', shell.ui.demoBatPan ?? '');
     // Only a thing stuck on the glass is in its moment: until then it is inert.
     el.inert = true;
-    el.innerHTML = THINGS[kind] ?? '';
+    el.innerHTML = thingMarkup(kind);
     flying.append(el);
-    return { el, stuck: false };
+    return { el, stuck: false, glassY: 0 };
   });
   const pick = seeded(17);
   const home = (): gsap.TweenVars => ({
@@ -550,6 +553,42 @@ function mount(shell: DemoShell): void {
     gsap.set(thing.el, home());
   }
   let ducking = false;
+  const glassCaptions = shell.beats.slice(iThrow, iSing).map((beat) => beat.el);
+  const positionOnGlass = (thing: Thing): void => {
+    const stage = shell.stage.getBoundingClientRect();
+    const ceiling = captionCeiling(
+      stage,
+      glassCaptions.map((caption) => caption.getBoundingClientRect()),
+    );
+    const gy = safeGlassY(
+      thing.glassY,
+      stage.height,
+      thing.el.offsetWidth,
+      thing.el.offsetHeight,
+      ceiling,
+    );
+    thing.el.style.setProperty('--gy', `${gy.toFixed(1)}%`);
+  };
+  // Caption fitting and viewport/font changes affect the safe band. No frame loop.
+  let glassLayoutFrame = 0;
+  const refreshGlass = (): void => {
+    cancelAnimationFrame(glassLayoutFrame);
+    glassLayoutFrame = requestAnimationFrame(() => {
+      for (const thing of things) if (thing.stuck) positionOnGlass(thing);
+    });
+  };
+  const glassSizes = new ResizeObserver(refreshGlass);
+  // Fitting can translate a caption without changing its observed size.
+  const glassPositions = new MutationObserver(refreshGlass);
+  glassSizes.observe(shell.stage);
+  for (const caption of glassCaptions) {
+    glassSizes.observe(caption);
+    glassPositions.observe(caption, {
+      attributes: true,
+      attributeFilter: ['style', 'data-fit', 'data-fit-shift'],
+    });
+  }
+  glassPositions.observe(shell.root, { attributes: true, attributeFilter: ['data-holding'] });
   const flick = (thing: Thing, dir = 1): void => {
     if (!thing.stuck) {
       return;
@@ -575,9 +614,9 @@ function mount(shell: DemoShell): void {
     // tall frame, more of it), so the glass takes its things above them.
     const gx = 6 + pick() * 88;
     const tall = shell.stage.clientHeight > shell.stage.clientWidth;
-    const gy = 8 + pick() * (tall ? 32 : 42);
+    thing.glassY = 8 + pick() * (tall ? 32 : 42);
     thing.el.style.setProperty('--gx', `${gx.toFixed(1)}%`);
-    thing.el.style.setProperty('--gy', `${gy.toFixed(1)}%`);
+    positionOnGlass(thing);
     gsap.set(thing.el, { clearProps: 'transform,opacity' });
     gsap.fromTo(
       thing.el,
@@ -625,6 +664,10 @@ function mount(shell: DemoShell): void {
     }
   });
   const resetThings = (): void => {
+    resetThrowMotion(
+      attack,
+      things.map((thing) => thing.el),
+    );
     for (const thing of things) {
       if (thing.el.parentElement !== flying) {
         flying.append(thing.el);
@@ -633,7 +676,6 @@ function mount(shell: DemoShell): void {
       thing.el.inert = true;
       thing.el.style.removeProperty('--gx');
       thing.el.style.removeProperty('--gy');
-      gsap.killTweensOf(thing.el);
       gsap.set(thing.el, { clearProps: 'all' });
       gsap.set(thing.el, home());
     }
@@ -646,7 +688,6 @@ function mount(shell: DemoShell): void {
         void cook?.offsetWidth;
         cook?.setAttribute('data-throwing', '');
       } else {
-        attack.pause(0);
         resetThings();
       }
     },

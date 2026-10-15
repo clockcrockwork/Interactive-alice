@@ -26,8 +26,8 @@ import {
   HOUSE_SVG,
   hands,
   LETTER,
-  THINGS,
   TREE_SVG,
+  thingMarkup,
 } from './figures.ts';
 
 /** The pig comes in stages: the baby, a grunt, a snout, and a pig. */
@@ -91,7 +91,7 @@ function mount(shell: DemoShell): void {
     `${LETTER.mid}</div><div class="pp__fold pp__fold--bottom"><div class="pp__fold-face">${LETTER.bottom}</div>` +
     `<div class="pp__fold-back">${LETTER.plain}</div></div><div class="pp__fold pp__fold--top">` +
     `<div class="pp__fold-face">${LETTER.top}</div><div class="pp__fold-back">${LETTER.outside}</div></div></div>` +
-    `<div class="pp__plate-flying">${THINGS.plate}</div>` +
+    `<div class="pp__plate-flying">${thingMarkup('plate')}</div>` +
     `<div class="pp__pig-run">${figure('pig/trotting')}</div>` +
     '<div class="pp__trees pp__trees--near"></div>' +
     '</div>';
@@ -155,7 +155,7 @@ function mount(shell: DemoShell): void {
   // --- The things the cook throws, and the glass they stick to.
   const flying = shell.layer('pp__flying');
   const glass = shell.layer('pp__glass');
-  glass.innerHTML = `<div class="pp__big-pan">${THINGS.saucepan}</div><div class="pp__pan-after">${THINGS['frying-pan']}</div>`;
+  glass.innerHTML = `<div class="pp__big-pan">${thingMarkup('saucepan')}</div><div class="pp__pan-after">${thingMarkup('frying-pan')}</div>`;
   const bigPan = glass.querySelector<HTMLElement>('.pp__big-pan');
   const panAfter = glass.querySelector<HTMLElement>('.pp__pan-after');
 
@@ -531,7 +531,7 @@ function mount(shell: DemoShell): void {
     el.setAttribute('aria-label', shell.ui.demoBatPan ?? '');
     // Only a thing stuck on the glass is in its moment: until then it is inert.
     el.inert = true;
-    el.innerHTML = THINGS[kind] ?? '';
+    el.innerHTML = thingMarkup(kind);
     flying.append(el);
     return { el, stuck: false };
   });

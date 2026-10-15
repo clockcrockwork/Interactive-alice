@@ -2,6 +2,7 @@
     cauldron, the crockery the cook throws, and Alice's own two hands. */
 
 import { figure } from '../art/art.ts';
+import { type ArtStyle, artStyle } from '../art/treatments.ts';
 
 /** Her two hands at the bottom of the frame, and the bundle between them. */
 export const hands = (bundle: string): string =>
@@ -117,3 +118,43 @@ export const THINGS: Record<string, string> = {
   'frying-pan':
     '<svg viewBox="0 0 140 80" focusable="false"><ellipse cx="50" cy="44" rx="44" ry="30" fill="var(--pp-iron)"/><ellipse cx="50" cy="40" rx="34" ry="20" fill="var(--pp-iron-rim)"/><path d="M92 40 h44" stroke="var(--pp-iron)" stroke-width="9" stroke-linecap="round"/></svg>',
 };
+
+/** Whole cutouts inside the original canvases; the wrapper owns spin and hit area. */
+export function thingMarkup(
+  kind: string,
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  const fallback = THINGS[kind] ?? '';
+  if (style !== 'engraved') return fallback;
+  let src: string;
+  let box: string;
+  let placement: string;
+  switch (kind) {
+    case 'plate':
+      src = new URL('../../assets/images/figures/plate.any.generated.webp', import.meta.url).href;
+      box = '100 100';
+      placement = 'x="0.65" y="0.65" width="98.7" height="98.7"';
+      break;
+    case 'dish':
+      src = new URL('../../assets/images/figures/dish.any.generated.webp', import.meta.url).href;
+      box = '120 70';
+      placement = 'x="0" y="4.8" width="120" height="70"';
+      break;
+    case 'saucepan':
+      src = new URL('../../assets/images/figures/saucepan.any.generated.webp', import.meta.url)
+        .href;
+      box = '120 80';
+      placement = 'x="0" y="0" width="120" height="80"';
+      break;
+    case 'fire-iron':
+      src = new URL('../../assets/images/figures/fire-iron.any.generated.webp', import.meta.url)
+        .href;
+      box = '140 40';
+      // Reframe the 3:1 source in 7:2 without stretching; only clear margins overflow.
+      placement = 'x="0" y="-3.333333" width="140" height="46.666666"';
+      break;
+    default:
+      return fallback;
+  }
+  return `<svg viewBox="0 0 ${box}" focusable="false" data-generated-${kind}=""><image href="${src}" ${placement} preserveAspectRatio="xMidYMid meet"/></svg>`;
+}

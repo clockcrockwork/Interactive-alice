@@ -9,10 +9,10 @@ included. Merge and production deployment are outside this change.
 Only engraved style selects these four cutouts. Flat/paper return the unchanged
 `THINGS` vectors; frying-pan stays vector in every style. The same renderer is
 used for the outside flying plate, large passing saucepan and thrown objects.
-The existing logical canvas, CSS wrapper, centre pivot, hitbox and all movement
-remain unchanged. The thrown sequence remains fourteen objects, or nine at
-width700px and below; data-kind, labels, inert/focus behavior, captions, bat,
-duck and reverse reconstruction retain their existing implementation.
+The existing logical canvas, CSS wrapper, centre pivot and hitbox remain
+unchanged. The thrown sequence remains fourteen objects, or nine at width
+700px and below. The replay and caption-clearance corrections below preserve
+the existing data-kind, labels, keyboard/inert behavior and bat/duck controls.
 
 - Plate: whole asset at x0.65/y0.65,98.7×98.7 inside100×100, uniformly reduced
   slightly to retain its original approximately46-unit outer radius.
@@ -66,6 +66,39 @@ alpha and visible bounds, wrapper ratios/pivots, thrown count and ordering,
 keyboard bat, duck, reverse/repeat, caption avoidance and zero-fetch fallback.
 Existing Pig and Pepper browser cases remain unchanged.
 
+### Inherited motion issues exposed by repeat coverage
+
+The first normal CI run on head `1d455100663d0f0654514cf7c0a2b62b2dd15ded`
+reported 714 desktop passes and five failures. Three were in the new kitchen
+repeat tests; Cheshire's second Pig click and Mock Turtle's stretch also failed.
+Trial passed in that run. The raw transition diagnostic reported three passes
+and two failures on both base and head; its continue-on-error step status does
+not mean the diagnostic passed.
+
+The kitchen failures exposed two behaviors already present in the base:
+
+- Reverse reset paused the reusable attack, then `killTweensOf` removed its
+  flight tweens as well as reader-triggered motion. An actual-GSAP unit
+  reproduction failed before the correction. Reset now preserves attack-owned
+  children and cancels other tweens on those same objects, including a bat
+  created immediately before reverse. Reduced-motion callbacks also survive.
+- The fixed random landing band did not measure caption height or rotated
+  wrapper extent. The same seed advances across bat/duck and repeated throws,
+  allowing a later landing into the tall Japanese axes caption. The failed CI
+  assertion is retained; its exact collision rectangles were unavailable.
+  Landing Y is now capped above the measured throw/mind/axes caption band,
+  allowing every wrapper rotation plus an eight-pixel gap. X and random draws
+  are unchanged. Empty/offstage rectangles are ignored; hidden upcoming
+  captions with layout reserve space. Resize and caption-fit changes refresh
+  existing landings without consuming randomness. In an impossibly short
+  frame, top-edge overhang is preferred to covering or moving the sentences.
+
+Eleven additional unit cases cover live and uninitialized bat cleanup,
+replay, reduced motion, tall Japanese captions, narrow/short viewports and
+rotated wrappers. The browser reverse/repeat assertion remains, with caption
+clearance also checked after a 600×480 resize. This correction does not claim
+clearance for every later caption or change shared GSAP cleanup or caption CSS.
+
 Local browser visual QA is not claimed: prior recorded browser sandbox and
 protected/unreachable preview blockers have not been bypassed. The base PR #21
 reported229 unit passes and704 desktop browser passes/3 failures (Cheshire Pig
@@ -74,7 +107,7 @@ diagnostic. Those unresolved observations are not classified away or suppressed.
 Exact-head results must be read from the normal existing CI run; no rerun or
 additional paid jobs are requested. This remains a Draft visual-review candidate.
 
-The final local gate passes235 unit tests, lint, typecheck, check:data, production
+The corrected local gate passes246 unit tests, lint, typecheck, check:data, production
 build, schema parity and pacing-fixture parity. Local Node24 differs from the
 repository's pinned Node22; existing CI supplies the pinned runtime. The existing
 large-chunk warning remains. Browser enumeration confirms12 cases in each of

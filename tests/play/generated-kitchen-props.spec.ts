@@ -46,6 +46,23 @@ const visit = async (
 const expectedKinds = async (page: Page) =>
   kinds.slice(0, (await page.evaluate(() => matchMedia('(max-width: 700px)').matches)) ? 9 : 14);
 
+const captionOverlap = async (page: Page) =>
+  page.evaluate(() => {
+    const lines = [...document.querySelectorAll('.demo-beat[data-active] .line')].map((line) =>
+      line.getBoundingClientRect(),
+    );
+    return [...document.querySelectorAll('.pp__glass .pp__thing')].some((el) => {
+      const box = el.getBoundingClientRect();
+      return lines.some(
+        (line) =>
+          box.left < line.right &&
+          box.right > line.left &&
+          box.top < line.bottom &&
+          box.bottom > line.top,
+      );
+    });
+  });
+
 for (const locale of ['', 'ja/']) {
   for (const motion of ['no-preference', 'reduce'] as const) {
     const label = `${locale || 'en/'} ${motion}`;
@@ -174,23 +191,13 @@ for (const locale of ['', 'ja/']) {
       await expect(stuck).toHaveCount(Math.ceil(expected.length / 2), { timeout: 10_000 });
       for (const cue of ['throw', 'mind', 'axes']) {
         await atCue(page, cue, 0.6);
-        const overlap = await page.evaluate(() => {
-          const lines = [...document.querySelectorAll('.demo-beat[data-active] .line')].map(
-            (line) => line.getBoundingClientRect(),
-          );
-          return [...document.querySelectorAll('.pp__glass .pp__thing')].some((el) => {
-            const box = el.getBoundingClientRect();
-            return lines.some(
-              (line) =>
-                box.left < line.right &&
-                box.right > line.left &&
-                box.top < line.bottom &&
-                box.bottom > line.top,
-            );
-          });
-        });
-        expect(overlap, cue).toBe(false);
+        await expect.poll(() => captionOverlap(page), { message: cue }).toBe(false);
       }
+      // Existing stuck objects reflow when caption fitting changes the safe band.
+      await page.setViewportSize({ width: 600, height: 480 });
+      await atCue(page, 'axes', 0.6);
+      await expect(stuck).toHaveCount(Math.ceil(expected.length / 2));
+      await expect.poll(() => captionOverlap(page), { message: 'resized axes' }).toBe(false);
       expect(errors).toEqual([]);
     });
   }

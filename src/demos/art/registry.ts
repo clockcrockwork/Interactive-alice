@@ -87,7 +87,7 @@ export type ArtEntry =
       markup: string;
       box: [number, number];
       fragment?: string;
-      generated?: Partial<Record<'blue' | 'yellow', ImageSource & { footY: number }>>;
+      generated?: Partial<Record<'blue' | 'yellow' | 'any', ImageSource & { footY: number }>>;
     }
   | { kind: 'image'; sources: Partial<Record<'blue' | 'yellow' | 'any', ImageSource>> };
 
@@ -162,7 +162,21 @@ export const ART: Record<string, ArtEntry> = {
 
   'white-rabbit/running': vector(RABBIT_SVG, [120, 100]),
   'white-rabbit/diving': vector(RABBIT_DIVING_SVG, [100, 100]),
-  'white-rabbit/herald': vector(RABBIT_HERALD_SVG, [140, 220]),
+  'white-rabbit/herald': {
+    ...vector(RABBIT_HERALD_SVG, [140, 220]),
+    generated: {
+      any: {
+        src: new URL(
+          '../../assets/images/figures/white-rabbit--herald.any.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 1001,
+        height: 1572,
+        // Visible soles (alpha > 32); keep transparent margins in the master.
+        footY: 1515,
+      },
+    },
+  },
   'white-rabbit/garden': vector('', [60, 80], feetAtOrigin(HOUSE_RABBIT, 60, 80)),
   pat: vector('', [60, 70], feetAtOrigin(HOUSE_PAT, 60, 70)),
   'dinah-cat': vector(DINAH_SVG, [120, 100]),

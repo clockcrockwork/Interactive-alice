@@ -149,7 +149,8 @@ export function figure(
 ): string {
   const entry = entryOf(id);
   if (entry.kind === 'vector') {
-    const generated = style === 'engraved' ? entry.generated?.[variant] : undefined;
+    const generatedVariant = entry.generated?.[variant] ? variant : 'any';
+    const generated = style === 'engraved' ? entry.generated?.[generatedVariant] : undefined;
     if (generated) {
       const [w, h] = entry.box;
       const scale = Math.min(w / generated.width, h / generated.height);
@@ -159,7 +160,7 @@ export function figure(
       const y = h - generated.footY * scale;
       // Keep the scene's original layout/growth box. Only the image moves within
       // it: its visible soles, rather than its transparent padding, meet h.
-      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated=""><svg viewBox="0 0 ${w} ${h}" focusable="false"><image class="art__image" data-variant="${variant}" href="${generated.src}" x="${x}" y="${y}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet"/></svg></span>`;
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated=""><svg viewBox="0 0 ${w} ${h}" focusable="false"><image class="art__image" data-variant="${generatedVariant}" href="${generated.src}" x="${x}" y="${y}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet"/></svg></span>`;
     }
     const cut = cutOutsFor(id, style, demo);
     if (cut) {

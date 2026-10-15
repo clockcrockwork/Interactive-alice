@@ -28,7 +28,7 @@ import {
   seeded,
 } from '../shell/shell.ts';
 import { exclaims, type LocaleProfile, pageProfile, units } from '../shell/words.ts';
-import { COURT_DOORS, HANDS_WITH_LOBSTER, JELLY_SVG, TUREEN_SVG } from './figures.ts';
+import { COURT_DOORS, HANDS_WITH_LOBSTER, JELLY_SVG, tureenMarkup } from './figures.ts';
 import './quadrille.css';
 import './shore.css';
 
@@ -783,7 +783,7 @@ function mount(shell: DemoShell): void {
 
   // --- Beautiful Soup: a tureen steams while the Mock Turtle sobs through it.
   const soup = shell.layer('lq__soup');
-  soup.innerHTML = `<div class="lq__tureen">${TUREEN_SVG}</div>`;
+  soup.innerHTML = `<div class="lq__tureen">${tureenMarkup()}</div>`;
   master.fromTo(soup, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.4 }, iSoup + 0.1);
   master.to(turtle, { '--sob': 1, duration: 0.25, yoyo: true, repeat: 5 }, iSoup + 0.1);
   move(iSong, { inside: 0, form: 0, aside: 0, radius: 1, unwind: 1 }, 0.9);

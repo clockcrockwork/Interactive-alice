@@ -1,6 +1,7 @@
 /** The Lobster Quadrille's props: her own hands with a lobster, the jelly-fish, the tureen, and the court doors. */
 
 import { figure } from '../art/art.ts';
+import { type ArtStyle, artStyle } from '../art/treatments.ts';
 
 export const HANDS_WITH_LOBSTER = `
 <div class="lq__hand lq__hand--left">${figure('alice/hand-left')}</div>
@@ -16,17 +17,31 @@ export const JELLY_SVG = `
   <circle cx="32" cy="26" r="2.5" fill="var(--ink-primary)"/><circle cx="48" cy="26" r="2.5" fill="var(--ink-primary)"/>
 </svg>`;
 
+const TUREEN_SHADOW = `  <ellipse cx="100" cy="120" rx="70" ry="12" fill="oklch(from var(--ink-primary) l c h / 0.2)"/>`;
+
+const TUREEN_STEAM = `  <g class="lq__steam">
+    <path d="M70 46 q-10 -16 0 -30 M100 42 q-10 -18 0 -34 M130 46 q-10 -16 0 -30" stroke="var(--lq-foam)" stroke-width="5" fill="none" stroke-linecap="round"/>
+  </g>`;
+
 export const TUREEN_SVG = `
 <svg viewBox="0 0 200 140" focusable="false">
-  <ellipse cx="100" cy="120" rx="70" ry="12" fill="oklch(from var(--ink-primary) l c h / 0.2)"/>
+${TUREEN_SHADOW}
   <path d="M30 60 Q30 120 100 120 Q170 120 170 60 Z" fill="var(--paper-base)"/>
   <ellipse cx="100" cy="60" rx="70" ry="14" fill="var(--world-leaf-deep)"/>
   <ellipse cx="100" cy="58" rx="60" ry="9" fill="var(--world-leaf)"/>
   <path d="M20 66 q-16 0 -10 16 M180 66 q16 0 10 16" stroke="var(--paper-aged)" stroke-width="8" fill="none" stroke-linecap="round"/>
-  <g class="lq__steam">
-    <path d="M70 46 q-10 -16 0 -30 M100 42 q-10 -18 0 -34 M130 46 q-10 -16 0 -30" stroke="var(--lq-foam)" stroke-width="5" fill="none" stroke-linecap="round"/>
-  </g>
+${TUREEN_STEAM}
 </svg>`;
+
+/** Only the bowl is raster: the shadow and animated steam retain their SVG anchors. */
+export function tureenMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return TUREEN_SVG;
+  const src = new URL('../../assets/images/figures/tureen.any.generated.webp', import.meta.url)
+    .href;
+  return `<svg viewBox="0 0 200 140" focusable="false" data-generated-tureen="">${TUREEN_SHADOW}<image href="${src}" x="0" y="0" width="200" height="140" preserveAspectRatio="xMidYMid meet"/>${TUREEN_STEAM}</svg>`;
+}
 
 /** The court's doors at the end of the shore: a path, a frame with the court's
     light in it, and two leaves. The trial opens on the same pair from inside. */

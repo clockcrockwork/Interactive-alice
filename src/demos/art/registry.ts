@@ -82,10 +82,20 @@ export interface ImageSource {
 }
 
 export type ArtEntry =
-  | { kind: 'vector'; markup: string; box: [number, number]; fragment?: string }
+  | {
+      kind: 'vector';
+      markup: string;
+      box: [number, number];
+      fragment?: string;
+      generated?: Partial<Record<'blue' | 'yellow', ImageSource & { footY: number }>>;
+    }
   | { kind: 'image'; sources: Partial<Record<'blue' | 'yellow' | 'any', ImageSource>> };
 
-const vector = (markup: string, box: [number, number], fragment?: string): ArtEntry => ({
+const vector = (
+  markup: string,
+  box: [number, number],
+  fragment?: string,
+): Extract<ArtEntry, { kind: 'vector' }> => ({
   kind: 'vector',
   markup,
   box,
@@ -101,7 +111,21 @@ export const ART: Record<string, ArtEntry> = {
   'alice/falling': vector(ALICE_SVG, [120, 200]),
   'alice/running-away': vector(ALICE_RUNNING_AWAY_SVG, [120, 220]),
   'alice/silhouette': vector(ALICE_SILHOUETTE_SVG, [120, 220]),
-  'alice/from-behind': vector(ALICE_FROM_BEHIND_SVG, [120, 220]),
+  'alice/from-behind': {
+    ...vector(ALICE_FROM_BEHIND_SVG, [120, 220]),
+    generated: {
+      yellow: {
+        src: new URL(
+          '../../assets/images/figures/alice--from-behind.yellow.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 926,
+        height: 1698,
+        // Visible soles (alpha > 32), not the transparent canvas bottom.
+        footY: 1602,
+      },
+    },
+  },
   'alice/sitting': vector(ALICE_SITTING_SVG, [160, 150]),
   'alice/foot': vector(FOOT_SVG, [200, 260]),
   'alice/looking-down': vector(ALICE_LOOKING_DOWN_SVG, [400, 220]),

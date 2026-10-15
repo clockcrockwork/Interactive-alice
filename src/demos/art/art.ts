@@ -145,9 +145,22 @@ export function figure(
   className = '',
   style: ArtStyle = pageStyle(),
   demo: string | undefined = pageDemo(),
+  variant: AliceVariant = inBrowser ? aliceVariant() : 'yellow',
 ): string {
   const entry = entryOf(id);
   if (entry.kind === 'vector') {
+    const generated = style === 'engraved' ? entry.generated?.[variant] : undefined;
+    if (generated) {
+      const [w, h] = entry.box;
+      const scale = Math.min(w / generated.width, h / generated.height);
+      const width = generated.width * scale;
+      const height = generated.height * scale;
+      const x = (w - width) / 2;
+      const y = h - generated.footY * scale;
+      // Keep the scene's original layout/growth box. Only the image moves within
+      // it: its visible soles, rather than its transparent padding, meet h.
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated=""><svg viewBox="0 0 ${w} ${h}" focusable="false"><image class="art__image" data-variant="${variant}" href="${generated.src}" x="${x}" y="${y}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet"/></svg></span>`;
+    }
     const cut = cutOutsFor(id, style, demo);
     if (cut) {
       return `<span class="art art--cut ${className}" data-art="${id}">${cutOutSvg(entry, cut)}</span>`;

@@ -621,6 +621,26 @@
       "date": "2026-10-05",
       "edits": "none",
       "bytes": 4942
+    },
+    {
+      "file": "figures/alice--from-behind.yellow.generated.webp",
+      "what": "Generated yellow static rear-view Alice for the shared witnesses/trial court, in the unchanged 120x220 logical box.",
+      "generator": "OpenAI built-in image_gen; exact model identifier not exposed",
+      "intent": "Preserve the supplied character identity and engraved cut-out style in a standing rear view.",
+      "date": "2026-10-15",
+      "edits": "Sharp lossless WebP format conversion only at original 926x1698 resolution; no resize, crop, recolour, or drawing edits. Alpha and RGB at alpha>0 exactly match the PNG. Hidden RGB at alpha=0 normalized on 183501 pixels.",
+      "bytes": 1067572,
+      "sha256": "3368946b4ef12a937435cd9f269e8f7080c19fa2e628aab9a1900c0842314512",
+      "sourceSha256": "dd5e8d7bf92b6a4de956526c5f0ba3582b8e578ac97736d802406677dfb5d2da",
+      "width": 926,
+      "height": 1698,
+      "footAnchor": {
+        "y": 1602,
+        "basis": "Lower edge of alpha>32 bounding box (127,106)-(804,1602), source pixels"
+      },
+      "prompt": "Use case: illustration-story. Create a single isolated FULL BODY REAR VIEW character cut-out, using the attached character sheet as identity and engraving-style reference. This is the same young Victorian storybook girl from the sheet's top-row back view. She is standing STILL, calmly watching something ahead, both feet planted close together, arms resting naturally near her sides, narrow balanced silhouette. Camera at ordinary standing eye level behind her, straight rear view with only a very slight natural shoulder angle; no running stride, no falling, no overhead viewpoint. Her long softly curled chestnut-brown hair lies down her back with a small subdued blue-grey period ribbon. Ochre-yellow puff-sleeved calf-length dress, ivory pinafore tied in a clear neat bow behind waist, plain stockings, dark brown strap shoes. Back costume construction and body proportions must match reference. Show head to both shoes completely with modest transparent margins. Portrait composition intended for logical 120x220 placement; keep arms/hair/skirt reasonably narrow so she does not hide nearby scene characters. Not a fashion portrait or dramatic pose. Late nineteenth-century British book engraving, delicate brown-black ink contours #2A211A, restrained parallel hatching, gentle warm paper highlights within the figure, subtle muted antique hand-colour. Dress #D8B348, chestnut hair #68472D with #8A6543 highlights, ivory #F4EFE5. Same line density and fine print character as reference; no thick vector outline, glossy painting, anime, chibi, 3D, oversaturated colour. Genuinely transparent background, no scene, no floor, no cast shadow, no captions, labels, lettering or frame. Exactly one complete illustration, not a sheet, no separate parts.\n",
+      "styleSpecification": "docs/generated-art-style.md at main 3eefd290e96059d3af1acba8d0379326bfd12ffb",
+      "status": "Preview integration candidate; no blue derivative supplied."
     }
   ]
 }

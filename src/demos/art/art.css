@@ -20,6 +20,11 @@
     block-size: auto;
   }
 
+  /* Preserve transparent source padding beyond the fixed scene layout box. */
+  .art--generated > svg {
+    overflow: visible;
+  }
+
   .art__image {
     display: none;
   }

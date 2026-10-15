@@ -5,6 +5,8 @@
  * is also Time's clock. No words anywhere: the watch's face is numbers only.
  */
 
+import { type ArtStyle, artStyle } from '../art/treatments.ts';
+
 /** One laid place, seen a little from above: saucer, cup, plate and spoon; and
     the mess that appears on it once it has been used (`--dirt`). */
 export const SETTING_SYMBOL = `
@@ -124,6 +126,15 @@ export const BUTTER_SVG = `
   <circle cx="98" cy="44" r="2.5" fill="var(--tp-crumb)"/>
 </svg>`;
 
+/** The riddle is a centred, whole-object swap, never a foot-grounded figure. */
+export function deskMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return DESK_SVG;
+  const src = new URL('../../assets/images/figures/desk.any.generated.webp', import.meta.url).href;
+  return `<svg viewBox="0 0 240 200" focusable="false" data-generated-desk=""><image href="${src}" x="0" y="0" width="240" height="200" preserveAspectRatio="xMidYMid meet"/></svg>`;
+}
+
 /** The March Hare's cup of tea, in two halves so the watch can go in between. */
 export const CUP_BACK_SVG = `
 <svg viewBox="0 0 300 220" focusable="false">
@@ -152,6 +163,15 @@ export const RAVEN_SVG = `
   <path d="M196 40 L236 44 L212 56 Z" fill="var(--tp-ink-cut)"/>
   <path d="M40 150 l-30 30 M60 154 l-10 34" stroke="var(--tp-ink-cut)" stroke-width="5" stroke-linecap="round"/>
 </svg>`;
+
+/** The complete bird is centred with transparent letterboxing, not foot-grounded. */
+export function ravenMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return RAVEN_SVG;
+  const src = new URL('../../assets/images/figures/raven.any.generated.webp', import.meta.url).href;
+  return `<svg viewBox="0 0 240 200" focusable="false" data-generated-raven=""><image href="${src}" x="0" y="20" width="240" height="160" preserveAspectRatio="xMidYMid meet"/></svg>`;
+}
 
 export const DESK_SVG = `
 <svg viewBox="0 0 240 200" focusable="false">

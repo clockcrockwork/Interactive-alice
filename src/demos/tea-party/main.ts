@@ -26,12 +26,12 @@ import {
   BUTTER_SVG,
   CUP_BACK_SVG,
   CUP_FRONT_SVG,
-  DESK_SVG,
+  deskMarkup,
   FROWN_SVG,
   HOUSE_SVG,
   KNIFE_SVG,
   NOTES_SVG,
-  RAVEN_SVG,
+  ravenMarkup,
   SETTING_SYMBOL,
   SETTING_USE,
   TEAPOT_SVG,
@@ -294,8 +294,8 @@ function mount(shell: DemoShell): void {
   // on every "you might as well say".
   const riddle = shell.layer('tp__riddle');
   riddle.innerHTML =
-    `<div class="tp__cutout tp__raven">${RAVEN_SVG}</div>` +
-    `<div class="tp__cutout tp__desk">${DESK_SVG}</div>`;
+    `<div class="tp__cutout tp__raven">${ravenMarkup()}</div>` +
+    `<div class="tp__cutout tp__desk">${deskMarkup()}</div>`;
   between(riddle, iRaven, iSilence + 0.4);
   master.fromTo(riddle, { opacity: 0 }, { opacity: 1, duration: 0.3 }, iRaven + 0.1);
   master.to(riddle, { opacity: 0, duration: 0.25 }, iSilence + 0.1);

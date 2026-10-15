@@ -4,6 +4,7 @@ import { expect, test } from '@playwright/test';
 import { lonelyLetter, namedWords } from '../../src/demos/shell/words.ts';
 import type { LocaleRealia } from '../../src/types/schema.ts';
 import { atCue, collectErrors, demos, pages } from '../demo-helpers.ts';
+import { observeTransitions } from '../transition-diagnostics.ts';
 
 /**
  * The demos in Japanese: the index and its language switch, and every place a
@@ -42,6 +43,7 @@ test.describe('the demos in Japanese', () => {
     page,
   }) => {
     const errors = collectErrors(page);
+    await observeTransitions(page);
     await page.goto(index?.url ?? '');
     await expect(page.locator('html')).toHaveAttribute('lang', LOCALE);
     await expect(page.locator('h1')).toHaveText(ui.demosTitle ?? '-');

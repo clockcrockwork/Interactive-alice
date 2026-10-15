@@ -73,3 +73,31 @@ intake would need accepted art, articulated cut-outs and optimized WebP/AVIF del
 - No screenshot, real-device pass, full browser suite pass or final art approval is
   claimed. PR #12 already reports three separate timing-sensitive E2E failures in
   Bill, Mock Turtle and trial; this change does not claim to fix them.
+
+## Transition diagnosis (2026-10-15)
+
+The Japanese-index round-trip failure in PR #17 remains unclassified. Independent
+builds of base `3752d3f` and head `78a5f82` produce byte-identical English/Japanese
+indexes and identical directly loaded JS/CSS for both indexes and Japanese
+riverbank. Riverbank HTML differs only in the three comparison UI strings.
+This excludes a changed executable bundle, not suite-load/timing effects.
+
+A temporary diagnostic in the existing standard-runner `checks` job runs the same
+Japanese-index test five times against each application, base and head, with one
+worker. It observes page lifecycle events, stylesheet responses, readable
+`@view-transition` rules and reduced-motion state. It does not consume transition
+promises, ignore console errors, change thresholds or alter the app. The full gate
+still runs, and diagnostic failures remain failures. Existing Bill and Mock Turtle
+failures stay with PR #12's owner; they are not changed here.
+
+The structured lifecycle trace is printed in the job log, with result statuses in
+the job summary. No new artifact upload or npm cache is introduced. Playwright's
+binary trace is disabled for these additional diagnostic repetitions; the full
+suite keeps its existing configuration. The diagnostic uses the same installed
+dependencies in both isolated trees. Remove this diagnostic once the cause is
+established rather than keeping extra repetitions in routine CI indefinitely.
+
+Local verification of the observer is limited: Chromium exits before any test
+body with `socket() failed: Operation not permitted`. No sandbox setting was
+changed. The non-browser gate passed; browser findings must come from the normal
+CI runner, and no local application reproduction is claimed.

@@ -349,6 +349,58 @@ the review question on issue #8 and it belongs to a person looking at it.
 Still to come with the scenes they belong to: audio, and back-navigation restore
 across a document boundary.
 
+### The concept demos
+
+The demos under `/demos/` are outside the story runtime, so the pacing fixture and the
+scene probe do not cover them. They have their own layer: `build/demos.test.ts` for
+the page generator, and `tests/demos.spec.ts` in the browser, driven through
+`window.__aliceDemo`. What each proves is listed in
+[`concept-demos.md`](concept-demos.md) §5.
+
+### Engines, touch screens and slow machines
+
+Every browser test runs in every project of the full matrix. The browser target is
+Baseline, so a test that fails in Firefox or WebKit is a product bug until it is shown
+to be the test's own assumption, and then it is the test that changes: no test is
+skipped, quarantined or fenced to one engine. The one fence allowed is behaviour that
+does not exist on a device, and the only such case today is hover on a touch screen;
+the hover test skips there, and the button and press that are that device's way to
+the same play are tested on it.
+
+What a test may assume, learned from the first full-matrix run:
+
+- **input is the device's own.** A tap on a touch screen, a click elsewhere, through
+  the browser's input pipeline (`tapAt`, `press` in `tests/demo-helpers.ts`), at a
+  point taken from the frame or from the thing tapped, never a desktop pixel.
+  Playwright's `click` is not used on a control inside a sticky stage: it scrolls the
+  element "into view" first, and that scroll can carry the page into another beat;
+- **the engine's own tools are not the test's.** Chromium's CPU throttling and CDP are
+  not available elsewhere, so a starved machine is made inside the page
+  (`starveFrames`: every animation frame blocks the main thread), the same in every
+  engine;
+- **a moment is watched, not polled.** A value that is reached for a moment is sampled
+  on every frame from inside the page (`watchProperty`) and asserted on what was seen;
+  a poll across the bridge can step over it, and does on a slow runner;
+- **a speed is a speed.** A test that scrolls to make the reader move moves the
+  position by the clock (so far in so many milliseconds), not by a step per frame,
+  which on a machine with long frames is a reader many times slower;
+- **state, not time.** A count is taken of what happened (drops that fell), not of what
+  is on screen at one instant; a test waits for the state it needs, never for a longer
+  timeout;
+- **geometry through the interface every engine implements.** SVG text is located
+  through the SVG interface (a character's extent, or `getBBox` through
+  `getScreenCTM`), not by the element's client box: Firefox reports a `tspan` on a
+  `textPath` far off the page, and WebKit's box for a transformed, centred `<text>`
+  starts at its origin;
+- **a pixel is a whole pixel.** Engines round a fractional scroll position
+  differently (WebKit floors it), so a helper that scrolls to a beat's head rounds up
+  and lands inside the beat everywhere.
+
+On a small machine (four cores) each project runs alone: the two Chromium projects and
+Firefox at four workers, WebKit at two, where four workers on four cores starve its
+frames enough to fail tests on time rather than on behaviour. CI runs desktop Chromium
+on two workers.
+
 ## 6. Ownership
 
 The `test-engineer` agent owns the design and maintenance of these suites. Anyone

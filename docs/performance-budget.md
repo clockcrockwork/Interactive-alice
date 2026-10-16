@@ -36,6 +36,80 @@ one scene page. Shared chunks count once.
 | audio per scene | ≤ 700 KB | BGM loop, fetched after the first interaction |
 | fonts | ≤ 100 KB | subset, `font-display: swap` |
 
+The concept demos under `/demos/` are outside these budgets by design; see
+[`concept-demos.md`](concept-demos.md) §2. For the record, gzip, on the build that
+introduced them: the shared demo shell (GSAP, ScrollTrigger and the shell) is 46 KB of
+JS; Drink Me, the pool, the Caucus-race, the Rabbit's house, Bill, the Dormouse, the
+Cheshire Cat, the Caterpillar, the kitchen, the croquet-ground, the Mock Turtle, the
+Lobster Quadrille, the trial, the riverbank, the Mouse's tale and the tea-party add between 2 and 7 KB each to that; the rabbit hole adds 136 KB for Three.js and the
+well. Story pages are unaffected: they share none of these
+chunks, and their own sizes did not move.
+
+The Japanese demos (`/demos/ja/`) reuse every chunk of the English ones: the build's
+script grew by 0.6 KB raw (0.17 KB gzip, the shared word reader and the Cat's lid) and
+its styles by 1.5 KB raw (0.4 KB gzip, the Japanese typography and the language
+switch), measured against the build before them. A Japanese demo page's HTML is about
+0.6 KB gzip larger than its English one (the dormouse: 4.9 KB against 4.2 KB). No font
+is downloaded (system fonts only, 0 bytes) and no storage key was added.
+
+The language-differences standard ([`text-experience-binding.md`](text-experience-binding.md)
+§9), measured against the build before it: the shared demo shell grew by 3.1 KB raw
+(1.4 KB gzip: the locale profile, `units()` with its segmenter, `graphemes()` and
+realia on the shell); the demos' styles by 0.4 KB raw (0.09 KB gzip); a demo page's
+HTML by about 0.1 KB gzip (the profile on the root, and the realia a demo reads: the
+Japanese caterpillar 5.81 → 5.94 KB). On the story, inside its budgets: `story.js`
+unchanged, `base.css` +40 B gzip (the emphasis rule), each part page +60 B gzip and
+the home page +90 B gzip (the profile on the root).
+
+Frame time was also measured for the demos, on the software renderer this project
+tests on (Chromium with SwiftShader, no GPU, 1280×760), holding each beat and taking
+the mean of a dozen frames; the numbers are large because there is no GPU, and their
+ranking is what matters. Before and after the pass that followed:
+
+```text
+                         worst beat, before → after   what changed
+trial                    330 ms → 74 ms                the pieces' drop-shadow filter became a
+                                                       shadow at the feet; the court is composited
+Pig and Pepper           1291 ms → 179 ms              the outside world is composited and hidden
+                                                       while the kitchen is on, as is the pepper;
+                                                       the room and its smoke are composited
+pool of tears            271 ms → 189 ms               the sea is drawn at 0.6 of the screen's
+                                                       pixels and scaled by the browser
+croquet                  136 ms → 97 ms                the pieces' drop-shadow filter became a
+                                                       shadow at the feet
+rabbit hole (WebGL)      mean 115 ms                   drawn only while the well is on screen,
+                                                       and only when the camera moved if paused
+```
+
+The WebGL well was not the heaviest demo even without a GPU (its flat CSS fallback
+measured 63 ms mean against the well's 115 ms on the same renderer, which is not the
+gap that would justify losing the well on a phone with a GPU), so it stays; the cost
+that did move was in CSS filters on many pieces and in layers painted at a scale
+or an opacity that made them invisible anyway. The scripts that took these numbers
+are not in the repository; the method is a `requestAnimationFrame` sampler run in
+the page while the test harness scrolls, beat by beat.
+
+The same sampler run in Firefox, also without a GPU (its software renderer), found
+two demos far slower there than in Chromium. The croquet-ground's lawn, a 6000 by
+2400 pixel plane in CSS 3D with a striped gradient, took most of a second a frame to
+rasterise (mean 493 ms on the flamingo beat); laid as a quarter-size plane scaled up
+four times, the same lawn costs a mean of 46 ms. The Dormouse's spiral of text, turned and
+zoomed by the camera, still costs 200 to 550 ms a frame in that renderer while
+anything moves over it (the drips at the drawing, the floating letters at *muchness*):
+the turned text is rasterised again each time. Making the text layer its own 3D plane
+(`transform-style: preserve-3d`) brings Firefox to about 30 ms, but Chromium then
+rasterises the zoomed text soft, so it was not done; this one is open.
+
+WebKit without a GPU (WPE, as the test matrix runs it) is slowest on the Cheshire Cat:
+600 to 750 ms a frame at the Cat's answers, because the Cat's swaying tail is animated
+inside the figure that carries the engraving and rim filters, so the filters are run
+again over the whole Cat every frame (stopping only the tail: 54 ms; dropping only the
+filters: about 180 ms). That is open too. What was fixed is the clock: GSAP's default
+lag smoothing counted every frame over half a second as 33 ms, so on such a page every
+reaction ran at a twentieth of its speed; the shell now counts frames of up to a second
+in full (§ the concept demos' shell, `concept-demos.md` §3). The browser tests are
+written so that these costs make them slower rather than wrong.
+
 These are starting budgets for the PoC, chosen to keep a scene loadable on a
 mid-range phone over mobile data. They may be raised deliberately, in a pull
 request that says which budget moved and what the scene gained. They may not be

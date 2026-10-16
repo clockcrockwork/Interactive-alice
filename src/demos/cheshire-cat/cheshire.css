@@ -1,0 +1,696 @@
+/* The Cheshire Cat: a night wood in depth, and a Cat that vanishes through an
+   SVG mask, tail first and grin last. The wood is the reader's to play in. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    /* The night wood, in the book's own night: deep at the top, the printed
+       night lower where the mist is. Trunks are ink; the Cat is a sepia print
+       with a paper grin; the moon and stars are the world's glow; fireflies
+       and the chalk way are the reader's gold, and go out. */
+    --cc-night: var(--world-night-deep);
+    --cc-night-low: var(--world-night);
+    --cc-moon: var(--world-glow);
+    --cc-tree-far: color-mix(in oklch, var(--ink-primary), var(--world-night) 55%);
+    --cc-tree-mid: var(--ink-primary);
+    --cc-tree-near: oklch(from var(--ink-primary) calc(l - 0.08) c h);
+    --cc-mist: oklch(from var(--sepia-light) l c h / 0.28);
+    --cc-cat: var(--sepia-light);
+    --cc-cat-stripe: var(--sepia-dark);
+    --cc-grin: var(--paper-base);
+    --cc-firefly: var(--ix-gold);
+    --cc-sign: var(--sepia-dark);
+    --cc-shadow: oklch(from var(--ink-primary) l c h / 0.6);
+  }
+}
+
+@layer scene {
+  .demo--cheshire-cat .demo-beat {
+    inset-block-end: 8vh;
+  }
+
+  .demo--cheshire-cat .line[data-speaker="cheshire-cat"] {
+    letter-spacing: 0.02em;
+  }
+
+  .demo--cheshire-cat .demo-beat[data-cue="mad"] .line {
+    animation: cc-wobble 2.4s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * -0.4s);
+  }
+
+  .cc__wood {
+    --px: 0;
+    --mad: 0;
+    --tilt: 0;
+    overflow: hidden;
+    background: linear-gradient(to bottom, var(--cc-night), var(--cc-night-low));
+    transform: rotate(calc(var(--tilt) * 1deg)) scale(calc(1 + var(--tilt) * 0.02));
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  /* "We're all mad here": a lilac wash comes over the wood, and goes again. */
+  .cc__wood::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--ix-lilac);
+    opacity: calc(var(--mad) * 0.3);
+    pointer-events: none;
+  }
+
+  .cc__moon {
+    position: absolute;
+    inset-inline-start: 72%;
+    inset-block-start: 14%;
+    inline-size: 12vmin;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--cc-moon);
+    box-shadow: 0 0 60px 20px oklch(from var(--world-glow) l c h / 0.25);
+    translate: calc(var(--px) * -1vmin) 0;
+    overflow: hidden;
+  }
+
+  /* The moon turns to a crescent when the grin arrives: a night-coloured disc
+     slides across it. */
+  .cc__moon::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--cc-night);
+    translate: calc(100% + var(--crescent, 0) * -58%) calc(var(--crescent, 0) * -18%);
+  }
+
+  /* Pig, or fig: the moon shows the reader's answer for a moment, drawn into it. */
+  .cc__moon-picture {
+    position: absolute;
+    inset-inline-start: 72%;
+    inset-block-start: 14%;
+    inline-size: 12vmin;
+    aspect-ratio: 1;
+    padding: 1.4vmin;
+    translate: calc(var(--px) * -1vmin) 0;
+    opacity: 0;
+    transition: opacity var(--demo-calm) var(--demo-ease);
+    pointer-events: none;
+  }
+
+  .cc__moon-picture[data-shown] {
+    opacity: 0.85;
+    transition-duration: var(--demo-quick);
+  }
+
+  .cc__moon-picture svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .cc__moon-grin {
+    position: absolute;
+    inset-inline-start: 72%;
+    inset-block-start: 14%;
+    inline-size: 12vmin;
+    aspect-ratio: 1;
+    translate: calc(var(--px) * -1vmin) 0;
+    opacity: 0;
+  }
+
+  .cc__moon-grin svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .cc__trees {
+    position: absolute;
+    inset-inline: -20%;
+    inset-block-end: 0;
+    block-size: 100%;
+    background-repeat: repeat-x;
+    background-position: bottom;
+    /* The wood takes the tap; the trunks in front must not hide the Cat from it. */
+    pointer-events: none;
+  }
+
+  .cc__trees--far {
+    --rate: 2;
+    background-image: radial-gradient(
+      ellipse 5vmin 30vmin at 50% 100%,
+      var(--cc-tree-far) 60%,
+      transparent 61%
+    );
+    background-size: 20vmin 100%;
+    opacity: 0.8;
+  }
+
+  .cc__trees--mid {
+    --rate: 5;
+    background-image:
+      linear-gradient(to right, transparent 44%, var(--cc-tree-mid) 44% 56%, transparent 56%),
+      radial-gradient(ellipse 14vmin 12vmin at 50% 30%, var(--cc-tree-mid) 60%, transparent 61%);
+    background-size: 46vmin 100%;
+  }
+
+  /* Two near trunks frame the wood at its very edges, partly out of the frame,
+     placed by the frame's width rather than tiled, so on a narrow phone as on a
+     wide screen none of them stands in front of a bough or the Cat. The layer
+     starts a fifth of a frame to the left (see .cc__trees). */
+  .cc__trees--near {
+    --rate: 11;
+    --trunk: clamp(2.6rem, 13vmin, 9rem);
+    background-image:
+      linear-gradient(var(--cc-tree-near), var(--cc-tree-near)),
+      linear-gradient(var(--cc-tree-near), var(--cc-tree-near));
+    background-size: var(--trunk) 100%;
+    background-repeat: no-repeat;
+    background-position:
+      calc(20vw - var(--trunk) * 0.4) 0,
+      calc(120vw - var(--trunk) * 0.6) 0;
+  }
+
+  .cc__trees,
+  .cc__bough-layer,
+  .cc__tree-grins {
+    translate: calc(var(--px) * var(--rate, 1) * -0.5vmin) 0;
+  }
+
+  .cc__mist {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    block-size: 40%;
+    background: linear-gradient(to top, var(--cc-mist), transparent);
+    pointer-events: none;
+  }
+
+  .cc__bough-layer {
+    --rate: 6;
+    position: absolute;
+    inset: 0;
+  }
+
+  /* Three boughs the Cat can sit on; the reader sends it from one to another. */
+  .cc__bough {
+    position: absolute;
+    inset-inline-start: var(--bx, 50%);
+    inset-block-start: var(--by, 26%);
+    inline-size: clamp(16rem, 60vmin, 34rem);
+    translate: -50% 0;
+    scale: var(--bs, 1);
+  }
+
+  .cc__bough svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .cc__bough-bare {
+    position: absolute;
+    inset: 0;
+  }
+
+  .cc__bough .art {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .cc__pupils {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    transform: translate(calc(var(--look-x, 0) * 1px), calc(var(--look-y, 0) * 1px));
+  }
+
+  /* The grin widens with the pointer and the story (--wide) and with the reader's
+     answer to pig or fig (--more). */
+  .cc__grin {
+    --widen: calc(var(--wide, 0) + var(--more, 0));
+    transform-box: fill-box;
+    transform-origin: 50% 40%;
+    transform: scale(calc(1 + var(--widen) * 0.35), calc(1 + var(--widen) * 0.6));
+  }
+
+  /* When all are mad, the trees grin too. */
+  .cc__tree-grins {
+    --rate: 5;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .cc__tree-grin {
+    position: absolute;
+    inset-inline-start: var(--x, 50%);
+    inset-block-start: var(--y, 40%);
+    inline-size: 9vmin;
+    translate: -50% 0;
+  }
+
+  .cc__tree-grin svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* A way drawn in the mist with a finger, which the fireflies then take. */
+  .cc__chalk {
+    pointer-events: none;
+  }
+
+  .cc__chalk svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .cc__chalk path {
+    fill: none;
+    stroke: var(--cc-firefly);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 6px var(--cc-firefly));
+    opacity: 0.8;
+  }
+
+  /* Stars: they twinkle, and at the end they gather into a grin by the moon. */
+  .cc__stars {
+    pointer-events: none;
+  }
+
+  .cc__star {
+    position: absolute;
+    inset-inline-start: var(--sx, 50%);
+    inset-block-start: var(--sy, 20%);
+    inline-size: 0.5vmin;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--cc-moon);
+    animation: cc-twinkle 2.4s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -0.31s);
+  }
+
+  .cc__alice {
+    position: absolute;
+    inset-inline-start: 22%;
+    inset-block-end: -4%;
+    inline-size: clamp(7rem, 24vmin, 14rem);
+    color: var(--alice-shadow);
+    filter: drop-shadow(0 0 20px var(--cc-shadow));
+    pointer-events: none;
+  }
+
+  .cc__alice .art {
+    transform: scaleX(calc(var(--face, 1)));
+    transition: transform var(--demo-calm) var(--demo-ease);
+  }
+
+  .cc__alice svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* The kitchen's pig, trotting across the wood floor behind Alice: placed off
+     the right edge, carried across by the story's --trot and back by the reader's
+     --back. It faces left; coming back the other way it turns round. */
+  .cc__pig {
+    --trot: 0;
+    --back: 0;
+    position: absolute;
+    inset-inline-start: 100%;
+    inset-block-end: 33%;
+    inline-size: clamp(4rem, 12vmin, 7rem);
+    translate: calc((var(--back) - var(--trot)) * (100vw + 100%)) 0;
+    cursor: pointer;
+  }
+
+  .cc__pig .art {
+    display: block;
+    transform-origin: 50% 100%;
+  }
+
+  .cc__pig[data-facing="right"] .art {
+    scale: -1 1;
+  }
+
+  .cc__pig svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .cc__pig [data-part="legs-fore"],
+  .cc__pig [data-part="legs-hind"] {
+    transform-box: fill-box;
+    transform-origin: 50% 0;
+  }
+
+  .cc__pig[data-trotting] [data-part="legs-fore"] {
+    animation: cc-trot 0.32s ease-in-out infinite alternate;
+  }
+
+  .cc__pig[data-trotting] [data-part="legs-hind"] {
+    animation: cc-trot 0.32s ease-in-out infinite alternate-reverse;
+  }
+
+  .cc__pig[data-trotting] .art {
+    animation: cc-bob 0.16s ease-in-out infinite alternate;
+  }
+
+  .cc__pig[data-hop] .art {
+    animation: cc-hop 0.5s ease-out 1;
+  }
+
+  /* Fireflies follow the pointer through the wood and go out. */
+  .cc__fireflies {
+    pointer-events: none;
+  }
+
+  .cc__firefly {
+    position: absolute;
+    inline-size: 0.9vmin;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--cc-firefly);
+    box-shadow: 0 0 10px 3px oklch(from var(--ix-gold) l c h / 0.6);
+    animation: cc-firefly 3s ease-out forwards;
+  }
+
+  /* Signposts: in that direction lives a Hatter, in that a March Hare. */
+  .cc__signs {
+    pointer-events: none;
+  }
+
+  .cc__sign {
+    position: absolute;
+    inset-block-end: 22%;
+    inline-size: clamp(4rem, 12vmin, 7rem);
+    aspect-ratio: 1 / 1.3;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--cc-grin);
+    cursor: pointer;
+    pointer-events: auto;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--demo-calm) var(--demo-ease),
+      visibility 0s linear var(--demo-calm);
+  }
+
+  .cc__sign[data-shown] {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .cc__sign--left {
+    inset-inline-start: 8%;
+  }
+
+  .cc__sign--right {
+    inset-inline-end: 8%;
+  }
+
+  .cc__sign svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .cc__sign:focus-visible {
+    outline: 2px solid var(--cc-firefly);
+    outline-offset: 4px;
+  }
+
+  .cc__sign-arrow {
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+  }
+
+  /* The way to the Hatter points left: the same arrow, mirrored where it stands. */
+  .cc__sign--left .cc__sign-arrow {
+    scale: -1 1;
+  }
+
+  .cc__sign:hover .cc__sign-arrow,
+  .cc__sign:focus-visible .cc__sign-arrow {
+    animation: cc-point 0.8s ease-in-out infinite alternate;
+  }
+
+  /* The join from Pig and Pepper: the bough close, with the grin already on it,
+     settling into the wood's framing over the first beat. */
+  .cc__join {
+    pointer-events: none;
+    background: linear-gradient(to bottom, var(--cc-night), var(--cc-night-low));
+  }
+
+  .cc__close {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 26%;
+    inline-size: clamp(16rem, 60vmin, 34rem);
+    translate: -50% 0;
+  }
+
+  .cc__close-bare svg,
+  .cc__close-grin svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .cc__close-grin {
+    position: absolute;
+    inset-inline-start: 62.5%;
+    inset-block-start: 44%;
+    inline-size: 25%;
+  }
+
+  .cc__prop {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: -50% 0;
+  }
+
+  .cc__prop--call {
+    inset-block-start: calc(var(--demo-bar-height) + 3.4rem);
+  }
+
+  /* Pig, or fig: two answers side by side, under *Call the pig*. */
+  .cc__prop--pig,
+  .cc__prop--fig {
+    inset-block-start: calc(var(--demo-bar-height) + 3.4rem);
+    translate: 0 0;
+    white-space: nowrap;
+  }
+
+  .cc__prop--pig {
+    inset-inline-start: auto;
+    inset-inline-end: calc(50% + 0.3rem);
+  }
+
+  .cc__prop--fig {
+    inset-inline-start: calc(50% + 0.3rem);
+  }
+
+  /* Which end goes first: two choices side by side at the slow vanishing. */
+  .cc__prop--tail,
+  .cc__prop--head {
+    inset-block-start: calc(var(--demo-bar-height) + 3.4rem);
+    translate: 0 0;
+    white-space: nowrap;
+  }
+
+  .cc__prop--tail {
+    inset-inline-start: auto;
+    inset-inline-end: calc(50% + 0.3rem);
+  }
+
+  .cc__prop--head {
+    inset-inline-start: calc(50% + 0.3rem);
+  }
+
+  .cc__prop--tail[aria-pressed="true"],
+  .cc__prop--head[aria-pressed="true"] {
+    border-color: var(--demo-ink);
+    box-shadow: inset 0 0 0 1px var(--demo-ink);
+  }
+
+  .cc__hint {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: calc(var(--demo-bar-height) + 5.8rem);
+    margin: 0;
+    text-align: center;
+    font-family: system-ui, sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--demo-ink-soft);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--demo-calm) var(--demo-ease);
+  }
+
+  .cc__hint[data-shown] {
+    opacity: 0.8;
+  }
+
+  .cc__tail {
+    transform-box: fill-box;
+    transform-origin: 0 50%;
+    animation: cc-tail 3.6s ease-in-out infinite alternate;
+  }
+
+  .demo[data-paused] .cc__tail,
+  .demo[data-paused] .cc__pig [data-part],
+  .demo[data-paused] .cc__pig .art,
+  .demo[data-paused] .cc__star,
+  .demo[data-paused] .cc__firefly,
+  .demo[data-paused] .cc__sign-arrow,
+  .demo[data-paused] .demo-beat[data-cue="mad"] .line {
+    animation-play-state: paused;
+  }
+
+  @keyframes cc-twinkle {
+    from {
+      opacity: 0.25;
+      transform: scale(0.7);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1.3);
+    }
+  }
+
+  @keyframes cc-tail {
+    from {
+      transform: rotate(-8deg);
+    }
+    to {
+      transform: rotate(10deg);
+    }
+  }
+
+  @keyframes cc-wobble {
+    0%,
+    100% {
+      transform: rotate(-1.5deg) translateY(0);
+    }
+    50% {
+      transform: rotate(1.5deg) translateY(-3px);
+    }
+  }
+
+  @keyframes cc-firefly {
+    0% {
+      transform: translate(0, 0) scale(0.4);
+      opacity: 0;
+    }
+    15% {
+      opacity: 1;
+    }
+    100% {
+      transform: translate(calc(var(--dx, 0) * 1px), calc(var(--dy, 0) * 1px)) scale(1);
+      opacity: 0;
+    }
+  }
+
+  @keyframes cc-trot {
+    from {
+      transform: rotate(-22deg);
+    }
+    to {
+      transform: rotate(22deg);
+    }
+  }
+
+  @keyframes cc-bob {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-4%);
+    }
+  }
+
+  @keyframes cc-hop {
+    0%,
+    100% {
+      transform: translateY(0) rotate(0);
+    }
+    40% {
+      transform: translateY(-30%) rotate(-6deg);
+    }
+  }
+
+  @keyframes cc-point {
+    from {
+      transform: translateX(-4%);
+    }
+    to {
+      transform: translateX(6%);
+    }
+  }
+
+  /* On a tall frame the sentences take the lower third, so the signposts stand
+     higher in the wood, under the bough and above them. */
+  @media (max-aspect-ratio: 3 / 4) {
+    .cc__sign {
+      inset-block-end: 40%;
+    }
+  }
+
+  /* On a wide frame the sentences take the width of its lower part, about a line
+     each, so the five of *which way* and *croquet* stay below the bough and clear
+     of the Cat; the pig trots a little lower on the floor, above them. */
+  @media (min-aspect-ratio: 4 / 3) {
+    .demo--cheshire-cat .demo-beat {
+      inset-block-end: calc(var(--space-2) + 2.2rem);
+      max-inline-size: min(60rem, 92vw);
+      font-size: clamp(1.1rem, 0.7rem + 1vw, 1.5rem);
+      line-height: 1.3;
+    }
+
+    .cc__pig {
+      inset-block-end: 29%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cc__tail,
+    .cc__star,
+    .cc__firefly,
+    .cc__sign:hover .cc__sign-arrow,
+    .cc__pig[data-trotting] [data-part],
+    .cc__pig[data-trotting] .art,
+    .cc__pig[data-hop] .art,
+    .demo--cheshire-cat .demo-beat[data-cue="mad"] .line {
+      animation: none;
+    }
+
+    .cc__moon-picture {
+      transition: none;
+    }
+
+    .cc__firefly {
+      opacity: 0.8;
+    }
+
+    .cc__wood {
+      transform: none;
+    }
+
+    .cc__sign,
+    .cc__hint {
+      transition: none;
+    }
+  }
+}

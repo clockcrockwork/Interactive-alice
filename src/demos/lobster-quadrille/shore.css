@@ -1,0 +1,56 @@
+/* The shore the Mock Turtle and the Lobster Quadrille share: one place, defined
+   once, in the book's printed tints (docs/visual-design.md). Both demos import
+   this sheet before their own; neither redefines a value from it. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    /* The sky is paper, lighter at the horizon; the sun is the book's glow. */
+    --lq-sky: var(--world-sky);
+    --lq-sky-low: var(--paper-base);
+    --lq-sun: var(--world-glow);
+    --lq-sun-deep: oklch(from var(--world-glow) calc(l - 0.08) c h);
+    /* The sea in the world's water tints; the nearest swell catches the paper. */
+    --lq-sea: var(--world-water);
+    --lq-sea-deep: var(--world-water-deep);
+    --lq-sea-near: color-mix(in oklch, var(--world-water), var(--paper-base) 18%);
+    --lq-foam: oklch(from var(--paper-base) l c h / 0.85);
+    /* Shingle and sand: light sepia fills, darker toward the bottom of the frame. */
+    --lq-shingle: var(--paper-aged);
+    --lq-shingle-deep: oklch(from var(--sepia-light) calc(l - 0.1) c h);
+    --lq-grass: var(--world-leaf);
+    --lq-grass-deep: var(--world-leaf-deep);
+    /* Under the water: the deep tint, darker still at the bottom. */
+    --lq-under: var(--world-water-deep);
+    --lq-under-deep: oklch(from var(--world-water-deep) calc(l - 0.14) c h);
+    /* The creatures, as the art layer draws them: printed fills, except the
+       lobster, which is the shore's one red. */
+    --lq-gryphon: var(--sepia-mid);
+    --lq-gryphon-wing: var(--paper-aged);
+    --lq-turtle: var(--world-leaf);
+    --lq-turtle-shell: var(--world-leaf-deep);
+    --lq-lobster: var(--wonder-red);
+    /* Line work and shadow are ink, never black; highlights are paper. */
+    --lq-ink-shadow: oklch(from var(--ink-primary) l c h / 0.3);
+    --lq-ink-faint: oklch(from var(--ink-primary) l c h / 0.1);
+    --lq-paper-faint: oklch(from var(--paper-base) l c h / 0.14);
+    --lq-caption-shadow: oklch(from var(--paper-base) l c h / 0.5);
+    --lq-focus: var(--ix-gold);
+    /* The two speakers' inks on their slips: the Mock Turtle's sea-green and the
+       Gryphon's sepia, each a step deep enough to keep 4.5:1 on the slip over
+       the darkest thing behind it (the water, the court's doors). */
+    --lq-say-turtle: oklch(from var(--world-leaf-deep) calc(l - 0.08) c h);
+    --lq-say-gryphon: var(--sepia-deep);
+    /* The court, seen at the end of the shore and from inside at the trial:
+       sepia doors on a sepia floor, a dark red frame, and the court's glow. */
+    --lq-court-floor: var(--sepia-dark);
+    --lq-court-floor-deep: var(--sepia-deep);
+    --lq-court-frame: oklch(from var(--wonder-red-dark) calc(l - 0.08) c h);
+    --lq-court-door: var(--sepia-dark);
+    --lq-court-door-deep: var(--sepia-deep);
+    --lq-court-gold: var(--world-glow);
+    --lq-court-light: oklch(from var(--world-glow) calc(l + 0.05) c h);
+    --lq-court-curtain: var(--wonder-red-dark);
+  }
+}

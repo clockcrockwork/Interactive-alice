@@ -1,0 +1,161 @@
+{
+  "$schema": "../../schema/experience-demo.schema.json",
+  "id": "duchess",
+  "titleChapter": 9,
+  "titleSection": "a-moral",
+  "joinsPrevious": true,
+  "reads": { "moral": ["ch09.s0065", "ch09.s0110", "ch09.s0130", "ch09.s0140"] },
+  "shots": [
+    {
+      "id": "arm-in-arm",
+      "beats": [
+        {
+          "id": "glad-to-see-you",
+          "cue": "glad",
+          "segments": [
+            "ch09.s0010",
+            "ch09.s0015"
+          ]
+        },
+        {
+          "id": "pepper-and-vinegar",
+          "cue": "pepper",
+          "segments": [
+            "ch09.s0020",
+            "ch09.s0025",
+            "ch09.s0030"
+          ]
+        },
+        {
+          "id": "everything-has-a-moral",
+          "cue": "moral",
+          "segments": [
+            "ch09.s0035",
+            "ch09.s0040",
+            "ch09.s0045",
+            "ch09.s0050"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-morals",
+      "beats": [
+        {
+          "id": "chin-on-her-shoulder",
+          "cue": "chin",
+          "segments": [
+            "ch09.s0055",
+            "ch09.s0060",
+            "ch09.s0065"
+          ]
+        },
+        {
+          "id": "sense-and-sounds",
+          "cue": "sense",
+          "segments": [
+            "ch09.s0070",
+            "ch09.s0075",
+            "ch09.s0080",
+            "ch09.s0085"
+          ]
+        },
+        {
+          "id": "flamingoes-and-mustard",
+          "cue": "bite",
+          "segments": [
+            "ch09.s0090",
+            "ch09.s0095",
+            "ch09.s0100",
+            "ch09.s0105"
+          ]
+        },
+        {
+          "id": "birds-of-a-feather",
+          "cue": "feather",
+          "segments": [
+            "ch09.s0110",
+            "ch09.s0115",
+            "ch09.s0120"
+          ]
+        },
+        {
+          "id": "the-mustard-mine",
+          "cue": "mine",
+          "segments": [
+            "ch09.s0125",
+            "ch09.s0130"
+          ]
+        },
+        {
+          "id": "be-what-you-would-seem",
+          "cue": "seem",
+          "segments": [
+            "ch09.s0135",
+            "ch09.s0140"
+          ]
+        },
+        {
+          "id": "a-right-to-think",
+          "cue": "think",
+          "segments": [
+            "ch09.s0145",
+            "ch09.s0150",
+            "ch09.s0155"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-queen-again",
+      "beats": [
+        {
+          "id": "like-a-thunderstorm",
+          "cue": "thunder",
+          "segments": [
+            "ch09.s0160",
+            "ch09.s0165"
+          ]
+        },
+        {
+          "id": "take-your-choice",
+          "cue": "choice",
+          "segments": [
+            "ch09.s0170",
+            "ch09.s0175",
+            "ch09.s0180",
+            "ch09.s0185"
+          ]
+        },
+        {
+          "id": "on-with-the-game",
+          "cue": "game",
+          "segments": [
+            "ch09.s0190",
+            "ch09.s0195",
+            "ch09.s0200",
+            "ch09.s0205"
+          ]
+        },
+        {
+          "id": "no-one-left",
+          "cue": "left",
+          "segments": [
+            "ch09.s0210",
+            "ch09.s0215"
+          ]
+        },
+        {
+          "id": "the-mock-turtle",
+          "cue": "turtle",
+          "segments": [
+            "ch09.s0220",
+            "ch09.s0225",
+            "ch09.s0230",
+            "ch09.s0235"
+          ]
+        }
+      ]
+    }
+  ]
+}

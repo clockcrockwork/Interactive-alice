@@ -143,7 +143,12 @@ def plan(scene: dict, locale: str) -> dict:
             beat_costs.append((beat["id"], cost * shot_weight))
         shot_costs.append((shot["id"], shot_weight * total))
 
-    whole = sum(cost for _, cost in shot_costs)
+    # Added left to right, as the runtime adds them: the built-in sum() of floats is
+    # compensated from Python 3.12 on, which would make the fixture depend on the
+    # interpreter's version by one rounding step.
+    whole = 0.0
+    for _, cost in shot_costs:
+        whole += cost
     return {
         "scene": scene["id"],
         "locale": locale,

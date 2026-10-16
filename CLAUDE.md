@@ -41,7 +41,8 @@ Baseline Widely available as of 2026-09-01
 Fixed on purpose, so the target does not move underneath the project; change it
 deliberately in `docs/frontend-architecture.md` §6. Documented exceptions, used as
 progressive enhancement only: cross-document View Transitions, the Speculation
-Rules API, and any WebGL or device-motion work a Shot introduces.
+Rules API, `Intl.Segmenter` (for a script written without spaces; spaces are the
+fallback), and any WebGL or device-motion work a Shot introduces.
 
 Chrome's Modern Web Guidance skills are expected to be installed alongside this
 repository for evergreen platform knowledge. They advise on the platform; the
@@ -57,6 +58,12 @@ npm run check:frontend          # the project's own front-end invariants
 npm run scene -- rabbit-hole --locale ja
 npm run scene -- rabbit-hole --plan    # derived progress ranges
 ```
+
+The nineteen concept demos under `/demos/` (riverbank, rabbit hole, Drink Me, pool of
+tears, Caucus-race, the Mouse's tale, the Rabbit's house, Bill the Lizard, Caterpillar,
+Pig and Pepper, Cheshire Cat, tea-party, Dormouse, croquet, the Duchess, the Mock Turtle,
+Lobster Quadrille, the witnesses, trial) are built with the site; see `docs/concept-demos.md`. They share the text layer and the hard rules
+with the story, not its runtime or its budgets.
 
 ```
 npm run dev           # Vite dev server; pages regenerate when text/ or experience/ changes
@@ -93,6 +100,7 @@ that fact in the pull request; see `docs/deployment.md` §4.
 | Images, music, sound effects | `docs/assets-and-audio.md` |
 | Preview and production deploy | `docs/deployment.md` |
 | First executable milestone | `docs/poc/rabbit-hole.md`, issue #1 |
+| The standalone concept demos under `/demos/` | `docs/concept-demos.md` |
 
 When implementation proves a documented decision wrong, change the document in
 the same body of work. Do not let code and docs disagree on purpose.

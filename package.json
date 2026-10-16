@@ -19,6 +19,7 @@
     "test:e2e:full": "playwright test",
     "types:schema": "node build/generate-types.mjs && biome check --write src/types/schema.ts",
     "plan:fixture": "node build/python.mjs scripts/show-scene.py --all --plan --json > tests/fixtures/plans.json",
+    "art:bake": "node --experimental-strip-types scripts/bake-art.mjs && biome check --write src/demos/art/baked.ts src/assets/images/provenance.json",
     "check:text": "node build/python.mjs scripts/check-text.py",
     "check:experience": "node build/python.mjs scripts/check-experience.py",
     "check:frontend": "node build/python.mjs scripts/check-frontend.py",
@@ -31,9 +32,14 @@
     "@biomejs/biome": "2.5.13",
     "@playwright/test": "1.63.0",
     "@types/node": "22.19.2",
+    "@types/three": "^0.186.0",
     "json-schema-to-typescript": "^16.0.0",
     "typescript": "5.9.3",
     "vite": "8.3.0",
     "vitest": "5.0.0"
+  },
+  "dependencies": {
+    "gsap": "^3.15.0",
+    "three": "^0.186.0"
   }
 }

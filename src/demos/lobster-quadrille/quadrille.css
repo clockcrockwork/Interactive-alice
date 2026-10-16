@@ -1,0 +1,776 @@
+/* The Lobster Quadrille: a shore in layers, a sea that breathes, and a ring of
+   dancers in CSS 3D the camera steps into. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  /* The colours are the shore's, in ./shore.css, shared with the Mock Turtle. */
+  :root {
+    --lq-radius: clamp(180px, 36vmin, 340px);
+    /* Half the width the two lines may use: the frame's own, on a phone. */
+    --lq-span: min(44vw, calc(var(--lq-radius) * 1.7));
+    --lq-dancer: clamp(4.5rem, 15vmin, 9rem);
+    --lq-host: clamp(7rem, 24vmin, 14rem);
+    /* The dusk that comes late in the song: the world's night, warmed by the
+       last of the glow. */
+    --lq-dusk: var(--world-night);
+    --lq-dusk-low: color-mix(in oklch, var(--world-night), var(--world-glow) 45%);
+  }
+}
+
+@layer scene {
+  /* Nothing on the stage widens the page: the somersault turns the whole frame,
+     and its corners stay inside the document's width. */
+  .demo--lobster-quadrille {
+    overflow-x: clip;
+  }
+
+  .demo--lobster-quadrille .demo__stage {
+    --roll: 0;
+  }
+
+  /* The captions sit in the sky, clear of the dance on the shingle, under the
+     props; the last beat sets them above the link to the next scene. */
+  .demo--lobster-quadrille .demo-beat {
+    inset-block: calc(var(--demo-bar-height) + 3.4rem) auto;
+    max-inline-size: min(46rem, 92vw);
+  }
+
+  /* A verse is five long lines: set a little smaller and, with no prop over the
+     song, up under the bar, so the tops of the dancers' leaps stay clear of it. */
+  .demo--lobster-quadrille
+  .demo-beat:is([data-cue="verse-one"], [data-cue="verse-two"], [data-cue="verse-three"]) {
+    inset-block-start: calc(var(--demo-bar-height) + 0.75rem);
+    font-size: calc(var(--demo-caption-size) * 0.84);
+  }
+
+  .demo--lobster-quadrille .demo-beat[data-cue="faint"] {
+    inset-block: auto 9vh;
+    max-inline-size: min(34rem, 88vw);
+  }
+
+  .demo--lobster-quadrille .line[data-speaker="mock-turtle"] {
+    color: var(--lq-say-turtle);
+  }
+
+  .demo--lobster-quadrille .line[data-speaker="gryphon"] {
+    font-weight: 700;
+    color: var(--lq-say-gryphon);
+  }
+
+  /* The cry from the distance: small and spaced, in the court's own red. */
+  .demo--lobster-quadrille .line[data-speaker="white-rabbit"] {
+    font-size: calc(0.8em * var(--demo-fit-size, 1));
+    letter-spacing: 0.08em;
+  }
+
+  /* A sung word, lit as it is sung: it rises on the swell into the line. */
+  .demo--lobster-quadrille .lq__word {
+    --lit: 1;
+    display: inline-block;
+    opacity: calc(0.36 + var(--lit) * 0.64);
+    transform: translateY(calc((1 - var(--lit)) * 0.32em)) rotate(calc((1 - var(--lit)) * -5deg));
+  }
+
+  /* The shore in layers; they stream sideways when she runs. */
+  .lq__shore {
+    --run: 0;
+    --dusk: 0;
+    overflow: hidden;
+  }
+
+  .lq__shore > * {
+    position: absolute;
+    inset-inline: -20%;
+  }
+
+  .lq__sky {
+    inset-block: 0 46%;
+    background: linear-gradient(to bottom, var(--lq-sky), var(--lq-sky-low));
+  }
+
+  .lq__sky::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, var(--lq-dusk), var(--lq-dusk-low));
+    opacity: var(--dusk);
+  }
+
+  .lq__sea {
+    inset-block: 44% 40%;
+    background: linear-gradient(to bottom, var(--lq-sea), var(--lq-sea-deep));
+    border-start-start-radius: 50% 8px;
+    border-start-end-radius: 50% 8px;
+  }
+
+  .lq__sea--far {
+    inset-block: 50% 44%;
+    opacity: 0.9;
+  }
+
+  .lq__sea--mid {
+    inset-block: 52% 42%;
+  }
+
+  .lq__sea--near {
+    inset-block: 54% 38%;
+    background: linear-gradient(to bottom, var(--lq-sea-near), var(--lq-sea-deep));
+  }
+
+  .lq__shingle {
+    inset-block: 60% 0;
+    background:
+      radial-gradient(circle at 20% 30%, var(--lq-ink-faint) 0 6px, transparent 7px),
+      radial-gradient(circle at 70% 60%, var(--lq-paper-faint) 0 5px, transparent 6px),
+      linear-gradient(to bottom, var(--lq-shingle), var(--lq-shingle-deep));
+    background-size:
+      140px 90px,
+      170px 110px,
+      auto;
+  }
+
+  /* The run: a plane of shingle lying on the shore and streaming toward the
+     camera under the runners, there while they run and gone as they arrive.
+     One tile of the pattern is one loop of the stream. */
+  .lq__shore {
+    --stream: 0;
+  }
+
+  .lq__stream {
+    inset-block: 60% 0;
+    perspective: 40vh;
+    perspective-origin: 50% 0;
+    overflow: hidden;
+    opacity: var(--stream);
+  }
+
+  .lq__stream-plane {
+    position: absolute;
+    inset-inline: -80%;
+    inset-block-start: -40px;
+    block-size: calc(32vh + 80px);
+    transform-origin: 50% 40px;
+    transform: rotateX(68deg);
+    background:
+      radial-gradient(circle at 20% 30%, var(--lq-ink-faint) 0 7px, transparent 8px),
+      radial-gradient(circle at 70% 70%, var(--lq-paper-faint) 0 6px, transparent 7px),
+      radial-gradient(ellipse at 45% 50%, var(--lq-ink-faint) 0 4px, transparent 5px),
+      linear-gradient(to bottom, var(--lq-shingle), var(--lq-shingle-deep));
+    background-size:
+      130px 40px,
+      170px 40px,
+      90px 40px,
+      auto;
+  }
+
+  .lq__shore[data-running] .lq__stream-plane {
+    animation: lq-stream 0.4s linear infinite;
+  }
+
+  /* The court's doors at the end of the run: a path takes over from the shingle
+     and a pair of paper-theatre doors grows from a speck on the horizon. `--near`
+     is how far along the run they are; `--open` how far the leaves have swung. */
+  .lq__doors {
+    --near: 0;
+    --open: 0;
+    perspective: 900px;
+    perspective-origin: 50% 70%;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .lq__court-path {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block: 60% 0;
+    inline-size: 100vw;
+    background: linear-gradient(to bottom, var(--lq-court-floor), var(--lq-court-floor-deep));
+    clip-path: polygon(49% 0, 51% 0, 100% 100%, 0 100%);
+    transform-origin: 50% 0;
+    transform: translateX(-50%) scaleX(calc(0.1 + var(--near) * 1.4));
+    opacity: min(1, var(--near) * 1.5);
+  }
+
+  .lq__court-doors {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 60%;
+    inline-size: 16vmin;
+    block-size: 27vmin;
+    margin-inline-start: -8vmin;
+    margin-block-start: -27vmin;
+    border: 0.6vmin solid var(--lq-court-frame);
+    border-block-end: 0;
+    box-shadow: 0 0 6vmin oklch(from var(--ink-primary) l c h / 0.5);
+    background: var(--lq-court-frame);
+    /* The block stays flat, so the leaves paint over the light in DOM order and
+       swing in a perspective of their own that scales with the block. */
+    perspective: 60vmin;
+    transform-origin: 50% 100%;
+    transform: translateY(calc(var(--near) * 44vh)) scale(calc(0.08 + var(--near) * 7.2));
+    opacity: min(1, var(--near) * 5);
+  }
+
+  .lq__court-light {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse at 50% 70%,
+      var(--lq-court-light),
+      var(--lq-court-gold) 30%,
+      var(--lq-court-curtain) 75%
+    );
+  }
+
+  .lq__court-leaf {
+    position: absolute;
+    inset-block: 0;
+    inline-size: 50%;
+    background:
+      linear-gradient(to bottom, transparent 30%, oklch(from var(--ink-primary) l c h / 0.25)),
+      repeating-linear-gradient(
+        to bottom,
+        var(--lq-court-door) 0 18%,
+        var(--lq-court-door-deep) 18% 20%
+      );
+    box-shadow: inset 0 0 0 0.3vmin var(--lq-court-gold);
+    backface-visibility: visible;
+  }
+
+  .lq__court-leaf::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 52%;
+    inline-size: 8%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--lq-court-gold);
+  }
+
+  .lq__court-leaf--left {
+    inset-inline-start: 0;
+    transform-origin: 0 50%;
+    transform: rotateY(calc(var(--open) * 80deg));
+  }
+
+  .lq__court-leaf--left::after {
+    inset-inline-end: 8%;
+  }
+
+  .lq__court-leaf--right {
+    inset-inline-end: 0;
+    transform-origin: 100% 50%;
+    transform: rotateY(calc(var(--open) * -80deg));
+  }
+
+  .lq__court-leaf--right::after {
+    inset-inline-start: 8%;
+  }
+
+  /* The dance floor in CSS 3D: the ring the camera steps inside, and the two
+     lines facing each other along the shore. */
+  .lq__world {
+    perspective: 1000px;
+    perspective-origin: 50% 45%;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .lq__ring {
+    --inside: 0;
+    --tilt: -6;
+    --shown: 0;
+    --partners: 0;
+    --jelly: 0;
+    --away: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 68%;
+    inline-size: 0;
+    block-size: 0;
+    transform-style: preserve-3d;
+    transform: translate3d(
+        0,
+        0,
+        calc(var(--inside) * var(--lq-radius) * 1.05 - var(--lq-radius) * 0.2)
+      )
+      rotateX(calc(var(--tilt) * 1deg));
+  }
+
+  /* Everything on the floor stands with its feet on a spot: across it is in ring
+     radii for the ring and in the frame's half-width for the lines, mixed by
+     `--k`; in depth it is in radii. */
+  .lq__item {
+    --xr: 0;
+    --xl: 0;
+    --z: 0;
+    --k: 0;
+    --hop: 0;
+    --size: var(--lq-dancer);
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: var(--size);
+    margin-inline-start: calc(var(--size) / -2);
+    margin-block-start: calc(var(--size) * -1);
+    transform: translate3d(
+        calc(var(--xr) * var(--lq-radius) * (1 - var(--k)) + var(--xl) * var(--lq-span) * var(--k)),
+        0,
+        calc(var(--z) * var(--lq-radius))
+      )
+      rotateX(calc(var(--tilt) * -1deg)) translateY(calc(var(--hop) * -30%));
+  }
+
+  .lq__dancer {
+    --sob: 0;
+    --lead: 0;
+    filter: drop-shadow(0 8px 8px var(--lq-ink-shadow));
+    opacity: calc(var(--shown) * (1 - var(--away)));
+  }
+
+  .lq__gryphon,
+  .lq__turtle {
+    --size: var(--lq-host);
+    margin-block-start: calc(var(--size) * -0.92);
+    opacity: calc(1 - var(--away));
+  }
+
+  /* The Gryphon runs with her: it is never left behind. */
+  .lq__gryphon {
+    opacity: 1;
+  }
+
+  .lq__gryphon {
+    translate: calc(var(--lead) * 6vw) calc(var(--lead) * 2vh);
+    scale: calc(1 + var(--lead) * 0.3);
+  }
+
+  .lq__turtle {
+    --breath: 0;
+  }
+
+  .lq__turtle .art {
+    transform-origin: 50% 100%;
+    transform: scale(calc(1 + var(--breath) * 0.06), calc(1 + var(--breath) * 0.08));
+  }
+
+  .lq__turtle .lq__tear {
+    opacity: var(--sob);
+    transform: translateY(calc(var(--sob) * 14px));
+  }
+
+  .lq__dancer .art,
+  .lq__dancer svg,
+  .lq__partner .art,
+  .lq__jelly svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* Each dancer's lobster, standing at its side; it crosses the gap to the
+     dancer opposite at the change, with a hop, and is thrown out to sea. */
+  .lq__partner {
+    --size: calc(var(--lq-dancer) * 0.56);
+    --lift: 0;
+    margin-inline-start: calc(var(--lq-dancer) * 0.2);
+    margin-block-start: calc(var(--size) * -0.75);
+    opacity: calc(var(--shown) * var(--partners) * (1 - var(--away)));
+    translate: 0 calc(var(--lift) * -60%);
+    filter: drop-shadow(0 4px 4px var(--lq-ink-shadow));
+  }
+
+  .lq__ring[data-thrown] .lq__partner {
+    opacity: 0;
+    translate: 0 -160%;
+    rotate: -40deg;
+    transition:
+      opacity var(--demo-calm) var(--demo-ease),
+      translate var(--demo-calm) var(--demo-ease),
+      rotate var(--demo-calm) var(--demo-ease);
+  }
+
+  /* The jelly-fish between the lines, cleared out of the way. */
+  .lq__jelly {
+    --size: clamp(2.2rem, 6.5vmin, 4rem);
+    opacity: calc(var(--shown) * var(--jelly));
+  }
+
+  .lq__jelly svg {
+    transform-origin: 50% 100%;
+    animation: lq-jelly 1.7s ease-in-out infinite alternate;
+    animation-delay: calc(var(--xl) * -2s);
+  }
+
+  .lq__swimmer--snail .art {
+    transform-origin: 55% 60%;
+    transform: scale(calc(1 - var(--shy) * 0.35)) rotate(calc(var(--shy) * -20deg));
+    transition: transform var(--demo-calm) var(--demo-ease);
+  }
+
+  .lq__ring[data-dancing] .lq__dancer .art {
+    animation: lq-dance 0.6s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -110ms);
+  }
+
+  .lq__ring[data-partners] .lq__partner .art {
+    animation: lq-set 0.5s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -90ms);
+  }
+
+  .lq__ring[data-partners] .lq__dancer:not(.lq__gryphon, .lq__turtle) .art {
+    animation: lq-set 0.5s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i, 0) * -90ms);
+  }
+
+  /* Her hands with a lobster of her own. */
+  .lq__hands {
+    pointer-events: none;
+  }
+
+  .lq__hand {
+    position: absolute;
+    inset-block-end: -6%;
+    inline-size: clamp(5rem, 16vmin, 9rem);
+  }
+
+  .lq__hand--left {
+    inset-inline-start: 30%;
+    rotate: 14deg;
+  }
+
+  .lq__hand--right {
+    inset-inline-end: 30%;
+    rotate: -14deg;
+  }
+
+  .lq__lobster-held {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 6%;
+    inline-size: clamp(7rem, 22vmin, 12rem);
+    translate: -50% 0;
+    filter: drop-shadow(0 10px 14px oklch(from var(--ink-primary) l c h / 0.4));
+  }
+
+  .lq__lobster-held[data-gone] {
+    opacity: 0;
+  }
+
+  .lq__lobster-held[data-changed] {
+    filter: hue-rotate(40deg) drop-shadow(0 10px 14px oklch(from var(--ink-primary) l c h / 0.4));
+  }
+
+  .lq__thrown {
+    pointer-events: none;
+  }
+
+  /* Centred by its margin, so its transform is the throw's alone. */
+  .lq__lobster-flying {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 6%;
+    inline-size: clamp(7rem, 22vmin, 12rem);
+    margin-inline-start: calc(clamp(7rem, 22vmin, 12rem) / -2);
+    opacity: 0;
+    /* The reader's own throw: it trails coral while it is in the air, and it is
+       only in the air while it is visible. */
+    filter: drop-shadow(0 0 1.2vmin var(--ix-coral));
+  }
+
+  .lq__splash-ring {
+    position: absolute;
+    inset-inline-start: 66%;
+    inset-block-start: 50%;
+    inline-size: 12vmin;
+    aspect-ratio: 2 / 1;
+    translate: -50% -50%;
+    border: 0.8vmin solid var(--lq-foam);
+    border-radius: 50%;
+    opacity: 0;
+  }
+
+  .lq__sea-tap {
+    position: absolute;
+    inset: 20% 0 34% 0;
+    border: 0;
+    padding: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .lq__sea-tap[data-shown] {
+    pointer-events: auto;
+  }
+
+  /* Under the water: a blue that rises, bubbles, and a roll for the somersault. */
+  .demo--lobster-quadrille .demo__stage {
+    transform: rotate(calc(var(--roll) * 1deg));
+  }
+
+  .lq__water {
+    --depth: 0;
+    --blink: 0;
+    background: linear-gradient(
+      to bottom,
+      oklch(from var(--lq-under) l c h / 0.8),
+      oklch(from var(--lq-under-deep) l c h / 0.9)
+    );
+    opacity: calc(var(--depth) * 0.85 + var(--blink) * 0.15);
+    clip-path: inset(calc((1 - var(--depth)) * 100%) 0 0 0);
+    pointer-events: none;
+  }
+
+  .lq__water[data-tappable] {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .lq__bubble {
+    position: absolute;
+    inset-inline-start: var(--x);
+    inset-block-end: -6vh;
+    inline-size: calc(var(--size) * 1vmin);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 2px solid var(--lq-foam);
+    animation: lq-rise 4s linear infinite;
+    animation-delay: var(--delay);
+  }
+
+  /* The creatures of the song, out in the sea; the snail draws into its shell. */
+  .lq__song {
+    pointer-events: none;
+  }
+
+  .lq__swimmer {
+    position: absolute;
+    inset-block-start: 44%;
+    inline-size: clamp(3.5rem, 10vmin, 6rem);
+    opacity: 0;
+    filter: drop-shadow(0 4px 6px var(--lq-ink-shadow));
+  }
+
+  .lq__swimmer--whiting {
+    inset-inline-start: 22%;
+    animation: lq-bob 2.2s ease-in-out infinite alternate;
+  }
+
+  .lq__swimmer--snail {
+    --shy: 0;
+    inset-inline-start: 66%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .lq__swimmer--snail:focus-visible {
+    outline: 3px solid var(--lq-focus);
+    outline-offset: 4px;
+  }
+
+  /* The snail is a button only while it is in the sea. */
+  .lq__song .lq__swimmer--snail:not([data-live]) {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .lq__swimmer--porpoise {
+    inset-inline-start: 40%;
+    inset-block-start: 48%;
+    inline-size: clamp(5rem, 14vmin, 8rem);
+    animation: lq-bob 1.6s ease-in-out infinite alternate;
+  }
+
+  /* The tureen of beautiful soup. */
+  .lq__soup {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .lq__tureen {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 24%;
+    inline-size: clamp(8rem, 26vmin, 14rem);
+    translate: -50% 0;
+  }
+
+  .lq__steam path {
+    animation: lq-steam 2.4s ease-in-out infinite;
+    transform-origin: 50% 100%;
+  }
+
+  .lq__prop--throw,
+  .lq__prop--somersault,
+  .lq__prop--join {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: -50% 0;
+  }
+
+  .demo[data-paused] .lq__stream-plane,
+  .demo[data-paused] .lq__ring .lq__dancer .art,
+  .demo[data-paused] .lq__ring .lq__partner .art,
+  .demo[data-paused] .lq__jelly svg,
+  .demo[data-paused] .lq__bubble,
+  .demo[data-paused] .lq__swimmer,
+  .demo[data-paused] .lq__steam path {
+    animation-play-state: paused;
+  }
+
+  @keyframes lq-stream {
+    from {
+      transform: rotateX(68deg) translateY(0);
+    }
+
+    to {
+      transform: rotateX(68deg) translateY(40px);
+    }
+  }
+
+  @keyframes lq-jelly {
+    from {
+      transform: scale(1, 1);
+    }
+
+    to {
+      transform: scale(1.08, 0.9);
+    }
+  }
+
+  @keyframes lq-set {
+    from {
+      transform: translateY(0) rotate(-4deg);
+    }
+
+    to {
+      transform: translateY(-10%) rotate(4deg);
+    }
+  }
+
+  @keyframes lq-dance {
+    from {
+      transform: translateY(0) rotate(-6deg) scale(1);
+    }
+
+    to {
+      transform: translateY(-16%) rotate(6deg) scale(1.04);
+    }
+  }
+
+  @keyframes lq-rise {
+    from {
+      transform: translateY(0) translateX(0);
+      opacity: 0.9;
+    }
+
+    to {
+      transform: translateY(-110vh) translateX(3vmin);
+      opacity: 0;
+    }
+  }
+
+  @keyframes lq-bob {
+    from {
+      transform: translateY(0) rotate(-3deg);
+    }
+
+    to {
+      transform: translateY(-1.6vmin) rotate(3deg);
+    }
+  }
+
+  @keyframes lq-steam {
+    0% {
+      transform: translateY(0) scaleX(1);
+      opacity: 0.9;
+    }
+
+    100% {
+      transform: translateY(-14px) scaleX(1.3);
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 700px) {
+    /* A tall narrow frame: the song's verses and the run are long, so they are
+       set smaller, and the creatures of the song swim lower in the sea, under them. */
+    .demo--lobster-quadrille
+      .demo-beat:is(
+        [data-cue="verse-one"],
+        [data-cue="verse-two"],
+        [data-cue="verse-three"],
+        [data-cue="soup"],
+        [data-cue="run"]
+      ) {
+      font-size: clamp(0.95rem, 0.85rem + 1vw, 1.1rem);
+    }
+
+    /* Full-width glyphs make a verse taller rather than wider: on a narrow frame
+       it keeps less leading and a closer stack, so it ends above the sea line and
+       the dancers' leaps stay clear of it. */
+    :root[data-glyph-width="full"]
+      .demo--lobster-quadrille
+      .demo-beat:is([data-cue="verse-one"], [data-cue="verse-two"], [data-cue="verse-three"]) {
+      font-size: clamp(0.9rem, 0.8rem + 1vw, 1.02rem);
+      line-height: 1.42;
+      gap: 0.2em;
+    }
+
+    .lq__swimmer {
+      inset-block-start: 53%;
+    }
+
+    .lq__swimmer--porpoise {
+      inset-block-start: 56%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* No stream under the run: the doors come with a blink instead. */
+    .lq__stream {
+      display: none;
+    }
+
+    .lq__jelly svg,
+    .lq__ring[data-partners] .lq__dancer .art,
+    .lq__ring[data-partners] .lq__partner .art,
+    .lq__ring[data-dancing] .lq__dancer .art,
+    .lq__swimmer--whiting,
+    .lq__swimmer--porpoise,
+    .lq__steam path {
+      animation: none;
+    }
+
+    .lq__bubble {
+      animation: none;
+      transform: translateY(calc(var(--ly, 0) * -90vh));
+      opacity: 0.6;
+    }
+
+    .demo .lq__song .lq__swimmer.lq__swimmer--snail .art,
+    .lq__ring[data-thrown] .lq__partner {
+      transition: none;
+    }
+
+    /* A sung word is there lit: no rise. */
+    .demo--lobster-quadrille .lq__word {
+      transform: none;
+    }
+
+    /* The doors open with a cross-fade: the leaves give way to the light. */
+    .lq__court-leaf--left,
+    .lq__court-leaf--right {
+      transform: none;
+      opacity: calc(1 - var(--open));
+    }
+  }
+}

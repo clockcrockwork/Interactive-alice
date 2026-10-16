@@ -1,0 +1,641 @@
+/* The rabbit hole demo: the well is WebGL; Alice, the jar, the bats and the sky
+   are DOM layers over it. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  /* The well's shades, every one from the shared palette. The script reads the
+     ones the WebGL well needs through a probe element at mount, so the derived
+     colours resolve where a canvas can read them. */
+  :root {
+    --rh-well: var(--world-night-deep);
+    --rh-well-deep: oklch(from var(--world-night-deep) calc(l - 0.05) c h);
+    /* The dream leans lilac; falling fast leaks a little blue into the depth. */
+    --rh-dream: color-mix(in oklch, var(--world-night), var(--ix-lilac) 40%);
+    --rh-rush: color-mix(in oklch, var(--world-night-deep), var(--ix-blue) 35%);
+    --rh-brick: var(--sepia-deep);
+    --rh-brick-light: var(--sepia-dark);
+    --rh-wood: var(--sepia-dark);
+    --rh-wood-deep: var(--sepia-deep);
+    --rh-lamp: var(--world-glow);
+    --rh-ambient: var(--sepia-mid);
+    --rh-dust: var(--paper-warm);
+    --rh-paper: var(--paper-warm);
+    --rh-paper-ink: var(--ink-secondary);
+    --rh-paper-frame: var(--sepia-mid);
+    /* The map's sea: the world's water, printed toward sepia. */
+    --rh-map-sea: color-mix(in oklch, var(--world-water), var(--sepia-mid) 45%);
+    --rh-marmalade: color-mix(in oklch, var(--sepia-mid), var(--world-glow) 45%);
+    --rh-ground: var(--sepia-dark);
+    --rh-leaf: var(--sepia-light);
+    --rh-leaf-deep: var(--world-leaf-deep);
+    /* Book cloth, as a print would ink it. */
+    --rh-book-1: var(--sepia-dark);
+    --rh-book-2: var(--world-water-deep);
+    --rh-book-3: var(--world-leaf-deep);
+    --rh-book-4: var(--sepia-light);
+    --rh-book-5: var(--ink-faded);
+    --rh-book-6: var(--paper-aged);
+    --rh-shadow: oklch(from var(--ink-primary) l c h / 0.6);
+  }
+}
+
+@layer scene {
+  /* Where the script reads a token's resolved colour. */
+  .rh__probe {
+    position: absolute;
+    inline-size: 0;
+    block-size: 0;
+    color: var(--probe, var(--ink-primary));
+    visibility: hidden;
+  }
+
+  .demo--rabbit-hole .demo__captions {
+    /* Sentences fly up out of the depth: the beat is the perspective origin. */
+    perspective: 800px;
+  }
+
+  .demo--rabbit-hole .demo-beat {
+    inset-block-end: auto;
+    inset-block-start: 62vh;
+    transform-style: preserve-3d;
+  }
+
+  /* Overlays over the shelves let the pointer through to the jar, the wall and
+     the well; only their own controls take it back. */
+  .rh__bats,
+  .rh__chase,
+  .rh__flash,
+  .rh__dark,
+  .rh__blink {
+    pointer-events: none;
+  }
+
+  .rh__canvas {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    opacity: 0;
+  }
+
+  /* Above ground: the sky and the sun over the field (field.css, shared with the
+     riverbank's last frame): the hedge, the hole the Rabbit goes down, and Alice. */
+  .rh__surface {
+    background: linear-gradient(to bottom, var(--world-sky) 0%, var(--paper-base) 55%);
+  }
+
+  .rh__sun {
+    position: absolute;
+    inset-inline-start: 78%;
+    inset-block-start: 14%;
+    inline-size: 12vmin;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--world-glow), var(--ix-gold) 60%, transparent 62%);
+    box-shadow: 0 0 60px 20px oklch(from var(--world-glow) l c h / 0.35);
+  }
+
+  /* Above ground the sentences are in the sky, off Alice, the hole and the hedge;
+     at the end they are over the door in the floor, which sits low for them. */
+  .demo--rabbit-hole {
+    --demo-end-lift: 0rem;
+  }
+
+  .demo--rabbit-hole .demo-beat:is([data-cue="surface"], [data-cue="tunnel"], [data-cue="end"]) {
+    inset-block-start: calc(var(--demo-bar-height) + 1.5rem);
+  }
+
+  .rh__flat {
+    background: radial-gradient(circle at 50% 50%, var(--world-night) 0%, var(--rh-well-deep) 70%);
+    opacity: 0;
+  }
+
+  .rh__flat::before {
+    content: "";
+    position: absolute;
+    inset: -50%;
+    background: repeating-radial-gradient(
+      circle at 50% 50%,
+      transparent 0 6vmin,
+      oklch(from var(--sepia-mid) l c h / 0.35) 6vmin 6.6vmin
+    );
+    scale: var(--fall-rings, 1);
+    opacity: 0.8;
+  }
+
+  .rh__alice {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 40%;
+    inline-size: clamp(6rem, 18vmin, 11rem);
+    translate: -50% -50%;
+    opacity: 0;
+    filter: drop-shadow(0 12px 18px var(--rh-shadow));
+  }
+
+  .rh__alice-figure {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    animation: rh-sway 3.2s ease-in-out infinite alternate;
+  }
+
+  /* A drag spins her; the number is written by the script and settles to zero. */
+  .rh__alice .art {
+    rotate: calc(var(--tumble, 0) * 1deg);
+  }
+
+  .rh__hair {
+    transform-origin: 50% 20%;
+    animation: rh-hair 2.1s ease-in-out infinite alternate;
+  }
+
+  .rh__skirt {
+    transform-origin: 50% 45%;
+    animation: rh-skirt 1.7s ease-in-out infinite alternate;
+  }
+
+  .rh__hand {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    inline-size: 0;
+    block-size: 0;
+    translate: 3.2rem -0.8rem;
+  }
+
+  .rh__jar-track {
+    position: absolute;
+    inset-inline-start: 74%;
+    inset-block-start: 50%;
+    inline-size: 0;
+    block-size: 0;
+  }
+
+  .rh__jar {
+    position: absolute;
+    inline-size: 4.2rem;
+    translate: -50% -50%;
+    cursor: pointer;
+    pointer-events: auto;
+    filter: drop-shadow(0 4px 8px var(--rh-shadow));
+    transition: filter var(--demo-quick) var(--demo-ease);
+  }
+
+  .rh__jar:hover,
+  .rh__jar[data-hot] {
+    filter: drop-shadow(0 0 14px var(--ix-gold));
+  }
+
+  .rh__jar svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .rh__cupboard {
+    position: absolute;
+    inset-inline-start: 8%;
+    inset-block-start: 58%;
+    inline-size: 7rem;
+    aspect-ratio: 1 / 1.1;
+    border: 3px solid var(--rh-wood);
+    border-radius: 0.3rem;
+    background: linear-gradient(
+      to bottom,
+      var(--rh-wood-deep) 0 48%,
+      var(--rh-wood) 48% 52%,
+      var(--rh-wood-deep) 52%
+    );
+    box-shadow: inset 0 0 20px oklch(from var(--ink-primary) l c h / 0.7);
+    opacity: 0;
+  }
+
+  .rh__cupboard::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to right,
+      var(--rh-wood) 0 0.8rem,
+      oklch(from var(--rh-wood) calc(l - 0.04) c h) 0.8rem 1rem
+    );
+    border-radius: inherit;
+    transform-origin: 0 50%;
+    transform: rotateY(calc(var(--door, 0) * -110deg));
+  }
+
+  /* Take the jar on the left, Look at the map on the right: never on each other,
+     however narrow the frame. */
+  .rh__prop-jar {
+    inset-inline-start: 4%;
+    inset-block-start: 22vh;
+  }
+
+  /* Bow and Call Dinah have their beats to themselves, at the top, over her head. */
+  .rh__prop-bow,
+  .rh__prop-call {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: -50% 0;
+  }
+
+  .demo[data-motion="reduced"] :is(.rh__prop-bow, .rh__prop-call) {
+    inset-block-start: calc(var(--demo-bar-height) + 2.6rem);
+  }
+
+  /* Something taken off a passing shelf, and the cupboard it goes back into. */
+  .rh__held {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: 3.6rem;
+    translate: -50% -50%;
+    filter: drop-shadow(0 4px 8px var(--rh-shadow));
+    pointer-events: none;
+  }
+
+  .rh__held svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .rh__shelf-cupboard {
+    position: absolute;
+    inset-inline-end: 10%;
+    inset-block-start: 40%;
+    inline-size: 6rem;
+    aspect-ratio: 1 / 1.1;
+    border: 3px solid var(--rh-wood);
+    border-radius: 0.3rem;
+    background: linear-gradient(
+      to bottom,
+      var(--rh-wood-deep) 0 48%,
+      var(--rh-wood) 48% 52%,
+      var(--rh-wood-deep) 52%
+    );
+    box-shadow: inset 0 0 20px oklch(from var(--ink-primary) l c h / 0.7);
+    opacity: 0;
+    scale: 0.8;
+  }
+
+  .rh__shelf-cupboard::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to right,
+      var(--rh-wood) 0 0.8rem,
+      oklch(from var(--rh-wood) calc(l - 0.04) c h) 0.8rem 1rem
+    );
+    border-radius: inherit;
+    transform-origin: 0 50%;
+    transform: rotateY(calc(var(--door, 0) * -110deg));
+  }
+
+  .rh__prop-back {
+    inset-inline-end: 10%;
+    inset-block-start: calc(40% - 2.6rem);
+  }
+
+  .rh__canvas[data-pickable] {
+    cursor: grab;
+  }
+
+  /* A map off the wall, looked at: it comes up from where it was tapped (or from
+     the wall at the right) and holds still in front while the well falls on behind
+     it. It stays above the captions' line, which are paper on dark. */
+  .rh__map {
+    --map-x: 30vw;
+    --map-y: -8vh;
+    /* In front of every other layer, so the open sheet takes its own tap. */
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .rh__map-sheet {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 36%;
+    inline-size: min(84vw, 66vh);
+    aspect-ratio: 4 / 3;
+    translate: -50% -50%;
+    transform: translate(var(--map-x), var(--map-y)) scale(0.16) rotate(-8deg);
+    opacity: 0;
+    visibility: hidden;
+    cursor: pointer;
+    filter: drop-shadow(0 18px 28px var(--rh-shadow));
+    transition:
+      transform var(--demo-calm) var(--demo-ease),
+      opacity var(--demo-calm) var(--demo-ease),
+      visibility 0s linear var(--demo-calm);
+  }
+
+  .rh__map-sheet svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .rh__map[data-open] .rh__map-sheet {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition-delay: 0s;
+  }
+
+  .rh__prop-map,
+  .rh__prop-away {
+    inset-inline-end: 4%;
+    inset-block-start: 22vh;
+  }
+
+  .rh__bats {
+    opacity: 0;
+  }
+
+  .rh__bat {
+    position: absolute;
+    inset-block-start: var(--bat-y, 30%);
+    inset-inline-start: 0;
+    inline-size: 3.5rem;
+    color: var(--ink-primary);
+    filter: drop-shadow(0 0 6px var(--ink-secondary));
+  }
+
+  .rh__bat svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .rh__wing {
+    transform-origin: 50% 50%;
+    animation: rh-flap 0.32s ease-in-out infinite alternate;
+  }
+
+  .rh__wing--right {
+    animation-delay: 0.05s;
+  }
+
+  .rh__dinah {
+    position: absolute;
+    inset-inline-start: 60%;
+    inset-block-start: 30%;
+    inline-size: 6rem;
+    opacity: 0;
+    color: color-mix(in oklch, var(--ink-secondary), var(--ix-lilac) 35%);
+    filter: blur(0.5px) drop-shadow(0 0 20px oklch(from var(--ix-lilac) l c h / 0.5));
+  }
+
+  .rh__dinah svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .rh__flash {
+    background: var(--world-glow);
+    opacity: 0;
+  }
+
+  .rh__blink {
+    background: var(--paper-base);
+    opacity: 0;
+  }
+
+  /* The chase round the well: a bat and a ghost of Dinah, in the dream's lilac.
+     Placed from the middle of the frame by the script; a tap on either is play. */
+  .rh__chase {
+    opacity: 0;
+  }
+
+  .rh__chaser {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 38%;
+    margin-inline-start: -3rem;
+    margin-block-start: -1.5rem;
+    inline-size: 6rem;
+  }
+
+  .rh__chaser--cat {
+    inline-size: 9rem;
+    margin-inline-start: -4.5rem;
+    margin-block-start: -2.25rem;
+    color: color-mix(in oklch, var(--paper-aged), var(--ix-lilac) 55%);
+    filter: drop-shadow(0 0 16px oklch(from var(--ix-lilac) l c h / 0.7));
+    opacity: 0.9;
+  }
+
+  /* A real bat among the ghosts: ink, lit at the edge so it shows on the dark. */
+  .rh__chaser--bat {
+    color: var(--ink-secondary);
+    filter: drop-shadow(0 0 3px var(--paper-aged)) drop-shadow(0 0 10px var(--sepia-mid));
+  }
+
+  .rh__chaser svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .rh__chase[data-play] .rh__chaser {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  /* The curtsey, hers or the reader's: head bowed, knees bent under a spread
+     skirt, hands out to hold it. */
+  .rh__alice [data-part="head"],
+  .rh__alice [data-part="legs"] {
+    transform-box: fill-box;
+    transition: transform 0.25s var(--demo-ease);
+  }
+
+  .rh__alice [data-part="head"] {
+    transform-origin: 50% 100%;
+  }
+
+  .rh__alice [data-part="legs"] {
+    transform-origin: 50% 0;
+  }
+
+  .rh__alice [data-part^="arm"] {
+    transform-box: view-box;
+    transition: transform 0.25s var(--demo-ease);
+  }
+
+  .rh__alice [data-part="arm-left"] {
+    transform-origin: 40px 74px;
+  }
+
+  .rh__alice [data-part="arm-right"] {
+    transform-origin: 80px 74px;
+  }
+
+  .rh__alice .rh__skirt {
+    transition: scale 0.25s var(--demo-ease);
+  }
+
+  .rh__alice:is([data-bow], [data-bowing]) [data-part="head"] {
+    transform: translateY(10px) rotate(14deg);
+  }
+
+  .rh__alice:is([data-bow], [data-bowing]) [data-part="legs"] {
+    transform: translateY(-16px) scale(1.35, 0.5);
+  }
+
+  .rh__alice:is([data-bow], [data-bowing]) [data-part="arm-left"] {
+    transform: rotate(-40deg);
+  }
+
+  .rh__alice:is([data-bow], [data-bowing]) [data-part="arm-right"] {
+    transform: rotate(38deg);
+  }
+
+  .rh__alice:is([data-bow], [data-bowing]) .rh__skirt {
+    scale: 1.26 0.86;
+  }
+
+  .rh__dark {
+    background: var(--rh-well-deep);
+    opacity: 0;
+  }
+
+  /* The doors: the strange door in the floor, and beyond it another, and another
+     (trapdoor.css draws each). They come up through the shaft's perspective as she
+     falls; each is the hall's own trapdoor seen from above, so the next page opens
+     on the same door, open, from above, and goes through it. */
+  .rh__doors {
+    --fall: 0;
+    opacity: 0;
+  }
+
+  .rh__door {
+    transform: translateZ(calc((var(--fall) - var(--i) * 700) * 1px))
+      rotate(calc(var(--turn) * 1deg));
+    transition: opacity var(--demo-quick) var(--demo-ease);
+  }
+
+  .rh__door[data-passed] {
+    opacity: 0;
+  }
+
+  .rh__door .trapdoor__light {
+    transition: opacity var(--demo-calm) var(--demo-ease);
+  }
+
+  .rh__door .trapdoor__leaf {
+    transition: transform var(--demo-calm) var(--demo-ease);
+  }
+
+  .rh__rabbit {
+    position: absolute;
+    inset-block-end: 14%;
+    inset-inline-start: 0;
+    inline-size: 5rem;
+    color: var(--paper-base);
+  }
+
+  .rh__rabbit svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .demo[data-paused] .rh__alice-figure,
+  .demo[data-paused] .rh__hair,
+  .demo[data-paused] .rh__skirt,
+  .demo[data-paused] .rh__wing {
+    animation-play-state: paused;
+  }
+
+  @keyframes rh-sway {
+    from {
+      transform: rotate(-7deg);
+    }
+    to {
+      transform: rotate(7deg);
+    }
+  }
+
+  @keyframes rh-hair {
+    from {
+      transform: skewX(-6deg) scaleY(1);
+    }
+    to {
+      transform: skewX(8deg) scaleY(1.12);
+    }
+  }
+
+  @keyframes rh-skirt {
+    from {
+      transform: scaleX(1) skewX(-4deg);
+    }
+    to {
+      transform: scaleX(1.12) skewX(5deg);
+    }
+  }
+
+  @keyframes rh-flap {
+    from {
+      transform: scaleY(1) rotate(0deg);
+    }
+    to {
+      transform: scaleY(0.35) rotate(8deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rh__door,
+    .rh__door .trapdoor__light,
+    .rh__door .trapdoor__leaf {
+      transition: none;
+    }
+
+    /* The curtsey is a still: she is in it, or not. */
+    .rh__alice [data-part] {
+      transition: none;
+    }
+
+    .demo--rabbit-hole .demo-beat {
+      transform-style: flat;
+    }
+
+    /* Alice hangs still in the shaft; the wings hold a mid-beat pose. */
+    .rh__alice-figure,
+    .rh__hair {
+      animation: none;
+    }
+
+    .rh__alice .rh__skirt {
+      animation: none;
+      transition: none;
+    }
+
+    .rh__wing {
+      animation: none;
+      transform: scaleY(0.7);
+    }
+
+    .rh__jar {
+      transition: none;
+    }
+
+    /* The map appears and goes with a fade, in place, no zoom. */
+    .rh__map .rh__map-sheet,
+    .rh__map[data-open] .rh__map-sheet {
+      transform: none;
+      transition:
+        opacity var(--demo-quick) var(--demo-ease),
+        visibility 0s linear var(--demo-quick);
+    }
+
+    .rh__map[data-open] .rh__map-sheet {
+      transition-delay: 0s;
+    }
+  }
+}

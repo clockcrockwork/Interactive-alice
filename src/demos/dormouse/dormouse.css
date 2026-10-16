@@ -1,0 +1,685 @@
+/* The Dormouse's tale: a teacup seen from above, the tale written on the treacle
+   in a spiral that shrinks toward the centre, and a camera that turns to follow it. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    /* The tea-table in denser sepia: a paper cloth, china of paper, treacle in
+       the deepest sepia with the tea's midtone as its shine, and the tale written
+       on the treacle in paper (ink would vanish into it). */
+    --dm-cloth: var(--paper-warm);
+    --dm-cloth-alt: var(--paper-base);
+    --dm-china: var(--paper-base);
+    --dm-china-shade: var(--paper-aged);
+    --dm-treacle: var(--sepia-deep);
+    --dm-treacle-deep: oklch(from var(--sepia-deep) calc(l - 0.1) c h);
+    --dm-treacle-shine: var(--sepia-mid);
+    --dm-ink: var(--paper-base);
+    --dm-mouse: var(--sepia-mid);
+    --dm-shadow: oklch(from var(--ink-primary) l c h / 0.3);
+    /* The tea-party's own leak of colour: the bubbles round the rim are paper,
+       tinted with Alice's dress for her, lilac for the Hatter, coral for the Hare. */
+    --dm-bubble-alice: color-mix(in oklch, var(--alice-dress-light), var(--paper-base) 65%);
+    --dm-bubble-hatter: color-mix(in oklch, var(--ix-lilac), var(--paper-base) 70%);
+    --dm-bubble-hare: color-mix(in oklch, var(--ix-coral), var(--paper-base) 70%);
+    /* The wood she walks into, and the hall of doors seen through the tree: the
+       same tokens the croquet-ground opens with (hall sepia and paper, door
+       sepia-dark, garden leaf, roses Wonderland red). */
+    --dm-wood: var(--world-leaf-deep);
+    --dm-wood-deep: var(--world-night-deep);
+    --dm-bark: var(--sepia-dark);
+    --dm-bark-deep: var(--sepia-deep);
+    --dm-bark-mid: color-mix(in oklch, var(--sepia-dark), var(--sepia-deep) 40%);
+    --dm-hall-wall: var(--sepia-mid);
+    --dm-hall-wall-deep: var(--sepia-dark);
+    --dm-hall-wall-light: var(--sepia-light);
+    --dm-hall-door: color-mix(in oklch, var(--sepia-dark), var(--sepia-deep));
+    --dm-hall-door-frame: var(--sepia-deep);
+    --dm-hall-gold: var(--world-glow);
+    --dm-hall-garden: var(--world-leaf);
+  }
+}
+
+@layer scene {
+  .demo--dormouse {
+    --demo-ground: var(--dm-cloth);
+  }
+
+  .demo-body:has(.demo--dormouse) {
+    background: var(--dm-cloth);
+  }
+
+  /* Walking off: the table pulls back and away as the wood comes up. */
+  .dm__cloth,
+  .dm__stage,
+  .dm__teapot-layer {
+    --leave: 0;
+    transform-origin: 50% 35%;
+    transform: translateY(calc(var(--leave) * -30%)) scale(calc(1 - var(--leave) * 0.6));
+  }
+
+  /* Arriving from the tea-party: its dense sepia over the cup, lifting. */
+  .dm__arrive {
+    background: radial-gradient(
+      ellipse at 50% 47%,
+      oklch(from var(--sepia-dark) l c h / 0.25),
+      oklch(from var(--sepia-dark) l c h / 0.7)
+    );
+    pointer-events: none;
+  }
+
+  .dm__cloth {
+    background:
+      repeating-conic-gradient(from 45deg, var(--dm-cloth) 0 25%, var(--dm-cloth-alt) 0 50%) 50% 50%
+      / 9vmin 9vmin;
+    translate: calc(var(--px, 0) * -1.2vmin) calc(var(--py, 0) * -1.2vmin);
+    scale: 1.06;
+  }
+
+  /* The cup's layer takes the reader's hands: a horizontal drag stirs, a held
+     finger reads ahead; a vertical drag still scrolls the page on. */
+  .dm__stage {
+    overflow: hidden;
+    touch-action: pan-y;
+  }
+
+  /* The layers over the cup are drawings: they never take the pointer, only the
+     things in them the reader can press (the Dormouse, the letters at muchness). */
+  .dm__mouse-layer,
+  .dm__drips-layer,
+  .dm__letters,
+  .dm__sister-letters,
+  .dm__teapot-layer {
+    pointer-events: none;
+  }
+
+  /* The cup: a fixed box the SVG is drawn into once; the camera is its transform,
+     so the compositor moves the rasterised cup rather than the SVG redrawing. */
+  .dm__cup {
+    --cup-transform: none;
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: 1000px;
+    block-size: 1000px;
+    transform-origin: 0 0;
+    transform: var(--cup-transform);
+    will-change: transform;
+  }
+
+  .dm__svg {
+    position: absolute;
+    inset: 0;
+    display: block;
+    inline-size: 1000px;
+    block-size: 1000px;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .dm__svg--sisters {
+    will-change: transform;
+  }
+
+  .dm__sisters {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  /* The sisters' bucket, pulled up the spiral by its rope, dripping as it goes. */
+  .dm__svg--bucket {
+    opacity: 0;
+    transition: opacity var(--demo-calm) var(--demo-ease);
+    will-change: transform;
+  }
+
+  .dm__svg--bucket[data-on] {
+    opacity: 1;
+    transition-duration: var(--demo-quick);
+  }
+
+  .dm__rope {
+    fill: none;
+    stroke: var(--sepia-light);
+    stroke-width: 2.6;
+    stroke-dasharray: 5 2.5;
+    stroke-linecap: round;
+  }
+
+  .dm__drop {
+    fill: var(--dm-treacle-shine);
+    stroke: var(--dm-treacle-deep);
+    stroke-width: 0.8;
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    animation: dm-drop 1.6s ease-out forwards;
+  }
+
+  .dm__svg--text {
+    --sleep: 0;
+    --wobble: 0;
+    transform-origin: 50% 50%;
+    transform: rotate(calc(var(--wobble) * 0.12deg)) skewX(calc(var(--wobble) * 0.25deg));
+    will-change: transform;
+  }
+
+  .dm__svg--text[data-dozing] {
+    filter: blur(calc(var(--sleep) * 1px));
+  }
+
+  /* Geometric precision: Chrome otherwise sets SVG text at its on-screen size,
+     and the cup's own CSS scale then skews what the text reports about itself, so
+     the camera's targets, read at mount, would miss the sentence (on a phone by a
+     third of the cup). With it, the tale lays out the same at every zoom. */
+  .dm__text {
+    font-family: var(--demo-serif);
+    fill: var(--dm-ink);
+    letter-spacing: 0.02em;
+    text-rendering: geometricPrecision;
+  }
+
+  .dm__text tspan {
+    fill-opacity: var(--tone, 0.4);
+  }
+
+  /* Bubbles: the others talk around the rim while the tale turns below. */
+  /* Captions sit high here, clear of the link to the next demo already. */
+  .demo--dormouse {
+    --demo-end-lift: 0px;
+  }
+
+  .demo--dormouse .demo-beat {
+    inset-block-end: auto;
+    inset-block-start: calc(var(--demo-bar-height) + 3vh);
+    max-inline-size: min(40rem, 94vw);
+    text-align: start;
+    text-shadow: none;
+    font-size: clamp(1rem, 0.9rem + 0.8vw, 1.35rem);
+  }
+
+  .demo--dormouse .line {
+    justify-self: center;
+    padding: 0.4em 0.9em;
+    border-radius: 1.2em;
+    background: oklch(from var(--paper-base) l c h / 0.9);
+    color: var(--demo-paper-ink);
+    box-shadow: 0 6px 20px oklch(from var(--ink-primary) l c h / 0.18);
+    max-inline-size: 24rem;
+  }
+
+  .demo--dormouse .line[data-kind="narration"] {
+    background: var(--demo-slip);
+    box-shadow: none;
+    color: var(--ink-secondary);
+    --demo-say-style: italic;
+    text-align: center;
+  }
+
+  .demo--dormouse .line[data-speaker="alice"] {
+    justify-self: start;
+    background: var(--dm-bubble-alice);
+    border-end-start-radius: 0.2em;
+  }
+
+  .demo--dormouse .line[data-speaker="hatter"] {
+    justify-self: end;
+    background: var(--dm-bubble-hatter);
+    border-end-end-radius: 0.2em;
+  }
+
+  .demo--dormouse .line[data-speaker="march-hare"] {
+    justify-self: end;
+    background: var(--dm-bubble-hare);
+    border-start-end-radius: 0.2em;
+  }
+
+  /* The Dormouse's own words are in the treacle; the paragraph stays for a reader
+     who is not looking. */
+  .demo--dormouse .line[data-speaker="dormouse"] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .dm__mouse {
+    position: absolute;
+    inset-inline-end: 4%;
+    inset-block-end: 6%;
+    inline-size: clamp(6rem, 16vmin, 10rem);
+    pointer-events: auto;
+    cursor: pointer;
+    filter: drop-shadow(0 8px 14px var(--dm-shadow));
+  }
+
+  .dm__mouse svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* Awake by the story (--awake) or by the reader's pinch (--pinched). */
+  .dm__mouse {
+    --woken: max(var(--awake, 0), var(--pinched, 0));
+  }
+
+  .dm__eye-open {
+    opacity: var(--woken, 0);
+  }
+
+  .dm__eye-shut {
+    opacity: calc(1 - var(--woken, 0));
+  }
+
+  .dm__zzz {
+    font-family: var(--demo-serif);
+    font-weight: 700;
+    fill: var(--ink-secondary);
+    opacity: calc(1 - var(--woken, 0));
+    animation: dm-zzz 2.4s ease-in-out infinite;
+  }
+
+  .dm__zzz--2 {
+    animation-delay: 0.8s;
+  }
+
+  .dm__zzz--3 {
+    animation-delay: 1.6s;
+  }
+
+  .dm__body {
+    transform-origin: 50% 80%;
+    animation: dm-breathe 3.4s ease-in-out infinite alternate;
+  }
+
+  .dm__mouse[data-shriek] .dm__body {
+    animation: dm-shriek 0.5s ease-out 1;
+  }
+
+  .dm__prop-pinch {
+    inset-inline-end: 4%;
+    inset-block-end: calc(6% + clamp(6rem, 16vmin, 10rem) + 0.5rem);
+  }
+
+  /* The reader's own props on the cup sit at the lower left, clear of the
+     Dormouse on the right and of the bubbles round the top: the stir below, and
+     the beat's own (drawing treacle, drawing an M) above it. */
+  .dm__prop-left {
+    inset-inline-start: 4%;
+    inset-block-end: calc(6% + 2.6rem);
+  }
+
+  .dm__prop-stir {
+    inset-block-end: 6%;
+  }
+
+  .dm__drips {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .dm__drip {
+    position: absolute;
+    inset-inline-start: var(--dx, 50%);
+    inset-block-start: -6vh;
+    inline-size: 3vmin;
+    block-size: 8vh;
+    border-radius: 50% 50% 55% 55% / 30% 30% 70% 70%;
+    background: radial-gradient(circle at 35% 30%, var(--dm-treacle-shine), var(--dm-treacle) 45%);
+    animation: dm-drip 6s ease-in infinite;
+    will-change: transform;
+    animation-delay: var(--delay, 0s);
+    opacity: var(--drips, 0);
+  }
+
+  .dm__letters {
+    font-family: var(--demo-serif);
+    font-size: clamp(2rem, 8vmin, 5rem);
+    color: var(--dm-ink);
+    opacity: 0;
+  }
+
+  .dm__letter {
+    position: absolute;
+    inset-inline-start: var(--lx, 50%);
+    inset-block-start: 100%;
+    text-shadow: 0 2px 10px oklch(from var(--ink-primary) l c h / 0.4);
+    will-change: transform;
+    animation: dm-float 7s linear infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  /* At muchness a letter is the reader's to press: it becomes a thing that
+     begins with it. */
+  .dm__letters[data-on] .dm__letter {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .dm__letter svg {
+    display: block;
+    inline-size: 1.6em;
+    block-size: auto;
+    filter: drop-shadow(0 2px 6px oklch(from var(--ink-primary) l c h / 0.45));
+  }
+
+  .dm__sister-letters {
+    font-family: var(--demo-serif);
+    font-size: clamp(2rem, 8vmin, 5rem);
+    color: var(--dm-ink);
+  }
+
+  .dm__letter--once {
+    animation: dm-float 4s linear 1 forwards;
+  }
+
+  .dm__teapot {
+    position: absolute;
+    inset-inline-start: 6%;
+    inset-block-end: 8%;
+    inline-size: clamp(8rem, 22vmin, 14rem);
+    opacity: 0;
+    filter: drop-shadow(0 10px 18px var(--dm-shadow));
+  }
+
+  .dm__teapot svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .dm__lid {
+    transform-origin: 20% 100%;
+    transform: rotate(calc(var(--lid, 0) * -35deg));
+  }
+
+  /* The door in the tree. Drawn at the size it ends at, the doorway most of the
+     screen, and scaled down to start; the camera in is one transform on the tree. */
+  .dm__wood {
+    background: radial-gradient(ellipse at 50% 60%, var(--dm-wood), var(--dm-wood-deep) 75%);
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .dm__tree {
+    --zoom: 0;
+    --door-w: clamp(60vmin, 70vw, 70vmin);
+    position: absolute;
+    inset: 0;
+    transform-origin: 50% 52%;
+    transform: scale(calc(0.34 + var(--zoom) * 0.66));
+    /* No will-change here: the compositor would keep the small-scale raster
+       through the zoom, and the floor's tiles would come up jagged. */
+  }
+
+  .dm__trunk {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: -60vmin;
+    inline-size: calc(var(--door-w) * 1.85);
+    block-size: max(240vmin, 200vh);
+    translate: -50% 0;
+    border-radius: 30% 30% 10% 10% / 8% 8% 3% 3%;
+    background:
+      radial-gradient(
+        ellipse at 50% 14%,
+        oklch(from var(--ink-primary) l c h / 0.35),
+        transparent 40%
+      ),
+      repeating-linear-gradient(
+        to right,
+        var(--dm-bark) 0 6vmin,
+        var(--dm-bark-deep) 6vmin 7vmin,
+        var(--dm-bark-mid) 7vmin 12vmin
+      );
+  }
+
+  .dm__tree-door {
+    --open: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 52%;
+    inline-size: var(--door-w);
+    block-size: calc(var(--door-w) * 1.5);
+    translate: -50% -50%;
+    border: 1.4vmin solid var(--dm-hall-door-frame);
+    border-radius: 50% 50% 4% 4% / 32% 32% 3% 3%;
+    background: var(--dm-hall-wall-deep);
+    overflow: hidden;
+    perspective: 90vmin;
+  }
+
+  /* Through the door: the warm hall, its floor, and the little door at the centre. */
+  .dm__hall {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse at 50% 55%,
+      var(--dm-hall-wall-light),
+      var(--dm-hall-wall) 45%,
+      var(--dm-hall-wall-deep)
+    );
+  }
+
+  /* The tiles are a small SVG tile rather than a conic gradient, so their
+     diagonals stay smooth when the tree is scaled up; squashed for foreshortening.
+     The tile is a mask over ink on paper, so the floor keeps the book's tokens. */
+  .dm__hall-floor {
+    position: absolute;
+    inset: 66% 0 0 0;
+    background: var(--paper-base);
+  }
+
+  .dm__hall-floor::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--ink-primary);
+    mask:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' preserveAspectRatio='none'%3E%3Cpath d='M20 0L40 20L20 40L0 20Z'/%3E%3C/svg%3E")
+      50% 0 / 6vmin 3.6vmin;
+  }
+
+  .dm__hall-floor::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      oklch(from var(--ink-primary) l c h / 0) 40%,
+      oklch(from var(--ink-primary) l c h / 0.45)
+    );
+  }
+
+  .dm__little-door {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 66%;
+    inline-size: calc(var(--door-w) * 0.3);
+    block-size: calc(var(--door-w) * 0.45);
+    translate: -50% -100%;
+    border: 0.9vmin solid var(--dm-hall-door-frame);
+    border-block-end: 0;
+    border-radius: calc(var(--door-w) * 0.16) calc(var(--door-w) * 0.16) 0 0;
+    background: var(--dm-hall-door);
+    overflow: hidden;
+  }
+
+  .dm__garden {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 50% 30%, var(--world-glow) 14%, transparent 15%),
+      linear-gradient(
+        to bottom,
+        var(--world-sky),
+        var(--dm-hall-garden) 60%,
+        var(--world-leaf-deep)
+      );
+  }
+
+  .dm__rose-tree {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 12%;
+    inline-size: 60%;
+    aspect-ratio: 1;
+    translate: -50% 0;
+    border-radius: 50% 50% 40% 40%;
+    background:
+      radial-gradient(circle at 30% 35%, var(--paper-base) 9%, transparent 10%),
+      radial-gradient(circle at 62% 28%, var(--wonder-red) 9%, transparent 10%),
+      radial-gradient(circle at 48% 58%, var(--wonder-red) 9%, transparent 10%),
+      radial-gradient(circle at 74% 62%, var(--paper-base) 8%, transparent 9%),
+      radial-gradient(circle at 26% 70%, var(--wonder-red) 8%, transparent 9%),
+      radial-gradient(circle at 45% 45%, var(--world-leaf), var(--world-leaf-deep) 75%);
+  }
+
+  .dm__tree-leaf {
+    position: absolute;
+    inset: -1.4vmin;
+    border: 1.4vmin solid var(--dm-hall-door-frame);
+    border-radius: inherit;
+    background:
+      radial-gradient(circle at 84% 52%, var(--dm-hall-gold) 1.6vmin, transparent 1.9vmin),
+      repeating-linear-gradient(
+        to right,
+        var(--dm-hall-door) 0 10vmin,
+        var(--dm-hall-door-frame) 10vmin 11.4vmin
+      );
+    box-shadow: inset 0 0 6vmin oklch(from var(--ink-primary) l c h / 0.5);
+    transform-origin: 0 50%;
+    transform: rotateY(calc(var(--open) * -112deg));
+    will-change: transform;
+  }
+
+  .demo[data-paused] .dm__zzz,
+  .demo[data-paused] .dm__body,
+  .demo[data-paused] .dm__drip,
+  .demo[data-paused] .dm__letter,
+  .demo[data-paused] .dm__drop {
+    animation-play-state: paused;
+  }
+
+  @keyframes dm-zzz {
+    0% {
+      transform: translate(0, 0) scale(0.7);
+      opacity: 0;
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      transform: translate(14px, -34px) scale(1.2);
+      opacity: 0;
+    }
+  }
+
+  @keyframes dm-breathe {
+    from {
+      transform: scale(1, 1);
+    }
+    to {
+      transform: scale(1.03, 0.97);
+    }
+  }
+
+  @keyframes dm-shriek {
+    0% {
+      transform: scale(1, 1);
+    }
+    30% {
+      transform: scale(0.9, 1.25) translateY(-10px);
+    }
+    60% {
+      transform: scale(1.1, 0.9);
+    }
+    100% {
+      transform: scale(1, 1);
+    }
+  }
+
+  @keyframes dm-drip {
+    0% {
+      transform: translateY(0) scaleY(0.6);
+    }
+    70% {
+      transform: translateY(40vh) scaleY(1.6);
+    }
+    100% {
+      transform: translateY(110vh) scaleY(1);
+    }
+  }
+
+  @keyframes dm-drop {
+    from {
+      transform: scale(0.4);
+      opacity: 1;
+    }
+    30% {
+      transform: scale(1.2);
+      opacity: 1;
+    }
+    to {
+      transform: scale(1.7);
+      opacity: 0;
+    }
+  }
+
+  @keyframes dm-float {
+    from {
+      transform: translateY(0) rotate(-10deg);
+      opacity: 0;
+    }
+    15% {
+      opacity: 1;
+    }
+    to {
+      transform: translateY(-110vh) rotate(12deg);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dm__zzz,
+    .dm__body,
+    .dm__letter {
+      animation: none;
+    }
+
+    .dm__zzz {
+      opacity: calc(0.7 - var(--woken, 0) * 0.7);
+    }
+
+    .dm__mouse[data-shriek] .dm__body {
+      animation: none;
+      transform: scale(0.95, 1.1);
+    }
+
+    /* The letters hang in the air instead of rising. */
+    .dm__letter,
+    .dm__letter--once {
+      inset-block-start: calc(20% + var(--ly, 0) * 60%);
+      opacity: 1;
+    }
+
+    /* The bucket is a still: there on the sentence, the drips on the words. */
+    .dm__drop,
+    .dm__svg--bucket {
+      animation: none;
+      transition: none;
+    }
+
+    .dm__drip {
+      animation: none;
+      transform: translateY(20vh);
+    }
+  }
+}

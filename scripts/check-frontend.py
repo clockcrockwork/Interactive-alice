@@ -12,9 +12,15 @@ own, listed in CLAUDE.md, and each one has already been stated in a document:
   keyframe-layout  keyframes animate transform and opacity, not layout
   reduced-motion   a stylesheet with motion carries a reduced-motion block
   bfcache          nothing listens for unload, which would disqualify the page
+  locale-profile   code and styles read the locale profile, never a language's name:
+                   no :lang() rule, no locale id literal, no branch on the page's
+                   lang, no splitting a line at spaces outside units(), and no
+                   italic written in a demo's sheet: the shell applies the speech
+                   tokens (--demo-say-style, --demo-italic) by the profile
   node-pin         .nvmrc and package.json agree on one Node major
 
-A line may opt out with a trailing comment naming the rule and a reason:
+A line may opt out with a trailing comment naming the rule and a reason (a CSS
+selector, by a comment on the first line of its block, where the formatter puts it):
 
     el.style.width = w + 'px';  /* check-frontend: allow inline-style — measured once on resize */
 
@@ -49,6 +55,28 @@ LAYOUT_PROPS = re.compile(
     r"border-[\w-]*width|font-size|box-shadow)\s*:"
 )
 MOTION = re.compile(r"@keyframes|transition\s*:|animation\s*:")
+# A language named in a selector. The one rule that may (font stacks are per script)
+# carries an allow comment; see docs/text-experience-binding.md, Language differences.
+LANG_SELECTOR = re.compile(r":lang\(\s*[A-Za-z]")
+# Branching on the page's language in code, instead of reading its profile.
+LANG_READ = re.compile(r"documentElement\.lang\b|\blang\s*[!=]==|startsWith\(\s*['\"][a-z]{2,3}\b")
+# Splitting a line of text at spaces: a language may write no spaces, so lines are
+# split by units() in src/demos/shell/words.ts, which reads the profile.
+SPACE_SPLIT = re.compile(r"\.split\(\s*(?:'\s'|\"\s\"|' '|\" \"|/\(?\\s)")
+# An italic written into a demo's own sheet: it would slant a line, a digit in it,
+# on a page whose script has no italic. Demos set the shell's tokens instead.
+ITALIC = re.compile(r"font-style\s*:\s*(?:italic|oblique)")
+DEMOS_DIR = REPO_ROOT / "src" / "demos"
+SHELL_SHEET = DEMOS_DIR / "shell" / "shell.css"
+WORDS_MODULE = REPO_ROOT / "src" / "demos" / "shell" / "words.ts"
+LOCALES_FILE = REPO_ROOT / "text" / "locales.json"
+
+
+def locale_literal() -> re.Pattern[str]:
+    """A string literal that is one of the registry's locale ids."""
+    ids = json.loads(LOCALES_FILE.read_text(encoding="utf-8"))["locales"].keys()
+    names = "|".join(re.escape(name) for name in sorted(ids, key=len, reverse=True))
+    return re.compile(rf"""['"`](?:{names})['"`]""")
 
 
 def shot_and_beat_ids() -> set[str]:
@@ -85,9 +113,44 @@ def report(problems: list[str], path: Path, number: int, rule: str, message: str
     problems.append(f"{path.relative_to(REPO_ROOT)}:{number}: [{rule}] {message}")
 
 
-def check_code(path: Path, text: str, ids: set[str], problems: list[str]) -> None:
+def is_runtime_code(path: Path) -> bool:
+    """Hand-written code that ships: src/, not its tests. Tests may name a locale."""
+    return path.is_relative_to(REPO_ROOT / "src") and not path.name.endswith(".test.ts")
+
+
+def check_code(
+    path: Path, text: str, ids: set[str], problems: list[str], locales: re.Pattern[str]
+) -> None:
     in_keyframes = 0
-    for number, line in enumerate(text.splitlines(), start=1):
+    lines = text.splitlines()
+    for number, line in enumerate(lines, start=1):
+        # The formatter puts a rule's comment on the line after its selector, so a
+        # selector may also be allowed by the first line inside its block.
+        following = lines[number] if number < len(lines) else ""
+        if is_runtime_code(path) and not allowed(line, "locale-profile"):
+            if (
+                path.suffix == ".css"
+                and LANG_SELECTOR.search(line)
+                and not allowed(following, "locale-profile")
+            ):
+                report(problems, path, number, "locale-profile",
+                       "key the rule on the locale profile (data-* on the root), not :lang(); "
+                       "only the font-stack rule in shell.css names a language")
+            if (
+                path.suffix == ".css"
+                and path.is_relative_to(DEMOS_DIR)
+                and path != SHELL_SHEET
+                and ITALIC.search(line)
+            ):
+                report(problems, path, number, "locale-profile",
+                       "set --demo-say-style on a line or use var(--demo-italic); the shell "
+                       "applies italic only where the profile's emphasis is italic")
+            if path.suffix == ".ts" and (LANG_READ.search(line) or locales.search(line)):
+                report(problems, path, number, "locale-profile",
+                       "read the locale profile (pageProfile(), shell.profile), not the language")
+            if path.suffix == ".ts" and path != WORDS_MODULE and SPACE_SPLIT.search(line):
+                report(problems, path, number, "locale-profile",
+                       "split a line with units() from shell/words.ts, which reads the profile")
         if CJK.search(line) and not allowed(line, "prose"):
             report(problems, path, number, "prose",
                    "narrative text belongs in text/locales/, referenced by segment id")
@@ -167,6 +230,7 @@ def main() -> int:
     roots = [REPO_ROOT / name for name in ROOTS if (REPO_ROOT / name).exists()]
 
     ids = shot_and_beat_ids()
+    locales = locale_literal()
     problems: list[str] = []
     check_node_pin(problems)
     files = [
@@ -178,7 +242,7 @@ def main() -> int:
         if path.suffix in {".ts", ".css", ".html"} and path.is_file() and not is_generated(path)
     ]
     for path in sorted(files):
-        check_code(path, path.read_text(encoding="utf-8"), ids, problems)
+        check_code(path, path.read_text(encoding="utf-8"), ids, problems, locales)
 
     for problem in problems:
         print(f"error: {problem}", file=sys.stderr)

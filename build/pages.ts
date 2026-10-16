@@ -539,6 +539,7 @@ export function writePages(root: string, outDir: string): string[] {
   // repository notices, rather than maintaining a second legal text copy.
   const creditSource = readFileSync(join(root, 'CREDITS.md'), 'utf8');
   const noticeSource = readFileSync(join(root, 'THIRD_PARTY_NOTICES.md'), 'utf8');
+  const apacheLicense = readFileSync(join(root, 'third_party', 'modern-web-guidance-LICENSE.txt'), 'utf8');
   const legalPage: GeneratedPage = {
     path: 'credits.html',
     html: `<!doctype html>
@@ -553,6 +554,7 @@ export function writePages(root: string, outDir: string): string[] {
     <main><h1>Credits &amp; Licenses</h1><p><a href="./">Back to Interactive Alice</a></p>
     <section aria-label="Credits"><pre>${escapeHtml(creditSource)}</pre></section>
     <section aria-label="Third-party notices"><pre>${escapeHtml(noticeSource)}</pre></section>
+    <section aria-label="Apache 2.0 license"><pre>${escapeHtml(apacheLicense)}</pre></section>
     </main>
   </body>
 </html>`,

@@ -1,4 +1,4 @@
-import { existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -61,7 +61,6 @@ describe('publishability', () => {
     expect(credit).toContain('Modern Web Guidance');
     expect(credit).toContain('Apache License 2.0');
   });
-
 
   it('keeps the locale entry when a part is not translated yet, without linking it', () => {
     const { pages, manifest, skipped } = generatePagesFrom(withoutText('ja', 1));

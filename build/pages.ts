@@ -205,7 +205,7 @@ function renderPart(project: Project, partId: string, locale: string, scenes: st
       <h1 class="story__title">${escapeHtml(heading)}</h1>
 ${body}
     </main>
-    <footer class="site-credits"><a href="${root}credits.html">Credits / Licenses</a></footer>
+    <footer class="site-credits"><a href="../../credits.html">Credits / Licenses</a></footer>
   </body>
 </html>
 `;
@@ -289,7 +289,7 @@ function renderLocaleEntry(
 ${links}
       </ul>
     </main>
-    <footer class="site-credits"><a href="${root}credits.html">Credits / Licenses</a></footer>
+    <footer class="site-credits"><a href="../credits.html">Credits / Licenses</a></footer>
   </body>
 </html>
 `;
@@ -349,7 +349,7 @@ function renderHome(
 ${links}
       </ul>
     </main>
-    <footer class="site-credits"><a href="${root}credits.html">Credits / Licenses</a></footer>
+    <footer class="site-credits"><a href="./credits.html">Credits / Licenses</a></footer>
   </body>
 </html>
 `;

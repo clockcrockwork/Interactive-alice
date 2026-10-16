@@ -126,6 +126,25 @@ export const BUTTER_SVG = `
   <circle cx="98" cy="44" r="2.5" fill="var(--tp-crumb)"/>
 </svg>`;
 
+/** Whole-object framing only: the knife keeps its 300x60 moving wrapper. */
+export function knifeMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return KNIFE_SVG;
+  const src = new URL('../../assets/images/figures/knife.any.generated.webp', import.meta.url).href;
+  return `<svg viewBox="0 0 300 60" focusable="false" data-generated-knife=""><image href="${src}" x="-2.902486" y="-23.543977" width="305.24283" height="101.74761" preserveAspectRatio="xMidYMid meet"/></svg>`;
+}
+
+/** Both butter instances share the low saucer base, near y88 of the 160x90 box. */
+export function butterMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return BUTTER_SVG;
+  const src = new URL('../../assets/images/figures/butter.any.generated.webp', import.meta.url)
+    .href;
+  return `<svg viewBox="0 0 160 90" focusable="false" data-generated-butter=""><image href="${src}" x="-1.557409" y="7.076331" width="163.017319" height="91.745991" preserveAspectRatio="xMidYMid meet"/></svg>`;
+}
+
 /** The riddle is a centred, whole-object swap, never a foot-grounded figure. */
 export function deskMarkup(
   style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
@@ -229,6 +248,15 @@ export const TRAY_SVG = `
   <ellipse cx="80" cy="25" rx="78" ry="22" fill="var(--tp-china-shade)"/>
   <ellipse cx="80" cy="22" rx="66" ry="16" fill="var(--tp-china)"/>
 </svg>`;
+
+/** Story and reader-created bats retain the same centred tray and flight pivot. */
+export function trayMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return TRAY_SVG;
+  const src = new URL('../../assets/images/figures/tray.any.generated.webp', import.meta.url).href;
+  return `<svg viewBox="0 0 160 50" focusable="false" data-generated-tray=""><image href="${src}" x="-0.063297" y="-2.338687" width="160.052905" height="53.350968" preserveAspectRatio="xMidYMid meet"/></svg>`;
+}
 
 /** What the Dormouse sings in its sleep: three notes in ink, rising. */
 export const NOTES_SVG = `

@@ -23,20 +23,20 @@ import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix } from '../shell/shell.ts';
 import {
-  BUTTER_SVG,
+  butterMarkup,
   CUP_BACK_SVG,
   CUP_FRONT_SVG,
   deskMarkup,
   FROWN_SVG,
   HOUSE_SVG,
-  KNIFE_SVG,
+  knifeMarkup,
   NOTES_SVG,
   ravenMarkup,
   SETTING_SYMBOL,
   SETTING_USE,
   TEAPOT_SVG,
-  TRAY_SVG,
   TREE_SVG,
+  trayMarkup,
   watchSvg,
 } from './figures.ts';
 import './tea-party.css';
@@ -164,7 +164,7 @@ function mount(shell: DemoShell): void {
     }
   }
   const pot = piece('tp__teapot', TEAPOT_SVG, 30, -330, 230);
-  piece('tp__butter-dish', BUTTER_SVG, -40, -560, 120);
+  piece('tp__butter-dish', butterMarkup(), -40, -560, 120);
   // The party, crowded together at the far end. Their seat follows the round.
   const hatter = piece(
     'tp__party tp__hatter',
@@ -430,8 +430,8 @@ function mount(shell: DemoShell): void {
     `<div class="tp__cup tp__cup--back">${CUP_BACK_SVG}</div>` +
     `<div class="tp__watch">${watchSvg((n) => dates.format(n))}</div>` +
     `<div class="tp__cup tp__cup--front">${CUP_FRONT_SVG}</div>` +
-    `<div class="tp__knife">${KNIFE_SVG}</div>` +
-    `<button type="button" class="tp__butter-pat" aria-label="${shell.ui.demoButterWatch ?? ''}">${BUTTER_SVG}</button>`;
+    `<div class="tp__knife">${knifeMarkup()}</div>` +
+    `<button type="button" class="tp__butter-pat" aria-label="${shell.ui.demoButterWatch ?? ''}">${butterMarkup()}</button>`;
   const watch = watchLayer.querySelector<HTMLElement>('.tp__watch') as HTMLElement;
   const knife = watchLayer.querySelector<HTMLElement>('.tp__knife') as HTMLElement;
   const cups = [...watchLayer.querySelectorAll<HTMLElement>('.tp__cup')];
@@ -579,7 +579,7 @@ function mount(shell: DemoShell): void {
   master.to(hatter, { '--sing': 1, duration: d(0.3), ease: 'back.out(1.5)' }, iTwinkle + 0.05);
   master.to(hatter, { '--sing': 0, duration: d(0.3) }, iMurder + 0.3);
   const batLayer = shell.layer('tp__bat-layer');
-  batLayer.innerHTML = `<div class="tp__bat">${figure('bat')}<div class="tp__tray">${TRAY_SVG}</div></div>`;
+  batLayer.innerHTML = `<div class="tp__bat">${figure('bat')}<div class="tp__tray">${trayMarkup()}</div></div>`;
   const bat = batLayer.querySelector<HTMLElement>('.tp__bat');
   between(batLayer, iTwinkle, iTeaTime);
   master.fromTo(
@@ -630,7 +630,7 @@ function mount(shell: DemoShell): void {
     // Under reduced motion each bat is a still in its own place in the sky.
     bat.style.setProperty('--still-x', `${8 + ((batsOut * 23) % 76)}vw`);
     bat.style.setProperty('--still-y', `${10 + ((batsOut * 11) % 26)}vh`);
-    bat.innerHTML = `${figure('bat')}<div class="tp__tray">${TRAY_SVG}</div>`;
+    bat.innerHTML = `${figure('bat')}<div class="tp__tray">${trayMarkup()}</div>`;
     if (!reducedMotion) {
       bat.addEventListener('animationend', (event) => {
         if (event.target === bat) {

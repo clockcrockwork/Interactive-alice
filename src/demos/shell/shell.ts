@@ -25,6 +25,13 @@ installTransitions();
 installArtTreatments();
 
 gsap.registerPlugin(ScrollTrigger);
+// The clock follows real time on frames of up to a second. GSAP's default lag
+// smoothing counts any frame over half a second as 33 ms, which keeps a tab's
+// return from jumping but, on a machine whose frames are always that long (a
+// renderer without a GPU under a filtered figure), runs every reaction at a
+// twentieth of its speed: a two-second wink took forty. Past a second, a frame
+// still counts as a quarter of one, so a hidden tab coming back does not leap.
+gsap.ticker.lagSmoothing(1000, 250);
 
 /** The realia a demo may read, by id. */
 export type Realia = LocaleRealia['realia'];

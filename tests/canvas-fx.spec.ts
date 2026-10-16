@@ -483,8 +483,9 @@ for (const entry of parts) {
       //
       // The reader moves at a speed, not by a step per frame: the scroll position
       // follows the clock across a third of a second, so a machine whose frames are
-      // long sees the same speed in fewer frames, rather than a reader thirty times
-      // slower than the one this test means.
+      // long is not a reader thirty times slower than the one this test means. It
+      // still takes at least four frames, so the runtime, which measures speed
+      // between frames, has movement to measure after the first resynchronises.
       const moving = await page.evaluate(
         async ({ top, travel, from, to }) => {
           const read = () =>
@@ -493,7 +494,7 @@ for (const entry of parts) {
           const duration = 333;
           const start = performance.now();
           for (let frames = 0; ; frames += 1) {
-            const f = Math.min(1, (performance.now() - start) / duration);
+            const f = Math.min(1, frames / 4, (performance.now() - start) / duration);
             window.scrollTo(0, top + travel * (from + (to - from) * f));
             await new Promise((resolve) => requestAnimationFrame(resolve));
             peak = Math.max(peak, read()?.streak ?? 0);
@@ -764,12 +765,13 @@ async function fastest(page: Page, from: number, to: number): Promise<number> {
         return detail?.streak ?? 0;
       };
       // At a speed, not a step per frame: the position follows the clock across
-      // 400 ms, so long frames give the same speed in fewer readings.
+      // 400 ms, so long frames give the same speed in fewer readings, though never
+      // fewer than four, so the runtime has movement to measure between frames.
       let longest = 0;
       const duration = 400;
       const start = performance.now();
       for (let frames = 0; ; frames += 1) {
-        const f = Math.min(1, (performance.now() - start) / duration);
+        const f = Math.min(1, frames / 4, (performance.now() - start) / duration);
         window.scrollTo(0, top + travel * (from + (to - from) * f));
         await new Promise((resolve) => requestAnimationFrame(resolve));
         longest = Math.max(longest, read());

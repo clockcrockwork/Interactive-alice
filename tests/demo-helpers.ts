@@ -48,7 +48,9 @@ export const settled = async (page: Page) => {
     () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
   );
   const done = () => page.evaluate(() => window.__aliceDemo?.settled() ?? true);
-  const deadline = Date.now() + 6_000;
+  // An ease that has not arrived in three seconds is crawling: on a machine with
+  // fast frames it arrives in well under one.
+  const deadline = Date.now() + 3_000;
   while (Date.now() < deadline) {
     if (await done()) {
       return;

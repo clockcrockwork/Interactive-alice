@@ -368,7 +368,9 @@ then only the branches without a control stay hidden, so the control is announce
 its own label. The link to the next scene joins the tab order only on the last beat,
 so a keyboard reader looking for a prop is never carried past the scene. A
 full-stage tap target is pointer play: it takes no keyboard focus, and the prop
-button beside it is the keyboard's way.
+button beside it is the keyboard's way. A prop on its way out takes no tap while it
+fades, so where two props share a place (Bill's *Hold up his head* over *Catch him!*)
+the one leaving never catches the press meant for the one arriving.
 
 **Sound of the place.** Besides the one-shot cues, the synthesiser has continuous
 ones a demo levels from its timeline: `wind`, `purr` and `drip` as before, and now

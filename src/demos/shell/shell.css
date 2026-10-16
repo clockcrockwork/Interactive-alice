@@ -509,6 +509,13 @@
       visibility 0s linear var(--demo-quick);
   }
 
+  /* A prop on its way out takes no tap: it stays visible while it fades, and where
+     two props share a place (Bill's *Hold up his head* over *Catch him!*), the one
+     leaving would catch the press meant for the one arriving. */
+  .demo__prop:not([data-shown]) {
+    pointer-events: none;
+  }
+
   .demo__prop[data-shown] {
     opacity: 1;
     visibility: visible;

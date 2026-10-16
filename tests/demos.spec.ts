@@ -9,6 +9,7 @@ import {
   settled,
   starveFrames,
   tapAt,
+  watchProperty,
 } from './demo-helpers.ts';
 import { sentencesOf } from './manifest.ts';
 
@@ -1309,15 +1310,21 @@ test('the mock turtle: comforting him makes him sigh harder, and the sea heaves'
   await expect
     .poll(() => customProperty(page, '.mt__shore', '--swell'), { timeout: 8000 })
     .toBeLessThan(0.1);
+  // The heave is a moment, so it is watched on every frame from inside the page: on
+  // a slow machine it can rise and fall between two readings fetched from outside.
+  const tap = await watchProperty(page, '.mt__shore', '--swell');
   await page.locator('.mt__turtle').click();
   await expect
-    .poll(() => customProperty(page, '.mt__shore', '--swell'), { timeout: 3000 })
+    .poll(async () => Math.max(0, ...(await tap())), { timeout: 8000 })
     .toBeGreaterThan(0.3);
   // The button does the same for a keyboard.
-  await page.waitForTimeout(1500);
+  await expect
+    .poll(() => customProperty(page, '.mt__shore', '--swell'), { timeout: 8000 })
+    .toBeLessThan(0.1);
+  const button = await watchProperty(page, '.mt__shore', '--swell');
   await page.locator('.mt__prop--comfort').click();
   await expect
-    .poll(() => customProperty(page, '.mt__shore', '--swell'), { timeout: 3000 })
+    .poll(async () => Math.max(0, ...(await button())), { timeout: 8000 })
     .toBeGreaterThan(0.3);
   await expect(page.locator('.demo__status')).not.toBeEmpty();
 });

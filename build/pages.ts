@@ -6,7 +6,7 @@
  * mapping. See docs/frontend-architecture.md §3.
  */
 
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { overlapsOf, planScene, type ScenePlan } from '../src/runtime/pacing.ts';
 import { chaptersOf, loadProject, type Part, type Project, type SegmentMeta } from './project.ts';
@@ -205,6 +205,7 @@ function renderPart(project: Project, partId: string, locale: string, scenes: st
       <h1 class="story__title">${escapeHtml(heading)}</h1>
 ${body}
     </main>
+    <footer class="site-credits"><a href="../../credits.html">Credits / Licenses</a></footer>
   </body>
 </html>
 `;
@@ -288,6 +289,7 @@ function renderLocaleEntry(
 ${links}
       </ul>
     </main>
+    <footer class="site-credits"><a href="../credits.html">Credits / Licenses</a></footer>
   </body>
 </html>
 `;
@@ -347,6 +349,7 @@ function renderHome(
 ${links}
       </ul>
     </main>
+    <footer class="site-credits"><a href="./credits.html">Credits / Licenses</a></footer>
   </body>
 </html>
 `;
@@ -532,7 +535,34 @@ export function writePages(root: string, outDir: string): string[] {
   rmSync(outDir, { recursive: true, force: true });
   mkdirSync(outDir, { recursive: true });
   const written: string[] = [];
-  for (const page of pages) {
+  // A visitor-accessible credits document is generated from the canonical
+  // repository notices, rather than maintaining a second legal text copy.
+  const creditSource = readFileSync(join(root, 'CREDITS.md'), 'utf8');
+  const noticeSource = readFileSync(join(root, 'THIRD_PARTY_NOTICES.md'), 'utf8');
+  const apacheLicense = readFileSync(
+    join(root, 'third_party', 'modern-web-guidance-LICENSE.txt'),
+    'utf8',
+  );
+  const legalPage: GeneratedPage = {
+    path: 'credits.html',
+    html: `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Credits &amp; Licenses · Interactive Alice</title>
+    <style>body{max-width:72ch;margin:2rem auto;padding:0 1.25rem;font:1rem/1.65 system-ui,sans-serif}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}a{color:inherit}</style>
+  </head>
+  <body>
+    <main><h1>Credits &amp; Licenses</h1><p><a href="./">Back to Interactive Alice</a></p>
+    <section aria-label="Credits"><pre>${escapeHtml(creditSource)}</pre></section>
+    <section aria-label="Third-party notices"><pre>${escapeHtml(noticeSource)}</pre></section>
+    <section aria-label="Apache 2.0 license"><pre>${escapeHtml(apacheLicense)}</pre></section>
+    </main>
+  </body>
+</html>`,
+  };
+  for (const page of [...pages, legalPage]) {
     const file = join(outDir, page.path);
     mkdirSync(dirname(file), { recursive: true });
     writeFileSync(file, page.html, 'utf8');

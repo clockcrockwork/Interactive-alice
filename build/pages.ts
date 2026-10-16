@@ -30,9 +30,8 @@ function renderCreditsFooter(): string {
     '      <p>Retold from <em>Alice\'s Adventures in Wonderland</em> by Lewis Carroll (1865), a public-domain work. English source: Project Gutenberg eBook #11.</p>',
     `      <nav aria-label="作品情報"><a href="${creditSource}">Credits / 原作・出典</a> · <a href="${thirdPartySource}">Third-party notices</a> · <a href="${feedbackSource}">お問い合わせ・不具合</a></nav>`,
     '    </footer>',
-  ].join('\\n');
+  ].join('\n');
 }
-
 
 export const escapeHtml = (value: string): string =>
   value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');

@@ -44,6 +44,19 @@ function withPendingFirstPart() {
   return project;
 }
 
+describe('credits and source notices', () => {
+  it('links the existing public credits and third-party notices from home, locale and story pages', () => {
+    const expectedPages = ['index.html', 'ja/index.html', 'ja/rabbit-hole/index.html'];
+    for (const path of expectedPages) {
+      const page = pages.find((candidate) => candidate.path === path);
+      expect(page?.html, path).toContain('aria-label="クレジット"');
+      expect(page?.html, path).toContain('Interactive-alice/blob/main/CREDITS.md');
+      expect(page?.html, path).toContain('Interactive-alice/blob/main/THIRD_PARTY_NOTICES.md');
+      expect(page?.html, path).toContain('Lewis Carroll (1865)');
+    }
+  });
+});
+
 describe('publishability', () => {
   it('keeps the locale entry when a part is not translated yet, without linking it', () => {
     const { pages, manifest, skipped } = generatePagesFrom(withoutText('ja', 1));

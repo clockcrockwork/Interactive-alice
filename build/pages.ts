@@ -20,15 +20,16 @@ export interface GeneratedPage {
 const PROJECT_NAME = 'Interactive Alice';
 
 const creditSource = 'https://github.com/clockcrockwork/Interactive-alice/blob/main/CREDITS.md';
-const thirdPartySource = 'https://github.com/clockcrockwork/Interactive-alice/blob/main/THIRD_PARTY_NOTICES.md';
+const thirdPartySource =
+  'https://github.com/clockcrockwork/Interactive-alice/blob/main/THIRD_PARTY_NOTICES.md';
 const feedbackSource = 'https://github.com/clockcrockwork/Interactive-alice/issues';
 
 /** A visible attribution, linked to the existing public repository-owned records. */
 function renderCreditsFooter(): string {
   return [
-    '    <footer class="site-credits" aria-label="クレジット">',
-    '      <p>Retold from <em>Alice\'s Adventures in Wonderland</em> by Lewis Carroll (1865), a public-domain work. English source: Project Gutenberg eBook #11.</p>',
-    `      <nav aria-label="作品情報"><a href="${creditSource}">Credits / 原作・出典</a> · <a href="${thirdPartySource}">Third-party notices</a> · <a href="${feedbackSource}">お問い合わせ・不具合</a></nav>`,
+    '    <footer class="site-credits" aria-label="Credits">',
+    "      <p>Retold from <em>Alice's Adventures in Wonderland</em> by Lewis Carroll (1865), a public-domain work. English source: Project Gutenberg eBook #11.</p>",
+    `      <nav aria-label="Source information"><a href="${creditSource}">Credits / Sources</a> · <a href="${thirdPartySource}">Third-party notices</a> · <a href="${feedbackSource}">Feedback</a></nav>`,
     '    </footer>',
   ].join('\n');
 }

@@ -539,7 +539,10 @@ export function writePages(root: string, outDir: string): string[] {
   // repository notices, rather than maintaining a second legal text copy.
   const creditSource = readFileSync(join(root, 'CREDITS.md'), 'utf8');
   const noticeSource = readFileSync(join(root, 'THIRD_PARTY_NOTICES.md'), 'utf8');
-  const apacheLicense = readFileSync(join(root, 'third_party', 'modern-web-guidance-LICENSE.txt'), 'utf8');
+  const apacheLicense = readFileSync(
+    join(root, 'third_party', 'modern-web-guidance-LICENSE.txt'),
+    'utf8',
+  );
   const legalPage: GeneratedPage = {
     path: 'credits.html',
     html: `<!doctype html>

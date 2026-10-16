@@ -7,7 +7,7 @@
  */
 
 import { expect, type Locator, type Page, test } from '@playwright/test';
-import { atCue, customProperty, demos } from '../demo-helpers.ts';
+import { atCue, customProperty, demos, watchProperty } from '../demo-helpers.ts';
 
 const demo = demos.find((d) => d.demo === 'mock-turtle');
 
@@ -165,13 +165,17 @@ test.describe('mock turtle: play', () => {
     await atCue(page, 'drawling', 0.6);
     expect(await eel.evaluate((button) => (button as HTMLButtonElement).inert)).toBe(false);
     await expect(page.getByRole('button', { name: 'Wake the Drawling-master' })).toBeVisible();
+    // The stretch and the faint are poses of a moment each, gone again between two
+    // readings fetched from outside on a slow machine: watched on every frame.
+    const stretch = await watchProperty(page, '.mt__eel', '--stretch');
+    const faint = await watchProperty(page, '.mt__eel', '--faint');
     await eel.locator('.art').click();
     await expect(page.locator('.demo__status')).toHaveText('Wake the Drawling-master');
     await expect
-      .poll(() => customProperty(page, '.mt__eel', '--stretch'), { timeout: 3000 })
+      .poll(async () => Math.max(0, ...(await stretch())), { timeout: 8000 })
       .toBeGreaterThan(0.5);
     await expect
-      .poll(() => customProperty(page, '.mt__eel', '--faint'), { timeout: 3000 })
+      .poll(async () => Math.max(0, ...(await faint())), { timeout: 8000 })
       .toBeGreaterThan(0.5);
     await expect
       .poll(() => customProperty(page, '.mt__eel', '--faint'), { timeout: 5000 })

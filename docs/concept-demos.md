@@ -361,7 +361,9 @@ then only the branches without a control stay hidden, so the control is announce
 its own label. The link to the next scene joins the tab order only on the last beat,
 so a keyboard reader looking for a prop is never carried past the scene. A
 full-stage tap target is pointer play: it takes no keyboard focus, and the prop
-button beside it is the keyboard's way.
+button beside it is the keyboard's way. A prop on its way out takes no tap while it
+fades, so where two props share a place (Bill's *Hold up his head* over *Catch him!*)
+the one leaving never catches the press meant for the one arriving.
 
 **Sound of the place.** Besides the one-shot cues, the synthesiser has continuous
 ones a demo levels from its timeline: `wind`, `purr` and `drip` as before, and now
@@ -385,6 +387,14 @@ The shell also hands every demo the page's **locale profile** (`shell.profile`),
 number formatting in its locale (`shell.locale.numberFormat()`) and its **realia**
 (`shell.realia(id)`, for the ids the demo file declares), so no demo reads the
 page's language itself ([`text-experience-binding.md`](text-experience-binding.md) §9).
+
+**One clock, near real time.** Timelines, reactions and every demo's frame loop run
+on GSAP's clock, whose lag smoothing the shell sets to count frames of up to a second
+in full (and a longer one, such as a hidden tab coming back, as a quarter of a
+second). GSAP's default counts any frame over half a second as 33 ms, which on a
+machine whose frames are always that long ran every reaction at a twentieth of its
+speed. So a slow machine shows fewer frames of a two-second wink, not a forty-second
+one.
 
 **Joins.** The demos are viewed in the book's order, and where two adjacent demos are
 one moment of the book they join: the end of the first is staged so that it leads
@@ -1396,6 +1406,16 @@ frame. `tests/play/japanese.spec.ts` also checks
 that the Japanese cards carry no Latin letters, that a name in corner brackets stays on
 one line on a phone, and that no group of the tale runs on past a comma; a test in
 `tests/demos.spec.ts` starves the court's frames and still sees a scroll settle.
+
+Bill's catch test presses the pinned control where it is (`press`, `tapAt` in
+`tests/demo-helpers.ts`), with a touch tap on a touch screen and a mouse click
+elsewhere, through the browser's own input. It does not scroll the control into view
+or dispatch a synthetic click. The catch and miss outcomes and the crowd's required
+position are still asserted. The Mock Turtle's Drawling-master test starts
+`watchProperty` before activation and samples the stretch and faint on every
+animation frame inside the page, so a brief pose is not lost between external
+polls. It still requires both poses to exceed the same threshold, the faint to
+clear, and the button to become inert after its beat.
 
 What costs frames, and what was done about it, is in
 [`performance-budget.md`](performance-budget.md) §2: a drop-shadow filter on many

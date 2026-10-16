@@ -19,6 +19,21 @@ export interface GeneratedPage {
 
 const PROJECT_NAME = 'Interactive Alice';
 
+const creditSource = 'https://github.com/clockcrockwork/Interactive-alice/blob/main/CREDITS.md';
+const thirdPartySource =
+  'https://github.com/clockcrockwork/Interactive-alice/blob/main/THIRD_PARTY_NOTICES.md';
+const feedbackSource = 'https://github.com/clockcrockwork/Interactive-alice/issues';
+
+/** A visible attribution, linked to the existing public repository-owned records. */
+function renderCreditsFooter(): string {
+  return [
+    '    <footer class="site-credits" aria-label="Credits">',
+    "      <p>Retold from <em>Alice's Adventures in Wonderland</em> by Lewis Carroll (1865), a public-domain work. English source: Project Gutenberg eBook #11.</p>",
+    `      <nav aria-label="Source information"><a href="${creditSource}">Credits / Sources</a> · <a href="${thirdPartySource}">Third-party notices</a> · <a href="${feedbackSource}">Feedback</a></nav>`,
+    '    </footer>',
+  ].join('\n');
+}
+
 export const escapeHtml = (value: string): string =>
   value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -205,6 +220,7 @@ function renderPart(project: Project, partId: string, locale: string, scenes: st
       <h1 class="story__title">${escapeHtml(heading)}</h1>
 ${body}
     </main>
+${renderCreditsFooter()}
   </body>
 </html>
 `;
@@ -288,6 +304,7 @@ function renderLocaleEntry(
 ${links}
       </ul>
     </main>
+${renderCreditsFooter()}
   </body>
 </html>
 `;
@@ -347,6 +364,7 @@ function renderHome(
 ${links}
       </ul>
     </main>
+${renderCreditsFooter()}
   </body>
 </html>
 `;

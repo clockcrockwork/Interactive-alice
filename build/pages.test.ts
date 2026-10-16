@@ -1,4 +1,4 @@
-import { existsSync, mkdtempSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -48,7 +48,7 @@ describe('publishability', () => {
   it('links every generated page to visitor-accessible credits', () => {
     for (const page of pages) {
       const depth = page.path.split('/').length - 1;
-      expect(page.html).toContain(`href="${'../'.repeat(depth)}credits.html"`);
+      expect(page.html).toContain(`href="${depth === 0 ? './' : '../'.repeat(depth)}credits.html"`);
     }
   });
 

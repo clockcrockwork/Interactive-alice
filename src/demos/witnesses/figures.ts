@@ -1,5 +1,7 @@
 /** Paper-theatre props for the witnesses. Decorative SVG, drawn once. */
 
+import { type ArtStyle, artStyle } from '../art/treatments.ts';
+
 /** The Hatter's teacup, held up; it drops at "on one knee". */
 export const TEACUP_SVG = `
 <svg viewBox="0 0 60 44" focusable="false">
@@ -45,6 +47,50 @@ export const PEPPER_BOX_SVG = `
   <rect x="8" y="4" width="14" height="12" rx="4" fill="var(--sepia-deep)"/>
   <circle cx="12" cy="8" r="1.2" fill="var(--paper-aged)"/><circle cx="18" cy="8" r="1.2" fill="var(--paper-aged)"/><circle cx="15" cy="12" r="1.2" fill="var(--paper-aged)"/>
 </svg>`;
+
+/** Whole cup and saucer; the original wrapper owns its fall and centre pivot. */
+export function teacupMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return TEACUP_SVG;
+  const src = new URL(
+    '../../assets/images/figures/witness-teacup.any.generated.webp',
+    import.meta.url,
+  ).href;
+  return `<svg viewBox="0 0 60 44" focusable="false" data-generated-witness-teacup=""><image href="${src}" x="-2.151351" y="1.486486" width="63.308108" height="46.443243" preserveAspectRatio="xMidYMid meet"/></svg>`;
+}
+
+/** Bread is one cutout; the parent still thins it from its left-edge origin. */
+export function breadMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return BREAD_SVG;
+  const src = new URL(
+    '../../assets/images/figures/bread-and-butter.any.generated.webp',
+    import.meta.url,
+  ).href;
+  return `<svg viewBox="0 0 60 40" focusable="false" data-generated-bread-and-butter=""><image href="${src}" x="-0.808023" y="0.699140" width="61.616046" height="41.077364" preserveAspectRatio="xMidYMid meet"/></svg>`;
+}
+
+/** Both shoes share one right-facing source, without new .art treatment hooks. */
+export function shoeMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return SHOE_SVG;
+  const src = new URL('../../assets/images/figures/hatter-shoe.any.generated.webp', import.meta.url)
+    .href;
+  return `<svg viewBox="0 0 44 22" focusable="false" data-generated-hatter-shoe=""><image href="${src}" x="-2.937238" y="-1.394700" width="49.483961" height="24.741980" preserveAspectRatio="xMidYMid meet"/></svg>`;
+}
+
+/** Keep the cook's bottom-centre pivot and the pepper particles outside the art. */
+export function pepperBoxMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return PEPPER_BOX_SVG;
+  const src = new URL('../../assets/images/figures/pepper-box.any.generated.webp', import.meta.url)
+    .href;
+  return `<svg viewBox="0 0 30 50" focusable="false" data-generated-pepper-box=""><image href="${src}" x="-2.172849" y="-2.737174" width="33.720600" height="56.224152" preserveAspectRatio="xMidYMid meet"/></svg>`;
+}
 
 /**
  * The King's note-book, held in his hand: two scribbles (`--word-one`,

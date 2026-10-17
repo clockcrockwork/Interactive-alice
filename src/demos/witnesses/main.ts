@@ -24,14 +24,14 @@ import {
 } from '../trial/court.ts';
 import {
   BAG_SVG,
-  BREAD_SVG,
+  breadMarkup,
   LETTER_SVG,
   NOTEBOOK_OPEN_SVG,
   NOTEBOOK_SVG,
-  PEPPER_BOX_SVG,
-  SHOE_SVG,
+  pepperBoxMarkup,
   SPRAWLER_SVG,
-  TEACUP_SVG,
+  shoeMarkup,
+  teacupMarkup,
 } from './figures.ts';
 import './witnesses.css';
 
@@ -273,15 +273,15 @@ function mount(shell: DemoShell): void {
   // --- The Hatter, in the witness-box with his teacup and bread-and-butter.
   const hatter = piece(
     'wt__hatter',
-    `${figure('hatter')}<div class="wt__teacup">${TEACUP_SVG}</div><div class="wt__bread">${BREAD_SVG}</div>` +
+    `${figure('hatter')}<div class="wt__teacup">${teacupMarkup()}</div><div class="wt__bread">${breadMarkup()}</div>` +
       `<div class="wt__twinkles">${'<i class="wt__twinkle"></i>'.repeat(4)}</div>`,
   );
   const hatterArt = hatter.querySelector<HTMLElement>('.art');
   const hat = hatter.querySelector<SVGGElement>('.hatter__hat');
   const teacup = hatter.querySelector<HTMLElement>('.wt__teacup');
   const bread = hatter.querySelector<HTMLElement>('.wt__bread');
-  const shoeLeft = piece('wt__shoe wt__shoe--left', SHOE_SVG);
-  const shoeRight = piece('wt__shoe wt__shoe--right', SHOE_SVG);
+  const shoeLeft = piece('wt__shoe wt__shoe--left', shoeMarkup());
+  const shoeRight = piece('wt__shoe wt__shoe--right', shoeMarkup());
   master.fromTo(
     hatter,
     { '--x': 110, opacity: 1 },
@@ -527,7 +527,7 @@ function mount(shell: DemoShell): void {
   // --- The cook, with the pepper-box; the people near the door sneeze.
   const cook = piece(
     'wt__cook',
-    `${figure('cook')}<div class="wt__pepper-box">${PEPPER_BOX_SVG}</div>`,
+    `${figure('cook')}<div class="wt__pepper-box">${pepperBoxMarkup()}</div>`,
   );
   master.fromTo(
     cook,

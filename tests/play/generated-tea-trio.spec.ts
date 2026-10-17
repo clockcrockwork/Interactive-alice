@@ -231,8 +231,8 @@ for (const locale of ['', 'ja/']) {
       await atCue(page, 'watch', 0.8);
       await expect(pat).toBeVisible();
       await expect(pat.locator('image')).toHaveCount(1);
-      // The watch, date text and two independent cup halves remain vector.
-      await expect(page.locator('.tp__watch image, .tp__cup image')).toHaveCount(0);
+      // The watch casing and two cup halves are cutouts; all date text stays live.
+      await expect(page.locator('.tp__watch image, .tp__cup image')).toHaveCount(3);
       await expect(page.locator('.tp__dates text')).toHaveCount(31);
       expect(errors).toEqual([]);
     });

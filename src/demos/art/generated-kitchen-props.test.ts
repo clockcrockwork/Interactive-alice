@@ -33,11 +33,13 @@ describe('generated kitchen crockery', () => {
     });
   }
 
-  it('keeps frying-pan vector-only and unknown things empty in every style', () => {
+  it('keeps frying-pan vector fallback and unknown things empty in every style', () => {
     const render = renderer();
     for (const style of ['flat', 'paper', 'engraved'] as const) {
-      expect(render('frying-pan', style)).toBe(kitchen.THINGS['frying-pan']);
-      expect(render('frying-pan', style)).not.toContain('<image');
+      if (style !== 'engraved') {
+        expect(render('frying-pan', style)).toBe(kitchen.THINGS['frying-pan']);
+        expect(render('frying-pan', style)).not.toContain('<image');
+      }
       expect(render('missing', style)).toBe('');
     }
   });

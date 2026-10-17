@@ -85,7 +85,10 @@ for (const locale of ['', 'ja/']) {
         'data-generated-saucepan',
         '',
       );
-      await expect(page.locator('.pp__pan-after image')).toHaveCount(0);
+      await expect(page.locator('.pp__pan-after > svg')).toHaveAttribute(
+        'data-generated-frying-pan',
+        '',
+      );
       for (const [kind, width, height] of props) {
         const wrapper = page.locator(`.pp__thing[data-kind="${kind}"]`).first();
         const svg = wrapper.locator(':scope > svg');

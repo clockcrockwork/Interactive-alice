@@ -24,20 +24,20 @@ import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix } from '../shell/shell.ts';
 import {
   butterMarkup,
-  CUP_BACK_SVG,
-  CUP_FRONT_SVG,
+  cupBackMarkup,
+  cupFrontMarkup,
   deskMarkup,
   FROWN_SVG,
   HOUSE_SVG,
   knifeMarkup,
   NOTES_SVG,
   ravenMarkup,
-  SETTING_SYMBOL,
   SETTING_USE,
-  TEAPOT_SVG,
+  settingSymbolMarkup,
   TREE_SVG,
+  teapotMarkup,
   trayMarkup,
-  watchSvg,
+  watchMarkup,
 } from './figures.ts';
 import './tea-party.css';
 
@@ -136,7 +136,7 @@ function mount(shell: DemoShell): void {
 
   // --- The world: a perspective, the table plane, and what stands on it.
   const world = shell.layer('tp__world');
-  world.innerHTML = `${SETTING_SYMBOL}<div class="tp__scene"><div class="tp__cloth"></div></div>`;
+  world.innerHTML = `${settingSymbolMarkup()}<div class="tp__scene"><div class="tp__cloth"></div></div>`;
   const scene = world.querySelector<HTMLElement>('.tp__scene') as HTMLElement;
   const piece = (
     className: string,
@@ -163,7 +163,7 @@ function mount(shell: DemoShell): void {
       places.push({ el, slot });
     }
   }
-  const pot = piece('tp__teapot', TEAPOT_SVG, 30, -330, 230);
+  const pot = piece('tp__teapot', teapotMarkup(), 30, -330, 230);
   piece('tp__butter-dish', butterMarkup(), -40, -560, 120);
   // The party, crowded together at the far end. Their seat follows the round.
   const hatter = piece(
@@ -427,9 +427,9 @@ function mount(shell: DemoShell): void {
   const dates = shell.locale.numberFormat({ maximumFractionDigits: 0 });
   const watchLayer = shell.layer('tp__watch-layer');
   watchLayer.innerHTML =
-    `<div class="tp__cup tp__cup--back">${CUP_BACK_SVG}</div>` +
-    `<div class="tp__watch">${watchSvg((n) => dates.format(n))}</div>` +
-    `<div class="tp__cup tp__cup--front">${CUP_FRONT_SVG}</div>` +
+    `<div class="tp__cup tp__cup--back">${cupBackMarkup()}</div>` +
+    `<div class="tp__watch">${watchMarkup((n) => dates.format(n))}</div>` +
+    `<div class="tp__cup tp__cup--front">${cupFrontMarkup()}</div>` +
     `<div class="tp__knife">${knifeMarkup()}</div>` +
     `<button type="button" class="tp__butter-pat" aria-label="${shell.ui.demoButterWatch ?? ''}">${butterMarkup()}</button>`;
   const watch = watchLayer.querySelector<HTMLElement>('.tp__watch') as HTMLElement;

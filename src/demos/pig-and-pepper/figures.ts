@@ -153,6 +153,12 @@ export function thingMarkup(
       // Reframe the 3:1 source in 7:2 without stretching; only clear margins overflow.
       placement = 'x="0" y="-3.333333" width="140" height="46.666666"';
       break;
+    case 'frying-pan':
+      src = new URL('../../assets/images/figures/frying-pan.any.generated.webp', import.meta.url)
+        .href;
+      box = '140 80';
+      placement = 'x="0.079538" y="8.041052" width="138.338679" height="79.050674"';
+      break;
     default:
       return fallback;
   }

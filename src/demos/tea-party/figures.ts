@@ -7,12 +7,7 @@
 
 import { type ArtStyle, artStyle } from '../art/treatments.ts';
 
-/** One laid place, seen a little from above: saucer, cup, plate and spoon; and
-    the mess that appears on it once it has been used (`--dirt`). */
-export const SETTING_SYMBOL = `
-<svg class="tp__defs" width="0" height="0" focusable="false" aria-hidden="true">
-  <symbol id="tp-setting" viewBox="0 0 160 120">
-    <ellipse cx="104" cy="92" rx="44" ry="14" fill="var(--tp-china-shade)"/>
+const SETTING_CLEAN = `    <ellipse cx="104" cy="92" rx="44" ry="14" fill="var(--tp-china-shade)"/>
     <ellipse cx="104" cy="88" rx="40" ry="12" fill="var(--tp-china)"/>
     <ellipse cx="104" cy="88" rx="26" ry="7" fill="none" stroke="var(--tp-china-rim)" stroke-width="2"/>
     <ellipse cx="46" cy="94" rx="34" ry="11" fill="var(--tp-china-shade)"/>
@@ -22,7 +17,9 @@ export const SETTING_SYMBOL = `
     <ellipse cx="46" cy="58" rx="15" ry="4" fill="var(--tp-tea)"/>
     <path d="M66 64 q14 2 12 14 q-2 8 -12 8" stroke="var(--tp-china)" stroke-width="5" fill="none"/>
     <path d="M120 70 l22 16" stroke="var(--tp-china-shade)" stroke-width="4" stroke-linecap="round"/>
-    <g style="opacity: var(--dirt, 0)">
+`;
+
+const SETTING_DIRT = `<g style="opacity: var(--dirt, 0)">
       <ellipse cx="104" cy="86" rx="16" ry="5" fill="var(--tp-stain)"/>
       <path d="M86 84 q6 -8 14 -2 M110 80 q8 -4 12 4" stroke="var(--tp-stain)" stroke-width="3" fill="none" stroke-linecap="round"/>
       <path d="M30 60 l-12 -30 h38 l-10 30 z" fill="var(--tp-china)" transform="rotate(-70 46 60)"/>
@@ -30,7 +27,51 @@ export const SETTING_SYMBOL = `
       <circle cx="70" cy="100" r="3" fill="var(--tp-crumb)"/>
       <circle cx="126" cy="104" r="2.5" fill="var(--tp-crumb)"/>
       <circle cx="140" cy="96" r="2" fill="var(--tp-crumb)"/>
-    </g>
+    </g>`;
+
+const TEAPOT_SHADOW = `<ellipse cx="100" cy="140" rx="70" ry="10" fill="var(--tp-shadow)"/>`;
+
+const TEAPOT_BODY = `  <path d="M46 70 C46 36 154 36 154 70 L160 118 Q160 134 142 134 L58 134 Q40 134 40 118 Z" fill="var(--tp-china)"/>
+  <path d="M154 74 C186 66 196 88 176 110" stroke="var(--tp-china)" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M46 78 C8 72 6 114 46 108" stroke="var(--tp-china)" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M60 96 q40 20 80 0" stroke="var(--tp-china-rim)" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <ellipse cx="100" cy="52" rx="42" ry="10" fill="var(--tp-tea)"/>
+`;
+
+const TEAPOT_LID = `<g class="tp__lid">
+    <path d="M58 52 Q100 24 142 52 Z" fill="var(--tp-china-shade)"/>
+    <ellipse cx="100" cy="52" rx="44" ry="8" fill="var(--tp-china)"/>
+    <circle cx="100" cy="30" r="7" fill="var(--tp-china-shade)"/>
+  </g>`;
+
+const TEAPOT_STEAM = `<g class="tp__steam">
+    <path d="M80 40 q-8 -14 0 -28 M100 36 q-10 -16 0 -32 M120 40 q-8 -14 0 -28" stroke="var(--tp-steam)" stroke-width="5" fill="none" stroke-linecap="round"/>
+  </g>`;
+
+const WATCH_BODY = `  <rect x="184" y="0" width="32" height="40" rx="8" fill="var(--tp-brass)"/>
+  <circle cx="200" cy="18" r="16" fill="var(--tp-brass)"/>
+  <circle cx="200" cy="220" r="196" fill="var(--tp-brass-deep)"/>
+  <circle cx="200" cy="220" r="184" fill="var(--tp-brass)"/>
+  <circle cx="200" cy="220" r="170" fill="var(--tp-china)"/>
+  <circle cx="200" cy="220" r="128" fill="none" stroke="var(--tp-china-rim)" stroke-width="2"/>
+`;
+
+const CUP_BACK_SURFACE = `  <ellipse cx="150" cy="60" rx="120" ry="34" fill="var(--tp-china-shade)"/>
+  <ellipse cx="150" cy="60" rx="104" ry="26" fill="var(--tp-tea)"/>
+`;
+
+const CUP_RINGS = `<g class="tp__rings">
+    <ellipse class="tp__ring" cx="150" cy="60" rx="30" ry="8" fill="none" stroke="var(--tp-china)" stroke-width="3"/>
+    <ellipse class="tp__ring tp__ring--2" cx="150" cy="60" rx="30" ry="8" fill="none" stroke="var(--tp-china)" stroke-width="3"/>
+    <ellipse class="tp__ring tp__ring--3" cx="150" cy="60" rx="30" ry="8" fill="none" stroke="var(--tp-china)" stroke-width="3"/>
+  </g>`;
+
+/** One laid place, seen a little from above: saucer, cup, plate and spoon; and
+    the mess that appears on it once it has been used (`--dirt`). */
+export const SETTING_SYMBOL = `
+<svg class="tp__defs" width="0" height="0" focusable="false" aria-hidden="true">
+  <symbol id="tp-setting" viewBox="0 0 160 120">
+${SETTING_CLEAN}    ${SETTING_DIRT}
   </symbol>
 </svg>`;
 
@@ -52,20 +93,9 @@ export const FROWN_SVG = `
 /** The teapot nearest Alice: its lid lifts (`--lid`) and there is nothing but tea. */
 export const TEAPOT_SVG = `
 <svg viewBox="0 0 200 150" focusable="false">
-  <ellipse cx="100" cy="140" rx="70" ry="10" fill="var(--tp-shadow)"/>
-  <path d="M46 70 C46 36 154 36 154 70 L160 118 Q160 134 142 134 L58 134 Q40 134 40 118 Z" fill="var(--tp-china)"/>
-  <path d="M154 74 C186 66 196 88 176 110" stroke="var(--tp-china)" stroke-width="12" fill="none" stroke-linecap="round"/>
-  <path d="M46 78 C8 72 6 114 46 108" stroke="var(--tp-china)" stroke-width="12" fill="none" stroke-linecap="round"/>
-  <path d="M60 96 q40 20 80 0" stroke="var(--tp-china-rim)" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <ellipse cx="100" cy="52" rx="42" ry="10" fill="var(--tp-tea)"/>
-  <g class="tp__lid">
-    <path d="M58 52 Q100 24 142 52 Z" fill="var(--tp-china-shade)"/>
-    <ellipse cx="100" cy="52" rx="44" ry="8" fill="var(--tp-china)"/>
-    <circle cx="100" cy="30" r="7" fill="var(--tp-china-shade)"/>
-  </g>
-  <g class="tp__steam">
-    <path d="M80 40 q-8 -14 0 -28 M100 36 q-10 -16 0 -32 M120 40 q-8 -14 0 -28" stroke="var(--tp-steam)" stroke-width="5" fill="none" stroke-linecap="round"/>
-  </g>
+  ${TEAPOT_SHADOW}
+${TEAPOT_BODY}  ${TEAPOT_LID}
+  ${TEAPOT_STEAM}
 </svg>`;
 
 /**
@@ -82,13 +112,7 @@ export function watchSvg(format: (n: number) => string = String): string {
   }).join('');
   return `
 <svg viewBox="0 0 400 440" focusable="false">
-  <rect x="184" y="0" width="32" height="40" rx="8" fill="var(--tp-brass)"/>
-  <circle cx="200" cy="18" r="16" fill="var(--tp-brass)"/>
-  <circle cx="200" cy="220" r="196" fill="var(--tp-brass-deep)"/>
-  <circle cx="200" cy="220" r="184" fill="var(--tp-brass)"/>
-  <circle cx="200" cy="220" r="170" fill="var(--tp-china)"/>
-  <circle cx="200" cy="220" r="128" fill="none" stroke="var(--tp-china-rim)" stroke-width="2"/>
-  <g class="tp__dates" transform="translate(0 20)">${dates}</g>
+${WATCH_BODY}  <g class="tp__dates" transform="translate(0 20)">${dates}</g>
   <g class="tp__watch-hand">
     <path d="M200 232 L200 108" stroke="var(--ink-primary)" stroke-width="6" stroke-linecap="round"/>
     <path d="M200 108 l-8 16 h16 z" fill="var(--ink-primary)"/>
@@ -157,13 +181,7 @@ export function deskMarkup(
 /** The March Hare's cup of tea, in two halves so the watch can go in between. */
 export const CUP_BACK_SVG = `
 <svg viewBox="0 0 300 220" focusable="false">
-  <ellipse cx="150" cy="60" rx="120" ry="34" fill="var(--tp-china-shade)"/>
-  <ellipse cx="150" cy="60" rx="104" ry="26" fill="var(--tp-tea)"/>
-  <g class="tp__rings">
-    <ellipse class="tp__ring" cx="150" cy="60" rx="30" ry="8" fill="none" stroke="var(--tp-china)" stroke-width="3"/>
-    <ellipse class="tp__ring tp__ring--2" cx="150" cy="60" rx="30" ry="8" fill="none" stroke="var(--tp-china)" stroke-width="3"/>
-    <ellipse class="tp__ring tp__ring--3" cx="150" cy="60" rx="30" ry="8" fill="none" stroke="var(--tp-china)" stroke-width="3"/>
-  </g>
+${CUP_BACK_SURFACE}  ${CUP_RINGS}
 </svg>`;
 
 export const CUP_FRONT_SVG = `
@@ -265,3 +283,76 @@ export const NOTES_SVG = `
   <g class="tp__note tp__note--2"><ellipse cx="56" cy="52" rx="8" ry="6" transform="rotate(-20 56 52)" fill="var(--ink-primary)"/><path d="M63 49 V14" stroke="var(--ink-primary)" stroke-width="3"/></g>
   <g class="tp__note tp__note--3"><ellipse cx="92" cy="60" rx="8" ry="6" transform="rotate(-20 92 60)" fill="var(--ink-primary)"/><ellipse cx="110" cy="54" rx="8" ry="6" transform="rotate(-20 110 54)" fill="var(--ink-primary)"/><path d="M99 57 V20 L117 14 V51" stroke="var(--ink-primary)" stroke-width="3" fill="none"/></g>
 </svg>`;
+
+/** The shared symbol keeps dirt independent for every one of the fourteen seats. */
+export function settingSymbolMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return SETTING_SYMBOL;
+  const src = new URL(
+    '../../assets/images/figures/place-setting-clean.any.generated.webp',
+    import.meta.url,
+  ).href;
+  return SETTING_SYMBOL.replace(
+    SETTING_CLEAN,
+    `<image href="${src}" x="0" y="0" width="160" height="120" preserveAspectRatio="xMidYMid meet" data-generated-place-setting-clean=""/>`,
+  );
+}
+
+/** The original shadow, lid hinge and steam remain separate animated SVG layers. */
+export function teapotMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return TEAPOT_SVG;
+  const body = new URL(
+    '../../assets/images/figures/teapot-body.any.generated.webp',
+    import.meta.url,
+  ).href;
+  const lid = new URL('../../assets/images/figures/teapot-lid.any.generated.webp', import.meta.url)
+    .href;
+  return TEAPOT_SVG.replace(
+    TEAPOT_BODY,
+    `<image href="${body}" x="-0.423077" y="4.615385" width="194.923077" height="146.192308" preserveAspectRatio="xMidYMid meet" data-generated-teapot-body=""/>`,
+  ).replace(
+    TEAPOT_LID,
+    `<g class="tp__lid"><image href="${lid}" x="56" y="23" width="88" height="37" preserveAspectRatio="xMidYMid meet" data-generated-teapot-lid=""/></g>`,
+  );
+}
+
+/** Only the blank casing is rasterized; dates, hand, butter and crumbs stay live. */
+export function watchMarkup(
+  format: (n: number) => string = String,
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  const svg = watchSvg(format);
+  if (style !== 'engraved') return svg;
+  const src = new URL('../../assets/images/figures/watch-body.any.generated.webp', import.meta.url)
+    .href;
+  return svg.replace(
+    WATCH_BODY,
+    `<image href="${src}" x="-0.735219" y="-10.853217" width="402.742320" height="442.444570" preserveAspectRatio="xMidYMid meet" data-generated-watch-body=""/>`,
+  );
+}
+
+/** The three ring ripples remain above the back surface and behind the watch. */
+export function cupBackMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return CUP_BACK_SVG;
+  const src = new URL('../../assets/images/figures/cup-back.any.generated.webp', import.meta.url)
+    .href;
+  return CUP_BACK_SVG.replace(
+    CUP_BACK_SURFACE,
+    `<image href="${src}" x="1.181430" y="-1.563742" width="294.865747" height="125.778670" preserveAspectRatio="xMidYMid meet" data-generated-cup-back=""/>`,
+  );
+}
+
+/** The front wall occludes the sinking watch without moving its cup wrapper. */
+export function cupFrontMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return CUP_FRONT_SVG;
+  const src = new URL('../../assets/images/figures/cup-front.any.generated.webp', import.meta.url)
+    .href;
+  return `<svg viewBox="0 0 300 220" focusable="false"><image href="${src}" x="-3.035811" y="12.483784" width="302.485135" height="222.263514" preserveAspectRatio="xMidYMid meet" data-generated-cup-front=""/></svg>`;
+}

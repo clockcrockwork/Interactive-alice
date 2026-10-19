@@ -108,7 +108,7 @@ preview exercise the same output.
 
 ## 4. Checks
 
-On every pull request:
+Automatic on every pull request and `main` push, without browser installation:
 
 ```text
 npm run types:schema   # then a diff check: the types still match schema/
@@ -116,13 +116,18 @@ npm run lint           # Biome check: format and lint, fails on any diagnostic
 npm run typecheck
 npm test               # Vitest unit layer
 npm run build          # also prints bundle and media sizes
-npm run test:e2e       # Playwright, desktop Chromium; needs the build above
 npm run check:data     # the three Python checkers, through the portable launcher
 npm run plan:fixture   # then a diff check on the fixture
 ```
 
 The two diff checks matter as much as the tests: they are what stop the generated
 types and the pacing fixture from drifting away from their sources.
+
+Before merge, explicitly verify the settled source head with desktop Chromium
+and accessibility tests. Run `npm run build` followed by `npm run test:e2e`
+locally, or use the manual GitHub workflow described below when remote evidence
+is needed. Do not run the expensive remote browser pass on every work commit or
+Draft update; reuse a successful result only while its exact source SHA is current.
 
 `npm run test:e2e` serves the existing `dist/`, so the build has to come first. The
 wider browser pass, desktop and phone Chromium plus Firefox and WebKit, is
@@ -131,12 +136,29 @@ rather than to every pull request.
 
 ### CI execution
 
-The repository uses standard GitHub-hosted runners for ordinary pull-request and
-`main` checks. The repository is public, so these standard hosted jobs do not
-consume the account's private-repository Actions minutes.
+The repository uses standard GitHub-hosted runners for the automatic nonbrowser
+checks and explicit browser verification. The repository is public, so these
+standard hosted jobs do not consume the account's private-repository Actions minutes.
 
-A local run is useful evidence when diagnosing a failure, but it does not replace
-the required GitHub checks for a merge once branch protection is enabled.
+For remote browser evidence, run `checks.yml` via `workflow_dispatch` on `main`
+with a full 40-character `target_sha`. This deliberately uses the trusted workflow
+on `main` while testing a separately specified repository commit. The manual job
+validates the commit through the repository API, checks out that exact SHA,
+installs its locked dependencies and rebuilds its own output before running E2E.
+It does not reuse an automatic job's build, upload an artifact or dependency cache,
+write a commit status, or deploy. Its maximum is 20 minutes, including setup.
+
+Record the run URL and the summary's verified checkout SHA in the PR, and check
+that the SHA still matches the head being reviewed. A head change requires a new
+assessment. The workflow's GitHub check is not a PR required check for the target
+SHA: the summary distinguishes tested source from workflow source. An automatic
+browser job marked `skipped` is not an E2E pass. Preserve this distinction when
+reviewing a green automatic run.
+
+A local run is useful exact-source evidence, but it does not replace required
+GitHub checks once branch protection is enabled. Before enabling protection,
+verify a compatible required-check contract. Do not require the manual evidence
+job or rely on its automatic skipped result to enforce browser verification.
 
 The build's size output is the budget record. A pull request that grows a budget
 in [`performance-budget.md`](performance-budget.md) says so in its description;

@@ -491,7 +491,8 @@ CSS perspective origin and its lines tween in `z`.
 
 **Interaction.** The pointer leans the camera (a fine pointer only; on touch the
 camera sways by itself, or the phone's tilt steers it). Drag across the well and Alice
-tumbles, spinning on and settling by herself; scrolling fast is falling fast, the dust
+tumbles, spinning on and settling by herself (a finger's drag too: the stage keeps
+sideways moves, `touch-action: pan-y`, and leaves vertical ones to the scroll); scrolling fast is falling fast, the dust
 streaks and she tumbles. Tap a book, a jar or a map on a passing shelf (a ray to the
 wall, then the nearest thing to where it lands) and it jumps into her hand; she would
 not drop it, so *Put it back* tucks it into a cupboard. The jar is optional play: tap or click it, or press the

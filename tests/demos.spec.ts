@@ -569,24 +569,20 @@ test('the rabbit hole: a drag across the well tumbles her', async ({ page }) => 
   await page.goto(demo?.url ?? '');
   await scrollTo(page, 0.3);
   await page.waitForTimeout(500);
-  await page.mouse.move(300, 400);
+  // A finger's drag reaches the well as a mouse's does: the stage leaves only
+  // vertical moves to the scroll. (No engine offers a test a held, moving touch,
+  // so the drag below is a mouse's, and the touch path is this property.)
+  await expect(page.locator('.demo__stage')).toHaveCSS('touch-action', 'pan-y');
+  // Across the middle of the frame, whatever its width; the spin is a moment that
+  // settles by itself, so it is watched on every frame from inside the page.
+  const tumble = await watchProperty(page, '.rh__alice', '--tumble');
+  const size = await page.evaluate(() => ({ w: innerWidth, h: innerHeight }));
+  await page.mouse.move(size.w * 0.25, size.h * 0.55);
   await page.mouse.down();
-  await page.mouse.move(700, 400, { steps: 10 });
+  await page.mouse.move(size.w * 0.75, size.h * 0.55, { steps: 10 });
   await page.mouse.up();
   await expect
-    .poll(
-      () =>
-        page.evaluate(() =>
-          Math.abs(
-            Number(
-              document
-                .querySelector<HTMLElement>('.rh__alice')
-                ?.style.getPropertyValue('--tumble') ?? 0,
-            ),
-          ),
-        ),
-      { timeout: 4000 },
-    )
+    .poll(async () => Math.max(0, ...(await tumble()).map(Math.abs)), { timeout: 8000 })
     .toBeGreaterThan(5);
 });
 

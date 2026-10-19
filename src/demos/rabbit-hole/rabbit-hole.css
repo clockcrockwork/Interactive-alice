@@ -50,6 +50,13 @@
     visibility: hidden;
   }
 
+  /* A sideways drag across the well tumbles her, a finger's as well as a mouse's:
+     the stage keeps horizontal moves for the page and leaves vertical ones to the
+     scroll. Without it a touch drag was taken as a scroll and never reached her. */
+  .demo--rabbit-hole .demo__stage {
+    touch-action: pan-y;
+  }
+
   .demo--rabbit-hole .demo__captions {
     /* Sentences fly up out of the depth: the beat is the perspective origin. */
     perspective: 800px;

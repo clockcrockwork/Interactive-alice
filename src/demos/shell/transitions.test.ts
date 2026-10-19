@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { transitionKindFor } from './transitions.ts';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { installTransitions, transitionKindFor } from './transitions.ts';
 
 describe('which way the screen turns between demo pages', () => {
   it('swallows the screen into a hole for the well, the hall and the chimney', () => {
@@ -27,5 +27,44 @@ describe('which way the screen turns between demo pages', () => {
     expect(transitionKindFor('https://x/demos/ja/rabbit-hole/')).toBe('hole');
     expect(transitionKindFor('/sub/demos/ja/dormouse/?probe=1')).toBe('whirl');
     expect(transitionKindFor('https://x/demos/ja/trial/')).toBe('cards');
+  });
+});
+
+describe('a cross-document transition the browser skips', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('is not an error: its rejected promises are handled, on leaving and on arriving', async () => {
+    const target = new EventTarget();
+    vi.stubGlobal('window', target);
+    vi.stubGlobal('location', { href: 'https://x/demos/ja/riverbank/' });
+    const unhandled: unknown[] = [];
+    const onUnhandled = (reason: unknown): void => {
+      unhandled.push(reason);
+    };
+    process.on('unhandledRejection', onUnhandled);
+    try {
+      installTransitions();
+      for (const type of ['pageswap', 'pagereveal']) {
+        const skipped = new Error('Transition was aborted because of invalid state');
+        const event = Object.assign(new Event(type), {
+          viewTransition: {
+            types: new Set<string>(),
+            ready: Promise.reject(skipped),
+            finished: Promise.reject(skipped),
+          },
+          activation: { entry: { url: 'https://x/demos/ja/riverbank/' } },
+        });
+        target.dispatchEvent(event);
+        expect([...event.viewTransition.types]).toEqual([
+          transitionKindFor('https://x/demos/ja/riverbank/'),
+        ]);
+      }
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      expect(unhandled).toEqual([]);
+    } finally {
+      process.off('unhandledRejection', onUnhandled);
+    }
   });
 });

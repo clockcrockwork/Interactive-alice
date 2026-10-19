@@ -38,19 +38,38 @@ export const transitionKindFor = (url: string): 'hole' | 'whirl' | 'cards' => {
   return (id && KIND[id]) || 'cards';
 };
 
+interface PageTransition {
+  types: Set<string>;
+  ready?: Promise<unknown>;
+  finished?: Promise<unknown>;
+}
+
 interface PageTransitionEvent extends Event {
-  viewTransition?: { types: Set<string> };
+  viewTransition?: PageTransition | null;
   activation?: { entry?: { url?: string | null } | null } | null;
 }
+
+/**
+ * The browser may skip a cross-document transition after it has begun (the other
+ * page's opt-in, a navigation that came too fast); its promises then reject. The
+ * transition is an enhancement, so a skipped one is not an error: the page simply
+ * arrives without it.
+ */
+const tolerateSkip = (transition: PageTransition | null | undefined): void => {
+  transition?.ready?.catch(() => undefined);
+  transition?.finished?.catch(() => undefined);
+};
 
 export function installTransitions(): void {
   window.addEventListener('pageswap', (event) => {
     const swap = event as PageTransitionEvent;
     const destination = swap.activation?.entry?.url ?? '';
     swap.viewTransition?.types.add(transitionKindFor(destination));
+    tolerateSkip(swap.viewTransition);
   });
   window.addEventListener('pagereveal', (event) => {
     const reveal = event as PageTransitionEvent;
     reveal.viewTransition?.types.add(transitionKindFor(location.href));
+    tolerateSkip(reveal.viewTransition);
   });
 }

@@ -35,7 +35,7 @@ describe('a cross-document transition the browser skips', () => {
     vi.unstubAllGlobals();
   });
 
-  it('is not an error: its rejected promises are handled, on leaving and on arriving', async () => {
+  it('is not an error on leaving: its rejected promises are handled', async () => {
     const target = new EventTarget();
     vi.stubGlobal('window', target);
     vi.stubGlobal('location', { href: 'https://x/demos/ja/riverbank/' });
@@ -46,7 +46,7 @@ describe('a cross-document transition the browser skips', () => {
     process.on('unhandledRejection', onUnhandled);
     try {
       installTransitions();
-      for (const type of ['pageswap', 'pagereveal']) {
+      for (const type of ['pageswap']) {
         const skipped = new Error('Transition was aborted because of invalid state');
         const event = Object.assign(new Event(type), {
           viewTransition: {

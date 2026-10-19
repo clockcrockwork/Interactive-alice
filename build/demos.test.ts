@@ -1,6 +1,8 @@
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { transitionKindFor } from '../src/demos/shell/transitions.ts';
 import {
+  arrivalScript,
   DEMO_ORDER,
   demoDir,
   generateDemoPages,
@@ -96,6 +98,20 @@ describe('the concept-demo pages', () => {
       const next = DEMO_ORDER[(position + 1) % DEMO_ORDER.length];
       expect(page?.html).toContain(`href="../${next}/"`);
     }
+  });
+
+  it('takes its half of the turn between pages in the head, before any module runs', () => {
+    for (const page of pages) {
+      const id = /^demos\/(?:[^/]+\/)?([^/]+)\/index\.html$/.exec(page.path)?.[1];
+      const kind = transitionKindFor(id && id !== 'index.html' ? `/demos/${id}/` : '/demos/');
+      const script = arrivalScript(kind);
+      expect(page.html, page.path).toContain(script);
+      expect(page.html.indexOf(script), page.path).toBeLessThan(
+        page.html.indexOf('<script type="module"'),
+      );
+    }
+    expect(arrivalScript('hole')).toContain('t.types.add("hole")');
+    expect(arrivalScript('hole')).toContain('data-arriving');
   });
 
   it('applies the remembered drawing before first paint and offers the three, engraved pressed', () => {

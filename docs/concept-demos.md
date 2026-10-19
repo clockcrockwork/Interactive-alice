@@ -326,10 +326,15 @@ the phone's tilt drives the shell's pointer, so every demo that leans with the
 pointer leans with the phone. Not offered under reduced motion.
 
 **Transitions.** Leaving a page for another sets a view-transition type from the
-destination (`shell/transitions.ts`, on `pageswap` and `pagereveal`): a well, the
-hall or the chimney swallow the screen into a hole; the spiral, the pool and the wood
-whirl it; a court, a race or the index deal it like a card. A browser without the
-Navigation API simply navigates.
+destination: a well, the hall or the chimney swallow the screen into a hole; the
+spiral, the pool and the wood whirl it; a court, a race or the index deal it like a
+card. The leaving page sets it on `pageswap` (`shell/transitions.ts`); the arriving
+page's half runs from a small script in its head (`arrivalScript` in
+`build/demos.ts`), because `pagereveal` fires before any module script, with the
+page's own kind written by the build. That script also absorbs a turn the browser
+skips and marks the root `data-arriving` until the turn is over, so a test waits for
+the page as a reader does. A browser without cross-document view transitions simply
+navigates.
 
 **Going on by itself.** Scroll is the guaranteed path, and the link to the next
 scene is a link. A reader who would rather be carried can turn on *Go on by

@@ -57,9 +57,13 @@ test.describe('the demos in Japanese', () => {
     const switcher = page.locator('.demos__languages');
     await expect(switcher).toHaveAttribute('aria-label', ui.demoLanguages ?? '-');
     await expect(switcher.locator(`a[lang="${LOCALE}"]`)).toHaveAttribute('aria-current', 'page');
+    // Each page is let finish turning in before the next link is followed.
+    const arrived = () => expect(page.locator('html')).not.toHaveAttribute('data-arriving', '');
+    await arrived();
     await switcher.locator(`a[lang="${baseIndex?.locale}"]`).click();
     await expect(page).toHaveURL(/\/demos\/$/);
     await expect(page.locator('html')).toHaveAttribute('lang', baseIndex?.locale ?? '-');
+    await arrived();
     await page.locator(`.demos__languages a[lang="${LOCALE}"]`).click();
     await expect(page).toHaveURL(new RegExp(`/demos/${LOCALE}/$`));
     // The cards are read by early readers: no technical words in Latin letters.
@@ -69,6 +73,7 @@ test.describe('the demos in Japanese', () => {
       expect(card).not.toMatch(/[A-Za-z]/);
     }
     // And a card leads to that demo in Japanese.
+    await arrived();
     await page.locator('.demos__card[data-demo="riverbank"] a').click();
     await expect(page).toHaveURL(new RegExp(`/demos/${LOCALE}/riverbank/$`));
     await expect(page.locator('.demo__back')).toHaveText(ui.demoBack ?? '-');

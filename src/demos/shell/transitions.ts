@@ -60,16 +60,17 @@ const tolerateSkip = (transition: PageTransition | null | undefined): void => {
   transition?.finished?.catch(() => undefined);
 };
 
+/**
+ * The leaving page's half: the turn is chosen by where it is going. The arriving
+ * page's half is not here: `pagereveal` fires before a module script runs, so the
+ * build writes it into each page's head instead (`arrivalScript` in build/demos.ts),
+ * with that page's own kind already known.
+ */
 export function installTransitions(): void {
   window.addEventListener('pageswap', (event) => {
     const swap = event as PageTransitionEvent;
     const destination = swap.activation?.entry?.url ?? '';
     swap.viewTransition?.types.add(transitionKindFor(destination));
     tolerateSkip(swap.viewTransition);
-  });
-  window.addEventListener('pagereveal', (event) => {
-    const reveal = event as PageTransitionEvent;
-    reveal.viewTransition?.types.add(transitionKindFor(location.href));
-    tolerateSkip(reveal.viewTransition);
   });
 }

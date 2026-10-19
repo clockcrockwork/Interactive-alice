@@ -12,6 +12,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { figure } from '../src/demos/art/art.ts';
+import { transitionKindFor } from '../src/demos/shell/transitions.ts';
 import type {
   ChapterStructureFile,
   ExperienceConceptDemoFile,
@@ -37,6 +38,19 @@ const ALICE_SCRIPT =
   '<script>try{var d=document.documentElement,a=localStorage.getItem("alice-demos:alice"),' +
   'r=localStorage.getItem("alice-demos:art");if(a==="blue")d.dataset.alice=a;' +
   'if(r==="flat"||r==="paper")d.dataset.art=r}catch(e){}</script>';
+
+/**
+ * The arriving page's half of the turn between pages, inline in the head because
+ * `pagereveal` fires before any module script runs. It names the page's own kind of
+ * turn, absorbs a turn the browser skips, and marks the root `data-arriving` until
+ * the turn is over, so nothing (a reader's second click, a test) cuts it short
+ * unseen. `kind` comes from `transitionKindFor`, the same rule the leaving page uses.
+ */
+export const arrivalScript = (kind: string): string =>
+  '<script>addEventListener("pagereveal",function(e){var t=e.viewTransition;if(!t)return;' +
+  `try{t.types.add(${JSON.stringify(kind)})}catch(x){}var d=document.documentElement;` +
+  'd.setAttribute("data-arriving","");t.ready.catch(function(){});' +
+  't.finished.catch(function(){}).then(function(){d.removeAttribute("data-arriving")})})</script>';
 
 /** Order the index lists them in, and the order "next scene" follows. */
 export const DEMO_ORDER = [
@@ -475,6 +489,7 @@ ${htmlOpen(project.locale, project.settings)}
     <link rel="icon" href="${root}assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="${root}styles/base.css" />
     ${ALICE_SCRIPT}
+    ${arrivalScript(transitionKindFor(`/demos/${demo.id}/`))}
     <script type="module" src="${root}demos/${demo.id}/main.ts"></script>
     <script type="application/json" id="demo-ui">${escapeHtml(JSON.stringify(forScript)).replace(/&quot;/g, '"')}</script>
   </head>
@@ -623,6 +638,7 @@ ${htmlOpen(project.locale, project.settings)}
     <link rel="icon" href="${root}assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="${root}styles/base.css" />
     ${ALICE_SCRIPT}
+    ${arrivalScript(transitionKindFor('/demos/'))}
     <script type="module" src="${root}demos/index/main.ts"></script>
   </head>
   <body class="demo-body">

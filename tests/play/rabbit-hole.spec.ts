@@ -93,6 +93,7 @@ const changedDuring = async (
   selector: string,
   attribute: string,
   action: () => Promise<void>,
+  timeout = 5000,
 ) => {
   await page.evaluate(
     ([sel, name]) => {
@@ -111,7 +112,7 @@ const changedDuring = async (
   await action();
   await expect
     .poll(() => page.evaluate(() => (window as unknown as { __changed?: boolean }).__changed), {
-      timeout: 5000,
+      timeout,
     })
     .toBe(true);
 };
@@ -234,7 +235,21 @@ test.describe('the rabbit hole: above ground, the jar, the curtsey and the chase
     expect(second).not.toBe(first);
     const call = page.locator('.rh__prop-call');
     await expect(call).toHaveAttribute('data-shown', '');
-    await changedDuring(page, '.rh__chaser--cat', 'style', () => call.click());
+    const pounces = () => page.evaluate(() => window.__aliceDinahPounces?.() ?? 0);
+    const taken = await pounces();
+    // The press is taken in its window at once; the lunge it starts is drawn on the
+    // next frames, which a software WebGL renderer under load may space seconds
+    // apart, so the drawing gets the same budget as this page's other frames.
+    await changedDuring(
+      page,
+      '.rh__chaser--cat',
+      'style',
+      async () => {
+        await call.click();
+        expect(await pounces()).toBe(taken + 1);
+      },
+      20_000,
+    );
     await atCue(page, 'dream', 0.5);
     await expect.poll(() => opacityOf(page, '.rh__chase'), { timeout: 20_000 }).toBeLessThan(0.05);
     await expect(call).not.toHaveAttribute('data-shown', '');

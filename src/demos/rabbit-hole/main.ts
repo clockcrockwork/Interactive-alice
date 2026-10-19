@@ -406,7 +406,9 @@ function mount(shell: DemoShell): void {
       });
     };
     const behind = lead - dir * gap;
-    const catAngle = first ? lead : behind;
+    // Called, Dinah springs forward in either lap: away from the bat while it
+    // chases her, at it once she is the chaser (the gap above closes).
+    const catAngle = first ? lead + pounce.lunge * 0.3 * dir : behind;
     const batAngle = first ? behind : lead + Math.sin(pounce.lunge * Math.PI) * 0.35 * dir;
     place(chaseCat, catAngle, true);
     place(chaseBat, batAngle, false);
@@ -428,10 +430,15 @@ function mount(shell: DemoShell): void {
   const callButton = shell.prop(shell.ui.demoCallDinah ?? '', 'rh__prop-call');
   const inChase = (): boolean => master.time() >= iCats && master.time() < iCats + 0.9;
   let pounceTimer = 0;
+  let pounces = 0;
+  // Test seam: how many calls Dinah has answered, counted when the press is taken,
+  // so a test knows the press landed in its window before any frame is drawn.
+  window.__aliceDinahPounces = () => pounces;
   const pounceNow = (): void => {
     if (!inChase()) {
       return;
     }
+    pounces += 1;
     shell.sound.play('whoosh', 0.35);
     gsap.fromTo(
       pounce,
@@ -833,6 +840,8 @@ declare global {
   interface Window {
     /** Test seam: the shelves' things in frame, at client points. */
     __aliceShelves?: () => { kind: string; x: number; y: number }[];
+    /** Test seam: how many times Dinah has pounced at a call. */
+    __aliceDinahPounces?: () => number;
   }
 }
 

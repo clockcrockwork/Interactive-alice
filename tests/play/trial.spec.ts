@@ -8,7 +8,7 @@
  */
 
 import { expect, test } from '@playwright/test';
-import { atCue, customProperty, demos, scrollTo } from '../demo-helpers.ts';
+import { atCue, customProperty, demos, press, scrollTo } from '../demo-helpers.ts';
 
 const trial = demos.find((candidate) => candidate.demo === 'trial');
 
@@ -23,9 +23,10 @@ test('the trial: pressing Dodge left while the cards fly makes some of them miss
   await atCue(page, 'attack');
   const left = page.locator('.tr__prop-dodge--left');
   await expect(left).toBeVisible();
-  // The lean lasts about a second; keep pressing through the flight.
+  // The lean lasts about a second; keep pressing through the flight, where the
+  // button is, as a reader taps (Playwright's click scrolls the pinned stage).
   for (let i = 0; i < 6; i += 1) {
-    await left.click();
+    await press(page, left);
     await page.waitForTimeout(500);
   }
   await expect

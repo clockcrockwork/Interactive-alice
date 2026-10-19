@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { atCue, customProperty, demos, scrollTo } from '../demo-helpers.ts';
+import { atCue, customProperty, demos, press, scrollTo } from '../demo-helpers.ts';
 
 /**
  * Drink Me: peeking behind the low curtain before the story finds the little door.
@@ -21,7 +21,7 @@ test.describe('Drink Me: the curtain', () => {
     await expect(page.locator(BUTTON)).toBeVisible();
     await expect.poll(() => customProperty(page, CURTAIN, '--curtain-lift')).toBe(0);
 
-    await page.locator(BUTTON).click();
+    await press(page, page.locator(BUTTON));
     await expect(page.locator(CURTAIN)).toHaveAttribute('data-peek', '');
     // The lift is a tween; on a slow renderer only its start may be seen before
     // the moment is over, so any lift at all is the check here.
@@ -45,9 +45,9 @@ test.describe('Drink Me: the curtain', () => {
   test('pressing again keeps it up until it is pressed once more', async ({ page }) => {
     await page.goto(demo?.url ?? '');
     await atCue(page, 'hall', 0.5);
-    await page.locator(BUTTON).click();
+    await press(page, page.locator(BUTTON));
     await expect(page.locator(CURTAIN)).toHaveAttribute('data-peek', '');
-    await page.locator(BUTTON).click();
+    await press(page, page.locator(BUTTON));
     await expect
       .poll(() => customProperty(page, CURTAIN, '--curtain-lift'), { timeout: 8000 })
       .toBeGreaterThan(0.5);
@@ -56,7 +56,7 @@ test.describe('Drink Me: the curtain', () => {
     await expect
       .poll(() => customProperty(page, CURTAIN, '--curtain-lift'), { timeout: 8000 })
       .toBeGreaterThan(0.5);
-    await page.locator(BUTTON).click();
+    await press(page, page.locator(BUTTON));
     await expect(page.locator(CURTAIN)).not.toHaveAttribute('data-peek', '', { timeout: 3000 });
   });
 
@@ -90,16 +90,46 @@ test.describe('Drink Me: the curtain', () => {
   }) => {
     await page.goto(demo?.url ?? '');
     await atCue(page, 'hall', 0.5);
-    const box = await page.locator(CURTAIN).boundingBox();
-    expect(box).not.toBeNull();
-    if (!box) {
-      return;
-    }
     // Pressing and holding keeps it up though she stoops and the curtain moves on
     // screen; letting go drops it. The curtain listens for pointer events of any
     // kind, and a held mouse button is the hold every engine can drive here, on
     // the phone projects as well (no engine offers a held touch to a test).
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.3);
+    //
+    // The hall leans toward a mouse, and a resting mouse lifts the curtain and she
+    // stoops, so the curtain moves as the pointer comes to it: aim, let it settle,
+    // and aim again until it holds still under the pointer, then press there.
+    const curtainSpot = () =>
+      page.evaluate((selector) => {
+        const b = document.querySelector(selector)?.getBoundingClientRect();
+        if (!b) {
+          return undefined;
+        }
+        // A point of the curtain itself, nearest its upper middle: lifted, it is
+        // shorter, and the little door and its glow show through below.
+        for (const fy of [0.3, 0.2, 0.4, 0.1, 0.5]) {
+          for (const fx of [0.5, 0.4, 0.6, 0.3, 0.7]) {
+            const x = b.x + b.width * fx;
+            const y = b.y + b.height * fy;
+            if (document.elementFromPoint(x, y)?.closest(selector)) {
+              return { x, y };
+            }
+          }
+        }
+        return undefined;
+      }, CURTAIN);
+    let spot = await curtainSpot();
+    for (let tries = 0; tries < 8 && spot; tries += 1) {
+      await page.mouse.move(spot.x, spot.y, { steps: 4 });
+      await page.waitForTimeout(400);
+      const again = await curtainSpot();
+      const still = again && Math.hypot(again.x - spot.x, again.y - spot.y) < 2;
+      spot = again;
+      if (still) {
+        break;
+      }
+    }
+    expect(spot, 'the curtain is there to press').toBeDefined();
+    await page.mouse.move(spot?.x ?? 0, spot?.y ?? 0);
     await page.mouse.down();
     await expect(page.locator(CURTAIN)).toHaveAttribute('data-peek', '');
     await page.waitForTimeout(2500);
@@ -116,8 +146,8 @@ test.describe('Drink Me: the curtain', () => {
   }) => {
     await page.goto(demo?.url ?? '');
     await atCue(page, 'hall', 0.5);
-    await page.locator(BUTTON).click();
-    await page.locator(BUTTON).click();
+    await press(page, page.locator(BUTTON));
+    await press(page, page.locator(BUTTON));
     await expect(page.locator(CURTAIN)).toHaveAttribute('data-peek', '');
 
     // Moving on to the story's own beat: the peek lets go and the story has the curtain.
@@ -168,21 +198,49 @@ test.describe('Drink Me: the key, the bottle and the table leg', () => {
     await page.goto(demo?.url ?? '');
     await atCue(page, 'key', 0.6);
     await expect.poll(() => opacityOf(page, '.dk__key'), { timeout: 5000 }).toBeGreaterThan(0.95);
-    // A tap on the key itself reaches it: nothing hidden lies over it.
-    const box = await page.locator('.dk__key').boundingBox();
-    expect(box).not.toBeNull();
-    if (!box) {
-      return;
+    // A tap on the key itself reaches it: nothing hidden lies over it. The hall
+    // leans toward the pointer, so the key moves as the mouse comes to it: aim,
+    // let the lean settle, and aim again until the key holds still under it, as a
+    // reader's hand does. The point is well inside the key, not on its edge.
+    const keySpot = () =>
+      page.evaluate(() => {
+        const b = document.querySelector('.dk__key')?.getBoundingClientRect();
+        if (!b) {
+          return undefined;
+        }
+        const onKey = (px: number, py: number) =>
+          Boolean(document.elementFromPoint(px, py)?.closest('.dk__key'));
+        for (let i = 3; i < 8; i += 1) {
+          for (let j = 2; j < 5; j += 1) {
+            const px = b.x + (b.width * i) / 10;
+            const py = b.y + (b.height * j) / 6;
+            const around = [
+              [0, 0],
+              [2, 0],
+              [-2, 0],
+              [0, 2],
+              [0, -2],
+            ];
+            if (around.every(([dx = 0, dy = 0]) => onKey(px + dx, py + dy))) {
+              return { x: px, y: py };
+            }
+          }
+        }
+        return undefined;
+      });
+    let spot = await keySpot();
+    for (let tries = 0; tries < 6 && spot; tries += 1) {
+      await page.mouse.move(spot.x, spot.y, { steps: 4 });
+      await page.waitForTimeout(500);
+      const again = await keySpot();
+      const still = again && Math.hypot(again.x - spot.x, again.y - spot.y) < 2;
+      spot = again;
+      if (still) {
+        break;
+      }
     }
-    const x = box.x + box.width * 0.2;
-    const y = box.y + box.height / 2;
-    expect(
-      await page.evaluate(
-        ([px, py]) => Boolean(document.elementFromPoint(px, py)?.closest('.dk__key')),
-        [x, y] as const,
-      ),
-    ).toBe(true);
-    await page.mouse.click(x, y);
+    expect(spot, 'nothing hidden lies over the key').toBeDefined();
+    await page.mouse.click(spot?.x ?? 0, spot?.y ?? 0);
     await expect(page.locator('.dk__hands')).toHaveAttribute('data-key', '');
     await expect.poll(() => opacityOf(page, '.dk__key'), { timeout: 5000 }).toBeLessThan(0.05);
     await expect(page.locator('.dk__prop--key')).toBeHidden();

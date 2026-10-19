@@ -106,11 +106,13 @@ test.describe('mock turtle: play', () => {
     await expect(throat).toBeHidden();
     await atCue(page, 'silence', 0.5);
     await expect(throat).toBeVisible();
+    // The heave is a moment: watched on every frame, not polled from outside.
+    const swell = await watchProperty(page, '.mt__shore', '--swell');
     await throat.click();
     await expect(page.locator('.mt__turtle')).toHaveAttribute('data-sobbing', '');
     await expect(page.locator('.demo__status')).toHaveText('Clear your throat');
     await expect
-      .poll(() => customProperty(page, '.mt__shore', '--swell'), { timeout: 3000 })
+      .poll(async () => Math.max(0, ...(await swell())), { timeout: 8000 })
       .toBeGreaterThan(0.3);
     // The moment passes with the beat.
     await atCue(page, 'once', 0.5);

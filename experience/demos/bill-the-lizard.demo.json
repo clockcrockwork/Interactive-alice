@@ -1,0 +1,25 @@
+{
+  "id": "bill-the-lizard",
+  "titleChapter": 4,
+  "titleSection": "there-goes-bill",
+  "joinsPrevious": true,
+  "shots": [
+    {
+      "id": "sent-down",
+      "beats": [
+        { "id": "cartwheels", "cue": "roof", "segments": ["ch04.s0470", "ch04.s0480"] },
+        { "id": "poor-bill", "cue": "descend", "segments": ["ch04.s0490", "ch04.s0500", "ch04.s0510"] },
+        { "id": "foot-waiting", "cue": "foot", "segments": ["ch04.s0520", "ch04.s0530"] },
+        { "id": "this-is-bill", "cue": "kick", "segments": ["ch04.s0540", "ch04.s0550"] }
+      ]
+    },
+    {
+      "id": "sky-rocket",
+      "beats": [
+        { "id": "there-goes-bill", "cue": "launch", "segments": ["ch04.s0560", "ch04.s0570"] },
+        { "id": "landing", "cue": "land", "segments": ["ch04.s0580", "ch04.s0590", "ch04.s0600"] },
+        { "id": "flustered", "cue": "brandy", "segments": ["ch04.s0610", "ch04.s0620", "ch04.s0630", "ch04.s0640"] }
+      ]
+    }
+  ]
+}

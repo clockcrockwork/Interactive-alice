@@ -54,6 +54,8 @@ still loading, and every page is independently linkable and cacheable.
 /                     language pick + entry
 /<locale>/            story entry for that language
 /<locale>/<part>/     one part of the story, hosting one or more Scenes
+/demos/               the concept demos and their index, in the base locale; see concept-demos.md
+/demos/<locale>/      the same demos in another language, under the same scheme
 ```
 
 All three levels are generated from the data. Every registered language has an entry
@@ -64,7 +66,11 @@ means for the site.
 The locale lives in the path, which keeps the static output free of negotiation
 logic and lets a CDN cache each language separately. No cookie, no redirect, no
 runtime language switch that rewrites the DOM: switching language navigates to the
-sibling URL.
+sibling URL. The demos follow the same rule with one difference kept on purpose:
+the base locale's demos stay at the plain `/demos/<id>/` URLs they were published
+at, and every other locale's are at `/demos/<locale>/<id>/`. Each demo index links
+the others (a link, not a stored preference), and a demo page links only to pages in
+its own language.
 
 ### A document is not a Scene
 
@@ -143,6 +149,7 @@ src/
   entry/                              one module per page kind
   runtime/                            scene progress, lifecycle, viewport, capability context
   scenes/<scene>/                     one directory per Scene: shots, layers, its own CSS
+  demos/<demo>/                       one directory per concept demo, plus the shared shell
   audio/                              BGM controller and the beep synthesizer
   styles/                             tokens, base, utilities
   assets/                             icons and placeholder art
@@ -178,10 +185,19 @@ nothing in this stack reads one: Vite owns the transform and Biome does not cons
 it. Adding one would be decoration that can silently disagree with the real target.
 
 Anything newer is progressive enhancement, and the documented exceptions are
-cross-document View Transitions, the Speculation Rules API, and any WebGL or
+cross-document View Transitions, the Speculation Rules API, `Intl.Segmenter`
+(see §9 of the binding doc; spaces are the fallback), and any WebGL or
 device-motion work a Shot introduces. The scene must stay complete when each is
 missing. Nothing in the guaranteed path may depend on a feature outside the
 Baseline target.
+
+`Intl.Segmenter` (Baseline 2024, so widely available only from mid-October 2026) is
+used the same way, by `units()` and `graphemes()` in `src/demos/shell/words.ts`
+(the locale profile, [`text-experience-binding.md`](text-experience-binding.md) §9):
+where it is missing, a line splits at its spaces and characters are counted as code
+points, which is exact for every language published today; only a language written
+without spaces would light whole phrases instead of words. When the pinned date moves
+past October 2026 it is simply inside the target.
 
 ## 7. What the runtime owns
 

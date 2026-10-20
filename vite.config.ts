@@ -1,6 +1,7 @@
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
+import { writeDemoPages } from './build/demos.ts';
 import { writePages } from './build/pages.ts';
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -8,7 +9,7 @@ const generated = join(root, 'src', 'generated');
 
 // The page graph is data: generate it before Vite resolves its entry points, for dev
 // and for build alike, so a locale or part cannot exist in data but not on disk.
-const pages = writePages(root, generated);
+const pages = [...writePages(root, generated), ...writeDemoPages(root, generated)];
 
 /** Data the page graph is derived from; editing any of it regenerates the pages. */
 const dataDirs = [join(root, 'text'), join(root, 'experience')];
@@ -23,6 +24,7 @@ export default defineConfig({
       name: 'alice:pages',
       buildStart() {
         writePages(root, generated);
+        writeDemoPages(root, generated);
       },
       configureServer(server) {
         for (const dir of dataDirs) {
@@ -38,6 +40,7 @@ export default defineConfig({
           clearTimeout(pending);
           pending = setTimeout(() => {
             writePages(root, generated);
+            writeDemoPages(root, generated);
             server.hot.send({ type: 'full-reload' });
           }, 50);
         };

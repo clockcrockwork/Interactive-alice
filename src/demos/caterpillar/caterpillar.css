@@ -1,0 +1,866 @@
+/* Advice from a Caterpillar: a meadow that scales about her feet, and above the
+   trees a sea of leaves with her own neck running down into them. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    /* The book's palette: a paper sky, the meadow and the sea of leaves in the
+       world's leaf tint, a sepia mushroom with paper spots, smoke in aged paper.
+       The Caterpillar is printed in the water tint so it reads against both. */
+    --ct-sky: var(--world-sky);
+    --ct-sky-low: var(--paper-base);
+    --ct-sky-high: var(--world-sky-deep);
+    --ct-cat: var(--world-water);
+    --ct-cat-stripe: var(--world-water-deep);
+    --ct-mushroom: var(--sepia-mid);
+    --ct-mushroom-spot: var(--paper-warm);
+    --ct-mushroom-gill: var(--paper-warm);
+    --ct-mushroom-edge: var(--paper-aged);
+    --ct-pigeon: var(--sepia-light);
+    --ct-pigeon-wing: var(--sepia-mid);
+    /* Smoke in the faded ink, so a ring reads on the paper sky. */
+    --ct-smoke: oklch(from var(--ink-faded) l c h / 0.75);
+    --ct-shade: oklch(from var(--ink-primary) l c h / 0.5);
+    --ct-shade-soft: oklch(from var(--ink-primary) l c h / 0.4);
+    /* The blink at a change of size: paper with a lilac leak, the guide's
+       colour for a change of size, gone with the blink. */
+    --ct-flash: color-mix(in oklch, var(--paper-base), var(--ix-lilac) 45%);
+    /* The hookah's coal while a puff is held: the world's glow, gold at full. */
+    --ct-ember: var(--world-glow);
+    --ct-ember-hot: var(--ix-gold);
+  }
+}
+
+@layer scene {
+  /* The last beat's captions sit at the top, over the look down at her feet. */
+  .demo--caterpillar {
+    --demo-end-lift: 0rem;
+  }
+
+  .demo--caterpillar .demo-beat {
+    inset-block-end: 10vh;
+  }
+
+  /* The foot under her chin, the fold, her shoulders far below at the foot of
+     the neck, her feet at the end: all low in the frame, so the captions go up. */
+  .demo--caterpillar
+  .demo-beat:is(
+    [data-cue="shrink"],
+    [data-cue="grow"],
+    [data-cue="free"],
+    [data-cue="neck"],
+    [data-cue="bend"],
+    [data-cue="back"]
+  ) {
+    inset-block: calc(var(--demo-bar-height) + 0.6rem) auto;
+  }
+
+  .demo--caterpillar .line[data-speaker="caterpillar"] {
+    --blur: 0;
+    --demo-say-style: italic;
+    color: var(--ink-secondary);
+    filter: blur(calc(var(--blur) * 1px));
+  }
+
+  .demo--caterpillar .line[data-speaker="pigeon"] {
+    font-weight: 700;
+    color: var(--wonder-red-dark);
+  }
+
+  /* The sky, and a higher, bluer sky that shows the more she rises. */
+  .ct__sky {
+    --high: 0;
+    --horizon: 82;
+    background: linear-gradient(to bottom, var(--ct-sky), var(--ct-sky-low));
+  }
+
+  /* The ground: its edge is the horizon, at eye level however tall she is. */
+  .ct__ground {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: calc(var(--horizon) * 1%);
+    inset-block-end: -10%;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0 2.2vh,
+        oklch(from var(--ink-primary) l c h / 0.06) 2.2vh 2.5vh
+      ),
+      linear-gradient(to bottom, var(--world-leaf), var(--world-leaf-deep) 40%);
+  }
+
+  .ct__sky::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, var(--ct-sky-high), var(--ct-sky) 70%);
+    opacity: var(--high);
+  }
+
+  /* The meadow scales about the ground under her feet; a pitch tilts it. */
+  .ct__meadow {
+    --s: 1;
+    --pitch: 0;
+    --fade: 1;
+    --lean: 0;
+    --base: 82;
+    opacity: var(--fade);
+    --toy: 0;
+    transform-origin: 50% calc(var(--base) * 1%);
+    transform: translateX(calc(var(--toy) * 16vw)) translateY(calc(var(--pitch) * 0.5vh))
+      rotate(calc(var(--lean) * 1deg)) scale(var(--s));
+    overflow: visible;
+  }
+
+  /* While her size is changing the meadow is one composited layer, scaled as a
+     whole rather than redrawn every frame; once it rests it is drawn crisp again
+     at its new size (the demo sets and clears the flag). */
+  .ct__meadow[data-scaling] {
+    will-change: transform;
+  }
+
+  .ct__grass {
+    position: absolute;
+    inset-inline: -20vw;
+    inset-block-start: calc(var(--base) * 1%);
+    block-size: 0;
+  }
+
+  .ct__blade {
+    position: absolute;
+    inset-inline-start: var(--x);
+    inset-block-end: 0;
+    inline-size: 2vmin;
+    block-size: calc(var(--h) * 0.36vmin);
+    transform-origin: 50% 100%;
+    transform: rotate(calc((var(--lean, 0) + var(--lean-own, 0)) * 1deg));
+    /* Each blade leans its hue a little off the leaf tint (--hue from the demo). */
+    background: linear-gradient(
+      to top,
+      oklch(from var(--world-leaf-deep) l c calc(h + (var(--hue) - 135) * 0.4)),
+      oklch(from var(--world-leaf) calc(l + 0.08) c calc(h + (var(--hue) - 135) * 0.4))
+    );
+    clip-path: polygon(0 100%, 50% 0, 100% 100%);
+  }
+
+  .ct__blade--far {
+    --lean-own: var(--lean);
+    opacity: 0.8;
+  }
+
+  /* The near blades read as nearer by size and a deeper, unlit tint rather than
+     a live blur, so scaling the meadow never re-rasterises a filter. */
+  .ct__blade--near {
+    --lean-own: var(--lean);
+    inline-size: 3.4vmin;
+    block-size: calc(var(--h) * 0.62vmin);
+    inset-block-end: -6vmin;
+    background: linear-gradient(
+      to top,
+      oklch(from var(--world-leaf-deep) calc(l - 0.06) c calc(h + (var(--hue) - 135) * 0.4)),
+      oklch(from var(--world-leaf) l c calc(h + (var(--hue) - 135) * 0.4))
+    );
+  }
+
+  .ct__mushroom {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--base) * 1%);
+    inline-size: clamp(13rem, 44vmin, 30rem);
+    translate: -50% -100%;
+  }
+
+  .ct__mushroom > .art,
+  .ct__caterpillar .art,
+  .ct__foot .art,
+  .ct__pigeon .art {
+    inline-size: 100%;
+  }
+
+  .ct__caterpillar {
+    --charge: 0;
+    position: absolute;
+    inset-inline-start: 24%;
+    inset-block-start: -18%;
+    inline-size: 46%;
+    transform-origin: 50% 100%;
+    pointer-events: auto;
+    cursor: pointer;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  /* Drawing in: the body swells with the charge (a step under reduced motion). */
+  .ct__caterpillar > .art {
+    display: block;
+    transform-origin: 50% 100%;
+    transform: scale(calc(1 + var(--charge) * 0.07), calc(1 + var(--charge) * 0.1));
+  }
+
+  /* The hookah's coal: dark at rest, glowing the longer the puff is held. */
+  .ct__ember {
+    position: absolute;
+    inset-inline-start: 101%;
+    inset-block-start: 47%;
+    inline-size: 22%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      var(--ct-ember-hot) 0 18%,
+      var(--ct-ember) 40%,
+      transparent 70%
+    );
+    opacity: calc(var(--charge) * 0.9);
+    transform: translate(-50%, -50%) scale(calc(0.6 + var(--charge) * 0.8));
+    pointer-events: none;
+  }
+
+  .ct__body {
+    animation: ct-breathe 3.2s ease-in-out infinite alternate;
+    transform-origin: 50% 100%;
+  }
+
+  /* Smoke rings from the hookah, drifting up toward the reader. Strength (0..1,
+     from the demo) sets how far it drifts, how big it grows and how long it lasts;
+     a strong ring hangs low over her and wobbles. */
+  .ct__ring {
+    --rx: 700;
+    --ry: 250;
+    --strength: 0;
+    --seconds: 4;
+    --rise: calc(46 - var(--strength) * 22);
+    --grow: calc(3.2 + var(--strength) * 2.2);
+    position: absolute;
+    inset-inline-start: calc(var(--rx) * 1px);
+    inset-block-start: calc(var(--ry) * 1px);
+    inline-size: calc(var(--size) * 1vmin);
+    aspect-ratio: 1;
+    margin: calc(var(--size) * -0.5vmin);
+    animation: ct-ring calc(var(--seconds) * 1s) ease-out forwards;
+  }
+
+  .ct__ring-body {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    border: 0.7vmin solid var(--ct-smoke);
+    border-radius: 50%;
+    filter: blur(0.6px);
+    animation: ct-wobble calc(1.6s + var(--strength) * 0.6s) ease-in-out infinite alternate;
+  }
+
+  /* "Explain yourself!": the smoke is a question mark rather than a ring. */
+  .ct__ring--ask .ct__ring-body {
+    border: 0;
+    border-radius: 0;
+    filter: blur(0.4px);
+  }
+
+  .ct__ask {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    overflow: visible;
+  }
+
+  .ct__ring[data-still] {
+    animation: ct-ring-still calc(var(--seconds) * 1s) linear forwards;
+    transform: translate(calc(var(--drift) * 1vmin), -20vh) scale(var(--grow));
+  }
+
+  .ct__ring[data-still] .ct__ring-body {
+    animation: none;
+  }
+
+  /* Above the trees: sky, a sea of leaves, and the neck. */
+  .ct__treetops {
+    --fade: 0;
+    --sway: 0;
+    opacity: var(--fade);
+    background: linear-gradient(to bottom, var(--ct-sky-high), var(--ct-sky) 45%, var(--world-sky));
+    pointer-events: none;
+  }
+
+  /* `--dip` is her head going down into the leaves, toward her shoulders. */
+  .ct__canopy {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    transform-origin: 50% 66%;
+    transform: rotate(calc(var(--sway) * 1deg)) scale(calc(1 + var(--dip, 0) * 0.9));
+  }
+
+  .ct__leaf {
+    /* --l is the leaf's share of the lighter tint, --hue its lean, both from the demo. */
+    fill: oklch(
+      from color-mix(in oklch, var(--world-leaf-deep), var(--world-leaf) var(--l)) l c
+        calc(h + (var(--hue) - 136) * 0.4)
+    );
+  }
+
+  .ct__leaf[data-band="2"] {
+    filter: blur(1px);
+  }
+
+  .ct__nest {
+    fill: var(--sepia-mid);
+  }
+
+  .ct__neck {
+    fill: var(--alice-skin);
+  }
+
+  .ct__neck--shade {
+    fill: var(--alice-shadow);
+    opacity: 0.6;
+  }
+
+  .ct__flash {
+    background: var(--ct-flash);
+    opacity: 0;
+  }
+
+  /* Overlays never take the pointer; the buttons inside them do. */
+  .ct__smoke,
+  .ct__flash,
+  .ct__iris,
+  .ct__foot-layer,
+  .ct__hands,
+  .ct__bird-layer {
+    pointer-events: none;
+  }
+
+  /* Her chin on her foot: the foot rises into the frame and the frame folds. */
+  .ct__iris {
+    --fold: 0;
+    background: var(--world-night-deep);
+    clip-path: inset(calc(100% - var(--fold) * 50%) 0 0 0);
+  }
+
+  .ct__foot {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: -30%;
+    inline-size: clamp(20rem, 70vmin, 40rem);
+    translate: -50% 70vh;
+    filter: drop-shadow(0 -10px 20px var(--ct-shade));
+  }
+
+  /* The two bits of mushroom, one in each hand: real buttons. */
+  .ct__hands {
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--demo-quick) var(--demo-ease),
+      visibility 0s linear var(--demo-quick);
+  }
+
+  .ct__hands[data-shown] {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .ct__bit {
+    --bite: 0;
+    position: absolute;
+    inset-block-end: -3%;
+    inline-size: clamp(6rem, 22vmin, 12rem);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    pointer-events: auto;
+    transform-origin: 50% 100%;
+    transform: scale(calc(1 - var(--bite) * 0.12)) rotate(calc(var(--bite) * -4deg));
+    transition: transform var(--demo-quick) var(--demo-ease);
+  }
+
+  /* The hand's and the bit's soft shadows are painted gradients, not a live
+     drop-shadow: a filter here was redrawn under every frame of a nibble. */
+  .ct__bit-hand::before,
+  .ct__bit-piece::before {
+    content: "";
+    position: absolute;
+    inset: 4% 8% -2%;
+    z-index: -1;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--ct-shade-soft), transparent);
+    translate: 0 12px;
+  }
+
+  .ct__bit-piece::before {
+    inset: 10% 4% 0;
+    background: radial-gradient(closest-side, var(--ct-shade), transparent);
+    translate: 0 8px;
+  }
+
+  .ct__bit svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* Her hand comes up from the bottom of the frame; the bit sits on the fingertips. */
+  .ct__bit-hand {
+    position: relative;
+    display: block;
+  }
+
+  .ct__bit-piece {
+    position: absolute;
+    inset-inline-start: 6%;
+    inset-block-start: -22%;
+    inline-size: 78%;
+    /* Its shadow falls on the hand, under the bit itself. */
+    isolation: isolate;
+  }
+
+  .ct__bit--right .ct__bit-piece {
+    inset-inline-start: auto;
+    inset-inline-end: 6%;
+  }
+
+  .ct__bit--left {
+    inset-inline-start: 6%;
+  }
+
+  .ct__bit--right {
+    inset-inline-end: 6%;
+    transform: scale(calc(1 - var(--bite) * 0.12)) rotate(calc(var(--bite) * 4deg));
+  }
+
+  .ct__bit:focus-visible {
+    outline: 3px solid var(--ink-secondary);
+    outline-offset: 4px;
+  }
+
+  .ct__bit[data-bitten] {
+    animation: ct-bite 0.35s ease-out 1;
+  }
+
+  /* The Pigeon at her face. */
+  .ct__pigeon {
+    --bx: 0;
+    --by: 0;
+    --bs: 1;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 45%;
+    inline-size: clamp(12rem, 46vmin, 30rem);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) translate(calc(var(--bx) * 1vw), calc(var(--by) * 1vh))
+      scale(var(--bs));
+    filter: drop-shadow(0 16px 24px var(--ct-shade-soft));
+  }
+
+  .ct__pigeon:focus-visible {
+    outline: 3px solid var(--ink-secondary);
+    outline-offset: 4px;
+  }
+
+  .ct__wing {
+    transform-origin: 110px 120px;
+  }
+
+  .ct__wing--right {
+    transform-origin: 150px 120px;
+  }
+
+  .ct__pigeon[data-beating] .ct__wing--left {
+    animation: ct-flap-left 0.16s ease-in-out infinite alternate;
+  }
+
+  .ct__pigeon[data-beating] .ct__wing--right {
+    animation: ct-flap-right 0.16s ease-in-out infinite alternate;
+  }
+
+  /* Under the neck's captions, at the foot of the frame, on a slip. */
+  .ct__hint {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: calc(var(--space-2) + 2.4rem);
+    margin: 0;
+    padding: 0.2em 0.7em;
+    border-radius: 999px;
+    background: var(--demo-slip);
+    translate: -50% 0;
+    white-space: nowrap;
+    font-family: system-ui, sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-secondary);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--demo-calm) var(--demo-ease);
+  }
+
+  .ct__hint[data-shown] {
+    opacity: 0.85;
+  }
+
+  /* Under the status line, which is where the hold hint shows. */
+  .ct__prop--puff {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 3.4rem);
+    translate: -50% 0;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* The Pigeon is only there to press while it is there. */
+  .ct__pigeon:not([data-here]) {
+    visibility: hidden;
+  }
+
+  /* Dip into the leaves: the button at the foot of the frame, and the place her
+     neck leaves the frame, which a downward drag pulls into the leaves. */
+  .ct__prop--dip {
+    inset-inline-end: var(--space-2);
+    inset-block-end: calc(var(--space-2) + 2.4rem);
+  }
+
+  .ct__dip-target {
+    position: absolute;
+    inset-inline: 32%;
+    inset-block: 58% 0;
+    cursor: grab;
+    touch-action: none;
+    visibility: hidden;
+  }
+
+  .ct__dip-target[data-live] {
+    visibility: visible;
+  }
+
+  /* The tape-measure down the frame's left edge: paper, a tick per unit and
+     quarter ticks in ink, the numbers sliding past a fixed mark as she changes
+     size. The unit is the page's (realia `height`): `--step` is one of it. */
+  .ct__tape {
+    --h: 3;
+    --frac: 0;
+    --notch: 3;
+    --step: clamp(1.8rem, 6vmin, 3rem);
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block: calc(var(--demo-bar-height) + 0.5rem) 34%;
+    inline-size: clamp(1.9rem, 4.5vmin, 2.8rem);
+    z-index: calc(var(--demo-z-captions) - 1);
+    pointer-events: none;
+  }
+
+  .ct__tape-strip {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: 0 0.3rem 0.3rem 0;
+    background: var(--paper-base);
+    box-shadow: 0 0.3rem 0.8rem var(--ct-shade-soft);
+    mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+  }
+
+  /* Ticks from twenty above the reading down to zero and no further: a tape
+     has no marks below its own end (--floor is the whole part of the reading). */
+  .ct__tape-ticks {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: calc(50% - 20 * var(--step));
+    block-size: calc(clamp(0, 20 + var(--floor, 20), 40) * var(--step) + 1.5px);
+    translate: 0 calc(var(--frac) * var(--step));
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        var(--ink-primary) 0 1.5px,
+        transparent 1.5px var(--step)
+      )
+      0 0 / 62% 100% no-repeat,
+      repeating-linear-gradient(
+        to bottom,
+        var(--ink-faded) 0 1px,
+        transparent 1px calc(var(--step) / 4)
+      )
+      0 0 / 30% 100% no-repeat;
+  }
+
+  .ct__tape-num {
+    --n: 0;
+    position: absolute;
+    inset-inline-end: 0.25rem;
+    inset-block-start: 50%;
+    translate: 0 calc((var(--h) - var(--n)) * var(--step) - 50%);
+    font-family: system-ui, sans-serif;
+    font-size: 0.62rem;
+    color: var(--ink-primary);
+  }
+
+  /* The notch where the text says she stands (three inches; one finger): cut
+     into the tape's edge. */
+  .ct__tape-notch {
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block-start: 50%;
+    inline-size: 0.55rem;
+    aspect-ratio: 1 / 1.4;
+    translate: 0 calc((var(--h) - var(--notch)) * var(--step) - 50%);
+    background: var(--world-night);
+    clip-path: polygon(100% 0, 0 50%, 100% 100%);
+  }
+
+  /* The reading: a mark across the tape and the number beside it. */
+  .ct__tape-mark {
+    position: absolute;
+    inset-inline: -0.2rem auto;
+    inset-block-start: 50%;
+    inline-size: calc(100% + 0.4rem);
+    block-size: 2px;
+    background: var(--ink-primary);
+  }
+
+  .ct__tape-read {
+    position: absolute;
+    inset-inline-start: calc(100% + 0.2rem);
+    inset-block-start: 50%;
+    translate: 0 -50%;
+    padding: 0.05em 0.45em;
+    border-radius: 0.3em;
+    background: var(--demo-slip);
+    color: var(--ink-primary);
+    font-family: system-ui, sans-serif;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    transition: box-shadow var(--demo-calm) var(--demo-ease);
+  }
+
+  /* The unit's name under the number, smaller: a line of its own, so no
+     language's order of number and unit is assumed. */
+  .ct__tape-value,
+  .ct__tape-unit {
+    display: block;
+    text-align: center;
+  }
+
+  .ct__tape-unit {
+    font-size: 0.62em;
+    line-height: 1.1;
+    color: var(--ink-secondary);
+  }
+
+  /* On the notch exactly, the notch is at the mark and the reading glows gold. */
+  .ct__tape[data-notch] .ct__tape-read {
+    box-shadow: 0 0 0 2px var(--ix-gold);
+  }
+
+  /* On a narrow frame the reading sits on the tape itself, and the captions
+     keep clear of the tape's lane. */
+  @media (max-width: 700px) {
+    .demo--caterpillar .demo-beat {
+      inset-inline-start: 2rem;
+    }
+
+    /* "What size do you want to be?": five slips from the foot of a narrow frame
+       would stand over her and the Caterpillar on the mushroom. They go up under
+       the smoke ring's button, and the shell's caption fit keeps them between the
+       button (a bar of two rows included, and the drift up as they go) and the
+       Caterpillar's head. */
+    .demo--caterpillar .demo-beat[data-cue="size"] {
+      --demo-fit-top: 11rem;
+      --demo-fit-foot: 59%;
+      inset-block: calc(var(--demo-bar-height) + 7rem) auto;
+    }
+
+    .ct__tape-read {
+      inset-inline-start: 0;
+      min-inline-size: 100%;
+      padding-inline: 0.15em;
+      text-align: center;
+    }
+  }
+
+  /* The Caterpillar up out of the grass to nod at three inches. */
+  .ct__peek {
+    position: absolute;
+    inset-inline-start: 74%;
+    inset-block-start: calc(var(--base) * 1%);
+    inline-size: clamp(5rem, 15vmin, 10rem);
+    translate: -50% -100%;
+    clip-path: inset(-60% -60% 0 -60%);
+  }
+
+  .ct__peek-cat {
+    translate: 0 105%;
+    transition: translate var(--demo-calm) var(--demo-ease);
+  }
+
+  .ct__peek[data-nod] .ct__peek-cat {
+    translate: 0 18%;
+  }
+
+  .ct__peek .ct__head {
+    transform-box: fill-box;
+    transform-origin: 20% 90%;
+  }
+
+  .ct__peek[data-nod] .ct__head {
+    animation: ct-nod 0.5s ease-in-out 0.45s 2;
+  }
+
+  /* Her own feet at the end, as she looks down at them. */
+  .ct__feet {
+    --toy: 0;
+    pointer-events: none;
+  }
+
+  .ct__feet-self {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 6vmin;
+    inline-size: clamp(14rem, 50vmin, 30rem);
+    translate: -50% calc((1 - var(--toy)) * 110%);
+  }
+
+  .ct__feet-self .art {
+    inline-size: 100%;
+  }
+
+  .demo[data-paused] .ct__ring,
+  .demo[data-paused] .ct__ring-body,
+  .demo[data-paused] .ct__body,
+  .demo[data-paused] .ct__wing {
+    animation-play-state: paused;
+  }
+
+  @keyframes ct-nod {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(16deg);
+    }
+  }
+
+  @keyframes ct-ring {
+    from {
+      opacity: 0.9;
+      transform: translate(0, 0) scale(0.4);
+    }
+
+    to {
+      opacity: 0;
+      transform: translate(calc(var(--drift) * 1vmin), calc(var(--rise) * -1vh)) scale(var(--grow));
+    }
+  }
+
+  @keyframes ct-ring-still {
+    from {
+      opacity: 0.7;
+    }
+
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes ct-wobble {
+    from {
+      transform: rotate(calc(var(--strength) * -6deg))
+        scale(calc(1 + var(--strength) * 0.1), calc(1 - var(--strength) * 0.08));
+    }
+
+    to {
+      transform: rotate(calc(var(--strength) * 6deg))
+        scale(calc(1 - var(--strength) * 0.08), calc(1 + var(--strength) * 0.1));
+    }
+  }
+
+  @keyframes ct-breathe {
+    from {
+      transform: scaleY(1);
+    }
+
+    to {
+      transform: scaleY(1.04);
+    }
+  }
+
+  @keyframes ct-bite {
+    0% {
+      transform: scale(1.06) rotate(-6deg);
+    }
+
+    100% {
+      transform: scale(calc(1 - var(--bite) * 0.12)) rotate(calc(var(--bite) * -4deg));
+    }
+  }
+
+  @keyframes ct-flap-left {
+    from {
+      transform: rotate(-30deg);
+    }
+
+    to {
+      transform: rotate(35deg);
+    }
+  }
+
+  @keyframes ct-flap-right {
+    from {
+      transform: rotate(30deg);
+    }
+
+    to {
+      transform: rotate(-35deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ct__body,
+    .ct__pigeon[data-beating] .ct__wing,
+    .ct__bit[data-bitten] {
+      animation: none;
+    }
+
+    .ct__pigeon .ct__wing--left {
+      transform: rotate(-16deg);
+    }
+
+    .ct__pigeon .ct__wing--right {
+      transform: rotate(16deg);
+    }
+
+    .ct__ring {
+      animation: ct-ring-still calc(var(--seconds) * 1s) linear forwards;
+      transform: translate(calc(var(--drift) * 1vmin), -20vh) scale(var(--grow));
+    }
+
+    .ct__ring-body {
+      animation: none;
+    }
+
+    .ct__bit,
+    .ct__hands,
+    .ct__peek-cat,
+    .ct__tape-read {
+      transition: none;
+    }
+
+    /* The nod is a still: up out of the grass with its head bowed. */
+    .ct__peek[data-nod] .ct__head {
+      animation: none;
+      transform: rotate(14deg);
+    }
+  }
+}

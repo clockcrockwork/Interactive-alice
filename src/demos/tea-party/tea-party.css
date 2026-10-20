@@ -1,0 +1,1187 @@
+/* A Mad Tea-Party, the first half: a long table in CSS 3D seen from Alice's
+   seat, the sun that is Time's clock, the watch close up, and at the end the
+   Dormouse's cup from above, where the Dormouse's own demo begins. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    /* The tea-party in denser sepia: a paper cloth laid in checks, china of
+       paper with aged rims, tea in the dark sepia, the house and the tree in
+       the world's printed tints. The cloth and the china are the Dormouse demo's
+       own tokens, so the cup at the end is the cup it opens on. */
+    --tp-ground: var(--sepia-dark);
+    --tp-ground-far: var(--sepia-mid);
+    --tp-sky: var(--world-sky);
+    --tp-sky-high: var(--paper-base);
+    --tp-dusk: var(--sepia-light);
+    --tp-dusk-high: var(--paper-aged);
+    --tp-cloth: var(--paper-warm);
+    --tp-cloth-alt: var(--paper-base);
+    --tp-hem: var(--paper-shadow);
+    --tp-china: var(--paper-base);
+    --tp-china-shade: var(--paper-aged);
+    --tp-china-rim: var(--sepia-light);
+    --tp-tea: var(--sepia-dark);
+    --tp-treacle: var(--sepia-deep);
+    --tp-treacle-deep: oklch(from var(--sepia-deep) calc(l - 0.1) c h);
+    --tp-treacle-shine: var(--sepia-mid);
+    --tp-stain: oklch(from var(--sepia-deep) l c h / 0.55);
+    --tp-crumb: var(--sepia-dark);
+    --tp-butter: color-mix(in oklch, var(--world-glow), var(--sepia-light) 25%);
+    --tp-butter-deep: var(--sepia-light);
+    --tp-brass: color-mix(in oklch, var(--sepia-light), var(--world-glow) 40%);
+    --tp-brass-deep: var(--sepia-dark);
+    --tp-ink-cut: var(--ink-primary);
+    --tp-wood: var(--sepia-dark);
+    --tp-wood-deep: var(--sepia-deep);
+    --tp-house: var(--paper-aged);
+    --tp-house-deep: var(--sepia-dark);
+    --tp-house-ear: color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm));
+    --tp-thatch: var(--sepia-mid);
+    --tp-thatch-deep: var(--sepia-dark);
+    --tp-window: var(--world-sky-deep);
+    --tp-bark: var(--sepia-dark);
+    --tp-leaf: var(--world-leaf);
+    --tp-leaf-light: color-mix(in oklch, var(--world-leaf), var(--paper-base) 25%);
+    --tp-leaf-deep: var(--world-leaf-deep);
+    --tp-grass: var(--world-leaf-deep);
+    --tp-sun: var(--world-glow);
+    --tp-sun-rim: color-mix(in oklch, var(--world-glow), var(--sepia-light) 40%);
+    --tp-steam: oklch(from var(--paper-base) l c h / 0.7);
+    --tp-shadow: oklch(from var(--ink-primary) l c h / 0.3);
+    --tp-chair: var(--sepia-deep);
+    --tp-chair-light: var(--sepia-dark);
+    /* The table's own leak of colour, as the guide allows the tea-party: the
+       bubbles are paper tinted with Alice's dress for her, lilac for the Hatter,
+       coral for the Hare, pink for the Dormouse; the date ring turns gold for a
+       moment at "what a funny watch". */
+    --tp-bubble-alice: color-mix(in oklch, var(--alice-dress-light), var(--paper-base) 65%);
+    --tp-bubble-hatter: color-mix(in oklch, var(--ix-lilac), var(--paper-base) 70%);
+    --tp-bubble-hare: color-mix(in oklch, var(--ix-coral), var(--paper-base) 70%);
+    --tp-bubble-dormouse: color-mix(in oklch, var(--ix-pink), var(--paper-base) 75%);
+    --tp-bubble-queen: color-mix(in oklch, var(--wonder-red-light), var(--paper-base) 70%);
+    --tp-aha: var(--ix-gold);
+    --tp-seat: 240;
+    --tp-fit: 1;
+    /* The scene's origin down the frame: the eye looks from here. */
+    --tp-origin: 52%;
+  }
+}
+
+@layer scene {
+  .demo--tea-party {
+    --demo-ground: var(--tp-ground);
+  }
+
+  .demo-body:has(.demo--tea-party) {
+    background: var(--tp-ground);
+  }
+
+  /* Layers that are off are not painted at all. */
+  .demo--tea-party .demo__layer[data-off] {
+    visibility: hidden;
+  }
+
+  /* --- The sky, and what stands on the horizon. */
+  .tp__sky {
+    --sun: 0.8;
+    --dusk: 0;
+    --pitch: 10;
+    --px: 0;
+    --py: 0;
+    overflow: hidden;
+    background: linear-gradient(
+      to bottom,
+      var(--tp-sky-high),
+      var(--tp-sky) 55%,
+      var(--tp-ground-far)
+    );
+    pointer-events: none;
+  }
+
+  .tp__sky::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      var(--tp-dusk-high),
+      var(--tp-dusk) 60%,
+      var(--tp-ground)
+    );
+    opacity: var(--dusk);
+  }
+
+  /* The horizon sits where the camera's pitch puts it: the eye's line is at the
+     scene's origin, and looking down by the pitch lifts the horizon by its tangent. */
+  .tp__horizon {
+    position: absolute;
+    inset: 0;
+    translate: calc(var(--px) * -1.5vw)
+      calc(var(--tp-origin) - tan(var(--pitch) * 1deg) * 900px * var(--tp-fit) + var(--py) * -1vh);
+    will-change: transform;
+  }
+
+  /* Wider than the frame by more than the pointer leans the horizon, so the
+     world's edge never shows. */
+  .tp__grass {
+    position: absolute;
+    inset-inline: -4vw;
+    inset-block-start: 0;
+    block-size: 120%;
+    background: linear-gradient(
+      to bottom,
+      var(--tp-leaf-deep),
+      var(--tp-grass) 25%,
+      var(--tp-ground) 70%
+    );
+  }
+
+  .tp__house {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 0;
+    inline-size: clamp(12rem, 36vmin, 26rem);
+    translate: -50% -96%;
+  }
+
+  .tp__tree {
+    position: absolute;
+    inset-inline-start: 64%;
+    inset-block-start: 0;
+    inline-size: clamp(12rem, 40vmin, 30rem);
+    translate: 0 -92%;
+    z-index: 1;
+  }
+
+  .tp__house svg,
+  .tp__tree svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .tp__house-hands {
+    transform-box: view-box;
+    transform-origin: 200px 120px;
+    rotate: calc(var(--hour, 0) * 1deg);
+  }
+
+  /* The sun travels an arc with the hour; it is Time's clock, and its hands
+     appear when the Hatter explains him. */
+  .tp__sun {
+    --hour: 0;
+    --minute: 0;
+    --clock: 0;
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: clamp(5rem, 13vmin, 9rem);
+    aspect-ratio: 1;
+    pointer-events: auto;
+    cursor: pointer;
+    translate: calc(12vw + var(--sun) * 76vw - 50%) calc(-8vh - sin(var(--sun) * pi) * 30vh - 50%);
+  }
+
+  .tp__sun-disc {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 45% 40%, var(--tp-sun), var(--tp-sun-rim));
+    box-shadow: 0 0 6vmin oklch(from var(--world-glow) l c h / 0.5);
+  }
+
+  .tp__hands {
+    position: absolute;
+    inset: 0;
+    opacity: var(--clock);
+  }
+
+  .tp__hand {
+    position: absolute;
+    inset-inline-start: calc(50% - 2%);
+    inset-block-end: 50%;
+    inline-size: 4%;
+    border-radius: 2px;
+    background: var(--ink-primary);
+    transform-origin: 50% 100%;
+  }
+
+  .tp__hand--hour {
+    block-size: 28%;
+    rotate: calc(var(--hour) * 1deg);
+  }
+
+  .tp__hand--minute {
+    block-size: 40%;
+    rotate: calc(var(--minute) * 1deg);
+  }
+
+  /* --- The world: a perspective, and the table plane the camera looks along. */
+  .tp__world {
+    --fit: var(--tp-fit);
+    perspective: 900px;
+    perspective-origin: 50% var(--tp-origin);
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .tp__defs {
+    position: absolute;
+  }
+
+  .tp__scene {
+    --pitch: 10;
+    --yaw: 0;
+    --look-x: 0;
+    --look-y: 0;
+    --cam-x: 0;
+    --cam-y: 400;
+    --cam-z: 0;
+    --round: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: var(--tp-origin);
+    inline-size: 0;
+    block-size: 0;
+    transform-style: preserve-3d;
+    transform: scale(var(--fit)) rotateX(calc((var(--pitch) + var(--look-y)) * -1deg))
+      rotateY(calc((var(--yaw) + var(--look-x)) * 1deg))
+      translate3d(calc(var(--cam-x) * -1px), calc(var(--cam-y) * 1px), calc(var(--cam-z) * -1px));
+    will-change: transform;
+  }
+
+  /* The cloth lies flat: its near edge under Alice, its far end past the party. */
+  .tp__cloth {
+    position: absolute;
+    inset-inline-start: -260px;
+    inset-block-start: -2600px;
+    inline-size: 520px;
+    block-size: 2600px;
+    transform-origin: 50% 100%;
+    transform: translateZ(200px) rotateX(90deg);
+    background:
+      linear-gradient(to top, transparent 80%, oklch(from var(--ink-primary) l c h / 0.25)),
+      repeating-conic-gradient(from 45deg, var(--tp-cloth) 0 25%, var(--tp-cloth-alt) 0 50%) 50% 50%
+      / 80px 80px;
+  }
+
+  .tp__cloth::after {
+    /* The hem at the far end, hanging down. */
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 0;
+    block-size: 70px;
+    background: linear-gradient(to bottom, var(--tp-hem), var(--tp-ground));
+    transform-origin: 50% 0;
+    transform: rotateX(-90deg);
+  }
+
+  /* A piece stands on the table at (x, z) and faces the camera; `--stand` lets a
+     laid place lie back toward the cloth, `--sink` hides a figure's legs under it. */
+  .tp__piece {
+    --x: 0;
+    --z: 0;
+    --dz: 0;
+    --w: 120px;
+    --stand: 1;
+    --sink: 0;
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: var(--w);
+    margin-inline-start: calc(var(--w) / -2);
+    transform-style: preserve-3d;
+    transform-origin: 50% 100%;
+    transform: translate3d(calc(var(--x) * 1px), 0, calc((var(--z) + var(--dz)) * 1px))
+      rotateX(calc((var(--pitch) + var(--look-y)) * var(--stand) * 1deg))
+      translateY(calc(-100% + var(--sink) * 100%));
+    pointer-events: none;
+  }
+
+  .tp__piece .art,
+  .tp__piece svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .tp__place {
+    --stand: 0.45;
+    --dirt: 0;
+  }
+
+  /* Once the party is moving round, a place can be tapped. */
+  .tp__scene[data-seating] .tp__place {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  /* A used place tapped: its cup wobbles. */
+  .tp__place[data-wobble] .tp__setting {
+    transform-origin: 30% 80%;
+    animation: tp-wobble 0.7s ease-out;
+  }
+
+  .tp__teapot {
+    --stand: 0.7;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .tp__butter-dish {
+    --stand: 0.6;
+  }
+
+  .tp__lid {
+    transform-box: fill-box;
+    transform-origin: 20% 100%;
+    transform: translateY(calc(var(--lid, 0) * -14px)) rotate(calc(var(--lid, 0) * -24deg));
+  }
+
+  .tp__steam {
+    opacity: var(--lid, 0);
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: tp-steam 2.2s ease-in-out infinite alternate;
+  }
+
+  /* The party: their seat moves with the round. Legs under the table. */
+  .tp__party {
+    --dz: calc(var(--round) * var(--tp-seat));
+    --sink: 0.4;
+  }
+
+  .tp__party::after {
+    content: "";
+    position: absolute;
+    inset-inline: 10%;
+    inset-block-end: 38%;
+    block-size: 6%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 50%, var(--tp-shadow), transparent 72%);
+    z-index: -1;
+  }
+
+  /* The Hatter: he rises to sing (`--sing`); at a used place he turns his face
+     away and frowns (`--frown`), the brows and the mouth laid over the figure. */
+  .tp__hatter-turn {
+    position: relative;
+    transform-origin: 50% 100%;
+    transform: translateY(calc(var(--sing, 0) * -10%)) rotate(calc(var(--sing, 0) * 6deg))
+      rotateY(calc(var(--frown, 0) * -34deg)) rotate(calc(var(--frown, 0) * -5deg))
+      translateY(calc(var(--shrug, 0) * -5%)) scale(1, calc(1 + var(--shrug, 0) * 0.05))
+      rotate(calc(var(--shrug, 0) * -4deg));
+  }
+
+  /* While the song is on, the Hatter can be tapped to sing along. */
+  .tp__scene[data-singalong] .tp__hatter {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .tp__frown {
+    position: absolute;
+    inset: 0;
+    opacity: var(--frown, 0);
+  }
+
+  .tp__brows {
+    transform-box: view-box;
+    transform-origin: 80px 94px;
+    transform: translateY(calc((1 - var(--frown, 0)) * -6px));
+  }
+
+  .tp__hatter-eyes ellipse {
+    ry: calc(5px + var(--wide, 0) * 5px - var(--frown, 0) * 2px);
+  }
+
+  .tp__hare .art {
+    transform-origin: 50% 100%;
+    transform: translateY(calc(var(--lean, 0) * -5%)) rotate(calc(var(--lean, 0) * -9deg));
+  }
+
+  .tp__dormouse {
+    --sink: 0.3;
+  }
+
+  .tp__dormouse .art {
+    transform-origin: 50% 100%;
+    transform: translateY(calc(var(--jolt, 0) * -14%)) scale(calc(1 + var(--sleep, 0) * 0.08));
+  }
+
+  .tp__dormouse .dm__eye-open {
+    opacity: var(--jolt, 0);
+  }
+
+  .tp__dormouse .dm__eye-shut {
+    opacity: calc(1 - var(--jolt, 0));
+  }
+
+  .tp__dormouse .dm__zzz {
+    font-family: var(--demo-serif);
+    font-weight: 700;
+    fill: var(--ink-secondary);
+    opacity: calc(0.6 + var(--sleep, 0) * 0.4);
+    animation: tp-zzz 2.4s ease-in-out infinite;
+  }
+
+  .tp__dormouse .dm__zzz--2 {
+    animation-delay: 0.8s;
+  }
+
+  .tp__dormouse .dm__zzz--3 {
+    animation-delay: 1.6s;
+  }
+
+  /* Singing in its sleep, when the reader has sung along four times. */
+  .tp__notes {
+    position: absolute;
+    inset-inline-start: 46%;
+    inset-block-start: -38%;
+    inline-size: 60%;
+    opacity: 0;
+  }
+
+  .tp__notes svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .tp__dormouse[data-singing] .tp__notes {
+    opacity: 1;
+  }
+
+  .tp__dormouse[data-singing] .tp__note {
+    transform-box: fill-box;
+    animation: tp-note 1.4s ease-out infinite;
+  }
+
+  .tp__dormouse[data-singing] .tp__note--2 {
+    animation-delay: 0.45s;
+  }
+
+  .tp__dormouse[data-singing] .tp__note--3 {
+    animation-delay: 0.9s;
+  }
+
+  .tp__dormouse[data-singing] .dm__zzz {
+    visibility: hidden;
+  }
+
+  /* --- No room! The words, big; then the armchair she sits down in. */
+  /* High in the frame, over the house, clear of the sentences below. */
+  .tp__words {
+    display: grid;
+    place-items: start center;
+    padding-block-start: 16vh;
+    pointer-events: none;
+  }
+
+  .tp__big {
+    margin: 0;
+    padding-inline: 4vw;
+    font-family: var(--demo-serif);
+    font-size: clamp(2.4rem, 11vmin, 7rem);
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    text-wrap: balance;
+    color: var(--paper-base);
+    text-shadow:
+      0 2px 0 var(--ink-primary),
+      0 8px 30px oklch(from var(--ink-primary) l c h / 0.6);
+    opacity: 0;
+  }
+
+  .tp__chair {
+    --sit: 0;
+    pointer-events: none;
+  }
+
+  .tp__arm {
+    position: absolute;
+    inset-block-end: -8vh;
+    inline-size: 24vw;
+    block-size: 34vh;
+    border-radius: 45% 45% 0 0 / 30% 30% 0 0;
+    background: linear-gradient(to bottom, var(--tp-chair-light), var(--tp-chair));
+    box-shadow: 0 -2vh 6vh oklch(from var(--ink-primary) l c h / 0.4);
+    transform: translateY(calc((1 - var(--sit)) * 60vh));
+  }
+
+  .tp__arm--left {
+    inset-inline-start: -8vw;
+    rotate: 8deg;
+  }
+
+  .tp__arm--right {
+    inset-inline-end: -8vw;
+    rotate: -8deg;
+  }
+
+  /* --- The riddle: two paper cut-outs that change places. */
+  .tp__riddle {
+    --swap: 0;
+    --play: 0;
+    /* The story's swap and the reader's: each one changes the places again. */
+    --s: calc(var(--swap) + var(--play) * (1 - 2 * var(--swap)));
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .tp__cutout {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 16%;
+    inline-size: clamp(8rem, 26vmin, 15rem);
+  }
+
+  .tp__cutout svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .tp__cutout::after {
+    content: "";
+    position: absolute;
+    inset-inline: 10%;
+    inset-block-end: -6%;
+    block-size: 10%;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at 50% 50%, var(--tp-shadow), transparent 70%);
+    z-index: -1;
+  }
+
+  .tp__raven {
+    translate: calc(-50% + (var(--s) * 2 - 1) * 24vw + var(--drag-x, 0px))
+      calc(sin(var(--s) * pi) * -8vh + var(--drag-y, 0px));
+    rotate: calc((1 - var(--s) * 2) * -6deg);
+    z-index: 1;
+  }
+
+  .tp__desk {
+    translate: calc(-50% + (1 - var(--s) * 2) * 24vw) calc(sin(var(--s) * pi) * 6vh);
+    rotate: calc((var(--s) * 2 - 1) * -4deg);
+  }
+
+  .tp__riddle[data-answering] .tp__raven {
+    pointer-events: auto;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  /* --- The watch, close up; the knife; the cup it goes into. */
+  .tp__watch-layer {
+    --in: 1;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .tp__cup {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    inline-size: clamp(15rem, 52vmin, 27rem);
+    translate: -50% -14%;
+    opacity: 0;
+  }
+
+  .tp__cup svg,
+  .tp__watch svg,
+  .tp__knife svg,
+  .tp__butter-pat svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .tp__watch {
+    --dip: 0;
+    --shake: 0;
+    --butter: 0;
+    --aha: 0;
+    --wet: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    inline-size: clamp(13rem, 44vmin, 23rem);
+    translate: -50% calc(-58% + var(--dip) * min(20vh, 30vmin));
+    scale: calc((0.5 + var(--in) * 0.5) * (1 - var(--dip) * 0.45));
+    rotate: calc(var(--shake) * 1deg);
+    font-family: var(--demo-serif);
+  }
+
+  .tp__watch::after {
+    /* A drop of tea, once it has been in. */
+    content: "";
+    position: absolute;
+    inset-inline-start: 48%;
+    inset-block-end: -5%;
+    inline-size: 4%;
+    aspect-ratio: 1 / 1.8;
+    border-radius: 50% 50% 50% 50% / 30% 30% 70% 70%;
+    background: var(--tp-tea);
+    opacity: var(--wet);
+  }
+
+  .tp__watch-hand {
+    transform-box: view-box;
+    transform-origin: 200px 220px;
+    rotate: calc(4 / 31 * 360deg);
+  }
+
+  .tp__dates text {
+    fill: color-mix(in oklch, var(--ink-primary), var(--tp-aha) calc(var(--aha) * 100%));
+  }
+
+  .tp__smear {
+    opacity: var(--butter);
+    transform-box: fill-box;
+    transform-origin: 50% 50%;
+    scale: calc(0.5 + var(--butter) * 0.5);
+  }
+
+  .tp__crumbs rect {
+    opacity: 0;
+  }
+
+  .tp__watch-layer[data-buttered] .tp__crumbs rect {
+    animation: tp-crumb 1.1s ease-in forwards;
+  }
+
+  .tp__watch-layer[data-buttered] .tp__crumbs rect:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+
+  .tp__watch-layer[data-buttered] .tp__crumbs rect:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+
+  .tp__watch-layer[data-buttered] .tp__crumbs rect:nth-child(4) {
+    animation-delay: 0.45s;
+  }
+
+  .tp__watch-layer[data-buttered] .tp__crumbs rect:nth-child(5) {
+    animation-delay: 0.6s;
+  }
+
+  .tp__knife {
+    --knife: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 46%;
+    inline-size: clamp(10rem, 34vmin, 18rem);
+    translate: calc(-50% + (0.5 - var(--knife)) * 90vw) calc(sin(var(--knife) * pi) * -6vh);
+    rotate: calc(-14deg + var(--knife) * 12deg);
+    opacity: min(1, calc(min(var(--knife), 1 - var(--knife)) * 12));
+  }
+
+  .tp__butter-pat {
+    position: absolute;
+    inset-inline-start: 70%;
+    inset-block-start: 62%;
+    inline-size: clamp(5rem, 14vmin, 8rem);
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .tp__butter-pat:focus-visible {
+    outline: 2px solid var(--ix-gold);
+    outline-offset: 4px;
+    border-radius: 1rem;
+  }
+
+  .tp__ring {
+    opacity: 0;
+    transform-box: view-box;
+    transform-origin: 150px 60px;
+  }
+
+  .tp__watch-layer[data-rings] .tp__ring {
+    animation: tp-ring 1.8s ease-out infinite;
+  }
+
+  .tp__watch-layer[data-rings] .tp__ring--2 {
+    animation-delay: 0.6s;
+  }
+
+  .tp__watch-layer[data-rings] .tp__ring--3 {
+    animation-delay: 1.2s;
+  }
+
+  /* --- The concert: the bat that flies like a tea-tray. */
+  .tp__bat-layer {
+    pointer-events: none;
+  }
+
+  .tp__bat {
+    --fly: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 70%;
+    inline-size: clamp(5rem, 14vmin, 9rem);
+    color: var(--ink-primary);
+    translate: calc(-50% + var(--fly) * 22vw) calc(var(--fly) * -70vh);
+    rotate: calc(sin(var(--fly) * pi * 2) * 28deg);
+    opacity: 0;
+  }
+
+  .tp__bat .art,
+  .tp__bat svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .tp__bat .rh__wing,
+  .tp__sing-bat .rh__wing {
+    transform-box: fill-box;
+    transform-origin: 100% 50%;
+    animation: tp-flap 0.5s ease-in-out infinite alternate;
+  }
+
+  .tp__bat .rh__wing--right,
+  .tp__sing-bat .rh__wing--right {
+    transform-origin: 0 50%;
+  }
+
+  .tp__tray {
+    position: absolute;
+    inset-inline: -20%;
+    inset-block-start: 70%;
+  }
+
+  /* A bat for each time the reader sings along: up from the table and away
+     across the sky, a tea-tray under it. */
+  .tp__sing-bat {
+    --dx: 24vw;
+    --peak: -50vh;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 62%;
+    inline-size: clamp(4rem, 11vmin, 7rem);
+    margin-inline-start: calc(clamp(4rem, 11vmin, 7rem) / -2);
+    color: var(--ink-primary);
+    opacity: 0;
+    animation: tp-sing-fly 2.2s ease-out forwards;
+  }
+
+  .tp__sing-bat .art,
+  .tp__sing-bat svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* --- The Queen's words. */
+  .tp__red {
+    background: var(--wonder-red);
+    mix-blend-mode: multiply;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* --- The join: the Dormouse's cup from above, in the next demo's colours. */
+  /* The Dormouse demo's first frame, drawn the way that demo draws it: its
+     cloth, scaled a little about the same point; the cup at its camera's opening
+     size (saucer r 480, china r 455, treacle r 425 of the cup's 1000, at 0.8 of
+     the longer side, 30 units above the middle); the Dormouse on the rim; and
+     the party's sepia over it all, which that demo lifts. */
+  .tp__join {
+    --join: 0;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .tp__join::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-conic-gradient(from 45deg, var(--tp-cloth) 0 25%, var(--tp-cloth-alt) 0 50%) 50% 50%
+      / 9vmin 9vmin;
+    transform-origin: 50% 35%;
+    scale: 1.06;
+  }
+
+  .tp__join::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse at 50% 47%,
+      oklch(from var(--sepia-dark) l c h / 0.25),
+      oklch(from var(--sepia-dark) l c h / 0.7)
+    );
+  }
+
+  .tp__join-cup {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: calc(50% - 3vmax);
+    inline-size: 76.8vmax;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    translate: -50% -50%;
+    scale: calc(0.12 + var(--join) * 0.88);
+    background: radial-gradient(
+      circle closest-side,
+      var(--tp-treacle-shine) 0,
+      var(--tp-treacle) 48.7%,
+      var(--tp-treacle-deep) 88.54%,
+      var(--tp-china) 88.54% 94.79%,
+      var(--tp-china-shade) 94.79%
+    );
+  }
+
+  .tp__join-mouse {
+    position: absolute;
+    inset-inline-end: 4%;
+    inset-block-end: 6%;
+    inline-size: clamp(6rem, 16vmin, 10rem);
+    filter: drop-shadow(0 8px 14px var(--tp-shadow));
+  }
+
+  .tp__join-mouse svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .tp__join-mouse .dm__eye-open {
+    opacity: 0;
+  }
+
+  /* Its zzz stand still here: under the shadow filter a moving one would
+     re-render the Dormouse on every frame, and the next page sets them going. */
+  .tp__join .tp__join-mouse .dm__zzz {
+    font-family: var(--demo-serif);
+    font-weight: 700;
+    fill: var(--ink-secondary);
+    opacity: 0.7;
+  }
+
+  /* --- Captions: bubbles, as the Dormouse demo has them. */
+  .demo--tea-party .demo-beat {
+    inset-block-end: 11vh;
+    max-inline-size: min(40rem, 94vw);
+    text-shadow: none;
+    font-size: clamp(1rem, 0.9rem + 0.8vw, 1.35rem);
+  }
+
+  .demo--tea-party .line {
+    justify-self: center;
+    padding: 0.4em 0.9em;
+    border-radius: 1.2em;
+    background: oklch(from var(--paper-base) l c h / 0.9);
+    color: var(--demo-paper-ink);
+    box-shadow: 0 6px 20px oklch(from var(--ink-primary) l c h / 0.25);
+    max-inline-size: 26rem;
+  }
+
+  .demo--tea-party .line[data-kind="narration"] {
+    background: var(--demo-slip);
+    box-shadow: none;
+    color: var(--ink-primary);
+    --demo-say-style: italic;
+  }
+
+  .demo--tea-party .line[data-speaker="alice"] {
+    justify-self: start;
+    background: var(--tp-bubble-alice);
+    border-end-start-radius: 0.2em;
+  }
+
+  .demo--tea-party .line[data-speaker="hatter"] {
+    justify-self: end;
+    background: var(--tp-bubble-hatter);
+    border-end-end-radius: 0.2em;
+  }
+
+  .demo--tea-party .line[data-speaker="march-hare"] {
+    justify-self: end;
+    background: var(--tp-bubble-hare);
+    border-start-end-radius: 0.2em;
+  }
+
+  .demo--tea-party .line[data-speaker="dormouse"] {
+    justify-self: end;
+    background: var(--tp-bubble-dormouse);
+    --demo-say-style: italic;
+  }
+
+  .demo--tea-party .line[data-speaker="queen-of-hearts"] {
+    justify-self: center;
+    background: var(--tp-bubble-queen);
+    color: var(--wonder-red-dark);
+    font-weight: 700;
+  }
+
+  /* At tea-time five sentences would cover the party and the cups the beat is
+     about: on a wide frame Alice's stand at the left and the party's at the
+     right, and the table runs up the middle between them. */
+  @media (min-width: 701px) {
+    .demo--tea-party .demo-beat[data-cue="tea-time"] {
+      max-inline-size: 96vw;
+    }
+
+    .demo--tea-party .demo-beat[data-cue="tea-time"] .line {
+      max-inline-size: min(24rem, 29vw);
+    }
+
+    /* The song: all of it at the right, so the Dormouse singing in its sleep
+       and the bats the reader sends up stay in the clear. The column starts below
+       the beat's own buttons, which share its corner, and grows down; the shell's
+       caption fit keeps its foot in the frame. */
+    .demo--tea-party .demo-beat[data-cue="twinkle"] {
+      inset-block: calc(var(--demo-bar-height) + 8rem) auto;
+      max-inline-size: 96vw;
+    }
+
+    .demo--tea-party .demo-beat[data-cue="twinkle"] .line {
+      justify-self: end;
+      max-inline-size: min(24rem, 29vw);
+    }
+  }
+
+  /* --- Props, under the bar on the right. */
+  .tp__prop-wine,
+  .tp__prop-butter,
+  .tp__prop-whisper,
+  .tp__prop-riddle,
+  .tp__prop-sing,
+  .tp__prop-round {
+    inset-inline-end: 4%;
+    inset-block-start: calc(var(--demo-bar-height) + 2.4rem);
+  }
+
+  /* The song comes while Time can still be whispered to: one under the other. */
+  .tp__prop-sing {
+    inset-block-start: calc(var(--demo-bar-height) + 5rem);
+  }
+
+  /* --- A phone: the whole table fits a narrower frame. */
+  @media (max-width: 700px) {
+    .demo--tea-party {
+      --tp-fit: 0.8;
+      --tp-origin: 48%;
+    }
+
+    .tp__cutout {
+      inset-block-start: 20%;
+    }
+
+    .tp__raven {
+      translate: calc(-50% + (var(--s) * 2 - 1) * 28vw + var(--drag-x, 0px))
+        calc(sin(var(--s) * pi) * -8vh + var(--drag-y, 0px));
+    }
+
+    .tp__desk {
+      translate: calc(-50% + (1 - var(--s) * 2) * 28vw) calc(sin(var(--s) * pi) * 6vh);
+    }
+
+    /* Tea-time's five sentences, a little smaller, so the far end of the table
+       and the party at it stay in the clear above them. */
+    .demo--tea-party .demo-beat[data-cue="tea-time"],
+    .demo--tea-party .demo-beat[data-cue="twinkle"] {
+      font-size: 0.92rem;
+      gap: 0.25em;
+    }
+
+    .tp__butter-pat {
+      inset-inline-start: 72%;
+      inset-block-start: 64%;
+    }
+  }
+
+  /* --- Pause: every loop stops. */
+  .demo[data-paused] .tp__place[data-wobble] .tp__setting,
+  .demo[data-paused] .tp__steam,
+  .demo[data-paused] .tp__dormouse .dm__zzz,
+  .demo[data-paused] .tp__watch-layer[data-buttered] .tp__crumbs rect,
+  .demo[data-paused] .tp__watch-layer[data-rings] .tp__ring,
+  .demo[data-paused] .tp__bat .rh__wing,
+  .demo[data-paused] .tp__sing-bat,
+  .demo[data-paused] .tp__sing-bat .rh__wing,
+  .demo[data-paused] .tp__dormouse[data-singing] .tp__note {
+    animation-play-state: paused;
+  }
+
+  @keyframes tp-wobble {
+    0%,
+    100% {
+      transform: rotate(0);
+    }
+    20% {
+      transform: rotate(-7deg);
+    }
+    45% {
+      transform: rotate(5deg);
+    }
+    70% {
+      transform: rotate(-3deg);
+    }
+  }
+
+  @keyframes tp-steam {
+    from {
+      transform: translateY(0) scaleY(0.9);
+    }
+    to {
+      transform: translateY(-6px) scaleY(1.1);
+    }
+  }
+
+  @keyframes tp-zzz {
+    0% {
+      transform: translate(0, 0) scale(0.7);
+      opacity: 0;
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      transform: translate(14px, -34px) scale(1.2);
+      opacity: 0;
+    }
+  }
+
+  @keyframes tp-crumb {
+    from {
+      transform: translateY(-60px);
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes tp-ring {
+    from {
+      transform: scale(0.4);
+      opacity: 0.9;
+    }
+    to {
+      transform: scale(3.4);
+      opacity: 0;
+    }
+  }
+
+  @keyframes tp-sing-fly {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0) scale(0.5) rotate(0deg);
+    }
+
+    12% {
+      opacity: 1;
+    }
+
+    50% {
+      transform: translate(calc(var(--dx) * 0.5), var(--peak)) scale(1) rotate(-14deg);
+    }
+
+    80% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 0;
+      transform: translate(var(--dx), calc(var(--peak) * 0.7)) scale(0.8) rotate(10deg);
+    }
+  }
+
+  @keyframes tp-note {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    30% {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(-26px);
+    }
+  }
+
+  @keyframes tp-flap {
+    from {
+      transform: scaleX(1);
+    }
+    to {
+      transform: scaleX(0.55);
+    }
+  }
+
+  /* --- Reduced motion: moving round, the Hatter's frown and the clock are cuts
+     (the script makes them so); here the loops hold still, the cup at a used
+     place does not wobble, the crumbs are already on the watch, the rings are
+     drawn once, and the bat is at the top of its flight and only fades in. */
+  @media (prefers-reduced-motion: reduce) {
+    .tp__steam,
+    .tp__dormouse .dm__zzz,
+    .tp__place[data-wobble] .tp__setting,
+    .tp__bat .rh__wing,
+    .tp__sing-bat .rh__wing {
+      animation: none;
+    }
+
+    /* Each bat sung for is a still in its own place in the sky, like a star,
+       until the song is over; the Dormouse's notes stand still over it. */
+    .tp__sing-bat {
+      inset-inline-start: var(--still-x);
+      inset-block-start: var(--still-y);
+      margin-inline-start: 0;
+      opacity: 1;
+      animation: none;
+    }
+
+    .tp__dormouse[data-singing] .tp__note {
+      animation: none;
+    }
+
+    .tp__dormouse .dm__zzz {
+      opacity: calc(0.5 + var(--sleep, 0) * 0.5);
+    }
+
+    .tp__watch-layer[data-buttered] .tp__crumbs rect {
+      animation: none;
+      opacity: 1;
+    }
+
+    .tp__watch-layer[data-rings] .tp__ring {
+      animation: none;
+      opacity: 0.4;
+      transform: scale(1.4);
+    }
+
+    .tp__watch-layer[data-rings] .tp__ring--2 {
+      transform: scale(2.2);
+    }
+
+    .tp__watch-layer[data-rings] .tp__ring--3 {
+      transform: scale(3);
+    }
+
+    .tp__bat {
+      translate: calc(-50% + 22vw) -70vh;
+      rotate: 0deg;
+    }
+  }
+}

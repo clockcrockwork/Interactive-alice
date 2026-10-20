@@ -194,6 +194,8 @@ renderers.
 ```text
 experience/  ──reads──>  text/story/chNN.structure.json   (ids, order, speaker, kind)
 experience/  ──reads──>  text/locales/<locale>/chNN.json  (the words, at runtime)
+experience/  ──reads──>  text/locales/<locale>/realia.json (things, by id; §9)
+experience/  ──reads──>  text/locales.json                 (the locale profile; §9)
 text/        ──knows nothing about experience/
 ```
 
@@ -255,7 +257,9 @@ npm run check:experience    # the boundary: references, order, layer separation
 Both validate every file against its schema first, then apply the rules above.
 The experience checker verifies that referenced ids exist, are claimed by exactly
 one beat across the story, and advance in reading order through the whole scene
-list, and that neither layer has grown fields belonging to the other.
+list, and that neither layer has grown fields belonging to the other. It also
+validates every concept demo file and checks each demo's staging contract against
+every locale that publishes it (§9.3).
 
 `scripts/jsonschema_lite.py` implements the small subset of JSON Schema these
 files use, so validation needs no dependency. If the real `jsonschema` package is
@@ -271,9 +275,173 @@ Closed since the first draft: `speaker` values are validated against
 [`../text/characters.json`](../text/characters.json), and `text/locales.json` now
 records writing direction, the CSS line-break keyword, and whether spaces inside a
 segment are content. Japanese sets that last flag, so its phrase spaces must never
-be trimmed, collapsed, or re-wrapped.
+be trimmed, collapsed, or re-wrapped. The registry has since grown into the full
+locale profile of §9.
 
 One honest caveat for a scene that animates per sentence: a segment is one line of
 text and normally one sentence, but a paired or repeated cry is deliberately kept
 as one segment. Four segments per language do that today, and
 `scripts/check-text.py` lists them as todo lines so the set stays visible.
+
+## 9. Language differences: what absorbs what
+
+A language differs from English in more ways than its words: how it marks a word
+on display, whether it writes spaces, whether its script has an italic, how wide its
+glyphs are, how it writes numbers, and which *things* its jokes are about. Each of
+those used to be found by a screenshot and fixed where it showed. The standard below
+gives every difference one owner and one check, so the next language — any script,
+right to left or without spaces — is found by the gate instead.
+
+```text
+layer                         owner             file                                    checked by
+1 locale profile              text layer        text/locales.json                       schema, check-text.py
+2 realia                      text layer        text/locales/<locale>/realia.json       schema, check-text.py, unit test
+3 staging contract            experience layer  experience/demos/<id>.demo.json         schema, check-experience.py
+4 code reads the profile      front end         src/, build/                            check-frontend.py (locale-profile)
+5 the shell absorbs the rest  front end         src/demos/shell/                        caption-fit spec, locale-profile spec, unit tests
+```
+
+### 9.1 The locale profile: what a language IS
+
+Declared once per locale in `text/locales.json`
+([`../schema/locales.schema.json`](../schema/locales.schema.json)), never inferred
+from a language's name:
+
+| Field | Values | What reads it |
+| --- | --- | --- |
+| `dir` | `ltr`, `rtl` | `dir` on every page; logical CSS properties do the rest |
+| `lineBreak` | CSS `line-break` keyword | `base.css` |
+| `significantSpaces` | boolean | spaces are content: never collapsed; lines break only there (`word-break: keep-all`); they are phrase spaces, so a regrouping parts a line at its pauses (§9.6) |
+| `setApart` | ordered `quotes`, `capitals` | how a word on display is marked; the gate verifies with exactly these |
+| `wordUnit` | `spaces`, `segmenter` | `units()`: phrase spaces, or `Intl.Segmenter` words for a language without spaces |
+| `emphasis` | `italic`, `slip` | speech and thought: a slant, or a warmer slip and never any slant, applied by the shell alone (§9.6) |
+| `glyphWidth` | `half`, `full` | caption size and leading; `emWidth()`'s width for a letter of a script it does not know |
+| `numbers` | an Intl tag | `shell.locale.numberFormat()`; the segmenter's locale |
+
+`build/pages.ts` writes all of it onto the root of every generated page, the
+story's and the demos' alike, through one function (`htmlOpen`):
+`<html lang dir data-line-break data-significant-spaces data-set-apart data-word-unit
+data-emphasis data-glyph-width data-numbers>`. The home page carries the base
+locale's. CSS keys on those attributes; the runtime reads them with
+`pageProfile()` (`src/demos/shell/words.ts`) and the demo shell exposes them as
+`shell.profile` and `shell.locale`. A missing attribute falls back to a neutral
+default (both set-apart methods, spaces, italic, half width), so an optional fact
+never blanks a stage.
+
+Font stacks are the one exception: a font stack is a property of a script, so
+`shell.css` sets `--demo-serif` and `--demo-display` in one `:lang()` rule in its
+tokens, and that is the only `:lang()` selector the front-end checker allows.
+
+### 9.2 Realia: the things a sentence is about
+
+`text/locales/<locale>/realia.json` ([`../schema/realia.schema.json`](../schema/realia.schema.json))
+holds what a joke is *about* when a stage draws or measures it, keyed by stable ids
+the schema defines:
+
+| Id | Shape | Read by |
+| --- | --- | --- |
+| `cat-mishearing` | `{ picture }` | the Cheshire Cat: the thing it hears instead of a pig (a fig; a lid) |
+| `m-things` | `[{ picture }, …]` | the Dormouse: the things the sisters drew, in the order the sentence lists them |
+| `height` | `{ unit, perInch, notch }` | the Caterpillar's tape: the unit her height is given in, and where "exactly three inches" lands |
+| `marks` | `{ yes, no }`: `check`, `circle` or `cross` | the jury's slates (the witnesses, the trial): the marks this language's readers write for yes and no, a tick or, where a tick reads as wrong, a circle |
+
+The text layer may name a thing, never a scene, shot, beat or demo: a realia id
+that is a demo's id, or a key such as `demo` or `cue`, is an error. A `picture` is a
+figure id in the art registry or a figure name the stage that draws it knows. The
+words that go with a thing (the tape's unit name) are UI copy in `ui.json`
+(`demoHeightUnit`), not realia. Like `ui.json`, realia are required for every locale
+in full, and an id is added only when a stage needs one.
+
+A demo declares the ids it reads (`"realia": ["height"]` in its demo file); the build
+writes that locale's entries for just those ids onto the page as `data-realia`, and
+the stage reads them with `shell.realia(id)`, falling back to its own default when a
+page carries none.
+
+### 9.3 The staging contract: what a stage needs from the text
+
+A demo that reads something *out of* its sentences declares it in its demo file, so a
+locale that does not provide it fails the gate instead of drawing nothing:
+
+```json
+"reads": {
+  "setApart": ["ch09.s0670", "ch09.s0690"],
+  "letter": ["ch07.s0780"],
+  "moral": ["ch09.s0065"],
+  "sound": ["ch09.s0500"]
+}
+```
+
+For every locale that publishes the demo, `check-experience.py` verifies each listed
+segment by that locale's profile:
+
+- `setApart` — at least one run set apart by the locale's own methods: a quoted run
+  (any paired quotation marks, corner brackets included), or for `capitals`, an
+  all-capital run of two letters or more or a capitalised word of five letters or
+  more that does not open the sentence;
+- `letter` — a quoted run of exactly one grapheme, or for `capitals`, a capital
+  standing alone just before punctuation or the end ("with an M.");
+- `moral` — a colon of either width followed by words;
+- `sound` — the structure's `kind` is `sound` (the Gryphon's cry is marked by kind,
+  not by punctuation), and the text is not empty.
+
+The gate's rules are deliberately *stricter* than the stage's own readings in
+`words.ts` (which accept both methods, and sentence-initial capitals), so whatever
+passes the gate the stage finds. `gateRuns` and `gateLetters` in `words.ts` state the
+same rules in TypeScript, and a unit test holds the two implementations to each
+other. A segment listed in `reads` must be one the demo stages. A locale that does
+not publish the demo yet is reported as a todo, not checked.
+
+Exclamations are not part of the contract on purpose: the shouting Queen and the
+hopping Gryphon react to whichever of their lines exclaim, in either width, and a
+language that exclaims less shouts less, which is correct.
+
+### 9.4 The code reads the profile, never the language
+
+- Splitting a line into the units a stage lights or lays out one at a time (the sung
+  words, the tail's chunks, a label's two lines) goes through `units(text, profile)`;
+  counting characters goes through `graphemes()`; widths through `emWidth()`, where
+  `isWide()` stays the per-character truth for a mixed run.
+- Setting apart reads with the profile's methods (`setApart`, `namedWords`,
+  `lonelyLetter` take them).
+- Numbers are formatted with `shell.locale.numberFormat()`.
+- Emphasis, glyph width and space handling are CSS on `data-*`, in `base.css` for the
+  story and `shell.css` for the demos. What a language's words do to a layout (a
+  longer stack, a name that must not break, a longer label) the demo shell absorbs
+  by measurement, never by a size per language (§9.6).
+
+`check-frontend.py`'s `locale-profile` rule fails a `:lang()` selector, a locale id
+literal, a branch on the page's `lang`, a line split at spaces outside `words.ts`, or
+an italic written in a demo's own stylesheet, in shipped code under `src/`. Tests may
+name a locale.
+
+### 9.5 Adding a language
+
+1. **Profile.** Add its entry to `text/locales.json`: the authoring fields of
+   [`text-pipeline.md`](text-pipeline.md) §4 and the profile above. Decide `setApart`
+   by asking how the language marks a word written on a thing; `wordUnit` by asking
+   whether it writes spaces between the units a child would read as one.
+2. **UI copy.** `text/locales/<locale>/ui.json`, every key.
+3. **Realia.** `text/locales/<locale>/realia.json`, every id, each naming what *this*
+   language's sentence is about. If its joke lands on a thing no stage draws yet,
+   draw it in that stage first (the unit test in `src/demos/realia.test.ts` fails until
+   every picture every locale names is drawable).
+4. **Chapters.** `text/locales/<locale>/chNN.json`, as the pipeline describes.
+5. **The gate tells you what the stages need.** `npm run check:data`: every demo the
+   language publishes is checked against its staging contract, by the language's own
+   profile, and each failure names the segment, the demo and what it reads.
+
+### 9.6 What the shell absorbs
+
+Some differences are not facts a translator declares but consequences of the words:
+a stack of sentences a third taller, a name set apart that a line must not break, a
+digit in a script without an italic, a label twice as long. Each is one mechanism in
+the demo shell, keyed on the profile or on measurement and never on a language, and
+each has one check; the review finding that named it is the check's first case.
+
+| Difference | Mechanism | Where | Checked by |
+| --- | --- | --- | --- |
+| A stack of slips that does not fit its frame | **Caption fit budget.** The shell measures each beat's stack where its demo placed it, between the bar and the frame's foot (or inside a band the beat declares with `--demo-fit-top` and `--demo-fit-foot`, to stay clear of a figure), and where it does not fit steps the slips down a size, then another, then tightens their leading, then moves the stack inside the band; a stack placed from the edge it crosses keeps its size and is moved, and is set smaller only where the move alone cannot fit it. What still does not fit is reported (`data-fit="over"`, a console warning, `captionFit()` on the seam), never clipped. A demo whose captions move by themselves keeps them further in (`--demo-fit-margin`). Measured on attach, when the fonts arrive, on a resize and when the page's state changes; never per frame. A sentence a stage draws elsewhere is held to the same frame: the Mouse's tail is fitted to its room, its finest groups where they fit, else two groups of a line to a row, else smaller (`layTail`). | `src/demos/shell/shell.ts` (`fitCaptions`), `fit.ts`, `shell.css` | `tests/caption-fit.spec.ts`: every demo, locale and beat at 0.3, 0.6 and 0.9 of it, at desktop and at 390 pixels, every visible line (or drawn sentence, where a beat is drawn elsewhere) inside the stage, below the bar and off the buttons shown, and nothing reported; `fit.test.ts`; `chunks.test.ts` (`layTail`) |
+| Where a line breaks, and where a regrouping should | **Break priority.** `units()` marks a unit that ends on a pause (a comma or a stop, of either width) as the stronger break and never splits a quoted run. Where spaces are phrase spaces (`significantSpaces`), the Mouse's tail parts a line at every pause and splits each part evenly (seven and five); where they are word spaces, the tail keeps the book's groups. A label's two lines prefer a pause. A caption holds each quoted run on one line (`.demo__held`, wrapped by the shell). | `words.ts`, `mouse-tale/chunks.ts`, `drink-me/figures.ts`, `shell.ts` (`holdQuotedRuns`) | `words.test.ts`, `chunks.test.ts` (every word-space locale's groups equal the book's), `tests/play/japanese.spec.ts` |
+| Speech in a script without an italic | **Speech marking by the shell.** A demo marks a speaker or a narration it sets apart with `--demo-say-style`, and draws a word in italic with `var(--demo-italic)`; the shell alone turns them into a font style, and only where the profile's emphasis is `italic`. | `shell.css` | `check-frontend.py` (no italic written in a demo's sheet); `tests/play/locale-profile.spec.ts` (on a page whose emphasis is a slip no element with text computes an italic, every demo, every beat, both widths) |
+| A symbol a language reads differently | **Realia `marks`.** The jury's slates draw the yes and no this language writes. | realia, `trial/court.ts`, `art/vectors.ts` | schema; `check-text.py` (yes and no differ); `realia.test.ts`; `locale-profile.spec.ts` |
+| A label longer in one language | **The chrome's floor.** Every pill is at least a 24-by-24 pixel target and every label at least 12 pixels; on a phone a bar whose pills do not fit one row wraps to a second rather than shrink, and the shell writes the height it measures as `--demo-bar-height`, so what sits under the bar moves down. | `shell.css`, `shell.ts` | `locale-profile.spec.ts`: at 320, 390 and 430 pixels, with and without a touch screen, in every locale |

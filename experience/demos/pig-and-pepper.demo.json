@@ -1,0 +1,240 @@
+{
+  "id": "pig-and-pepper",
+  "titleChapter": 6,
+  "shots": [
+    {
+      "id": "the-footmen",
+      "beats": [
+        {
+          "id": "a-footman",
+          "cue": "footman",
+          "segments": [
+            "ch06.s0010",
+            "ch06.s0015",
+            "ch06.s0020"
+          ]
+        },
+        {
+          "id": "the-invitation",
+          "cue": "invitation",
+          "segments": [
+            "ch06.s0025",
+            "ch06.s0030",
+            "ch06.s0035"
+          ]
+        },
+        {
+          "id": "laughing",
+          "cue": "laugh",
+          "segments": [
+            "ch06.s0040",
+            "ch06.s0045"
+          ]
+        },
+        {
+          "id": "how-to-get-in",
+          "cue": "get-in",
+          "segments": [
+            "ch06.s0050",
+            "ch06.s0055"
+          ]
+        },
+        {
+          "id": "a-plate",
+          "cue": "plate",
+          "segments": [
+            "ch06.s0060"
+          ]
+        },
+        {
+          "id": "going-in",
+          "cue": "in",
+          "segments": [
+            "ch06.s0065",
+            "ch06.s0070"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-kitchen",
+      "beats": [
+        {
+          "id": "smoke",
+          "cue": "smoke",
+          "segments": [
+            "ch06.s0075",
+            "ch06.s0080",
+            "ch06.s0085"
+          ]
+        },
+        {
+          "id": "pepper",
+          "cue": "pepper",
+          "segments": [
+            "ch06.s0090",
+            "ch06.s0095"
+          ]
+        },
+        {
+          "id": "the-cat",
+          "cue": "cat",
+          "segments": [
+            "ch06.s0100",
+            "ch06.s0105"
+          ]
+        },
+        {
+          "id": "why-grin",
+          "cue": "why",
+          "segments": [
+            "ch06.s0110",
+            "ch06.s0115",
+            "ch06.s0120"
+          ]
+        },
+        {
+          "id": "they-all-can",
+          "cue": "grin",
+          "segments": [
+            "ch06.s0125",
+            "ch06.s0130",
+            "ch06.s0135"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pots-and-pans",
+      "beats": [
+        {
+          "id": "throwing",
+          "cue": "throw",
+          "segments": [
+            "ch06.s0140",
+            "ch06.s0145",
+            "ch06.s0150"
+          ]
+        },
+        {
+          "id": "mind-what-you-do",
+          "cue": "mind",
+          "segments": [
+            "ch06.s0155",
+            "ch06.s0160"
+          ]
+        },
+        {
+          "id": "talking-of-axes",
+          "cue": "axes",
+          "segments": [
+            "ch06.s0165",
+            "ch06.s0170",
+            "ch06.s0175",
+            "ch06.s0180"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-lullaby",
+      "beats": [
+        {
+          "id": "speak-roughly",
+          "cue": "sing",
+          "segments": [
+            "ch06.s0185",
+            "ch06.s0190",
+            "ch06.s0195"
+          ]
+        },
+        {
+          "id": "chorus",
+          "cue": "chorus",
+          "segments": [
+            "ch06.s0200",
+            "ch06.s0205"
+          ]
+        },
+        {
+          "id": "nurse-it",
+          "cue": "nurse",
+          "segments": [
+            "ch06.s0210",
+            "ch06.s0215"
+          ]
+        },
+        {
+          "id": "off-to-croquet",
+          "cue": "off",
+          "segments": [
+            "ch06.s0220",
+            "ch06.s0225"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-baby",
+      "beats": [
+        {
+          "id": "caught",
+          "cue": "catch",
+          "segments": [
+            "ch06.s0230",
+            "ch06.s0235",
+            "ch06.s0240"
+          ]
+        },
+        {
+          "id": "a-knot",
+          "cue": "knot",
+          "segments": [
+            "ch06.s0245",
+            "ch06.s0250"
+          ]
+        },
+        {
+          "id": "grunting",
+          "cue": "grunt",
+          "segments": [
+            "ch06.s0255",
+            "ch06.s0260"
+          ]
+        },
+        {
+          "id": "a-snout",
+          "cue": "snout",
+          "segments": [
+            "ch06.s0265",
+            "ch06.s0270",
+            "ch06.s0275"
+          ]
+        },
+        {
+          "id": "a-pig",
+          "cue": "pig",
+          "segments": [
+            "ch06.s0280",
+            "ch06.s0285"
+          ]
+        },
+        {
+          "id": "trotting-off",
+          "cue": "trot",
+          "segments": [
+            "ch06.s0290",
+            "ch06.s0295"
+          ]
+        },
+        {
+          "id": "looking-up",
+          "cue": "look-up",
+          "segments": [
+            "ch06.s0300"
+          ]
+        }
+      ]
+    }
+  ]
+}

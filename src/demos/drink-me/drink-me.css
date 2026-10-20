@@ -1,0 +1,897 @@
+/* Drink Me: a first-person hall in CSS 3D. Alice is the camera; when she shrinks
+   the hall scales up around the floor under her feet, and when she grows it scales
+   down until the roof arrives. Scale is the parallax. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  /* The hall in the book's inks: lighter paper walls, sepia doors, a checkered
+     floor of ink and paper. The key alone is gold; the size changes lean blue. */
+  :root {
+    --dk-wall: var(--paper-aged);
+    --dk-wall-deep: var(--sepia-mid);
+    --dk-ceiling: var(--sepia-dark);
+    --dk-tile: var(--paper-base);
+    --dk-tile-dark: var(--ink-primary);
+    --dk-door: var(--sepia-dark);
+    --dk-door-frame: var(--sepia-deep);
+    --dk-brass: color-mix(in oklch, var(--sepia-light), var(--world-glow) 40%);
+    --dk-gold: var(--ix-gold);
+    --dk-glass: oklch(from var(--paper-base) l c h / 0.3);
+    --dk-glass-edge: oklch(from var(--paper-base) l c h / 0.7);
+    --dk-drink: oklch(from var(--sepia-mid) l c h / 0.85);
+    --dk-label: var(--paper-base);
+    --dk-label-ink: var(--ink-primary);
+    --dk-cake: var(--paper-aged);
+    --dk-cake-crust: var(--sepia-mid);
+    --dk-currant: var(--sepia-deep);
+    --dk-garden: var(--world-leaf);
+    --dk-curtain: var(--sepia-dark);
+    --dk-curtain-fold: var(--sepia-deep);
+    --dk-lamp: var(--world-glow);
+    /* The fold of the telescope and, at the end, the roof: the pool's own roof
+       colour (pool.css --pt-night), so the next page opens on the same fold. */
+    --dk-night: var(--world-night-deep);
+    --dk-tear: oklch(from var(--paper-base) l c h / 0.75);
+    --dk-shadow: oklch(from var(--ink-primary) l c h / 0.55);
+    /* The pool of tears' hall and its tears (pool.css --pt-hall, --pt-hall-deep,
+       --pt-foam): the end of this demo dims toward them. */
+    --dk-pool-hall: var(--sepia-dark);
+    --dk-pool-hall-deep: var(--sepia-deep);
+    --dk-pool-foam: var(--paper-base);
+    --dk-hall-height: 900px;
+    --dk-radius: 1100px;
+    --dk-panel: 600px;
+    /* The table's place in hall units; the camera starts at the origin. */
+    --dk-table-z: -600px;
+  }
+}
+
+@layer scene {
+  .demo--drink-me .demo-beat {
+    inset-block-end: 8vh;
+  }
+
+  .dk__world {
+    --persp: 900;
+    perspective: calc(var(--persp) * 1px);
+    perspective-origin: 50% 50%;
+    overflow: hidden;
+    background: var(--dk-wall-deep);
+  }
+
+  /* The hall: a round room, the glass table in the middle and doors all round,
+     with the strange door in the ceiling she fell through. Camera numbers are
+     unitless and tweened by the script; the camera stands at the hall's origin. */
+  .dk__hall {
+    --room: 1;
+    --cam-z: 0;
+    --cam-y: 0;
+    --yaw: 0;
+    --look-x: 0;
+    --look-y: 0;
+    --cam-pitch: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    inline-size: 0;
+    block-size: 0;
+    transform-style: preserve-3d;
+    transform: rotateX(calc((var(--cam-pitch) + var(--look-y)) * 1deg))
+      rotateY(calc((var(--look-x) + var(--yaw)) * 1deg))
+      translate3d(0, calc(var(--cam-y) * 1px), calc(var(--cam-z) * 1px))
+      scale3d(var(--room), var(--room), var(--room));
+    /* The eye is where CSS puts it: the perspective distance in front of the plane.
+       Turning and scaling pivot there, so the room turns round the camera. */
+    transform-origin: 0 var(--dk-eye, 240px) calc(var(--persp, 900) * 1px);
+  }
+
+  .dk__plane {
+    position: absolute;
+    transform-style: preserve-3d;
+  }
+
+  .dk__floor,
+  .dk__ceiling {
+    inline-size: calc(var(--dk-radius) * 2.4);
+    block-size: calc(var(--dk-radius) * 2.4);
+    inset-inline-start: calc(var(--dk-radius) * -1.2);
+    inset-block-start: calc(var(--dk-radius) * -1.2);
+    transform-origin: 50% 50%;
+  }
+
+  /* Everything round the room is centred on the table. */
+  .dk__ring {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    transform-style: preserve-3d;
+    transform: translateZ(var(--dk-table-z));
+  }
+
+  .dk__floor {
+    background:
+      radial-gradient(
+        circle at 50% 50%,
+        transparent calc(var(--dk-radius) * 1.02),
+        var(--dk-wall-deep) calc(var(--dk-radius) * 1.02)
+      ),
+      repeating-conic-gradient(
+        from 0deg at 50% 50%,
+        var(--dk-tile-dark) 0 7.5deg,
+        var(--dk-tile) 7.5deg 15deg
+      );
+    background-blend-mode: normal;
+    transform: translateY(var(--dk-eye, 240px)) rotateX(-90deg);
+  }
+
+  .dk__floor::after {
+    /* Rings across the wedges make the checker; nothing to do with the walls. */
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-radial-gradient(
+      circle at 50% 50%,
+      transparent 0 130px,
+      oklch(from var(--ink-primary) l c h / 0.55) 130px 260px
+    );
+    mix-blend-mode: multiply;
+  }
+
+  .dk__ceiling {
+    background: radial-gradient(circle at 50% 50%, var(--dk-ceiling), var(--dk-wall-deep) 70%);
+    /* Front face down, toward the room, so the trapdoor on it reads from below. */
+    transform: translateY(calc(var(--dk-eye, 240px) - var(--dk-hall-height))) rotateX(90deg);
+  }
+
+  /* The strange door in the ceiling, hinged on its far edge. */
+  .dk__trapdoor {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    inline-size: 260px;
+    block-size: 260px;
+    margin: -130px 0 0 -130px;
+    border: 10px solid var(--dk-door-frame);
+    border-radius: 50% 50% 10% 10%;
+    background: var(--dk-night);
+    transform-style: preserve-3d;
+  }
+
+  .dk__trapdoor-leaf {
+    position: absolute;
+    inset: -10px;
+    border-radius: inherit;
+    border: 10px solid var(--dk-door-frame);
+    background:
+      radial-gradient(circle at 50% 70%, var(--dk-brass) 9px, transparent 10px),
+      repeating-linear-gradient(to right, var(--dk-door) 0 30px, var(--dk-door-frame) 30px 34px);
+    transform-origin: 50% 0;
+    /* Open, it hangs down into the hall at a slant, its planks to the floor. */
+    transform: rotateX(calc(var(--open, 0) * -72deg));
+    backface-visibility: visible;
+  }
+
+  /* Twelve wall panels round the room, each with a door of its own shape. */
+  .dk__panel {
+    position: absolute;
+    inset-inline-start: calc(var(--dk-panel) / -2);
+    inset-block-start: calc(var(--dk-eye, 240px) - var(--dk-hall-height));
+    inline-size: var(--dk-panel);
+    block-size: var(--dk-hall-height);
+    transform-origin: 50% 50%;
+    transform: rotateY(calc(var(--i) * 30deg)) translateZ(calc(var(--dk-radius) * -1));
+    background:
+      linear-gradient(to bottom, transparent 82%, var(--dk-wall-deep) 82.5%),
+      linear-gradient(
+        to right,
+        oklch(from var(--ink-primary) l c h / 0.12),
+        transparent 12% 88%,
+        oklch(from var(--ink-primary) l c h / 0.12)
+      ),
+      var(--dk-wall);
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    backface-visibility: hidden;
+  }
+
+  .dk__door {
+    --w: 220px;
+    --h: 520px;
+    position: relative;
+    inline-size: var(--w);
+    block-size: var(--h);
+    background: var(--dk-door);
+    box-shadow: inset 0 0 40px oklch(from var(--ink-primary) l c h / 0.4);
+    border: 14px solid var(--dk-door-frame);
+    border-block-end: 0;
+  }
+
+  .dk__door::after {
+    /* The knob: every door has one, and every door is locked. */
+    content: "";
+    position: absolute;
+    inset-inline-start: 70%;
+    inset-block-start: 52%;
+    inline-size: 16px;
+    block-size: 16px;
+    border-radius: 50%;
+    background: var(--dk-brass);
+    transform-origin: -30px 50%;
+  }
+
+  .dk__door {
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .dk__door:focus-visible {
+    outline: 3px solid var(--dk-gold);
+    outline-offset: 6px;
+  }
+
+  .dk__door[data-tried]::after {
+    animation: dk-jiggle 0.5s ease-in-out 3;
+  }
+
+  .dk__hall[data-locked] .dk__door::after {
+    animation: dk-jiggle 0.5s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * -0.11s);
+  }
+
+  .dk__door--arched {
+    border-radius: 110px 110px 0 0;
+    background-image: linear-gradient(
+      to right,
+      transparent 48%,
+      var(--dk-door-frame) 48% 52%,
+      transparent 52%
+    );
+  }
+
+  .dk__door--gothic {
+    --w: 170px;
+    --h: 620px;
+    clip-path: polygon(50% 0, 100% 24%, 100% 100%, 0 100%, 0 24%);
+    border: 0;
+    background-image: linear-gradient(to bottom, var(--dk-door-frame) 0 12px, transparent 12px);
+  }
+
+  .dk__door--round {
+    --w: 300px;
+    --h: 300px;
+    border-radius: 50%;
+    border-block-end: 14px solid var(--dk-door-frame);
+    margin-block-end: 140px;
+    background-image: radial-gradient(
+      circle at 50% 50%,
+      transparent 40%,
+      oklch(from var(--ink-primary) l c h / 0.25) 41%
+    );
+  }
+
+  .dk__door--double {
+    --w: 340px;
+    --h: 480px;
+    background-image: linear-gradient(
+      to right,
+      transparent 49%,
+      var(--dk-door-frame) 49% 51%,
+      transparent 51%
+    );
+  }
+
+  .dk__door--double::after {
+    inset-inline-start: 42%;
+  }
+
+  .dk__door--tiny {
+    --w: 70px;
+    --h: 110px;
+    border-radius: 35px 35px 0 0;
+    border-width: 6px;
+  }
+
+  .dk__door--tiny::after {
+    inline-size: 6px;
+    block-size: 6px;
+  }
+
+  .dk__door--keyhole {
+    --w: 240px;
+    --h: 560px;
+    clip-path: path("M120 0 A120 120 0 1 1 119 0 Z M40 240 L200 240 L240 560 L0 560 Z");
+    border: 0;
+    background-image: radial-gradient(
+      circle at 50% 22%,
+      oklch(from var(--ink-primary) l c h / 0.3) 60px,
+      transparent 61px
+    );
+  }
+
+  .dk__door--dutch {
+    background-image: linear-gradient(
+      to bottom,
+      transparent 48%,
+      var(--dk-door-frame) 48% 51%,
+      transparent 51%
+    );
+  }
+
+  .dk__door--square {
+    --w: 260px;
+    --h: 420px;
+    background-image:
+      radial-gradient(circle, var(--dk-brass) 3px, transparent 4px),
+      radial-gradient(circle, var(--dk-brass) 3px, transparent 4px);
+    background-size:
+      40px 40px,
+      40px 40px;
+    background-position:
+      0 0,
+      20px 20px;
+  }
+
+  .dk__door--trapezoid {
+    --w: 300px;
+    --h: 500px;
+    clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%);
+    border: 0;
+    background-image: linear-gradient(to bottom, var(--dk-door-frame) 0 14px, transparent 14px);
+  }
+
+  .dk__door--windowed {
+    --w: 200px;
+    --h: 540px;
+    border-radius: 20px 20px 0 0;
+    background-image: radial-gradient(
+      ellipse 50px 70px at 50% 26%,
+      var(--dk-glass) 98%,
+      var(--dk-door-frame) 100%
+    );
+  }
+
+  .dk__door--oval {
+    --w: 220px;
+    --h: 480px;
+    border-radius: 110px / 200px;
+    border-block-end: 14px solid var(--dk-door-frame);
+    margin-block-end: 40px;
+  }
+
+  .dk__door--curtain {
+    /* The curtain panel carries no door of its own; the little door is below. */
+    display: none;
+  }
+
+  .dk__lamp {
+    position: absolute;
+    inset-inline-start: -14px;
+    inset-block-start: 0;
+    inline-size: 28px;
+    block-size: 28px;
+    border-radius: 50%;
+    background: var(--dk-lamp);
+    box-shadow: 0 0 60px 30px oklch(from var(--dk-lamp) l c h / 0.55);
+    transform: rotateY(calc(var(--i) * 60deg)) translateZ(calc(var(--dk-radius) * -0.55))
+      translateY(calc(var(--dk-eye, 240px) - var(--dk-hall-height) + 120px));
+  }
+
+  /* Alice, falling in through the strange door, before she is the camera. */
+  /* The rabbit hole's last frame, over everything at first (trapdoor.css draws
+     it): the page falls through it toward the hall's floor. */
+  .dk__arrival {
+    transform-origin: 50% var(--trapdoor-y);
+  }
+
+  .dk__arrival-door {
+    transform: rotate(calc(var(--turn) * 1deg));
+  }
+
+  .dk__falling {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 46%;
+    inline-size: clamp(4rem, 12vmin, 8rem);
+    translate: -50% -50%;
+    opacity: 0;
+    filter: drop-shadow(0 20px 30px var(--dk-shadow));
+  }
+
+  @keyframes dk-jiggle {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(-30deg);
+    }
+  }
+
+  /* The curtain and the little door, on the panel straight ahead. */
+  .dk__curtain {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 0;
+    inline-size: 190px;
+    block-size: 260px;
+    translate: -50% 0;
+    background: repeating-linear-gradient(
+      to right,
+      var(--dk-curtain) 0 22px,
+      var(--dk-curtain-fold) 22px 34px
+    );
+    border-radius: 12px 12px 0 0;
+    /* Hung from its rod: it gathers up toward the top when lifted, and a peek
+       leaves it swaying for a moment. It sits a hair before the door it hides. */
+    transform-origin: 50% 0;
+    transform: translateZ(2px) scaleY(calc(1 - var(--curtain-lift, 0) * 0.7))
+      skewX(calc(var(--curtain-sway, 0) * 4deg));
+    transform-style: preserve-3d;
+    opacity: var(--curtain-fade, 1);
+    pointer-events: auto;
+    cursor: pointer;
+    /* A finger may still scroll from the curtain: scroll is the guaranteed path. */
+    touch-action: pan-y;
+  }
+
+  .dk__little-door {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 0;
+    inline-size: 96px;
+    block-size: 150px;
+    translate: -50% 0;
+    border: 8px solid var(--dk-door-frame);
+    border-block-end: 0;
+    border-radius: 48px 48px 0 0;
+    background: var(--dk-door);
+    overflow: hidden;
+    transform-style: preserve-3d;
+  }
+
+  .dk__garden {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 30% 80%, var(--wonder-red) 6px, transparent 7px),
+      radial-gradient(circle at 60% 85%, var(--wonder-red-light) 6px, transparent 7px),
+      radial-gradient(circle at 80% 78%, var(--world-glow) 5px, transparent 6px),
+      radial-gradient(circle at 50% 40%, var(--paper-base) 14px, transparent 15px),
+      linear-gradient(to bottom, var(--world-sky), var(--dk-garden) 60%, var(--world-leaf-deep));
+    opacity: 0.001;
+  }
+
+  .dk__door-leaf {
+    position: absolute;
+    inset: 0;
+    background: var(--dk-door);
+    transform-origin: 0 50%;
+    transform: rotateY(calc(var(--open, 0) * -100deg));
+    box-shadow: inset 0 0 20px oklch(from var(--ink-primary) l c h / 0.5);
+  }
+
+  .dk__door-leaf::after {
+    content: "";
+    position: absolute;
+    inset-inline-end: 12px;
+    inset-block-start: 50%;
+    inline-size: 8px;
+    block-size: 8px;
+    border-radius: 50%;
+    background: var(--dk-brass);
+  }
+
+  /* The keyhole under the knob, and the garden's light through it while the reader
+     peeks: a transient glow, gone when the curtain drops. */
+  .dk__keyhole {
+    position: absolute;
+    inset-inline-end: 13px;
+    inset-block-start: calc(50% + 14px);
+    inline-size: 6px;
+    block-size: 11px;
+    border-radius: 3px 3px 1px 1px;
+    background: var(--ink-primary);
+  }
+
+  .dk__keyhole-glow {
+    position: absolute;
+    inset-inline-end: -14px;
+    inset-block-start: calc(50% - 10px);
+    inline-size: 60px;
+    block-size: 60px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      color-mix(in oklch, var(--world-glow), var(--ix-mint) 45%) 0,
+      oklch(from var(--world-glow) l c h / 0.5) 30%,
+      transparent 70%
+    );
+    opacity: var(--peek-glow, 0);
+    pointer-events: none;
+  }
+
+  /* The glass table, in the middle of the hall. */
+  .dk__table {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    transform-style: preserve-3d;
+    transform: translate3d(0, var(--dk-eye, 240px), var(--dk-table-z));
+  }
+
+  .dk__table-top {
+    position: absolute;
+    inline-size: 260px;
+    block-size: 180px;
+    inset-inline-start: -130px;
+    inset-block-start: -90px;
+    transform: translateY(-170px) rotateX(90deg);
+    background: var(--dk-glass);
+    border: 3px solid var(--dk-glass-edge);
+    border-radius: 8px;
+  }
+
+  .dk__table-leg {
+    position: absolute;
+    inline-size: 10px;
+    block-size: 170px;
+    inset-block-start: -170px;
+    background: linear-gradient(to right, var(--dk-glass-edge), var(--dk-glass));
+    transform: translate3d(calc(var(--lx) * 1px), 0, calc(var(--lz) * 1px));
+  }
+
+  .dk__key {
+    position: absolute;
+    inset-inline-start: -30px;
+    inset-block-start: -200px;
+    inline-size: 60px;
+    transform: rotateX(90deg) rotate(-20deg);
+    transform-origin: 50% 100%;
+    color: var(--dk-gold);
+    filter: drop-shadow(0 0 8px oklch(from var(--dk-gold) l c h / 0.6));
+  }
+
+  .dk__key svg,
+  .dk__bottle svg,
+  .dk__cake svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* The bottle and the cake stand on or under the table until they come forward.
+     They are only pictures here, so a tap goes through them to the key. */
+  .dk__bottle {
+    position: absolute;
+    inset-inline-start: -26px;
+    inset-block-start: -300px;
+    inline-size: 52px;
+    opacity: 0;
+    transform-origin: 50% 100%;
+    pointer-events: none;
+  }
+
+  .dk__cake {
+    position: absolute;
+    inset-inline-start: -40px;
+    inset-block-start: -70px;
+    inline-size: 80px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .dk__label-text {
+    font-family: var(--demo-serif);
+    font-weight: 700;
+    fill: var(--dk-label-ink);
+  }
+
+  .dk__liquid {
+    transform-origin: 50% 100%;
+    transform: scaleY(var(--fill, 1));
+  }
+
+  .dk__bite {
+    opacity: var(--bites, 0);
+  }
+
+  /* Hand-held props: what Alice raises to her lips, over everything. */
+  .dk__hand {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: -6%;
+    inline-size: clamp(9rem, 30vmin, 18rem);
+    translate: -50% 0;
+    transform-origin: 50% 100%;
+    opacity: 0;
+    pointer-events: none;
+    cursor: pointer;
+    filter: drop-shadow(0 20px 30px oklch(from var(--ink-primary) l c h / 0.5));
+  }
+
+  /* In reach only while it is in her hand; otherwise the hall behind gets the taps. */
+  .dk__hand[data-live] {
+    pointer-events: auto;
+  }
+
+  /* The bottle in her hand turns about its own axis: the glass is round and stays
+     put, the paper label goes round, four sides of it, every one the same words. */
+  .dk__hand--bottle {
+    --dk-hand-w: clamp(9rem, 30vmin, 18rem);
+    touch-action: pan-y;
+  }
+
+  .dk__turn {
+    --turn: 0;
+    position: relative;
+    perspective: calc(var(--dk-hand-w) * 2.4);
+  }
+
+  .dk__label-ring {
+    position: absolute;
+    inset-inline: 16%;
+    inset-block: 37% 44.4%;
+    transform-style: preserve-3d;
+    transform: rotateY(calc(var(--turn) * 1deg));
+  }
+
+  .dk__label-face {
+    position: absolute;
+    inset-block: 0;
+    inset-inline: 4%;
+    backface-visibility: hidden;
+    transform: rotateY(calc(var(--k) * 90deg)) translateZ(calc(var(--dk-hand-w) * 0.31));
+  }
+
+  .dk__label-face svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  /* The key in her hand rises into the frame while she holds it, and goes when she
+     leaves it on the table; the table's key is there whenever hers is not. */
+  .dk__key {
+    pointer-events: auto;
+    cursor: pointer;
+    transition: opacity var(--demo-quick) var(--demo-ease);
+  }
+
+  .dk__hall[data-key-taken] .dk__key {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .dk__hand svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .dk__hand[data-held] {
+    filter: drop-shadow(0 0 24px oklch(from var(--world-glow) l c h / 0.7));
+  }
+
+  .dk__hand--key {
+    inline-size: clamp(5rem, 16vmin, 9rem);
+    inset-inline-start: 72%;
+    inset-block-end: 4%;
+    color: var(--dk-gold);
+    filter: drop-shadow(0 6px 10px oklch(from var(--ink-primary) l c h / 0.5));
+    translate: -50% 120px;
+    rotate: -30deg;
+    transition:
+      opacity 0.3s var(--demo-ease),
+      translate 0.5s var(--demo-ease),
+      rotate 0.5s var(--demo-ease);
+  }
+
+  .dk__hands[data-key] .dk__hand--key {
+    opacity: 1;
+    translate: -50% 0;
+    rotate: -12deg;
+  }
+
+  .dk__prop--key {
+    inset-block-start: calc(var(--demo-bar-height) + 3.4rem);
+  }
+
+  .dk__little-door {
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .dk__prop {
+    inset-inline-start: 50%;
+    inset-block-start: calc(var(--demo-bar-height) + 1rem);
+    translate: -50% 0;
+  }
+
+  /* The telescope: the view folds up from the top and bottom as she shrinks. */
+  .dk__iris {
+    background: var(--dk-night);
+    clip-path: inset(0 0 100% 0);
+    opacity: 0;
+  }
+
+  .dk__iris--top {
+    clip-path: inset(0 0 calc(100% - var(--fold, 0) * 50%) 0);
+    opacity: 1;
+  }
+
+  .dk__iris--bottom {
+    clip-path: inset(calc(100% - var(--fold, 0) * 50%) 0 0 0);
+    opacity: 1;
+  }
+
+  .dk__tears {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* The dim at the end: the hall's colours become the pool's. */
+  .dk__dim {
+    background: linear-gradient(to bottom, var(--dk-pool-hall-deep), var(--dk-pool-hall) 60%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .dk__tear {
+    position: absolute;
+    inset-inline-start: var(--x, 50%);
+    inset-block-start: -8vh;
+    inline-size: 1.4vmin;
+    block-size: 9vh;
+    border-radius: 50% 50% 60% 60% / 20% 20% 80% 80%;
+    background: linear-gradient(to bottom, transparent, var(--dk-tear));
+    animation: dk-tear 3.2s ease-in infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  /* Her first tears once grown: fewer, rounder, the size the pool draws them. */
+  .dk__tears--giant .dk__tear {
+    inline-size: 1vmin;
+    block-size: 3.2vh;
+    border-radius: 50%;
+    background: var(--dk-pool-foam);
+    animation-duration: 2.4s;
+  }
+
+  .dk__flavours {
+    opacity: calc(var(--show, 0) * var(--fade, 1));
+  }
+
+  .dk__flavour {
+    position: absolute;
+    inset-inline-start: var(--x, 50%);
+    inset-block-end: 20%;
+    inline-size: var(--s, 4vmin);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 35% 35%,
+      oklch(from var(--paper-base) l c h / 0.7),
+      var(--c, var(--ix-gold)) 60%
+    );
+    animation: dk-bubble 2.8s ease-out infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  .dk__flash {
+    background: var(--world-glow);
+    opacity: 0;
+  }
+
+  /* Overlays over the hall let the pointer through to the doors, the curtain and
+     the key; the hand-held props set their own pointer-events back on. */
+  .dk__flash,
+  .dk__iris,
+  .dk__flavours,
+  .dk__hands,
+  .dk__self-layer,
+  .dk__falling-layer {
+    pointer-events: none;
+  }
+
+  /* Looking down at herself once she has grown: skirt and shoes fill the bottom
+     of the frame and the room is a toy beyond them. */
+  .dk__self-layer {
+    overflow: hidden;
+  }
+
+  .dk__self {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: -4%;
+    inline-size: clamp(24rem, 120vmin, 70rem);
+    translate: -50% 0;
+    opacity: 0;
+    filter: drop-shadow(0 -16px 30px var(--dk-shadow));
+  }
+
+  .dk__self svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .demo[data-paused] .dk__tear,
+  .demo[data-paused] .dk__flavour {
+    animation-play-state: paused;
+  }
+
+  @keyframes dk-tear {
+    from {
+      transform: translateY(0) scaleY(0.6);
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    to {
+      transform: translateY(120vh) scaleY(1.4);
+      opacity: 0.2;
+    }
+  }
+
+  @keyframes dk-bubble {
+    from {
+      transform: translateY(0) scale(0.4);
+      opacity: 0;
+    }
+    30% {
+      opacity: 1;
+    }
+    to {
+      transform: translateY(-70vh) scale(1.1);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* The key is in her hand or on the table: a cut. */
+    .dk__key,
+    .dk__hand--key {
+      transition: none;
+    }
+
+    .dk__door {
+      padding: 0;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    .dk__door:focus-visible {
+      outline: 3px solid var(--dk-gold);
+      outline-offset: 6px;
+    }
+
+    .dk__door[data-tried]::after {
+      animation: dk-jiggle 0.5s ease-in-out 3;
+    }
+
+    .dk__hall[data-locked] .dk__door::after {
+      animation: none;
+      transform: rotate(-20deg);
+    }
+
+    .dk__tear {
+      animation: none;
+      transform: translateY(calc(var(--ly, 0) * 100vh));
+      opacity: 0.8;
+    }
+
+    .dk__flavour {
+      animation: none;
+      transform: translateY(calc(var(--ly, 0) * -50vh));
+      opacity: 0.9;
+    }
+  }
+}

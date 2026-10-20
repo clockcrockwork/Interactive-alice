@@ -1,4 +1,4 @@
-/** Opt-in, scene-local comparison. The master is deliberately not an articulated rig. */
+/** Opt-in, scene-local comparison. The source master is not an articulated rig. */
 export const previewEnabled = (search: string): boolean =>
   new URLSearchParams(search).get('artPreview') === 'overhead';
 
@@ -8,7 +8,7 @@ export function installGeneratedPreview(root: HTMLElement, ui: Record<string, st
   if (!figure) return;
   const image = document.createElement('img');
   image.src = new URL(
-    '../../assets/images/generated-preview/alice--falling-overhead.yellow.candidate-v1.png',
+    '../../assets/images/generated-preview/alice--falling-overhead.yellow.candidate-v1.webp',
     import.meta.url,
   ).href;
   image.width = 1206;

@@ -15,7 +15,14 @@ Scroll into the fall. Open “Compare artwork” in the lower-left. Its checkbox
 unapproved generated yellow master and the original articulated drawing at the
 same scroll position. Without the explicit query parameter the original remains
 unchanged. The panel starts collapsed to reduce obstruction on small screens.
-Actual small-screen overlap remains visually unverified. The other three demos reusing `alice/falling` are unchanged.
+The fixed comparison control sits over the lower-left scene edge. At a 390x844
+CSS-pixel viewport, its collapsed summary occupies x=8-134 and y=794-836 (about
+1.6% of the viewport). A reduced-motion Chromium scan of all 11 Rabbit Hole cues
+found no overlap with visible caption lines or active prop buttons. The overlay
+does take pointer input in that small rectangle, so a drag that starts there does
+not tumble Alice; the rest of the stage remains available. It covers decorative
+floor art in the captured fall scene, not a caption or active scene control. The
+other three demos reusing `alice/falling` are unchanged.
 The yellow master deliberately remains yellow even if the original is set to blue.
 
 ## Scope and camera
@@ -46,8 +53,10 @@ Alpha QA found 52.10% fully transparent pixels. Apparent saturated red/yellow fr
 pixels have only alpha 1–4/255; the figure is not delivered on an opaque backdrop.
 The figure is fully in-frame. This is numerical image QA, not browser acceptance.
 
-This is intentionally an unoptimized review master: see provenance for exact byte
-size and SHA-256. The new asset is fetched only on the opt-in rabbit-hole comparison;
+The preview delivers a losslessly encoded WebP copy of the source master. The source
+master and full prompt are retained outside Git; the repository records only the
+delivery's hash, dimensions, encoding, short intent, and source hash. The image is
+fetched only on the opt-in rabbit-hole comparison;
 the entry bundle grows slightly to support that comparison. No story-page budget,
 shared registry, production deployment or protection setting is changed. Production
 intake would need accepted art, articulated cut-outs and optimized WebP/AVIF delivery.
@@ -55,20 +64,52 @@ intake would need accepted art, articulated cut-outs and optimized WebP/AVIF del
 ## Verification
 
 - Baseline on PR #12: 206 unit tests and production build passed.
-- Final change: 208 unit tests, check:data, lint, typecheck and production build passed.
-- Two locale comparison tests and the unchanged shared-scene regression test were
-  added, but browser assertions have not run successfully in this environment.
-- Playwright's browser download produced invalid ZIP files. The preinstalled
-  Chromium was then located using the repository's supported PW_CHROMIUM_PATH,
-  but its launch failed with socket() EPERM before any page assertion. No sandbox
-  or deployment protection was relaxed.
-- The runner has Node 24.19.0 rather than the project's pinned Node 22 range.
-  npm initially failed because its default cache directory was absent; selecting
-  a writable /tmp cache allowed the locked npm ci install to complete.
-- No screenshot, real-device pass, full browser suite pass or final art approval is
-  claimed. PR #12 already reports three separate timing-sensitive E2E failures in
-  Bill, Mock Turtle and trial; this change does not claim to fix them.
+- The consolidated candidate delivery's focused unit file passed 2/2. `check:data`,
+  typecheck, lint and production build passed; the build retains the existing
+  565.69 kB chunk warning. The earlier full-suite run was 297/299, with two locale
+  cases over their existing five-second limit. All eight cases in that locale test
+  file passed in isolation on both this tree and exact PR #12 base with one worker
+  and the same temporary directory, supporting worker contention as the timeout cause.
+- The focused generated-preview Playwright file passed 6/6 across desktop Chromium
+  and Pixel 7 emulation. The Dormouse moving-target browser test passed 1/1 on the
+  current tree; prior exact-base desktop evidence also passed. PR #27's historical
+  CI failure remains unexplained.
+- The Japanese index language-switch browser test still fails in this tree with
+  one `Transition was aborted because of invalid state. ViewTransition opt-in
+  disabled` page error; the same test fails on exact PR #12 base with two errors of
+  the same kind. This is an existing transition issue, not resolved here; no test
+  was weakened and no transition fix is included.
+- Local Chromium captures cover 18 EN/JA scene routes: overhead comparison at
+  desktop, Pixel 7 emulation and reduced motion, plus six other scenes at desktop.
+  The overhead WebP loaded at 1206x1304 in all six states and all captured routes
+  had no page errors. This is not real-device or continuous-motion coverage.
+- A separate Pixel 7 emulation geometry scan at 390x844 covered all 11 Rabbit Hole
+  cues. The collapsed control did not intersect visible captions or active prop
+  buttons; its 126x42 CSS-pixel summary reserves the documented lower-left drag area.
+- A bounded nine-file generated-asset desktop/phone Playwright batch ended without
+  reporter output or result files; it is not counted as executed coverage.
+- The runner used Node 24.12.0 rather than the project's pinned Node 22 range.
+  `npm ci --offline` completed from the local cache. No network permissions or
+  deployment protection were changed.
 
 ## Consolidated review status
 
-PR #27's repeated transition diagnostic was scoped to its historical base/head pair. The workflow integration and repeat-run script are removed from this consolidated branch to preserve the current manual-only browser-verification policy from PR #28. The reported Japanese index transition failure must be retested on this merged exact head; no result is carried forward from the old pair.
+PR #27's repeated transition diagnostic was reproduced against the exact PR #12
+base and this exact consolidated head. The workflow integration and repeat-run
+script are removed from this consolidated branch to preserve the manual-only
+browser-verification policy from PR #28. The screenshot contact sheet below
+records selected scene states; it does not replace continuous-motion or real-device
+testing.
+
+## Consolidated visual evidence
+
+See the [EN/JA scene contact sheet](generated-assets-review/contact-sheet.png).
+It contains 18 local Chromium screenshots: the overhead comparison in both
+locales at desktop, Pixel 7 emulation, and reduced motion, plus both locales for
+Witnesses, Trial, Croquet, Tea Party, Lobster Quadrille, and Pig and Pepper.
+All captured routes completed without page errors, and the overhead WebP loaded
+at 1206×1304 in all six overhead states. These are snapshots at selected scroll
+positions, not continuous-motion or real-device tests. The phone screenshot shows
+the comparison control over decorative floor art; the measured input footprint
+and bounded drag impact are described above. Final visual acceptance of the
+generated Alice artwork remains a human decision.

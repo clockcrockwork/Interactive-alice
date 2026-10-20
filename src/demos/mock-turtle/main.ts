@@ -361,7 +361,7 @@ function mount(shell: DemoShell): void {
     }
     comforting += 1;
     shell.sound.play('whoosh', 0.4);
-    shell.status(shell.ui.demoComfort ?? '');
+    shell.status(shell.ui.demoComfortDone ?? '');
     stir(Math.min(2.2, 1.2 + comforting * 0.25));
   };
   comfortButton.addEventListener('click', comfort);
@@ -401,7 +401,7 @@ function mount(shell: DemoShell): void {
       return;
     }
     shell.sound.play('thud', 0.3);
-    shell.status(shell.ui.demoClearThroat ?? '');
+    shell.status(shell.ui.demoClearThroatDone ?? '');
     if (reducedMotion) {
       // A start held still for a moment, then settled: no bounce.
       gsap.fromTo(
@@ -619,7 +619,7 @@ function mount(shell: DemoShell): void {
     }
     washing = true;
     shell.sound.play('splash', 0.5);
-    shell.status(shell.ui.demoWash ?? '');
+    shell.status(shell.ui.demoWashDone ?? '');
     gsap.to(group.play, {
       wash: 1,
       duration: reducedMotion ? 0.4 : 1.4,
@@ -761,7 +761,7 @@ function mount(shell: DemoShell): void {
     if (eel.inert || teaching?.isActive()) {
       return;
     }
-    shell.status(shell.ui.demoWakeEel ?? '');
+    shell.status(shell.ui.demoWakeEelDone ?? '');
     const play = gsap.timeline({ onUpdate: applyLesson });
     if (reducedMotion) {
       // Three poses, cut one to the next: drawling, stretched, fainted.
@@ -868,11 +868,4 @@ function mount(shell: DemoShell): void {
   });
 }
 
-const shell = attachDemo();
-if (shell) {
-  try {
-    mount(shell);
-  } catch (error) {
-    console.error(error);
-  }
-}
+attachDemo({ mount });

@@ -8,6 +8,12 @@
  * `bubble`, `murmur`) are started once and levelled from a frame loop or a cue;
  * one-shot cues (`thud`, `paper`, `splash`, `chime`, `whoosh`, `glass`) play when
  * asked.
+ *
+ * Off means off: nothing creates an AudioContext, a source or a timer until the
+ * visitor first turns sound on. While sound is off, held, the page hidden or put
+ * away (`pagehide`, the back-forward cache), the recurring timers are cleared and
+ * the context suspended; they come back when the page is shown again and only if
+ * sound is still on. A page that is unloaded closes its context.
  */
 
 export type ContinuousCue = 'wind' | 'purr' | 'drip' | 'river' | 'waves' | 'bubble' | 'murmur';
@@ -28,7 +34,41 @@ export interface DemoSound {
   play(cue: OneShotCue, strength?: number): void;
   /** Sets a continuous cue's level, 0..1. */
   level(cue: ContinuousCue, value: number): void;
+  /** Test seam: the audio's state, serialisable. */
+  state(): SoundState;
+  /** Releases the context, its timers and the page listeners. */
+  dispose(): void;
 }
+
+export interface SoundState {
+  /** `none` until sound is first turned on. */
+  context: 'none' | AudioContextState;
+  /** Whether the recurring timers are scheduled. */
+  running: boolean;
+  /** Timers pending now. */
+  timers: number;
+  /** Timer callbacks run since the page loaded. */
+  ticks: number;
+}
+
+/** What the synthesiser needs from the page; replaced in the unit tests. */
+export interface SoundHost {
+  createContext(): AudioContext;
+  setTimeout(fn: () => void, ms: number): number;
+  clearTimeout(id: number): void;
+  /** Where `pagehide` and `pageshow` arrive. */
+  window: EventTarget;
+  /** Where `visibilitychange` arrives, and whether the page is hidden. */
+  document: EventTarget & { readonly hidden: boolean };
+}
+
+const browserHost = (): SoundHost => ({
+  createContext: () => new AudioContext(),
+  setTimeout: (fn, ms) => window.setTimeout(fn, ms),
+  clearTimeout: (id) => window.clearTimeout(id),
+  window,
+  document,
+});
 
 function noiseBuffer(context: AudioContext): AudioBuffer {
   const seconds = 2;
@@ -43,19 +83,46 @@ function noiseBuffer(context: AudioContext): AudioBuffer {
   return buffer;
 }
 
-export function createSound(onRefused: () => void = () => undefined): DemoSound {
+export function createSound(
+  onRefused: () => void = () => undefined,
+  host: SoundHost = browserHost(),
+): DemoSound {
   let context: AudioContext | undefined;
   let master: GainNode | undefined;
   let enabled = false;
   let held = false;
+  let hidden = host.document.hidden;
+  let away = false;
+  let closed = false;
   const continuous = new Map<ContinuousCue, { gain: GainNode; target: number }>();
+  /** The recurring timers: how each runs, and when it first runs once started. */
+  const loops: { run: () => void; first: number; next: () => number }[] = [];
+  const timers = new Set<number>();
+  let running = false;
+  let ticks = 0;
+
+  const schedule = (loop: (typeof loops)[number], ms: number): void => {
+    const id = host.setTimeout(() => {
+      timers.delete(id);
+      if (!running) {
+        return;
+      }
+      ticks += 1;
+      loop.run();
+      schedule(loop, loop.next());
+    }, ms);
+    timers.add(id);
+  };
 
   const ensure = (): AudioContext | undefined => {
     if (context) {
       return context;
     }
+    if (closed) {
+      return undefined;
+    }
     try {
-      context = new AudioContext();
+      context = host.createContext();
     } catch {
       return undefined;
     }
@@ -116,9 +183,8 @@ export function createSound(onRefused: () => void = () => undefined): DemoSound 
         osc.start(now);
         osc.stop(now + 0.3);
       }
-      setTimeout(plink, 400 + Math.random() * 1600);
     };
-    setTimeout(plink, 600);
+    loops.push({ run: plink, first: 600, next: () => 400 + Math.random() * 1600 });
 
     // River: a bright band of noise, and now and then a bird over it.
     const riverSource = context.createBufferSource();
@@ -151,9 +217,8 @@ export function createSound(onRefused: () => void = () => undefined): DemoSound 
         osc.start(now);
         osc.stop(now + 0.25);
       }
-      setTimeout(chirp, 1800 + Math.random() * 4200);
     };
-    setTimeout(chirp, 1200);
+    loops.push({ run: chirp, first: 1200, next: () => 1800 + Math.random() * 4200 });
 
     // Waves: low noise that swells and falls on a slow breath.
     const wavesSource = context.createBufferSource();
@@ -197,9 +262,8 @@ export function createSound(onRefused: () => void = () => undefined): DemoSound 
         osc.start(now);
         osc.stop(now + 0.14);
       }
-      setTimeout(plop, 140 + Math.random() * 500);
     };
-    setTimeout(plop, 500);
+    loops.push({ run: plop, first: 500, next: () => 140 + Math.random() * 500 });
 
     // Murmur: a crowd, a middle band of noise that wavers.
     const murmurSource = context.createBufferSource();
@@ -228,15 +292,89 @@ export function createSound(onRefused: () => void = () => undefined): DemoSound 
           windFilter.frequency.setTargetAtTime(300 + entry.target * 1800, now, 0.2);
         }
       }
-      setTimeout(follow, 100);
     };
-    follow();
+    loops.push({ run: follow, first: 0, next: () => 100 });
     return context;
   };
 
+  /**
+   * Runs the timers and the context only while sound is on, not held, and the page
+   * is shown; stops both otherwise. The one place that decides.
+   */
+  const sync = (): void => {
+    const ctx = context;
+    const live = enabled && !held && !hidden && !away && ctx !== undefined && !closed;
+    if (live === running) {
+      return;
+    }
+    running = live;
+    if (!ctx) {
+      return;
+    }
+    if (live) {
+      for (const loop of loops) {
+        schedule(loop, loop.first);
+      }
+      master?.gain.setTargetAtTime(0.8, ctx.currentTime, 0.1);
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(() => {
+          enabled = false;
+          sync();
+          onRefused();
+        });
+      }
+      return;
+    }
+    for (const id of timers) {
+      host.clearTimeout(id);
+    }
+    timers.clear();
+    master?.gain.setTargetAtTime(0, ctx.currentTime, 0.1);
+    if (ctx.state === 'running') {
+      ctx.suspend().catch(() => undefined);
+    }
+  };
+
+  const lifetime = new AbortController();
+  const { signal } = lifetime;
+  host.document.addEventListener(
+    'visibilitychange',
+    () => {
+      hidden = host.document.hidden;
+      sync();
+    },
+    { signal },
+  );
+  host.window.addEventListener(
+    'pagehide',
+    (event) => {
+      away = true;
+      sync();
+      // Not kept for a return: the context goes with the page.
+      if (!(event as PageTransitionEvent).persisted && context) {
+        closed = true;
+        context.close().catch(() => undefined);
+      }
+    },
+    { signal },
+  );
+  host.window.addEventListener(
+    'pageshow',
+    () => {
+      away = false;
+      hidden = host.document.hidden;
+      sync();
+    },
+    { signal },
+  );
+
   const oneShot = (cue: OneShotCue, strength: number): void => {
-    const ctx = ensure();
-    if (!ctx || !master || !enabled || held) {
+    // Checked before anything is made: sound off creates nothing.
+    if (!enabled || !running) {
+      return;
+    }
+    const ctx = context;
+    if (!ctx || !master) {
       return;
     }
     const now = ctx.currentTime;
@@ -317,38 +455,39 @@ export function createSound(onRefused: () => void = () => undefined): DemoSound 
     },
     toggle() {
       enabled = !enabled;
-      const ctx = ensure();
-      const out = master;
-      if (!ctx || !out) {
+      if (enabled && !ensure()) {
         enabled = false;
-        return false;
       }
-      if (enabled && ctx.state === 'suspended') {
-        ctx.resume().catch(() => {
-          enabled = false;
-          out.gain.setTargetAtTime(0, ctx.currentTime, 0.1);
-          onRefused();
-        });
-      }
-      out.gain.setTargetAtTime(enabled ? 0.8 : 0, ctx.currentTime, 0.1);
+      sync();
       return enabled;
     },
     hold(muted) {
       held = muted;
+      sync();
     },
     play(cue, strength = 1) {
       oneShot(cue, strength);
     },
     level(cue, value) {
+      // Only a context the visitor asked for has levels to set.
       const entry = continuous.get(cue);
       if (entry) {
         entry.target = Math.max(0, Math.min(1, value));
-      } else if (enabled) {
-        ensure();
-        const made = continuous.get(cue);
-        if (made) {
-          made.target = Math.max(0, Math.min(1, value));
-        }
+      }
+    },
+    state: () => ({
+      context: context ? context.state : 'none',
+      running,
+      timers: timers.size,
+      ticks,
+    }),
+    dispose() {
+      lifetime.abort();
+      enabled = false;
+      sync();
+      if (context && !closed) {
+        closed = true;
+        context.close().catch(() => undefined);
       }
     },
   };

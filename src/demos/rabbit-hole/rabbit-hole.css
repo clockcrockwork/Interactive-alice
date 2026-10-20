@@ -117,6 +117,13 @@
     opacity: 0;
   }
 
+  /* One well at a time: the flat one waits under the canvas while WebGL draws,
+     and takes over if the context is lost for good. */
+  .demo--rabbit-hole[data-mode="webgl"] .rh__flat,
+  .demo--rabbit-hole[data-mode="flat"] .rh__well {
+    display: none;
+  }
+
   .rh__flat::before {
     content: "";
     position: absolute;

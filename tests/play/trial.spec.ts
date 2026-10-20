@@ -172,10 +172,10 @@ test('the trial: the eyes button says what a press will do, and the status what 
   await expect(eyes).not.toHaveAttribute('aria-pressed', /.*/);
   await eyes.click();
   await expect(eyes).toHaveText(labels.demoCloseEyes ?? '');
-  await expect(page.locator('.demo__status')).toHaveText(labels.demoOpenEyes ?? '');
+  await expect(page.locator('.demo__status')).toHaveText(labels.demoOpenEyesDone ?? '');
   await eyes.click();
   await expect(eyes).toHaveText(labels.demoOpenEyes ?? '');
-  await expect(page.locator('.demo__status')).toHaveText(labels.demoCloseEyes ?? '');
+  await expect(page.locator('.demo__status')).toHaveText(labels.demoCloseEyesDone ?? '');
 });
 
 test('the trial: the keepsakes can be given to the children, who carry them off', async ({
@@ -195,7 +195,7 @@ test('the trial: the keepsakes can be given to the children, who carry them off'
   await expect(page.locator('.tr__keepsake')).toHaveCount(2);
   await expect(give).toBeVisible({ timeout: 8000 });
   await give.click();
-  await expect(page.locator('.demo__status')).toHaveText(labels.demoGiveChildren ?? '');
+  await expect(page.locator('.demo__status')).toHaveText(labels.demoGiveChildrenDone ?? '');
   await expect(page.locator('.tr__child[data-running]')).toHaveCount(1);
   await expect(given).toHaveCount(1, { timeout: 8000 });
   // The other by a tap on it, as pointer play.

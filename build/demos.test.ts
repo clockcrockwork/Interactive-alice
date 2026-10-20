@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { transitionKindFor } from '../src/demos/shell/transitions.ts';
 import {
   arrivalScript,
+  DEMO_INDEX,
   DEMO_ORDER,
   demoDir,
   generateDemoPages,
@@ -82,7 +83,7 @@ describe('the concept-demo pages', () => {
     }
   });
 
-  it('names each demo after its chapter or section, in the demo locale, and links them in a ring', () => {
+  it('names each demo after its chapter or section, in the demo locale, and links them in order', () => {
     const index = pages.find((page) => page.path === 'demos/index.html');
     for (const [position, demo] of project.demos.entries()) {
       const title = titleOf(project, demo);
@@ -95,8 +96,9 @@ describe('the concept-demo pages', () => {
       expect(index?.html).toContain(title);
       const page = pages.find((candidate) => candidate.path === `demos/${demo.id}/index.html`);
       expect(page?.html).toContain(`<h1 class="demo__title">${title}</h1>`);
-      const next = DEMO_ORDER[(position + 1) % DEMO_ORDER.length];
-      expect(page?.html).toContain(`href="../${next}/"`);
+      // In the book's order; the last one goes back to the index, not round.
+      const next = DEMO_ORDER[position + 1];
+      expect(page?.html).toContain(`<a class="demo__next" href="${next ? `../${next}/` : '../'}">`);
     }
   });
 
@@ -221,13 +223,44 @@ describe('the concept-demo pages in every other locale', () => {
       for (const demo of other.demos.filter((candidate) => isPublishable(other, candidate))) {
         const html = pageAt(`demos/${other.locale}/${demo.id}/index.html`);
         const next = nextDemo(other, demo.id);
+        expect(html).toContain(`<a class="demo__back" href="../">`);
+        if (next === DEMO_INDEX) {
+          // The end of the walk: back to this locale's own index.
+          expect(html).toContain(`<a class="demo__next" href="../">`);
+          continue;
+        }
         // A sibling of this page's own directory: demos/<locale>/<next>/.
         expect(html).toContain(`<a class="demo__next" href="../${next}/">`);
         expect(
           all.pages.some((page) => page.path === `demos/${other.locale}/${next}/index.html`),
         ).toBe(true);
-        expect(html).toContain(`<a class="demo__back" href="../">`);
       }
+    }
+  });
+
+  it('ends the walk at the trial: its next link is the index, labelled so, with nothing going on by itself', () => {
+    for (const from of projects) {
+      const order = from.demos.filter((demo) => isPublishable(from, demo)).map((demo) => demo.id);
+      const last = order.at(-1);
+      expect(last, from.locale).toBe('trial');
+      expect(nextDemo(from, 'trial')).toBe(DEMO_INDEX);
+      // Every other demo goes on to the one after it, never round to the first.
+      for (const [i, id] of order.slice(0, -1).entries()) {
+        expect(nextDemo(from, id)).toBe(order[i + 1]);
+      }
+      const html = pageAt(
+        from.base ? 'demos/trial/index.html' : `demos/${from.locale}/trial/index.html`,
+      );
+      expect(html).toContain(
+        `<footer class="demo__end" data-last>\n        <a class="demo__next" href="../">${from.ui.demoBack}</a>`,
+      );
+      expect(html).not.toContain('class="demo__auto"');
+      expect(html).not.toContain(`>${from.ui.demoNext}</a>`);
+      const before = pageAt(
+        from.base ? 'demos/witnesses/index.html' : `demos/${from.locale}/witnesses/index.html`,
+      );
+      expect(before).toContain('class="demo__auto"');
+      expect(before).toContain(`<a class="demo__next" href="../trial/">${from.ui.demoNext}</a>`);
     }
   });
 
@@ -269,7 +302,7 @@ describe('the concept-demo pages in every other locale', () => {
     expect(html).toMatch(/src="\.\.\/\.\.\/\.\.\/assets\/images\/figures\//);
   });
 
-  it('leaves out a demo a locale cannot show yet, lists its card as pending, and skips it in the ring', () => {
+  it('leaves out a demo a locale cannot show yet, lists its card as pending, and skips it in the walk', () => {
     const ja = loadDemoProject(root, 'ja');
     ja.lines.delete('ch09.s0700');
     const graph = generateDemoPagesFrom(ja, projects);

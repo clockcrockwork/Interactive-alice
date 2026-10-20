@@ -430,7 +430,7 @@ function mount(shell: DemoShell): void {
     cauldron?.removeAttribute('data-shaken');
     void cauldron?.offsetWidth;
     cauldron?.setAttribute('data-shaken', '');
-    shell.status(shell.ui.demoPepper ?? '');
+    shell.status(shell.ui.demoPepperDone ?? '');
   };
   const pepperButton = shell.prop(shell.ui.demoPepper ?? '', 'pp__prop pp__prop--pepper');
   pepperButton.addEventListener('click', shakePepper);
@@ -666,7 +666,7 @@ function mount(shell: DemoShell): void {
       return;
     }
     ducking = true;
-    shell.status(shell.ui.demoDuck ?? '');
+    shell.status(shell.ui.demoDuckDone ?? '');
     for (const thing of things) {
       flick(thing, -1);
     }
@@ -833,7 +833,7 @@ function mount(shell: DemoShell): void {
     held?.removeAttribute('data-wriggle');
     shell.sound.play('paper', 0.5);
     if (byReader) {
-      shell.status(shell.ui.demoHoldTight ?? '');
+      shell.status(shell.ui.demoHoldTightDone ?? '');
     }
   };
   const unknot = (): void => {
@@ -941,7 +941,7 @@ function mount(shell: DemoShell): void {
     bonus = 1;
     applyStage();
     grunt();
-    shell.status(shell.ui.demoPokeBaby ?? '');
+    shell.status(shell.ui.demoPokeBabyDone ?? '');
   };
   held?.addEventListener('click', poke);
   const pokeButton = shell.prop(
@@ -1045,11 +1045,4 @@ function mount(shell: DemoShell): void {
   });
 }
 
-const shell = attachDemo();
-if (shell) {
-  try {
-    mount(shell);
-  } catch (error) {
-    console.error(error);
-  }
-}
+attachDemo({ mount });

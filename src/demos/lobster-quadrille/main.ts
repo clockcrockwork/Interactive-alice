@@ -458,7 +458,7 @@ function mount(shell: DemoShell): void {
     throwOpen = false;
     if (byReader) {
       shell.keep('lobster');
-      shell.status(shell.ui.demoThrowLobster ?? '');
+      shell.status(shell.ui.demoThrowLobsterDone ?? '');
     }
     throwWindow();
     heldNow();
@@ -573,7 +573,7 @@ function mount(shell: DemoShell): void {
     rolling = true;
     shell.sound.play('splash', 0.5);
     if (byReader) {
-      shell.status(shell.ui.demoSomersault ?? '');
+      shell.status(shell.ui.demoSomersaultDone ?? '');
     }
     if (reducedMotion) {
       // A blink instead of a turn.
@@ -661,7 +661,7 @@ function mount(shell: DemoShell): void {
     joinButton.hide();
     shell.sound.play('chime', 0.6);
     if (byReader) {
-      shell.status(shell.ui.demoJoinDance ?? '');
+      shell.status(shell.ui.demoJoinDanceDone ?? '');
     }
     gsap.to(joining, {
       amount: 1,
@@ -773,7 +773,7 @@ function mount(shell: DemoShell): void {
       return;
     }
     shell.sound.play('paper', 0.4);
-    shell.status(shell.ui.demoSnail ?? '');
+    shell.status(shell.ui.demoSnailDone ?? '');
     gsap.fromTo(
       snail,
       { '--shy': 1 },
@@ -842,14 +842,8 @@ function mount(shell: DemoShell): void {
   );
 }
 
-const shell = attachDemo({
+attachDemo({
+  mount,
   caption: (beat, master, reduced, beats) =>
     sungCaption(beat, master, reduced, beat.index === beats.length - 1),
 });
-if (shell) {
-  try {
-    mount(shell);
-  } catch (error) {
-    console.error(error);
-  }
-}

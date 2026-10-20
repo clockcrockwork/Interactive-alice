@@ -74,7 +74,9 @@
        rather than shrink its labels; the shell then writes the height it measures
        as --demo-bar-height on the page, so whatever sits under the bar moves down. */
     --demo-bar-row: 3.25rem;
-    --demo-bar-height: var(--demo-bar-row);
+    /* Under `viewport-fit=cover` a notch or a rounded corner may sit over the top
+       of the page: the bar pads itself clear of it, and is that much taller. */
+    --demo-bar-height: calc(var(--demo-bar-row) + env(safe-area-inset-top, 0px));
     /* The floor of the chrome's type scale: no pill smaller than a 24-pixel target,
        no label smaller than 12 pixels, in any language (hard rule 10: the pause
        control is one of them). */
@@ -165,8 +167,12 @@
 
   .demo {
     position: relative;
-    /* Scroll length: one viewport per beat, plus one to let the last beat settle.
-       Written by the shell from the number of beats it found. */
+  }
+
+  /* Scroll length: one viewport per beat, plus one to let the last beat settle.
+     Written by the shell from the number of beats it found; a page the shell has
+     not attached to is only as long as its text. */
+  .demo[data-attached] {
     min-block-size: calc((var(--demo-beats, 12) + 1) * 100vh);
   }
 
@@ -178,8 +184,12 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    min-block-size: var(--demo-bar-row);
-    padding-inline: var(--space-2);
+    min-block-size: calc(var(--demo-bar-row) + env(safe-area-inset-top, 0px));
+    /* Clear of a notch on top and, in landscape, at either side. The insets are
+       physical, so these are too. */
+    padding-block-start: env(safe-area-inset-top, 0px);
+    padding-left: max(var(--space-2), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--space-2), env(safe-area-inset-right, 0px));
     background: linear-gradient(to bottom, var(--demo-glass), transparent);
     font-family: system-ui, sans-serif;
     font-size: 0.85rem;
@@ -277,6 +287,12 @@
     isolation: isolate;
   }
 
+  /* The stage takes focus only from script, when the control focus was on leaves:
+     it is not a control, so it draws no ring. */
+  .demo__stage:focus {
+    outline: none;
+  }
+
   .demo__layer {
     position: absolute;
     inset: 0;
@@ -291,15 +307,11 @@
   }
 
   .demo-beat {
-    position: absolute;
-    inset-inline: 0;
-    inset-block-end: 14vh;
     display: grid;
     gap: 0.35em;
     max-inline-size: min(34rem, 88vw);
     margin-inline: auto;
     padding-inline: var(--space-2);
-    visibility: hidden;
     text-align: center;
     text-wrap: balance;
     font-size: var(--demo-caption-size);
@@ -307,7 +319,23 @@
     text-shadow: 0 1px 12px oklch(0% 0 0 / 0.6);
   }
 
-  .demo-beat[data-active] {
+  :where(.demo:not([data-attached])) .demo-beat {
+    margin-block-end: var(--space-2);
+  }
+
+  /* Placed and hidden only once the shell has attached: a page whose script never
+     ran (switched off, failed to load, or a staging that threw and was rolled
+     back) is the readable document it arrived as, every sentence in the flow.
+     `:where` keeps these at the specificity of a bare class, so a demo's own
+     placement of its captions still wins. */
+  :where(.demo[data-attached]) .demo-beat {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 14vh;
+    visibility: hidden;
+  }
+
+  :where(.demo[data-attached]) .demo-beat[data-active] {
     visibility: visible;
   }
 
@@ -568,7 +596,7 @@
       flex-wrap: wrap;
       justify-content: flex-end;
       gap: 6px var(--space-1, 4px);
-      padding-block: 6px;
+      padding-block: calc(6px + env(safe-area-inset-top, 0px)) 6px;
       font-size: var(--demo-label-min);
     }
 

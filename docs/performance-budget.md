@@ -85,9 +85,41 @@ The WebGL well was not the heaviest demo even without a GPU (its flat CSS fallba
 measured 63 ms mean against the well's 115 ms on the same renderer, which is not the
 gap that would justify losing the well on a phone with a GPU), so it stays; the cost
 that did move was in CSS filters on many pieces and in layers painted at a scale
-or an opacity that made them invisible anyway. The scripts that took these numbers
-are not in the repository; the method is a `requestAnimationFrame` sampler run in
-the page while the test harness scrolls, beat by beat.
+or an opacity that made them invisible anyway. The method is in the repository as
+`scripts/frame-sampler.mjs`:
+
+```text
+npm run build
+npm run perf:frames -- <demo> [--locale ja] [--art engraved|flat|paper]
+                              [--throttle 4] [--frames 24] [--reduced] [--json]
+```
+
+- **What it runs.** Chromium (the same binary the browser tests use) forced onto
+  SwiftShader (`--use-angle=swiftshader`), so a machine with a GPU measures the same
+  software renderer as CI; 1280×760; `dist/` through `vite preview` (started if
+  nothing answers on port 4173).
+- **What it measures.** For each beat the page is landed half-way into it through the
+  shell's seam (`seek`) and left to settle; a `requestAnimationFrame` sampler in the
+  page then records the gaps between 24 painted frames, the first three dropped.
+  Reported per beat: mean and worst frame in milliseconds, and for the demo the worst
+  beat's mean and the mean of beats. It measures a held beat (ambient motion, the
+  frame loop, a WebGL draw), not a scroll in progress.
+- **Options.** `--throttle n` slows the CPU n times through the DevTools protocol,
+  as a phone; `--art` picks the drawing as the index's picker would; `--reduced`
+  emulates reduced motion; `--json` prints one object for a diff.
+- **Machine conditions.** Note the machine and its load with every figure: run on an
+  otherwise idle machine, plugged in, with no other browser test running (the
+  parallel browser suites distort it badly). Absolute numbers are large without a GPU
+  and differ between machines; only numbers from the same machine on the same day
+  compare.
+- **Before and after.** Build and sample the base commit, then the change, on the
+  same machine back to back, three runs each, and compare the medians of each beat's
+  mean (`--json` to a file, then diff). A beat that moves by less than about 10 % or
+  10 ms is noise on SwiftShader.
+
+On 2026-10-20 in this repository's container (Linux, no GPU, idle), the trial
+measured a worst beat mean of 70 ms (mean of beats 39 ms) and the WebGL rabbit hole
+137 ms (94 ms), in line with the figures above.
 
 The same sampler run in Firefox, also without a GPU (its software renderer), found
 two demos far slower there than in Chromium. The croquet-ground's lawn, a 6000 by

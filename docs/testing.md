@@ -363,9 +363,17 @@ Every browser test runs in every project of the full matrix. The browser target 
 Baseline, so a test that fails in Firefox or WebKit is a product bug until it is shown
 to be the test's own assumption, and then it is the test that changes: no test is
 skipped, quarantined or fenced to one engine. The one fence allowed is behaviour that
-does not exist on a device, and the only such case today is hover on a touch screen;
-the hover test skips there, and the button and press that are that device's way to
-the same play are tested on it.
+does not exist on a device: hover on a touch screen (the hover test skips there, and
+the button and press that are that device's way to the same play are tested on it);
+steering by tilting, offered only on a coarse pointer (`tests/tilt.spec.ts` runs on the
+phone project); and the WebGL well's lifecycle, which a browser drawing the flat well
+does not have.
+
+What a person still owes the automated suites: a run of the demos' reading flow with
+VoiceOver and NVDA (`tests/reading-flow.spec.ts` checks the accessibility tree and the
+focus, not what a screen reader says), and the bar under a real notch
+(`src/demos/shell/safe-area.test.ts` reads the stylesheet; an inset cannot be
+emulated).
 
 What a test may assume, learned from the first full-matrix run:
 

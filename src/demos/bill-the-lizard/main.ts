@@ -474,7 +474,7 @@ function mount(shell: DemoShell): void {
     const gap = LAND_X - crowdTo;
     const step = Math.sign(gap) * Math.min(Math.abs(gap), CATCH_STEP);
     moveCrowd(crowdTo + step, 0.3);
-    shell.status(shell.ui.demoCatchBill ?? '');
+    shell.status(shell.ui.demoCatchBillDone ?? '');
   });
   let dragging: { left: number; width: number } | undefined;
   drag?.addEventListener('pointerdown', (event) => {
@@ -485,7 +485,7 @@ function mount(shell: DemoShell): void {
     dragging = { left: box.left, width: box.width };
     drag.setPointerCapture(event.pointerId);
     moveCrowd((event.clientX - dragging.left) / dragging.width, 0.15);
-    shell.status(shell.ui.demoCatchBill ?? '');
+    shell.status(shell.ui.demoCatchBillDone ?? '');
   });
   drag?.addEventListener('pointermove', (event) => {
     if (dragging && catchLive()) {
@@ -661,7 +661,7 @@ function mount(shell: DemoShell): void {
     holdTimeline?.kill();
     const timeline = gsap.timeline();
     holdTimeline = timeline;
-    shell.status(shell.ui.demoHoldHead ?? '');
+    shell.status(shell.ui.demoHoldHeadDone ?? '');
     if (reducedMotion) {
       timeline.set(holdFx, { lift: 1, tip: 1, onComplete: applyGarden }, 0);
       timeline.call(() => splutter(true), [], 0);
@@ -704,11 +704,4 @@ declare global {
   }
 }
 
-const shell = attachDemo();
-if (shell) {
-  try {
-    mount(shell);
-  } catch (error) {
-    console.error(error);
-  }
-}
+attachDemo({ mount });

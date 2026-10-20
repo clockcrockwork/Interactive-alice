@@ -126,7 +126,7 @@ test("the dormouse: the reader's hands reach the cup and the Dormouse", async ({
   await page.mouse.down();
   await page.mouse.move(760, 430, { steps: 10 });
   await page.mouse.up();
-  await expect(page.locator('.demo__status')).toHaveText(await label(page, 'demoStirTreacle'));
+  await expect(page.locator('.demo__status')).toHaveText(await label(page, 'demoStirTreacleDone'));
   await expect.poll(turn, { timeout: 5000 }).not.toBe(before);
   // Its keyboard twin is a real button.
   await expect(page.locator('.dm__prop-stir')).toBeVisible();

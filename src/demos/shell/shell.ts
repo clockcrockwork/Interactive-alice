@@ -17,7 +17,9 @@ import { installArtTreatments } from '../art/treatments.ts';
 import './shell.css';
 import type { LocaleRealia } from '../../types/schema.ts';
 import { cssPixels, FIT_MARGIN, FIT_STEPS, type FitStep, fitShift } from './fit.ts';
-import { createSound, type DemoSound } from './sound.ts';
+import { createKeepsakes } from './kept.ts';
+import { createSound, type DemoSound, type SoundState } from './sound.ts';
+import { tiltToPointer, validTilt } from './tilt.ts';
 import { installTransitions } from './transitions.ts';
 import { type LocaleProfile, pageProfile, quotedSpans } from './words.ts';
 
@@ -107,28 +109,10 @@ export interface DemoShell {
   kept(): string[];
 }
 
-const KEPT_KEY = 'alice-demos:kept';
-const readKept = (): string[] => {
-  try {
-    const raw = localStorage.getItem(KEPT_KEY);
-    const list: unknown = raw ? JSON.parse(raw) : [];
-    return Array.isArray(list) ? list.filter((x): x is string => typeof x === 'string') : [];
-  } catch {
-    return [];
-  }
-};
-const keepKind = (kind: string): void => {
-  const list = readKept();
-  if (list.includes(kind)) {
-    return;
-  }
-  list.push(kind);
-  try {
-    localStorage.setItem(KEPT_KEY, JSON.stringify(list));
-  } catch {
-    // A private window may refuse; the thing is kept for this page only.
-  }
-};
+const keepsakes = createKeepsakes();
+
+/** How long, after permission, a first tilt reading may take before steering stays with the pointer, ms. */
+const TILT_WAIT = 1000;
 
 /** Going on by itself: remembered per visitor, off until the reader turns it on. */
 const AUTO_KEY = 'alice-demos:auto';
@@ -152,6 +136,12 @@ const writeAuto = (on: boolean): void => {
 export interface ShellOptions {
   /** Custom caption behaviour: return true to take over a beat's caption tweens. */
   caption?: (beat: Beat, master: gsap.core.Timeline, reduced: boolean, beats: Beat[]) => boolean;
+  /**
+   * The demo's staging, run once the shell has attached. If it throws, the error is
+   * reported and the page goes back to the readable document it arrived as: the
+   * sentences in the track, the links in the flow (docs/concept-demos.md §3).
+   */
+  mount?: (shell: DemoShell) => void;
 }
 
 declare global {
@@ -181,6 +171,10 @@ declare global {
       /** The last caption fit step each beat needed, by beat index; beats that fit as placed are absent. */
       captionFit(): Record<number, FitStep>;
       auto(): boolean;
+      /** The synthesiser's state: whether a context exists, and its timers. */
+      sound(): SoundState;
+      /** Where the shell's pointer is, and whether tilt is steering it. */
+      pointer(): Pointer;
     };
   }
 }
@@ -281,10 +275,17 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   const realia = readRealia(root);
   const profile = pageProfile();
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Every listener the shell adds is released through this, should the demo fail
+  // to mount and the page go back to the document it arrived as.
+  const lifetime = new AbortController();
+  const { signal } = lifetime;
+  const homes = new Map<HTMLElement, HTMLElement>();
 
   // Stage first, captions on top; the beats move in keeping their order.
   const stage = document.createElement('div');
   stage.className = 'demo__stage';
+  // Focusable by script only: where focus goes when the control it was on leaves.
+  stage.tabIndex = -1;
   const captions = document.createElement('div');
   captions.className = 'demo__captions';
   const beats: Beat[] = [];
@@ -294,6 +295,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
       for (const line of lines) {
         holdQuotedRuns(line);
       }
+      homes.set(el, shot);
       beats.push({
         index: beats.length,
         el,
@@ -408,7 +410,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   // stretches its last frames).
   let stillFrames = 0;
   let lastTime = Number.NaN;
-  gsap.ticker.add((time, deltaMs) => {
+  const tick = (time: number, deltaMs: number): void => {
     const now = master.time();
     stillFrames = Math.abs(now - lastTime) < 1e-4 ? stillFrames + 1 : 0;
     lastTime = now;
@@ -418,7 +420,8 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     for (const fn of frameFns) {
       fn(deltaMs / 1000, time);
     }
-  });
+  };
+  gsap.ticker.add(tick);
 
   const pointer: Pointer = {
     x: 0,
@@ -437,7 +440,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
       pointer.y = (event.clientY / window.innerHeight) * 2 - 1;
       pointer.active = true;
     },
-    { passive: true },
+    { passive: true, signal },
   );
 
   // --- Tilt: on a phone, the view can be steered by tilting it. Offered as a
@@ -455,31 +458,58 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     tiltButton.className = 'demo__tilt';
     tiltButton.textContent = ui.demoTilt;
     bar.append(tiltButton);
-    tiltButton.addEventListener('click', async () => {
-      const Orientation = DeviceOrientationEvent as unknown as {
-        requestPermission?: () => Promise<'granted' | 'denied'>;
-      };
-      if (Orientation.requestPermission) {
-        try {
-          if ((await Orientation.requestPermission()) !== 'granted') {
+    tiltButton.addEventListener(
+      'click',
+      async () => {
+        const Orientation = DeviceOrientationEvent as unknown as {
+          requestPermission?: () => Promise<'granted' | 'denied'>;
+        };
+        if (Orientation.requestPermission) {
+          try {
+            if ((await Orientation.requestPermission()) !== 'granted') {
+              return;
+            }
+          } catch {
             return;
           }
-        } catch {
-          return;
         }
-      }
-      window.addEventListener('deviceorientation', (event) => {
-        const gamma = event.gamma ?? 0;
-        const beta = event.beta ?? 45;
-        // Held upright at about 45°, level is the middle; ±25° reaches the edges.
-        pointer.x = Math.max(-1, Math.min(1, gamma / 25));
-        pointer.y = Math.max(-1, Math.min(1, (beta - 45) / 25));
-        pointer.active = true;
-        pointer.tilt = true;
-      });
-      tiltButton.remove();
-      status(ui.demoTiltOn ?? '');
-    });
+        // On only once a reading arrives: a device may grant permission and still
+        // send nothing, or only nulls. Until then the pointer steers as before; if
+        // nothing comes in a second, the reader is told, and it stays that way.
+        tiltButton.disabled = true;
+        const listening = new AbortController();
+        signal.addEventListener('abort', () => listening.abort(), { once: true });
+        const giveUp = window.setTimeout(() => {
+          listening.abort();
+          tiltButton.remove();
+          status(ui.demoTiltNone ?? '');
+        }, TILT_WAIT);
+        window.addEventListener(
+          'deviceorientation',
+          (event) => {
+            if (!validTilt(event)) {
+              return;
+            }
+            const steer = tiltToPointer(
+              event.beta ?? 0,
+              event.gamma ?? 0,
+              screen.orientation?.angle ?? 0,
+            );
+            pointer.x = steer.x;
+            pointer.y = steer.y;
+            pointer.active = true;
+            if (!pointer.tilt) {
+              pointer.tilt = true;
+              window.clearTimeout(giveUp);
+              tiltButton.remove();
+              status(ui.demoTiltOn ?? '');
+            }
+          },
+          { signal: listening.signal },
+        );
+      },
+      { signal },
+    );
   }
 
   // --- Sound: synthesised, off by default, and held while motion is paused.
@@ -500,20 +530,24 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     soundButton.setAttribute('aria-pressed', 'false');
     soundButton.textContent = ui.demoSoundOn;
     bar.append(soundButton);
-    soundButton.addEventListener('click', () => showSound(sound.toggle()));
+    soundButton.addEventListener('click', () => showSound(sound.toggle()), { signal });
   }
 
   const button = root.querySelector<HTMLButtonElement>('.demo__motion');
   if (button) {
     button.hidden = false;
-    button.addEventListener('click', () => {
-      paused = !paused;
-      button.setAttribute('aria-pressed', String(paused));
-      button.textContent = paused ? (ui.demoResume ?? '') : (ui.demoPause ?? '');
-      ambient.paused(paused);
-      sound.hold(paused);
-      root.toggleAttribute('data-paused', paused);
-    });
+    button.addEventListener(
+      'click',
+      () => {
+        paused = !paused;
+        button.setAttribute('aria-pressed', String(paused));
+        button.textContent = paused ? (ui.demoResume ?? '') : (ui.demoPause ?? '');
+        ambient.paused(paused);
+        sound.hold(paused);
+        root.toggleAttribute('data-paused', paused);
+      },
+      { signal },
+    );
   }
 
   // --- Going on by itself. Scroll remains the way forward: this only follows a
@@ -523,7 +557,9 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   const end = root.querySelector<HTMLElement>('.demo__end');
   const nextLink = root.querySelector<HTMLAnchorElement>('.demo__next');
   const autoButton = root.querySelector<HTMLButtonElement>('.demo__auto');
-  let auto = readAuto();
+  // The last demo offers no going on by itself (its link goes back to the index),
+  // so a choice remembered from the pages before it never fires here.
+  let auto = autoButton ? readAuto() : false;
   let dwell = 0;
   let left = false;
   const showAuto = (): void => {
@@ -532,13 +568,17 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   };
   if (autoButton) {
     autoButton.hidden = false;
-    autoButton.addEventListener('click', () => {
-      auto = !auto;
-      dwell = 0;
-      writeAuto(auto);
-      showAuto();
-      nextLink?.style.setProperty('--demo-auto', '0');
-    });
+    autoButton.addEventListener(
+      'click',
+      () => {
+        auto = !auto;
+        dwell = 0;
+        writeAuto(auto);
+        showAuto();
+        nextLink?.style.setProperty('--demo-auto', '0');
+      },
+      { signal },
+    );
   }
   showAuto();
   const stepDwell = (dt: number): void => {
@@ -763,6 +803,9 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   };
   let fitQueued = 0;
   const queueFit = (): void => {
+    if (signal.aborted) {
+      return;
+    }
     cancelAnimationFrame(fitQueued);
     fitQueued = requestAnimationFrame(fitCaptions);
   };
@@ -783,7 +826,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   }
   // A demo moves its captions by a state on the page (under the water, the words
   // on the sand): fit them again where that state puts them.
-  new MutationObserver((records) => {
+  const watchRoot = new MutationObserver((records) => {
     const changed = records.some(
       (record) =>
         record.attributeName !== 'style' &&
@@ -793,7 +836,8 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     if (changed) {
       queueFit();
     }
-  }).observe(root, { attributes: true, attributeOldValue: true });
+  });
+  watchRoot.observe(root, { attributes: true, attributeOldValue: true });
   document.fonts?.ready.then(queueFit, () => undefined);
 
   const shell: DemoShell = {
@@ -851,6 +895,14 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
       };
       el.hide = () => {
         delete el.dataset.shown;
+        // A keyboard reader whose control just left is not left on a hidden
+        // button: focus moves to the next control still shown, else the stage.
+        if (el.contains(document.activeElement)) {
+          const next = [...stage.querySelectorAll<HTMLElement>('.demo__prop[data-shown]')].find(
+            (other) => other !== el,
+          );
+          (next ?? stage).focus({ preventScroll: true });
+        }
       };
       stage.append(el);
       return el;
@@ -858,8 +910,8 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     status,
     note,
     progress: () => trigger.progress,
-    keep: keepKind,
-    kept: readKept,
+    keep: keepsakes.keep,
+    kept: keepsakes.kept,
   };
 
   // A layer is decoration, hidden from assistive technology, until a demo puts a
@@ -891,7 +943,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   }
   function watchControls(layer: HTMLElement): void {
     let queued = false;
-    new MutationObserver(() => {
+    const watch = new MutationObserver(() => {
       if (queued) {
         return;
       }
@@ -900,8 +952,11 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
         queued = false;
         exposeControls(layer);
       });
-    }).observe(layer, { childList: true, subtree: true });
+    });
+    watch.observe(layer, { childList: true, subtree: true });
+    layerWatches.push(watch);
   }
+  const layerWatches: MutationObserver[] = [];
 
   window.__aliceDemo = {
     progress: () => trigger.progress,
@@ -914,6 +969,8 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     realia: () => realia,
     overrun: () => master.duration() - beats.length,
     auto: () => auto,
+    sound: () => sound.state(),
+    pointer: () => ({ ...pointer }),
     captionFit: () => Object.fromEntries(fitted),
     seek: (progress) => {
       const clamped = Math.min(1, Math.max(0, progress));
@@ -943,7 +1000,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   // A tween placed past the last beat stretches the timeline, and then the scroll
   // no longer lands each beat on its own unit of time. Say so once the demo has
   // composed, where the browser tests will see it.
-  requestAnimationFrame(() => {
+  const composed = requestAnimationFrame(() => {
     if (reducedMotion) {
       showReduced(trigger.progress);
     }
@@ -952,6 +1009,68 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     }
   });
 
+  // A demo whose staging throws leaves no half-built stage: the page goes back
+  // to the readable document it arrived as, sentences and links where a reader
+  // finds them, and the error stays in the console.
+  const detach = (): void => {
+    lifetime.abort();
+    cancelAnimationFrame(composed);
+    cancelAnimationFrame(fitQueued);
+    window.clearTimeout(liveTimer);
+    gsap.ticker.remove(tick);
+    frameFns.clear();
+    trigger.kill();
+    master.kill();
+    ambient.kill();
+    watchSizes.disconnect();
+    watchRoot.disconnect();
+    for (const watch of layerWatches) {
+      watch.disconnect();
+    }
+    sound.dispose();
+    for (const beat of beats) {
+      gsap.killTweensOf(beat.lines);
+      for (const el of [beat.el, ...beat.lines]) {
+        el.removeAttribute('style');
+      }
+      for (const key of ['active', 'reached', 'fit', 'fitShift']) {
+        delete beat.el.dataset[key];
+      }
+      homes.get(beat.el)?.append(beat.el);
+    }
+    stage.remove();
+    for (const added of root.querySelectorAll('.demo__note, .demo__sound, .demo__tilt')) {
+      added.remove();
+    }
+    if (button) {
+      button.hidden = true;
+    }
+    if (autoButton) {
+      autoButton.hidden = true;
+    }
+    end?.removeAttribute('inert');
+    end?.removeAttribute('data-auto');
+    nextLink?.removeAttribute('style');
+    // Whatever state the shell or the demo wrote on the page goes with it; the
+    // build's own attributes stay.
+    root.removeAttribute('style');
+    for (const name of root.getAttributeNames()) {
+      if (name.startsWith('data-') && name !== 'data-demo' && name !== 'data-realia') {
+        root.removeAttribute(name);
+      }
+    }
+    delete window.__aliceDemo;
+  };
+
+  if (options.mount) {
+    try {
+      options.mount(shell);
+    } catch (error) {
+      console.error(error);
+      detach();
+      return undefined;
+    }
+  }
   return shell;
 }
 

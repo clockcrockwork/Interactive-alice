@@ -119,13 +119,18 @@ function mount(shell: DemoShell): void {
   const quality = window.innerWidth < 720 || navigator.hardwareConcurrency <= 4 ? 'lite' : 'full';
   const well: Well | undefined = createWell(canvas, depthTotal, floorDepth, quality);
   shell.root.dataset.mode = well ? 'webgl' : 'flat';
-  if (!well) {
-    canvasLayer.remove();
+  // The flat well stays under the canvas, hidden while WebGL draws: a context
+  // that is lost for good falls back to it (below).
+  let wellGone = !well;
+  const goFlat = (): void => {
+    shell.root.dataset.mode = 'flat';
     if (shell.ui.demoFlatWell) {
       shell.note(shell.ui.demoFlatWell);
     }
-  } else {
-    flat.remove();
+  };
+  if (!well) {
+    canvasLayer.remove();
+    goFlat();
   }
 
   const land = surface.querySelector<HTMLElement>('.field__land');
@@ -193,7 +198,7 @@ function mount(shell: DemoShell): void {
     );
   }
   master.to(surface, { opacity: 0, duration: 0.7 }, iDrop);
-  master.to(well ? canvas : flat, { opacity: 1, duration: 0.6 }, iDrop + 0.05);
+  master.to(well ? [canvas, flat] : flat, { opacity: 1, duration: 0.6 }, iDrop + 0.05);
 
   const camera = well?.camera ?? {
     depth: 0,
@@ -209,14 +214,12 @@ function mount(shell: DemoShell): void {
   master.to(camera, { depth: floorDepth - 8, duration: iThump - steadyStart }, steadyStart);
   master.to(camera, { depth: floorDepth - 3.6, duration: 0.5, ease: 'power3.out' }, iThump);
   master.fromTo(camera, { floor: 0 }, { floor: 1, duration: 1.2 }, iThump - 1.4);
-  if (!well) {
-    master.fromTo(
-      flat,
-      { '--fall-rings': 1 },
-      { '--fall-rings': 4, duration: iThump - iDrop },
-      iDrop,
-    );
-  }
+  master.fromTo(
+    flat,
+    { '--fall-rings': 1 },
+    { '--fall-rings': 4, duration: iThump - iDrop },
+    iDrop,
+  );
 
   // --- Alice.
   if (alice) {
@@ -556,7 +559,7 @@ function mount(shell: DemoShell): void {
     iEnd + 0.3,
   );
   master.to(doors, { opacity: 1, duration: 0.15 }, iEnd + 0.3);
-  master.to(well ? canvas : flat, { opacity: 0, duration: 0.3 }, iEnd + 0.5);
+  master.to(well ? [canvas, flat] : flat, { opacity: 0, duration: 0.3 }, iEnd + 0.5);
   master.fromTo(
     tunnel,
     { fall: 0 },
@@ -652,7 +655,7 @@ function mount(shell: DemoShell): void {
   let downAt: { x: number; y: number; t: number } | undefined;
   canvas.setAttribute('data-pickable', '');
   const pickAt = (clientX: number, clientY: number): void => {
-    if (!well || !hand || master.time() < iDrop + 0.9 || master.time() > iThump - 0.3) {
+    if (!well || wellGone || !hand || master.time() < iDrop + 0.9 || master.time() > iThump - 0.3) {
       return;
     }
     const box = shell.stage.getBoundingClientRect();
@@ -726,7 +729,7 @@ function mount(shell: DemoShell): void {
   // pixels, so a test can tap one rather than search the frame for it.
   window.__aliceShelves = () => {
     const box = shell.stage.getBoundingClientRect();
-    return (well?.inFrame() ?? []).map(({ kind, x, y }) => ({
+    return (wellGone ? [] : (well?.inFrame() ?? [])).map(({ kind, x, y }) => ({
       kind,
       x: box.left + ((x + 1) / 2) * box.width,
       y: box.top + ((1 - y) / 2) * box.height,
@@ -757,6 +760,13 @@ function mount(shell: DemoShell): void {
     ) {
       pickAt(event.clientX, event.clientY);
     }
+    downAt = undefined;
+  });
+  // The browser took the gesture (a vertical move it scrolls with, a palm, a
+  // system gesture): no release will come, so let go of the drag and the tap here,
+  // and a later move without a press does not tumble her.
+  window.addEventListener('pointercancel', () => {
+    dragging = false;
     downAt = undefined;
   });
   window.addEventListener(
@@ -798,7 +808,9 @@ function mount(shell: DemoShell): void {
       const k = Math.min(1, dt * 2.5);
       camera.driftX = mix(camera.driftX, targetX, k);
       camera.driftY = mix(camera.driftY, targetY, k);
-      well?.tick(dt, elapsed);
+      if (!wellGone) {
+        well?.tick(dt, elapsed);
+      }
       if (alice && (Math.abs(spinVelocity) > 0.01 || Math.abs(spin) > 0.01)) {
         spin += spinVelocity * dt;
         spinVelocity *= 1 - Math.min(1, dt * 1.5);
@@ -816,7 +828,9 @@ function mount(shell: DemoShell): void {
     // invisible, and a paused page or a stepped (reduced-motion) camera needs a
     // new frame only when the camera has moved.
     let lastPose = '';
-    gsap.ticker.add(() => {
+    // Renders per animation frame, for the seam: one loop draws once a frame.
+    const drawn = { renders: 0, frame: -1, inFrame: 0, mostInFrame: 0 };
+    const draw = (): void => {
       const t = master.time();
       if (t < iDrop || t > iEnd + 0.85) {
         return;
@@ -832,9 +846,85 @@ function mount(shell: DemoShell): void {
         lastPose = pose;
       }
       well.render();
+      const frame = Number(document.timeline.currentTime ?? 0);
+      drawn.inFrame = frame === drawn.frame ? drawn.inFrame + 1 : 1;
+      drawn.frame = frame;
+      drawn.mostInFrame = Math.max(drawn.mostInFrame, drawn.inFrame);
+      drawn.renders += 1;
+    };
+
+    // --- The well's life with the page. Put away (`pagehide`), it stops drawing,
+    // and is released if the page is not kept for a return; brought back from the
+    // back-forward cache, it draws again. A lost context stops the loop until the
+    // browser restores it; one that does not come back in a while is the flat well.
+    let looping = false;
+    let state: 'drawing' | 'stopped' | 'lost' | 'flat' = 'stopped';
+    let lostTimer = 0;
+    const start = (): void => {
+      if (!looping && !wellGone) {
+        gsap.ticker.add(draw);
+        looping = true;
+        state = 'drawing';
+        lastPose = '';
+      }
+    };
+    const stop = (next: typeof state): void => {
+      if (looping) {
+        gsap.ticker.remove(draw);
+        looping = false;
+      }
+      state = next;
+    };
+    const fallFlat = (): void => {
+      window.clearTimeout(lostTimer);
+      stop('flat');
+      if (!wellGone) {
+        wellGone = true;
+        well.dispose();
+        goFlat();
+      }
+    };
+    start();
+    window.addEventListener('pagehide', (event) => {
+      stop('stopped');
+      if (!event.persisted) {
+        fallFlat();
+      }
     });
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted && state === 'stopped') {
+        start();
+      }
+    });
+    canvas.addEventListener('webglcontextlost', (event) => {
+      event.preventDefault();
+      stop('lost');
+      window.clearTimeout(lostTimer);
+      lostTimer = window.setTimeout(fallFlat, CONTEXT_PATIENCE);
+    });
+    canvas.addEventListener('webglcontextrestored', () => {
+      if (state !== 'lost') {
+        return;
+      }
+      window.clearTimeout(lostTimer);
+      // The renderer rebuilds its own state on restore; draw from the current pose.
+      resize();
+      start();
+    });
+    window.__aliceWell = () => ({
+      state,
+      loops: looping ? 1 : 0,
+      renders: drawn.renders,
+      mostInFrame: drawn.mostInFrame,
+    });
+    window.__aliceWellReset = () => {
+      drawn.mostInFrame = 0;
+    };
   }
 }
+
+/** How long a lost WebGL context may stay lost before the flat well takes over, ms. */
+const CONTEXT_PATIENCE = 3000;
 
 declare global {
   interface Window {
@@ -842,10 +932,23 @@ declare global {
     __aliceShelves?: () => { kind: string; x: number; y: number }[];
     /** Test seam: how many times Dinah has pounced at a call. */
     __aliceDinahPounces?: () => number;
+    /**
+     * Test seam: the WebGL well's loop. `loops` is how many draw loops are
+     * registered, `mostInFrame` the most renders seen in one animation frame.
+     */
+    __aliceWell?: () => {
+      state: 'drawing' | 'stopped' | 'lost' | 'flat';
+      loops: number;
+      renders: number;
+      mostInFrame: number;
+    };
+    /** Test seam: forgets the renders-per-frame high-water mark. */
+    __aliceWellReset?: () => void;
   }
 }
 
-const shell = attachDemo({
+attachDemo({
+  mount,
   caption: (beat, master, reduced, beats) =>
     depthCaption(
       beat,
@@ -855,11 +958,3 @@ const shell = attachDemo({
       beats.length - 1,
     ),
 });
-
-if (shell) {
-  try {
-    mount(shell);
-  } catch (error) {
-    console.error(error);
-  }
-}

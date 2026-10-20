@@ -270,6 +270,7 @@ const UI_FOR_SCRIPT = [
   'demoSoundOff',
   'demoTilt',
   'demoTiltOn',
+  'demoTiltNone',
   'demoTakeKey',
   'demoMyRunner',
   'demoFeed',
@@ -277,9 +278,11 @@ const UI_FOR_SCRIPT = [
   'demoWayHatter',
   'demoWayHare',
   'demoCallCat',
+  'demoCallCatDone',
   'demoTryDoor',
   'demoTeleportHint',
   'demoSnatch',
+  'demoSnatchDone',
   'demoKick',
   'demoVanish',
   'demoDrink',
@@ -297,16 +300,22 @@ const UI_FOR_SCRIPT = [
   'demoLeanRight',
   'demoPuffHold',
   'demoVanishTail',
+  'demoVanishTailDone',
   'demoVanishHead',
+  'demoVanishHeadDone',
   'demoDirtySeat',
   'demoStrokeFlamingo',
+  'demoStrokeFlamingoDone',
   'demoFlamingoSulks',
   'demoDodgeLeft',
   'demoDodgeRight',
   'demoDodged',
   'demoFlingMoral',
+  'demoFlingMoralDone',
   'demoSuppressGuineaPig',
+  'demoSuppressGuineaPigDone',
   'demoRightLizard',
+  'demoRightLizardDone',
   'demoTurnBottle',
   'demoClimbLeg',
   'demoCryTear',
@@ -314,9 +323,13 @@ const UI_FOR_SCRIPT = [
   'demoGiveComfit',
   'demoReadTail',
   'demoWiggleFoot',
+  'demoWiggleFootDone',
   'demoHoldHead',
+  'demoHoldHeadDone',
   'demoCatchBill',
+  'demoCatchBillDone',
   'demoDipLeaves',
+  'demoDipLeavesDone',
   'demoHeight',
   'demoHeightUnit',
   'demoOpenLetter',
@@ -327,16 +340,22 @@ const UI_FOR_SCRIPT = [
   'demoSingAlong',
   'demoAnswerRiddle',
   'demoStirTreacle',
+  'demoStirTreacleDone',
   'demoDrawTreacle',
   'demoDrawM',
   'demoStirQuarrel',
   'demoTurnCard',
   'demoShrug',
   'demoClearThroat',
+  'demoClearThroatDone',
   'demoWakeEel',
+  'demoWakeEelDone',
   'demoKingsNotebook',
+  'demoKingsNotebookDone',
   'demoCloseEyes',
+  'demoCloseEyesDone',
   'demoGiveChildren',
+  'demoGiveChildrenDone',
   'demoCallDinah',
   'demoPageEmpty',
   'demoChainLonger',
@@ -359,26 +378,43 @@ const UI_FOR_SCRIPT = [
   'demoReducedMotion',
   'demoPuff',
   'demoNibbleLeft',
+  'demoNibbleLeftDone',
   'demoNibbleRight',
+  'demoNibbleRightDone',
   'demoBendNeck',
   'demoShoo',
+  'demoShooDone',
   'demoPaintRose',
+  'demoPaintRoseDone',
   'demoStrike',
   'demoCatchFlamingo',
+  'demoCatchFlamingoDone',
   'demoHideGardeners',
+  'demoHideGardenersDone',
   'demoThrowLobster',
+  'demoThrowLobsterDone',
   'demoJoinDance',
+  'demoJoinDanceDone',
   'demoSomersault',
+  'demoSomersaultDone',
   'demoOpenEyes',
+  'demoOpenEyesDone',
   'demoSnail',
+  'demoSnailDone',
   'demoBow',
   'demoPepper',
+  'demoPepperDone',
   'demoDuck',
+  'demoDuckDone',
   'demoBatPan',
   'demoHoldTight',
+  'demoHoldTightDone',
   'demoPokeBaby',
+  'demoPokeBabyDone',
   'demoComfort',
+  'demoComfortDone',
   'demoWash',
+  'demoWashDone',
   'demoUglify',
   'demoPullTail',
   'demoUndoKnot',
@@ -451,25 +487,34 @@ export function realiaFor(
   );
 }
 
+/** What `nextDemo` names when there is no demo after this one: the locale's index. */
+export const DEMO_INDEX = 'index';
+
 /**
  * The demo after this one that has a page in the same locale, so "Next scene" and
- * going on by itself never leave the reader's language. The ring closes on the first.
+ * going on by itself never leave the reader's language. The walk ends at the last
+ * one the locale publishes (the trial): after it comes the index, not the first
+ * demo again (docs/concept-demos.md §3, Going on by itself).
  */
 export function nextDemo(project: DemoProject, id: string): string {
   const start = DEMO_ORDER.indexOf(id as (typeof DEMO_ORDER)[number]);
-  for (let step = 1; step <= DEMO_ORDER.length; step += 1) {
-    const candidate = DEMO_ORDER[(start + step) % DEMO_ORDER.length];
+  for (const candidate of DEMO_ORDER.slice(start + 1)) {
     const demo = project.demos.find((entry) => entry.id === candidate);
     if (demo && isPublishable(project, demo)) {
       return demo.id;
     }
   }
-  return id;
+  return DEMO_INDEX;
 }
+
+/** The next link's href from a demo page: a sibling directory, or the index above. */
+export const nextHref = (next: string): string => (next === DEMO_INDEX ? '../' : `../${next}/`);
 
 function renderDemo(project: DemoProject, demo: ExperienceConceptDemoFile): string {
   const title = titleOf(project, demo);
   const next = nextDemo(project, demo.id);
+  // The end of the walk: its link goes back to the index, and nothing goes on by itself.
+  const last = next === DEMO_INDEX;
   const ui = project.ui;
   const forScript = Object.fromEntries(UI_FOR_SCRIPT.map((key) => [key, ui[key]]));
   // demos/<id>/index.html, or demos/<locale>/<id>/index.html, and one more up out
@@ -504,9 +549,13 @@ ${htmlOpen(project.locale, project.settings)}
       <div class="demo__track" data-demo-track>
 ${renderTrack(project, demo)}
       </div>
-      <footer class="demo__end">
-        <a class="demo__next" href="../${next}/">${escapeHtml(ui.demoNext)}</a>
-        <button class="demo__auto" type="button" aria-pressed="false" hidden>${escapeHtml(ui.demoAuto)}</button>
+      <footer class="demo__end"${last ? ' data-last' : ''}>
+        <a class="demo__next" href="${nextHref(next)}">${escapeHtml(last ? ui.demoBack : ui.demoNext)}</a>${
+          last
+            ? ''
+            : `
+        <button class="demo__auto" type="button" aria-pressed="false" hidden>${escapeHtml(ui.demoAuto)}</button>`
+        }
       </footer>
     </main>
   </body>

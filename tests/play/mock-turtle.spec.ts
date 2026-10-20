@@ -110,7 +110,9 @@ test.describe('mock turtle: play', () => {
     const swell = await watchProperty(page, '.mt__shore', '--swell');
     await throat.click();
     await expect(page.locator('.mt__turtle')).toHaveAttribute('data-sobbing', '');
-    await expect(page.locator('.demo__status')).toHaveText('Clear your throat');
+    await expect(page.locator('.demo__status')).toHaveText(
+      'Ahem! The Mock Turtle starts, and sobs louder.',
+    );
     await expect
       .poll(async () => Math.max(0, ...(await swell())), { timeout: 8000 })
       .toBeGreaterThan(0.3);
@@ -172,7 +174,9 @@ test.describe('mock turtle: play', () => {
     const stretch = await watchProperty(page, '.mt__eel', '--stretch');
     const faint = await watchProperty(page, '.mt__eel', '--faint');
     await eel.locator('.art').click();
-    await expect(page.locator('.demo__status')).toHaveText('Wake the Drawling-master');
+    await expect(page.locator('.demo__status')).toHaveText(
+      'Awake, the Drawling-master gives his lesson.',
+    );
     await expect
       .poll(async () => Math.max(0, ...(await stretch())), { timeout: 8000 })
       .toBeGreaterThan(0.5);

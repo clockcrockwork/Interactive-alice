@@ -508,7 +508,7 @@ function mount(shell: DemoShell): void {
     if (t < iSuppress + 0.1 || Math.max(story.suppressed, play.suppressed) >= 0.3) {
       return;
     }
-    shell.status(shell.ui.demoSuppressGuineaPig ?? '');
+    shell.status(shell.ui.demoSuppressGuineaPigDone ?? '');
     gsap.to(play, {
       suppressed: 1,
       duration: dur(0.6),
@@ -690,7 +690,7 @@ function mount(shell: DemoShell): void {
       return;
     }
     righting.play = true;
-    shell.status(shell.ui.demoRightLizard ?? '');
+    shell.status(shell.ui.demoRightLizardDone ?? '');
     shell.sound.play('paper', 0.4);
     applyLizard();
   };
@@ -823,7 +823,7 @@ function mount(shell: DemoShell): void {
       return;
     }
     caught = true;
-    shell.status(shell.ui.demoKingsNotebook ?? '');
+    shell.status(shell.ui.demoKingsNotebookDone ?? '');
     shell.sound.play('paper', 0.4);
     pen.play = Math.max(pen.story, pen.play);
     // Under reduced motion each step is a cut, held as long as with motion.
@@ -912,11 +912,4 @@ function mount(shell: DemoShell): void {
   crowd();
 }
 
-const shell = attachDemo();
-if (shell) {
-  try {
-    mount(shell);
-  } catch (error) {
-    console.error(error);
-  }
-}
+attachDemo({ mount });

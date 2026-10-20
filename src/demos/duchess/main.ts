@@ -294,7 +294,7 @@ function mount(shell: DemoShell): void {
     ribbon.el.setAttribute('data-flung', '');
     shell.sound.play('whoosh', 0.5);
     if (byButton) {
-      shell.status(shell.ui.demoFlingMoral ?? '');
+      shell.status(shell.ui.demoFlingMoralDone ?? '');
     }
     gsap.to(ribbon.play, {
       f: 1,
@@ -639,11 +639,4 @@ function mount(shell: DemoShell): void {
   });
 }
 
-const shell = attachDemo();
-if (shell) {
-  try {
-    mount(shell);
-  } catch (error) {
-    console.error(error);
-  }
-}
+attachDemo({ mount });

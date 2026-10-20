@@ -251,7 +251,15 @@ pinned stage, the caption layer, a scroll-scrubbed master timeline, the pointer,
 the test seam.
 
 The page arrives as a readable document: the bar, a scroll hint, and the story's
-sentences in reading order inside the track. Attaching moves each beat into a stage
+sentences in reading order inside the track. Everything that places a sentence on
+the stage or hides it is scoped to the attached page (`[data-attached]`), so where
+the script never runs (switched off, or failed to load) every sentence is in the
+flow and the links on and back are where a reader finds them. A demo's staging is
+handed to the shell (`attachDemo({ mount })`); if it throws, the error stays in the
+console and the shell rolls the page back to that same document: its listeners,
+timelines, observers and sound released, the sentences returned to the track, the
+stage and its controls removed. The browser tests check all three cases on a few
+demos in every locale (`tests/fallback.spec.ts`). Attaching moves each beat into a stage
 that stays pinned to the viewport, hides the track, and turns the document's height
 into a GSAP timeline with **one unit of timeline time per beat**. A demo composes
 against that timeline: `master.to(thing, {...}, shell.cue('thump'))` puts a tween
@@ -316,14 +324,27 @@ visitor presses *Sound on* in the bar, which is also the gesture browsers requir
 and it is held silent while motion is paused, so the one pause covers both. The
 button shows the visitor's choice at once; the audio device follows when it can (a
 machine with no output may never start it), and only a browser that refuses outright
-turns the button back. Each
+turns the button back. Off means off: until that first press nothing makes an
+AudioContext, a source or a timer, whatever a demo plays or levels. Once on, the
+synthesiser's recurring timers (the levels' follower, the drips, the birds, the
+pot's plops) run only while sound is on, motion is not paused and the page is
+shown: they stop and the context is suspended when the page is hidden or put away
+(`pagehide`), come back on `pageshow` from the back-forward cache or when the page
+is visible again, and the context is closed when the page is unloaded. The seam's
+`sound()` reports the context's state and the timers (`src/demos/shell/sound.test.ts`,
+`tests/sound.spec.ts`). Each
 demo levels a continuous cue from its frame loop (wind with the fall, drips over the
 treacle, the purr as you near the Cat) and plays one-shots at its moments.
 
 **Tilt.** On a coarse-pointer device with orientation events, the bar offers *Steer
 by tilting*; a press asks permission where the browser wants one, and from then on
 the phone's tilt drives the shell's pointer, so every demo that leans with the
-pointer leans with the phone. Not offered under reduced motion.
+pointer leans with the phone. It says it is on (`demoTiltOn`) only once the first
+real reading arrives; a device that grants permission and then sends nothing, or
+only nulls, within a second leaves steering with the pointer and says so
+(`demoTiltNone`). The lean is read in the screen's frame, turned by
+`screen.orientation.angle`, so landscape either way steers the way the screen
+leans (`shell/tilt.ts`). Not offered under reduced motion.
 
 **Transitions.** Leaving a page for another sets a view-transition type from the
 destination: a well, the hall or the chimney swallow the screen into a hole; the
@@ -344,6 +365,15 @@ the next scene. The ring round the link fills while it waits (in quarters under
 reduced motion), scrolling back empties it, and the motion pause holds it. Off by
 default, and never the only way forward.
 
+**The walk ends at the trial.** *Decision, 2026-10-20.* The demos are a walk through
+the book, not a loop: the last one a locale publishes (the trial, her sister's dream)
+does not lead round to the riverbank. Its link goes to that locale's demo index and
+is labelled as the bar's back link is (`demoBack`, *All demos*); the page offers no
+*Go on by itself*, and a choice remembered from the pages before it never fires
+there, so the reader is never carried off the end. `nextDemo()` in `build/demos.ts`
+names the index (`DEMO_INDEX`) for the last demo; the build tests and the browser
+tests hold both.
+
 **Keepsakes.** A thing the reader does by hand, rather than the story doing it,
 can be kept: `shell.keep(kind)` records it in the visitor's own browser, under the
 demos' key, and `shell.kept()` reads the list back on any later page. The daisy chain
@@ -352,18 +382,30 @@ comfit fed to a runner, a rose painted red and the lobster thrown out to sea are
 this way, and in the trial's after-time, as her sister pictures her keeping the loving
 heart of her childhood, whatever was kept comes down and lies on the bank, and can be
 given to the children there. Nothing kept, nothing
-shown; it is the reader's record of having played, not a score.
+shown; it is the reader's record of having played, not a score. Where the browser
+refuses to store it (a private window, a full quota), what was kept is still kept
+for the page it was kept on (`shell/kept.ts`).
 
 **Status, bar and settled beats.** The polite live region that announces what the
 reader did is a small slip at the foot of the frame, under the captions and clear of
 the props at the top; it shows for a few seconds and then fades, keeping its text for
 assistive technology, and it speaks only for what the reader did, never for what the
-story does by itself. Every pill in the bar is at least a 24-by-24 pixel target with
+story does by itself. It says what happened, not the words of the control just
+pressed: such a status has a result label of its own (`demo<Control>Done`, or a named
+one such as `demoStruck`), and `scripts/check-frontend.py` (`status-echo`) fails a
+`status()` that passes a key used as a prop's label, an `aria-label` or a button's
+text. Every pill in the bar is at least a 24-by-24 pixel target with
 a label of 12 pixels or more (the pause control is one of them); on a phone the title
 is kept for assistive technology only, and when the pills do not fit one row at that
 size the bar wraps to a second row, in any language, rather than shrink them. The
 shell measures the bar and writes its height as `--demo-bar-height`, so the props and
-captions placed under the bar move down with it. Under reduced motion each
+captions placed under the bar move down with it. The pages ask for the whole screen
+(`viewport-fit=cover`), so the bar pads itself clear of a notch: the top safe-area
+inset above its row and, in landscape, the side insets at either end; the measured
+height includes that padding, and the starting value before the first measure
+includes the top inset (`shell/safe-area.test.ts` reads the stylesheet for it, since
+an inset cannot be emulated in the browser tests). Confirmation on a real notched
+phone is still owed. Under reduced motion each
 beat's sentences are there for the whole of the beat: their cut is placed just
 before the head rather than just after it.
 
@@ -375,7 +417,13 @@ so a keyboard reader looking for a prop is never carried past the scene. A
 full-stage tap target is pointer play: it takes no keyboard focus, and the prop
 button beside it is the keyboard's way. A prop on its way out takes no tap while it
 fades, so where two props share a place (Bill's *Hold up his head* over *Catch him!*)
-the one leaving never catches the press meant for the one arriving.
+the one leaving never catches the press meant for the one arriving. A prop that
+leaves while it has the keyboard's focus hands it on, to the next prop still shown or
+else to the stage (focusable by script only, drawing no ring), so a keyboard reader
+is never left on a hidden button nor sent back to the top of the page. As the beats
+change, only the shown beat's sentences are in the accessibility tree
+(`tests/reading-flow.spec.ts` checks both by aria snapshot and focus on two demos
+each); a run with VoiceOver and NVDA is still owed by a person.
 
 **Sound of the place.** Besides the one-shot cues, the synthesiser has continuous
 ones a demo levels from its timeline: `wind`, `purr` and `drip` as before, and now
@@ -429,7 +477,8 @@ trial on the same high frame of the court. Each demo remains complete on its own
 has a reduced-motion version of cuts and cross-fades, and each is described under its
 two demos below. The pairs with another scene of the book between them (Bill and the
 Caterpillar, the Caterpillar and the kitchen, the Cat and the tea-party) change scene through the page transition and
-nothing more.
+nothing more. The trial joins nothing after it: the walk ends there, and its link goes
+back to the index (above).
 
 ## 4. The nineteen demos
 
@@ -523,6 +572,13 @@ stepped beat by beat by the shell; the doors are a cut to the open tunnel.
 
 **Degraded mode.** If a WebGL context cannot be created, the well is drawn flat with
 CSS rings that scale with the fall, the page says so, and the seam reports `flat`.
+The well lives with the page: on `pagehide` its draw loop stops (and the renderer is
+released if the page is not kept for a return), on `pageshow` from the back-forward
+cache it draws again, and a lost context (`webglcontextlost`, default prevented)
+stops the loop until the browser restores it; one not restored within three
+seconds becomes the flat well, which waits hidden under the canvas for that. The
+seam `__aliceWell()` reports the loop's state, how many loops are registered and the
+most renders in one frame, which the browser tests hold at one.
 
 **Looking at a map.** While the shelves pass, from *Maps and pictures hung on little pegs* to the cupboard she tucks the jar into, a map on the wall can be looked at: tap one, or press *Look at the map*, and it comes up close and holds still in front, drawn large, a sea with waves, two coasts, a river, hills, a dotted route to a mark and a compass rose, pictures only, while the well goes on falling behind it. *Look away*, a tap on the map, or scrolling out of those beats in either direction puts it back on the wall, with a rustle of paper each way; it works the same over the flat well. Under reduced motion the map fades in and out in place, with no zoom.
 
@@ -1346,7 +1402,9 @@ relative URLs, and a refusal when a segment has no text in the base locale; for 
 other locale, its pages under `demos/<locale>/`, all nineteen in Japanese with
 `lang="ja"` and the Japanese sentence (never the English) for every segment, "Next
 scene" inside the locale, the language switch on every index, a demo with a missing
-sentence left out, carded as pending and skipped in the ring, every page's root
+sentence left out, carded as pending and skipped in the walk, the walk ending at the
+trial (its link the index's, labelled *All demos*, and no *Go on by itself* on it),
+every page's root
 carrying its locale's profile, and each locale's realia written onto a page for just
 the ids its demo reads. `shell/words.test.ts` and `mouse-tale/chunks.test.ts` run the
 word readers, `units()` and the tail's grouping against every locale's own sentences,
@@ -1355,7 +1413,11 @@ and against a sample written without spaces and one written right to left;
 checks that a pause of either width is the stronger break and that no quoted run is
 ever split; `chunks.test.ts` checks that the tail's groups in a word-space locale are
 the book's and that in a phrase-space locale no group runs on past a pause;
-`shell/fit.test.ts` holds the caption fit's arithmetic.
+`shell/fit.test.ts` holds the caption fit's arithmetic; `shell/sound.test.ts` that sound
+off makes no context or timer and that the timers stop while hidden, put away, held or
+off and come back on `pageshow`; `shell/tilt.test.ts` the tilt's mapping in all four
+screen angles; `shell/kept.test.ts` keepsakes kept in memory when storage refuses;
+`shell/safe-area.test.ts` that the bar pads itself with the safe-area insets.
 `src/demos/realia.test.ts` draws and measures every locale's realia, and
 `build/locale-standard.test.ts` breaks a copy of the data (a translation's quotation
 marks, a letter, a moral, a cry, a realia file, the jury's marks, the profile) or of a
@@ -1424,6 +1486,18 @@ frame. `tests/play/japanese.spec.ts` also checks
 that the Japanese cards carry no Latin letters, that a name in corner brackets stays on
 one line on a phone, and that no group of the tale runs on past a comma; a test in
 `tests/demos.spec.ts` starves the court's frames and still sees a scroll settle.
+`tests/fallback.spec.ts` holds the readable document on the riverbank, the rabbit hole
+and the trial in every locale with JavaScript off, with the demo's script blocked, and
+with a staging that throws (every sentence shown in the flow, the links working);
+`tests/sound.spec.ts` that a page played through with sound off constructs no
+AudioContext and that the timers follow the page's visibility and `pagehide`/`pageshow`;
+`tests/tilt.spec.ts` (on a coarse pointer: the phone project) that tilt is on only
+after a reading and that none within a second leaves the pointer steering;
+`tests/reading-flow.spec.ts` that only the shown beat is in the accessibility tree and
+that focus does not stay on a control that leaves; `tests/play/rabbit-hole.spec.ts`
+that the well keeps one draw loop through `pagehide`/`pageshow` and a lost and restored
+context, falls back to the flat well when the context is not restored, and lets go of
+a drag on `pointercancel`.
 
 How these tests touch the page is held to the same matrix. A control on the pinned
 stage is pressed where it is (`press`, `tapAt` in `tests/demo-helpers.ts`: a touch tap
@@ -1449,7 +1523,8 @@ screen; the WebGL well draws only while it can be seen.
 `npm run check:frontend` covers the demo code with the same rules as the scenes:
 no prose in code, no absolute paths, no inline style writes other than custom
 properties, keyframes on transform and opacity, a reduced-motion block wherever there
-is motion.
+is motion; and one of the demos' own, `status-echo`: no status line repeats the label
+of a control.
 
 ## 6. What is deliberately unfinished
 

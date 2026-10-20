@@ -70,10 +70,15 @@ for (const demo of demos) {
       '',
     );
     await expect(page.locator('.demo__next')).toBeVisible();
-    // The next scene is in the same language: a sibling of this page's directory.
+    // The next scene is in the same language: a sibling of this page's directory;
+    // after the last scene, the walk ends at that language's own index.
     const here = new URL(page.url());
     const nextUrl = new URL((await page.locator('.demo__next').getAttribute('href')) ?? '', here);
-    expect(new URL('..', nextUrl).pathname).toBe(new URL('..', here).pathname);
+    if (demo.demo === 'trial') {
+      expect(nextUrl.pathname).toBe(new URL('..', here).pathname);
+    } else {
+      expect(new URL('..', nextUrl).pathname).toBe(new URL('..', here).pathname);
+    }
     // The link to the next demo and the last caption do not overlap.
     await expect(page.locator('.demo')).toHaveAttribute('data-ending', '');
     const next = await page.locator('.demo__next').boundingBox();
@@ -1819,6 +1824,29 @@ test('going on by itself is off until asked, then follows a held end to the next
   await page.waitForURL(/\/demos\/lobster-quadrille\/?$/, { timeout: 10_000 });
   expect(await page.evaluate(() => window.__aliceDemo?.auto())).toBe(true);
   await page.evaluate(() => localStorage.removeItem('alice-demos:auto'));
+});
+
+test('the walk ends at the trial: its link goes to the index, and nothing goes on by itself', async ({
+  page,
+}) => {
+  const demo = demos.find((candidate) => candidate.demo === 'trial');
+  test.skip(!demo, 'no trial demo in this build');
+  // A reader who asked to be carried on the pages before.
+  await page.addInitScript(() => localStorage.setItem('alice-demos:auto', '1'));
+  await page.goto(demo?.url ?? '');
+  await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
+  await expect(page.locator('.demo__auto')).toHaveCount(0);
+  expect(await page.evaluate(() => window.__aliceDemo?.auto())).toBe(false);
+  await scrollTo(page, 1);
+  await expect(page.locator('.demo__end')).not.toHaveAttribute('data-auto', '');
+  // Held at the end longer than going on by itself would wait: still here.
+  await page.waitForTimeout(5500);
+  expect(new URL(page.url()).pathname).toMatch(/\/trial\/?$/);
+  const next = page.locator('.demo__next');
+  await expect(next).toHaveText((await page.locator('.demo__back').textContent()) ?? '-');
+  await next.click();
+  await page.waitForURL((url) => /\/demos\/(?:[a-z-]+\/)?$/.test(url.pathname));
+  await expect(page.locator('.demos__card').first()).toBeVisible();
 });
 
 test('going on by itself empties its ring when the reader scrolls back', async ({ page }) => {

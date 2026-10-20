@@ -750,7 +750,7 @@ function mount(shell: DemoShell): void {
     gsap.to(wake, { held: 1, duration: reducedMotion ? 0 : 0.25, onUpdate: applyEffects });
     if (!touched) {
       touched = true;
-      shell.status(shell.ui.demoStirTreacle ?? '');
+      shell.status(shell.ui.demoStirTreacleDone ?? '');
     }
   });
   // A lifted finger lets go; so does one the browser takes over to scroll the page.
@@ -853,11 +853,4 @@ function mount(shell: DemoShell): void {
   });
 }
 
-const shell = attachDemo();
-if (shell) {
-  try {
-    mount(shell);
-  } catch (error) {
-    console.error(error);
-  }
-}
+attachDemo({ mount });

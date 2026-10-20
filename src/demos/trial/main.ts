@@ -761,7 +761,7 @@ function mount(shell: DemoShell): void {
     applyEyes();
     shell.sound.play(eyesOpen ? 'chime' : 'glass', 0.5);
     // What the reader just did: opened her eyes, or closed them again.
-    shell.status((eyesOpen ? shell.ui.demoOpenEyes : shell.ui.demoCloseEyes) ?? '');
+    shell.status((eyesOpen ? shell.ui.demoOpenEyesDone : shell.ui.demoCloseEyesDone) ?? '');
   });
   const turnReal = (at: number, kinds: string[]): void => {
     master.call(
@@ -954,7 +954,7 @@ function mount(shell: DemoShell): void {
     sake.busy = true;
     kid.busy = true;
     applyGive();
-    shell.status(shell.ui.demoGiveChildren ?? '');
+    shell.status(shell.ui.demoGiveChildrenDone ?? '');
     const play = gsap.timeline({
       onComplete: () => {
         plays.delete(play);
@@ -994,11 +994,4 @@ function mount(shell: DemoShell): void {
   applyGive();
 }
 
-const shell = attachDemo();
-if (shell) {
-  try {
-    mount(shell);
-  } catch (error) {
-    console.error(error);
-  }
-}
+attachDemo({ mount });

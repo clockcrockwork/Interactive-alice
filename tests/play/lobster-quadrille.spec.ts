@@ -86,7 +86,8 @@ test.describe('lobster quadrille: play', () => {
     await atCue(page, 'throw', 0.3);
     await page.locator('.lq__prop--throw').click();
     await expect(page.locator('.lq__ring')).toHaveAttribute('data-thrown', '');
-    await expect(page.locator('.demo__status')).toHaveText('Throw the lobster');
+    // What happened, not the button's words again.
+    await expect(page.locator('.demo__status')).toHaveText('Out to sea goes the lobster.');
     expect(await page.evaluate(() => localStorage.getItem('alice-demos:kept'))).toContain(
       'lobster',
     );

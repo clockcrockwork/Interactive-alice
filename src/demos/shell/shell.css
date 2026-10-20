@@ -235,6 +235,13 @@
     min-inline-size: var(--demo-target-min);
   }
 
+  /* A control the shell has not offered (no script ran, or the staging was rolled
+     back) stays out of sight, whatever display a narrow bar gives its pills. */
+  .demo__bar [hidden],
+  .demo__end [hidden] {
+    display: none;
+  }
+
   .demo__sound[aria-pressed="true"],
   .demo__auto[aria-pressed="true"],
   .demo__motion[aria-pressed="true"] {

@@ -126,6 +126,16 @@ export function createSound(
     } catch {
       return undefined;
     }
+    // A resume still pending when the page asked to stop can land after the
+    // suspend (some engines settle a suspend at once while a resume is under
+    // way): whenever the context comes up while sound should be still, put it
+    // down again.
+    const made = context;
+    made.onstatechange = () => {
+      if (!running && !closed && made.state === 'running') {
+        made.suspend().catch(() => undefined);
+      }
+    };
     master = context.createGain();
     master.gain.value = 0;
     master.connect(context.destination);
@@ -316,7 +326,9 @@ export function createSound(
         schedule(loop, loop.first);
       }
       master?.gain.setTargetAtTime(0.8, ctx.currentTime, 0.1);
-      if (ctx.state === 'suspended') {
+      // Asked whatever the state reads now: a suspend still pending would
+      // otherwise land after this and leave the context silent.
+      if (ctx.state !== 'closed') {
         ctx.resume().catch(() => {
           enabled = false;
           sync();
@@ -330,7 +342,9 @@ export function createSound(
     }
     timers.clear();
     master?.gain.setTargetAtTime(0, ctx.currentTime, 0.1);
-    if (ctx.state === 'running') {
+    // Asked whatever the state reads now: the context may still be starting (a
+    // resume pending), and the browser runs the two in the order they were asked.
+    if (ctx.state !== 'closed') {
       ctx.suspend().catch(() => undefined);
     }
   };

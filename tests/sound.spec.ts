@@ -90,7 +90,11 @@ test('the sound timers stop while the page is hidden or put away, and resume whe
     expect(after?.running).toBe(false);
     expect(after?.timers).toBe(0);
     expect(after?.ticks).toBe(before);
-    expect(after?.context).not.toBe('running');
+    // The context's suspend is the browser's to finish, and a loaded machine takes
+    // its time: wait for the state, not for a fixed while.
+    await expect
+      .poll(async () => (await soundState(page))?.context, { timeout: 10_000 })
+      .not.toBe('running');
   };
 
   await setHidden(true);

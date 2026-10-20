@@ -56,15 +56,53 @@ class FakeContext {
   }
 }
 
+/**
+ * A context that settles a suspend at once while a resume is still under way, and
+ * says so through `onstatechange`, as Chromium was seen to under load.
+ */
+class EagerSuspendContext extends FakeContext {
+  onstatechange: (() => void) | null = null;
+  override resume() {
+    return new Promise<void>((resolve) => {
+      setTimeout(() => {
+        this.state = 'running';
+        this.onstatechange?.();
+        resolve();
+      }, 5);
+    });
+  }
+  override suspend() {
+    if (this.state !== 'suspended') {
+      this.state = 'suspended';
+      this.onstatechange?.();
+    }
+    return Promise.resolve();
+  }
+}
+
+/** A context whose resume and suspend take effect a moment later, in the order asked. */
+class SlowContext extends FakeContext {
+  override resume() {
+    return Promise.resolve().then(() => {
+      this.state = 'running';
+    });
+  }
+  override suspend() {
+    return Promise.resolve().then(() => {
+      this.state = 'suspended';
+    });
+  }
+}
+
 /** A page: its timers on a manual clock, its window and document as event targets. */
-function fakeHost() {
+function fakeHost(Context: typeof FakeContext = FakeContext) {
   let now = 0;
   let nextId = 1;
   const pending = new Map<number, { at: number; fn: () => void }>();
   const doc = Object.assign(new EventTarget(), { hidden: false });
   const win = new EventTarget();
   const host: SoundHost = {
-    createContext: () => new FakeContext() as unknown as AudioContext,
+    createContext: () => new Context() as unknown as AudioContext,
     setTimeout: (fn, ms) => {
       const id = nextId++;
       pending.set(id, { at: now + ms, fn });
@@ -195,6 +233,28 @@ describe('recurring timers follow the page', () => {
     sound.hold(false);
     await flush();
     expect(sound.state()).toMatchObject({ context: 'running', running: true });
+  });
+
+  it('suspend a context hidden while it is still starting', async () => {
+    const page = fakeHost(SlowContext);
+    const sound = createSound(undefined, page.host);
+    sound.toggle();
+    // Hidden before the context has finished starting.
+    page.hide(true);
+    await flush();
+    expect(sound.state()).toMatchObject({ context: 'suspended', running: false, timers: 0 });
+    page.hide(false);
+    await flush();
+    expect(sound.state()).toMatchObject({ context: 'running', running: true });
+  });
+
+  it('puts down a context that comes up after the page asked it to stop', async () => {
+    const page = fakeHost(EagerSuspendContext);
+    const sound = createSound(undefined, page.host);
+    sound.toggle();
+    page.transition('pagehide', true);
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(sound.state()).toMatchObject({ context: 'suspended', running: false, timers: 0 });
   });
 
   it('close the context when the page is unloaded rather than kept', async () => {

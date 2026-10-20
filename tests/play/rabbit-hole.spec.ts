@@ -414,7 +414,8 @@ test.describe('the rabbit hole: a drag the browser takes back', () => {
     await pointer('pointerdown', 100, 'stage');
     await pointer('pointermove', 140, 'window');
     await pointer('pointercancel', 140, 'window');
-    // Whatever spin the start gave settles.
+    // The start did tumble her (seen on a frame), and that spin settles.
+    await expect.poll(tumble, { timeout: 10_000 }).toBeGreaterThan(0.5);
     await expect.poll(tumble, { timeout: 15_000 }).toBeLessThan(0.5);
     // Moves with no press behind them do not tumble her.
     for (let x = 160; x <= 460; x += 30) {

@@ -61,6 +61,13 @@ Japanese caterpillar 5.81 → 5.94 KB). On the story, inside its budgets: `story
 unchanged, `base.css` +40 B gzip (the emphasis rule), each part page +60 B gzip and
 the home page +90 B gzip (the profile on the root).
 
+The owner's review of the demos (2026-10-20: the readable fallback, sound and WebGL
+lifecycles, tilt, safe areas, result statuses, the walk's end), measured against the
+build before it: the shared demo shell grew by 2.9 KB raw (1.0 KB gzip); the demos'
+styles by 0.6 KB raw (0.14 KB gzip); each demo page's HTML by about 0.65 KB gzip, the
+35 result labels the pages carry in their UI copy (the trial 4.99 → 5.65 KB). The
+story's own files (`story.js`, `base.css`, the part and home pages) are unchanged.
+
 Frame time was also measured for the demos, on the software renderer this project
 tests on (Chromium with SwiftShader, no GPU, 1280×760), holding each beat and taking
 the mean of a dozen frames; the numbers are large because there is no GPU, and their

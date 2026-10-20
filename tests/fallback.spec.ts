@@ -48,6 +48,9 @@ async function expectReadable(page: Page, segments: readonly string[]): Promise<
       expect(line.top, `${line.id} follows ${before.id}`).toBeGreaterThanOrEqual(before.bottom - 1);
     }
   }
+  // No control is offered for motion or going on by itself that is not there.
+  await expect(page.locator('.demo__motion')).toBeHidden();
+  await expect(page.locator('.demo__auto')).toBeHidden();
   await expect(page.locator('.demo__end')).not.toHaveAttribute('inert', '');
   await expect(page.locator('.demo__next')).toBeVisible();
   await expect(page.locator('.demo__back')).toBeVisible();
@@ -104,13 +107,21 @@ test.describe('when a demo staging throws', () => {
         const before = Element.prototype.before;
         Element.prototype.before = function (this: Element, ...nodes: (Node | string)[]) {
           if (this.classList.contains('demo__captions')) {
+            (window as unknown as { __stagingFailed?: boolean }).__stagingFailed = true;
             throw new Error('test: the staging fails');
           }
           before.apply(this, nodes);
         };
       });
       await page.goto(demo.url);
-      await expect.poll(() => errors.some((e) => e.includes('test: the staging fails'))).toBe(true);
+      // The staging did throw, and the shell said so in the console. (Engines word a
+      // logged Error differently, so the console is asked only that there is one.)
+      expect(
+        await page.evaluate(
+          () => (window as unknown as { __stagingFailed?: boolean }).__stagingFailed,
+        ),
+      ).toBe(true);
+      await expect.poll(() => errors.length).toBeGreaterThan(0);
       await expectReadable(page, demo.segments ?? []);
       expect(await page.evaluate(() => window.__aliceDemo === undefined)).toBe(true);
       // Pinned chrome is gone too: no pause control for motion that is not there.

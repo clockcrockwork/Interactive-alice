@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { atCue, customProperty, demos, scrollTo } from '../demo-helpers.ts';
+import { atCue, customProperty, demos, press, scrollTo } from '../demo-helpers.ts';
 
 const demo = demos.find((candidate) => candidate.demo === 'cheshire-cat');
 const CAT = '.art[data-art="cheshire-cat/on-bough"]';
@@ -234,7 +234,10 @@ test('the cheshire cat: pig or fig, the answer shows in the moon and the grin wi
   await atCue(page, 'again', 0.6);
   await expect(pig).toHaveAttribute('data-shown', '');
   await expect(fig).toHaveAttribute('data-shown', '');
-  await fig.click();
+  // Pressed where they are, as a reader taps: Playwright's own click scrolls a
+  // control on the pinned stage "into view", and that scroll can carry the page
+  // back a beat, where the answers are gone.
+  await press(page, fig);
   const moon = page.locator('.cc__moon-picture');
   await expect(moon).toHaveAttribute('data-picture', 'fig');
   await expect(moon).toHaveAttribute('data-shown', '');
@@ -248,7 +251,7 @@ test('the cheshire cat: pig or fig, the answer shows in the moon and the grin wi
   await expect
     .poll(() => customProperty(page, '.cc__grin', '--more'), { timeout: 5000 })
     .toBeLessThan(0.05);
-  await pig.click();
+  await press(page, pig);
   await expect(moon).toHaveAttribute('data-picture', 'pig');
   // The answers belong to their beat.
   await atCue(page, 'slowly', 0.5);

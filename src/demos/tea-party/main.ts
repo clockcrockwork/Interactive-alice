@@ -861,11 +861,4 @@ function mount(shell: DemoShell): void {
   });
 }
 
-const shell = attachDemo();
-if (shell) {
-  try {
-    mount(shell);
-  } catch (error) {
-    console.error(error);
-  }
-}
+attachDemo({ mount });

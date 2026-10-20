@@ -79,20 +79,24 @@
       translate3d(calc(var(--cam-x) * -1px), calc(var(--height) * 1px), calc(var(--cam-z) * -1px));
   }
 
+  /* The lawn is 6000 by 2400 pixels on the ground, laid as a quarter-size plane
+     scaled up four times: the same lawn, stripes and all, but a quarter of the
+     area for a browser that rasterises a 3D plane's gradients on the CPU (Firefox
+     without GPU compositing took most of a second a frame over the full size). */
   .cq__turf {
     position: absolute;
-    inset-inline-start: -3000px;
-    inset-block-start: -1400px;
-    inline-size: 6000px;
-    block-size: 2400px;
-    transform: rotateX(90deg);
+    inset-inline-start: -750px;
+    inset-block-start: -356px;
+    inline-size: 1500px;
+    block-size: 600px;
+    transform: rotateX(90deg) scale(4);
     transform-origin: 50% 58%;
     background:
       repeating-linear-gradient(
         to bottom,
-        oklch(from var(--ink-primary) l c h / 0) 0 70px,
-        oklch(from var(--ink-primary) l c h / 0.12) 70px 110px,
-        oklch(from var(--paper-base) l c h / 0.08) 110px 140px
+        oklch(from var(--ink-primary) l c h / 0) 0 17.5px,
+        oklch(from var(--ink-primary) l c h / 0.12) 17.5px 27.5px,
+        oklch(from var(--paper-base) l c h / 0.08) 27.5px 35px
       ),
       linear-gradient(to bottom, var(--cq-turf-deep), var(--cq-turf) 30%, var(--cq-turf-deep));
   }

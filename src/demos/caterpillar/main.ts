@@ -648,7 +648,7 @@ function mount(shell: DemoShell): void {
     });
     shell.sound.play(side === 'left' ? 'chime' : 'paper', 0.6);
     shell.status(
-      side === 'left' ? (shell.ui.demoNibbleLeft ?? '') : (shell.ui.demoNibbleRight ?? ''),
+      side === 'left' ? (shell.ui.demoNibbleLeftDone ?? '') : (shell.ui.demoNibbleRightDone ?? ''),
     );
   };
   bitLeft?.addEventListener('click', () => nibble('left'));
@@ -748,7 +748,7 @@ function mount(shell: DemoShell): void {
     }
     shooed += 1;
     shell.sound.play('whoosh', 0.7);
-    shell.status(shell.ui.demoShoo ?? '');
+    shell.status(shell.ui.demoShooDone ?? '');
     const away = shooed % 2 === 0 ? -1 : 1;
     shooTimeline?.kill();
     const timeline = gsap.timeline();
@@ -882,7 +882,7 @@ function mount(shell: DemoShell): void {
   dipButton.addEventListener('click', () => {
     if (dipLive()) {
       burstUp();
-      shell.status(shell.ui.demoDipLeaves ?? '');
+      shell.status(shell.ui.demoDipLeavesDone ?? '');
     }
   });
   let dragFrom: number | undefined;
@@ -903,7 +903,7 @@ function mount(shell: DemoShell): void {
     if (dip.d >= 1) {
       dragFrom = undefined;
       burstUp();
-      shell.status(shell.ui.demoDipLeaves ?? '');
+      shell.status(shell.ui.demoDipLeavesDone ?? '');
     }
   });
   const letGo = (): void => {
@@ -1001,14 +1001,8 @@ declare global {
   }
 }
 
-const shell = attachDemo({
+attachDemo({
+  mount,
   caption: (beat, master, reduced, beats) =>
     smokeCaption(beat, master, reduced, beat.index === beats.length - 1),
 });
-if (shell) {
-  try {
-    mount(shell);
-  } catch (error) {
-    console.error(error);
-  }
-}

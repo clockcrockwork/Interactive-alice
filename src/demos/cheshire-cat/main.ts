@@ -202,7 +202,9 @@ function mount(shell: DemoShell): void {
     wood.dataset.vanish = next;
     tailButton.setAttribute('aria-pressed', String(next === 'tail'));
     headButton.setAttribute('aria-pressed', String(next === 'head'));
-    shell.status((next === 'tail' ? shell.ui.demoVanishTail : shell.ui.demoVanishHead) ?? '');
+    shell.status(
+      (next === 'tail' ? shell.ui.demoVanishTailDone : shell.ui.demoVanishHeadDone) ?? '',
+    );
     apply();
   };
   tailButton.addEventListener('click', () => choose('tail'));
@@ -728,11 +730,4 @@ function mount(shell: DemoShell): void {
   });
 }
 
-const shell = attachDemo();
-if (shell) {
-  try {
-    mount(shell);
-  } catch (error) {
-    console.error(error);
-  }
-}
+attachDemo({ mount });

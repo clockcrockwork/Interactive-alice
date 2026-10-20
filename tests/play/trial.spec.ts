@@ -8,7 +8,7 @@
  */
 
 import { expect, test } from '@playwright/test';
-import { atCue, customProperty, demos, scrollTo } from '../demo-helpers.ts';
+import { atCue, customProperty, demos, press, scrollTo } from '../demo-helpers.ts';
 
 const trial = demos.find((candidate) => candidate.demo === 'trial');
 
@@ -23,9 +23,10 @@ test('the trial: pressing Dodge left while the cards fly makes some of them miss
   await atCue(page, 'attack');
   const left = page.locator('.tr__prop-dodge--left');
   await expect(left).toBeVisible();
-  // The lean lasts about a second; keep pressing through the flight.
+  // The lean lasts about a second; keep pressing through the flight, where the
+  // button is, as a reader taps (Playwright's click scrolls the pinned stage).
   for (let i = 0; i < 6; i += 1) {
-    await left.click();
+    await press(page, left);
     await page.waitForTimeout(500);
   }
   await expect
@@ -45,6 +46,10 @@ test('the trial: without any dodge, no card misses', async ({ page }) => {
   test.slow();
   await page.goto(trial?.url ?? '');
   await atCue(page, 'rise');
+  // A pointer parked at the edge before the flight, and left there, is no dodge:
+  // a reader scrolling with the wheel leaves the mouse wherever it was, and a
+  // browser's own hover update after a scroll reports it there again.
+  await page.mouse.move(4, 300);
   await page.waitForTimeout(600);
   await atCue(page, 'attack');
   await expect
@@ -53,6 +58,27 @@ test('the trial: without any dodge, no card misses', async ({ page }) => {
   // Let the whole flight land before reading the count.
   await page.waitForTimeout(5000);
   expect(await customProperty(page, '.tr__court', '--dodged')).toBe(0);
+});
+
+test('the trial: a pointer moved while the cards fly leans her, and some of them miss', async ({
+  page,
+}) => {
+  test.skip(!trial, 'no trial demo in this build');
+  test.slow();
+  await page.goto(trial?.url ?? '');
+  const size = await page.evaluate(() => ({ w: innerWidth, h: innerHeight }));
+  await atCue(page, 'rise');
+  await page.mouse.move(size.w / 2, size.h / 2);
+  await page.waitForTimeout(600);
+  await atCue(page, 'attack');
+  // Swept from one edge to the other and back while the pack is in the air.
+  for (let i = 0; i < 6; i += 1) {
+    await page.mouse.move(i % 2 ? size.w - 4 : 4, size.h / 2, { steps: 6 });
+    await page.waitForTimeout(300);
+  }
+  await expect
+    .poll(() => customProperty(page, '.tr__court', '--dodged'), { timeout: 8000 })
+    .toBeGreaterThanOrEqual(1);
 });
 
 const ui = (page: Parameters<typeof atCue>[0]) =>
@@ -146,10 +172,10 @@ test('the trial: the eyes button says what a press will do, and the status what 
   await expect(eyes).not.toHaveAttribute('aria-pressed', /.*/);
   await eyes.click();
   await expect(eyes).toHaveText(labels.demoCloseEyes ?? '');
-  await expect(page.locator('.demo__status')).toHaveText(labels.demoOpenEyes ?? '');
+  await expect(page.locator('.demo__status')).toHaveText(labels.demoOpenEyesDone ?? '');
   await eyes.click();
   await expect(eyes).toHaveText(labels.demoOpenEyes ?? '');
-  await expect(page.locator('.demo__status')).toHaveText(labels.demoCloseEyes ?? '');
+  await expect(page.locator('.demo__status')).toHaveText(labels.demoCloseEyesDone ?? '');
 });
 
 test('the trial: the keepsakes can be given to the children, who carry them off', async ({
@@ -169,7 +195,7 @@ test('the trial: the keepsakes can be given to the children, who carry them off'
   await expect(page.locator('.tr__keepsake')).toHaveCount(2);
   await expect(give).toBeVisible({ timeout: 8000 });
   await give.click();
-  await expect(page.locator('.demo__status')).toHaveText(labels.demoGiveChildren ?? '');
+  await expect(page.locator('.demo__status')).toHaveText(labels.demoGiveChildrenDone ?? '');
   await expect(page.locator('.tr__child[data-running]')).toHaveCount(1);
   await expect(given).toHaveCount(1, { timeout: 8000 });
   // The other by a tap on it, as pointer play.

@@ -593,11 +593,4 @@ function mount(shell: DemoShell): void {
   gsap.ticker.add(() => sea.draw());
 }
 
-const shell = attachDemo();
-if (shell) {
-  try {
-    mount(shell);
-  } catch (error) {
-    console.error(error);
-  }
-}
+attachDemo({ mount });

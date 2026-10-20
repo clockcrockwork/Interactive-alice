@@ -61,6 +61,13 @@ Japanese caterpillar 5.81 → 5.94 KB). On the story, inside its budgets: `story
 unchanged, `base.css` +40 B gzip (the emphasis rule), each part page +60 B gzip and
 the home page +90 B gzip (the profile on the root).
 
+The owner's review of the demos (2026-10-20: the readable fallback, sound and WebGL
+lifecycles, tilt, safe areas, result statuses, the walk's end), measured against the
+build before it: the shared demo shell grew by 2.9 KB raw (1.0 KB gzip); the demos'
+styles by 0.6 KB raw (0.14 KB gzip); each demo page's HTML by about 0.65 KB gzip, the
+35 result labels the pages carry in their UI copy (the trial 4.99 → 5.65 KB). The
+story's own files (`story.js`, `base.css`, the part and home pages) are unchanged.
+
 Frame time was also measured for the demos, on the software renderer this project
 tests on (Chromium with SwiftShader, no GPU, 1280×760), holding each beat and taking
 the mean of a dozen frames; the numbers are large because there is no GPU, and their
@@ -85,9 +92,62 @@ The WebGL well was not the heaviest demo even without a GPU (its flat CSS fallba
 measured 63 ms mean against the well's 115 ms on the same renderer, which is not the
 gap that would justify losing the well on a phone with a GPU), so it stays; the cost
 that did move was in CSS filters on many pieces and in layers painted at a scale
-or an opacity that made them invisible anyway. The scripts that took these numbers
-are not in the repository; the method is a `requestAnimationFrame` sampler run in
-the page while the test harness scrolls, beat by beat.
+or an opacity that made them invisible anyway. The method is in the repository as
+`scripts/frame-sampler.mjs`:
+
+```text
+npm run build
+npm run perf:frames -- <demo> [--locale ja] [--art engraved|flat|paper]
+                              [--throttle 4] [--frames 24] [--reduced] [--json]
+```
+
+- **What it runs.** Chromium (the same binary the browser tests use) forced onto
+  SwiftShader (`--use-angle=swiftshader`), so a machine with a GPU measures the same
+  software renderer as CI; 1280×760; `dist/` through `vite preview` (started if
+  nothing answers on port 4173).
+- **What it measures.** For each beat the page is landed half-way into it through the
+  shell's seam (`seek`) and left to settle; a `requestAnimationFrame` sampler in the
+  page then records the gaps between 24 painted frames, the first three dropped.
+  Reported per beat: mean and worst frame in milliseconds, and for the demo the worst
+  beat's mean and the mean of beats. It measures a held beat (ambient motion, the
+  frame loop, a WebGL draw), not a scroll in progress.
+- **Options.** `--throttle n` slows the CPU n times through the DevTools protocol,
+  as a phone; `--art` picks the drawing as the index's picker would; `--reduced`
+  emulates reduced motion; `--json` prints one object for a diff.
+- **Machine conditions.** Note the machine and its load with every figure: run on an
+  otherwise idle machine, plugged in, with no other browser test running (the
+  parallel browser suites distort it badly). Absolute numbers are large without a GPU
+  and differ between machines; only numbers from the same machine on the same day
+  compare.
+- **Before and after.** Build and sample the base commit, then the change, on the
+  same machine back to back, three runs each, and compare the medians of each beat's
+  mean (`--json` to a file, then diff). A beat that moves by less than about 10 % or
+  10 ms is noise on SwiftShader.
+
+On 2026-10-20 in this repository's container (Linux, no GPU, idle), the trial
+measured a worst beat mean of 70 ms (mean of beats 39 ms) and the WebGL rabbit hole
+137 ms (94 ms), in line with the figures above.
+
+The same sampler run in Firefox, also without a GPU (its software renderer), found
+two demos far slower there than in Chromium. The croquet-ground's lawn, a 6000 by
+2400 pixel plane in CSS 3D with a striped gradient, took most of a second a frame to
+rasterise (mean 493 ms on the flamingo beat); laid as a quarter-size plane scaled up
+four times, the same lawn costs a mean of 46 ms. The Dormouse's spiral of text, turned and
+zoomed by the camera, still costs 200 to 550 ms a frame in that renderer while
+anything moves over it (the drips at the drawing, the floating letters at *muchness*):
+the turned text is rasterised again each time. Making the text layer its own 3D plane
+(`transform-style: preserve-3d`) brings Firefox to about 30 ms, but Chromium then
+rasterises the zoomed text soft, so it was not done; this one is open.
+
+WebKit without a GPU (WPE, as the test matrix runs it) is slowest on the Cheshire Cat:
+600 to 750 ms a frame at the Cat's answers, because the Cat's swaying tail is animated
+inside the figure that carries the engraving and rim filters, so the filters are run
+again over the whole Cat every frame (stopping only the tail: 54 ms; dropping only the
+filters: about 180 ms). That is open too. What was fixed is the clock: GSAP's default
+lag smoothing counted every frame over half a second as 33 ms, so on such a page every
+reaction ran at a twentieth of its speed; the shell now counts frames of up to a second
+in full (§ the concept demos' shell, `concept-demos.md` §3). The browser tests are
+written so that these costs make them slower rather than wrong.
 
 These are starting budgets for the PoC, chosen to keep a scene loadable on a
 mid-range phone over mobile data. They may be raised deliberately, in a pull

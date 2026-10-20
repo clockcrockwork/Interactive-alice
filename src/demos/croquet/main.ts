@@ -155,7 +155,7 @@ function mount(shell: DemoShell): void {
     if (byReader) {
       shell.keep('rose');
       shell.sound.play('splash', 0.3);
-      shell.status(shell.ui.demoPaintRose ?? '');
+      shell.status(shell.ui.demoPaintRoseDone ?? '');
     }
   };
   for (const rose of roses) {
@@ -439,7 +439,7 @@ function mount(shell: DemoShell): void {
     hideButton.hide();
     shell.sound.play('whoosh', 0.6);
     if (byReader) {
-      shell.status(shell.ui.demoHideGardeners ?? '');
+      shell.status(shell.ui.demoHideGardenersDone ?? '');
     }
     gardeners.forEach((g, index) => {
       gsap.to(g, {
@@ -606,7 +606,7 @@ function mount(shell: DemoShell): void {
     mood.v = Math.min(1, mood.v + amount);
     applyMood();
     if (byButton) {
-      shell.status(shell.ui.demoStrokeFlamingo ?? '');
+      shell.status(shell.ui.demoStrokeFlamingoDone ?? '');
       nod();
     } else if (wasSulking && !mood.sulking) {
       nod();
@@ -821,7 +821,7 @@ function mount(shell: DemoShell): void {
       strokeButton.show();
     }
     if (byReader) {
-      shell.status(shell.ui.demoCatchFlamingo ?? '');
+      shell.status(shell.ui.demoCatchFlamingoDone ?? '');
     }
     gsap.to(flamingo, {
       yPercent: 0,
@@ -1004,7 +1004,7 @@ function mount(shell: DemoShell): void {
     }
     winking = true;
     shell.sound.play('chime', 0.5);
-    shell.status(shell.ui.demoCallCat ?? '');
+    shell.status(shell.ui.demoCallCatDone ?? '');
     gsap.to(cat, {
       '--blink': 1,
       duration: quick(0.25),
@@ -1044,11 +1044,4 @@ function mount(shell: DemoShell): void {
   }
 }
 
-const shell = attachDemo();
-if (shell) {
-  try {
-    mount(shell);
-  } catch (error) {
-    console.error(error);
-  }
-}
+attachDemo({ mount });

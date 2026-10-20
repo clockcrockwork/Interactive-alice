@@ -353,7 +353,7 @@ function mount(shell: DemoShell): void {
     }
     wiggles += 1;
     shell.sound.play('whoosh', 0.5);
-    shell.status(shell.ui.demoWiggleFoot ?? '');
+    shell.status(shell.ui.demoWiggleFootDone ?? '');
     flue.removeAttribute('data-puff');
     requestAnimationFrame(() => flue.setAttribute('data-puff', String(wiggles)));
     wiggleTimeline?.kill();
@@ -511,7 +511,7 @@ function mount(shell: DemoShell): void {
   snatchButton.addEventListener('click', () => {
     if (master.time() >= snatchFrom) {
       snatch();
-      shell.status(shell.ui.demoSnatch ?? '');
+      shell.status(shell.ui.demoSnatchDone ?? '');
     }
   });
   master.call(snatchShown, [], snatchFrom);
@@ -535,7 +535,7 @@ function mount(shell: DemoShell): void {
       master.time() < snatchBy
     ) {
       snatch();
-      shell.status(shell.ui.demoSnatch ?? '');
+      shell.status(shell.ui.demoSnatchDone ?? '');
     } else {
       shake();
     }
@@ -639,11 +639,4 @@ declare global {
   }
 }
 
-const shell = attachDemo();
-if (shell) {
-  try {
-    mount(shell);
-  } catch (error) {
-    console.error(error);
-  }
-}
+attachDemo({ mount });

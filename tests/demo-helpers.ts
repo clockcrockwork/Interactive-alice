@@ -48,7 +48,9 @@ export const settled = async (page: Page) => {
     () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
   );
   const done = () => page.evaluate(() => window.__aliceDemo?.settled() ?? true);
-  const deadline = Date.now() + 6_000;
+  // An ease that has not arrived in three seconds is crawling: on a machine with
+  // fast frames it arrives in well under one.
+  const deadline = Date.now() + 3_000;
   while (Date.now() < deadline) {
     if (await done()) {
       return;
@@ -62,9 +64,16 @@ export const settled = async (page: Page) => {
   await expect.poll(done, { timeout: 15_000 }).toBe(true);
 };
 
+/*
+ * Scroll positions are whole pixels, and engines differ in how they get there:
+ * Chromium and Firefox round a fractional position to the nearest pixel, WebKit
+ * floors it. A position asked for at a beat's head could land a pixel before it,
+ * in the beat before, in one engine only; so the helpers round up, and land at or
+ * just after the point they were asked for in every engine.
+ */
 export const scrollTo = async (page: Page, fraction: number) => {
   await page.evaluate((f) => {
-    window.scrollTo(0, (document.documentElement.scrollHeight - window.innerHeight) * f);
+    window.scrollTo(0, Math.ceil((document.documentElement.scrollHeight - window.innerHeight) * f));
   }, fraction);
   await settled(page);
 };
@@ -76,8 +85,10 @@ export const atCue = async (page: Page, cue: string, within = 0.5) => {
       const index = beats.findIndex((beat) => beat.dataset.cue === name);
       window.scrollTo(
         0,
-        (document.documentElement.scrollHeight - window.innerHeight) *
-          ((index + Number(fraction)) / beats.length),
+        Math.ceil(
+          (document.documentElement.scrollHeight - window.innerHeight) *
+            ((index + Number(fraction)) / beats.length),
+        ),
       );
     },
     [cue, within] as const,
@@ -150,6 +161,34 @@ export const watchProperty = async (page: Page, selector: string, property: stri
         [],
       key,
     );
+};
+
+/**
+ * Starves the page's frames: from now on every animation frame blocks the main
+ * thread for `ms` before it may paint, in any engine. Returns the release. This
+ * is what a slow runner does to the timeline, made on purpose and the same
+ * everywhere, where CPU throttling is a Chromium-only tool.
+ */
+export const starveFrames = async (page: Page, ms: number) => {
+  await page.evaluate((block) => {
+    const host = window as unknown as { __aliceStarve?: boolean };
+    host.__aliceStarve = true;
+    const spin = (): void => {
+      if (!host.__aliceStarve) {
+        return;
+      }
+      const until = performance.now() + block;
+      while (performance.now() < until) {
+        // Busy: a frame this long is the point.
+      }
+      requestAnimationFrame(spin);
+    };
+    requestAnimationFrame(spin);
+  }, ms);
+  return () =>
+    page.evaluate(() => {
+      (window as unknown as { __aliceStarve?: boolean }).__aliceStarve = false;
+    });
 };
 
 export const customProperty = (page: Page, selector: string, property: string) =>

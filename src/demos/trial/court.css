@@ -320,11 +320,16 @@
     opacity: 0;
   }
 
-  /* A phone's frame is narrow: she stands further over, so the court is seen
-     past her shoulder at the left. */
+  /* A phone's frame is narrow and tall. Sized by the width she would be too
+     short for her head to leave the frame a mile high, and wide enough to stand
+     over the throne; so she is sized by the frame's height and grows from her
+     left foot, her left edge held where the court is still seen past her. */
   @media (max-width: 600px) {
     .tr__alice {
-      inset-inline-start: 88%;
+      inset-inline-start: 62%;
+      inline-size: 23dvh;
+      translate: 0 0;
+      transform-origin: 0% 100%;
     }
   }
 

@@ -638,9 +638,17 @@ export interface LocaleUIStrings {
      */
     demoVanishTail: string;
     /**
+     * Status after the reader pressed demoVanishTail: what happened (cheshire cat: tail first chosen). Not the button's own words.
+     */
+    demoVanishTailDone: string;
+    /**
      * Cheshire Cat: the reader chooses the Cat goes head first; the grin always last.
      */
     demoVanishHead: string;
+    /**
+     * Status after the reader pressed demoVanishHead: what happened (cheshire cat: head first chosen). Not the button's own words.
+     */
+    demoVanishHeadDone: string;
     /**
      * Tea-party: status when the reader moves round into a used place.
      */
@@ -649,6 +657,10 @@ export interface LocaleUIStrings {
      * Croquet: a button to settle the flamingo before it sulks and twists away.
      */
     demoStrokeFlamingo: string;
+    /**
+     * Status after the reader pressed demoStrokeFlamingo: what happened (croquet: the flamingo stroked). Not the button's own words.
+     */
+    demoStrokeFlamingoDone: string;
     /**
      * Croquet: status when the flamingo has been left alone too long.
      */
@@ -670,13 +682,25 @@ export interface LocaleUIStrings {
      */
     demoFlingMoral: string;
     /**
+     * Status after the reader pressed demoFlingMoral: what happened (duchess: a moral blown away). Not the button's own words.
+     */
+    demoFlingMoralDone: string;
+    /**
      * The witnesses: a button that puts the cheering guinea-pig into the officers' bag before they do.
      */
     demoSuppressGuineaPig: string;
     /**
+     * Status after the reader pressed demoSuppressGuineaPig: what happened (witnesses: the guinea-pig suppressed). Not the button's own words.
+     */
+    demoSuppressGuineaPigDone: string;
+    /**
      * The witnesses: a button that turns the Lizard in the jury-box the right way up before Alice does.
      */
     demoRightLizard: string;
+    /**
+     * Status after the reader pressed demoRightLizard: what happened (witnesses: the Lizard turned right-side up). Not the button's own words.
+     */
+    demoRightLizardDone: string;
     /**
      * Drink Me: turn the bottle to look for a poison label (there is none).
      */
@@ -706,17 +730,33 @@ export interface LocaleUIStrings {
      */
     demoWiggleFoot: string;
     /**
+     * Status after the reader pressed demoWiggleFoot: what happened (rabbit's house: her foot wiggled). Not the button's own words.
+     */
+    demoWiggleFootDone: string;
+    /**
      * There Goes Bill: a guinea-pig holds up Bill's head for the brandy.
      */
     demoHoldHead: string;
+    /**
+     * Status after the reader pressed demoHoldHead: what happened (Bill: his head held up). Not the button's own words.
+     */
+    demoHoldHeadDone: string;
     /**
      * There Goes Bill: move the crowd by the hedge under the falling Bill.
      */
     demoCatchBill: string;
     /**
+     * Status after the reader pressed demoCatchBill: what happened (Bill: the crowd runs to catch him). Not the button's own words.
+     */
+    demoCatchBillDone: string;
+    /**
      * Caterpillar: dip her long neck down into the tree tops.
      */
     demoDipLeaves: string;
+    /**
+     * Status after the reader pressed demoDipLeaves: what happened (caterpillar: dipped into the leaves). Not the button's own words.
+     */
+    demoDipLeavesDone: string;
     /**
      * Caterpillar: accessible name of the tape-measure that reads her height, naming the unit the locale's realia measure it in (text/locales/<locale>/realia.json, height).
      */
@@ -758,6 +798,10 @@ export interface LocaleUIStrings {
      */
     demoStirTreacle: string;
     /**
+     * Status after the reader pressed demoStirTreacle: what happened (dormouse: the first touch on the treacle). Not the button's own words.
+     */
+    demoStirTreacleDone: string;
+    /**
      * Dormouse: pull a little bucket of treacle up the spiral.
      */
     demoDrawTreacle: string;
@@ -782,21 +826,41 @@ export interface LocaleUIStrings {
      */
     demoClearThroat: string;
     /**
+     * Status after the reader pressed demoClearThroat: what happened (mock turtle: the throat cleared). Not the button's own words.
+     */
+    demoClearThroatDone: string;
+    /**
      * Mock Turtle: the conger-eel drawls, stretches and faints in coils.
      */
     demoWakeEel: string;
+    /**
+     * Status after the reader pressed demoWakeEel: what happened (mock turtle: the Drawling-master woken). Not the button's own words.
+     */
+    demoWakeEelDone: string;
     /**
      * The witnesses: catch the King writing Rule Forty-two on the spot.
      */
     demoKingsNotebook: string;
     /**
+     * Status after the reader pressed demoKingsNotebook: what happened (witnesses: peeking at the King's note-book). Not the button's own words.
+     */
+    demoKingsNotebookDone: string;
+    /**
      * Sentence First: the dream comes back (the other half of Open her eyes).
      */
     demoCloseEyes: string;
     /**
+     * Status after the reader pressed demoCloseEyes: what happened (trial: eyes closed again). Not the button's own words.
+     */
+    demoCloseEyesDone: string;
+    /**
      * Sentence First: hand a keepsake to the little children of the after-time.
      */
     demoGiveChildren: string;
+    /**
+     * Status after the reader pressed demoGiveChildren: what happened (trial: a keepsake given to the children). Not the button's own words.
+     */
+    demoGiveChildrenDone: string;
     /**
      * Rabbit hole: Dinah, in the dream of cats and bats, pounces at the bat.
      */
@@ -950,6 +1014,10 @@ export interface LocaleUIStrings {
      */
     demoSnatch: string;
     /**
+     * Status after the reader pressed demoSnatch: what happened (rabbit's house: the snatch). Not the button's own words.
+     */
+    demoSnatchDone: string;
+    /**
      * Button that gives the sharp kick up the chimney.
      */
     demoKick: string;
@@ -990,6 +1058,10 @@ export interface LocaleUIStrings {
      */
     demoCallCat: string;
     /**
+     * Status after the reader pressed demoCallCat: what happened (croquet: the Cat's head winks). Not the button's own words.
+     */
+    demoCallCatDone: string;
+    /**
      * Accessible name of a door in the hall; pressing it tries the lock.
      */
     demoTryDoor: string;
@@ -1021,6 +1093,10 @@ export interface LocaleUIStrings {
      * Status once tilt steering is on.
      */
     demoTiltOn: string;
+    /**
+     * Status when tilt steering was allowed but the device sent no reading: steering stays with the pointer.
+     */
+    demoTiltNone: string;
     /**
      * Button that picks up the little golden key.
      */
@@ -1070,9 +1146,17 @@ export interface LocaleUIStrings {
      */
     demoNibbleLeft: string;
     /**
+     * Status after the reader pressed demoNibbleLeft: what happened (caterpillar: a bite of the left bit). Not the button's own words.
+     */
+    demoNibbleLeftDone: string;
+    /**
      * Button on the right bit of mushroom: nibbling it makes her shorter.
      */
     demoNibbleRight: string;
+    /**
+     * Status after the reader pressed demoNibbleRight: what happened (caterpillar: a bite of the right bit). Not the button's own words.
+     */
+    demoNibbleRightDone: string;
     /**
      * Hint that the pointer bends her neck.
      */
@@ -1082,9 +1166,17 @@ export interface LocaleUIStrings {
      */
     demoShoo: string;
     /**
+     * Status after the reader pressed demoShoo: what happened (caterpillar: the Pigeon shooed). Not the button's own words.
+     */
+    demoShooDone: string;
+    /**
      * Hint that a drag over a white rose paints it red.
      */
     demoPaintRose: string;
+    /**
+     * Status after the reader pressed demoPaintRose: what happened (croquet: a rose painted). Not the button's own words.
+     */
+    demoPaintRoseDone: string;
     /**
      * Button that swings the flamingo at the hedgehog.
      */
@@ -1094,29 +1186,57 @@ export interface LocaleUIStrings {
      */
     demoCatchFlamingo: string;
     /**
+     * Status after the reader pressed demoCatchFlamingo: what happened (croquet: the flamingo caught). Not the button's own words.
+     */
+    demoCatchFlamingoDone: string;
+    /**
      * Button that puts the gardeners into the flower-pot.
      */
     demoHideGardeners: string;
+    /**
+     * Status after the reader pressed demoHideGardeners: what happened (croquet: the gardeners hidden). Not the button's own words.
+     */
+    demoHideGardenersDone: string;
     /**
      * Button that throws the lobster out to sea.
      */
     demoThrowLobster: string;
     /**
+     * Status after the reader pressed demoThrowLobster: what happened (quadrille: the lobster thrown). Not the button's own words.
+     */
+    demoThrowLobsterDone: string;
+    /**
      * Button that puts the reader into the line of dancers.
      */
     demoJoinDance: string;
+    /**
+     * Status after the reader pressed demoJoinDance: what happened (quadrille: the dance joined). Not the button's own words.
+     */
+    demoJoinDanceDone: string;
     /**
      * Button that turns a somersault in the sea.
      */
     demoSomersault: string;
     /**
+     * Status after the reader pressed demoSomersault: what happened (quadrille: a somersault in the sea). Not the button's own words.
+     */
+    demoSomersaultDone: string;
+    /**
      * Button that wakes the sister from her dream.
      */
     demoOpenEyes: string;
     /**
+     * Status after the reader pressed demoOpenEyes: what happened (trial: eyes opened). Not the button's own words.
+     */
+    demoOpenEyesDone: string;
+    /**
      * Button on the snail in the song: it draws into its shell.
      */
     demoSnail: string;
+    /**
+     * Status after the reader pressed demoSnail: what happened (quadrille: the snail tapped). Not the button's own words.
+     */
+    demoSnailDone: string;
     /**
      * Technique note on the demo index card for Pig and Pepper.
      */
@@ -1134,9 +1254,17 @@ export interface LocaleUIStrings {
      */
     demoPepper: string;
     /**
+     * Status after the reader pressed demoPepper: what happened (pig and pepper: pepper shaken). Not the button's own words.
+     */
+    demoPepperDone: string;
+    /**
      * Button that ducks the reader under the flying pots and pans.
      */
     demoDuck: string;
+    /**
+     * Status after the reader pressed demoDuck: what happened (pig and pepper: ducked). Not the button's own words.
+     */
+    demoDuckDone: string;
     /**
      * Label on a pan stuck to the glass: a tap bats it away.
      */
@@ -1146,17 +1274,33 @@ export interface LocaleUIStrings {
      */
     demoHoldTight: string;
     /**
+     * Status after the reader pressed demoHoldTight: what happened (pig and pepper: the baby held tight). Not the button's own words.
+     */
+    demoHoldTightDone: string;
+    /**
      * Label on the baby in her arms: a tap makes it grunt and turn a little more pig.
      */
     demoPokeBaby: string;
+    /**
+     * Status after the reader pressed demoPokeBaby: what happened (pig and pepper: the next stage early). Not the button's own words.
+     */
+    demoPokeBabyDone: string;
     /**
      * Button on the Mock Turtle: comforting him makes him sigh harder and the sea heave.
      */
     demoComfort: string;
     /**
+     * Status after the reader pressed demoComfort: what happened (mock turtle: comforting makes him sigh harder). Not the button's own words.
+     */
+    demoComfortDone: string;
+    /**
      * Button that sends a wave over the subject words written on the sand.
      */
     demoWash: string;
+    /**
+     * Status after the reader pressed demoWash: what happened (mock turtle: the words washed away). Not the button's own words.
+     */
+    demoWashDone: string;
     /**
      * Button that makes one of the subject words writhe; tapping a word does the same.
      */

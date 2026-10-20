@@ -50,6 +50,13 @@
     visibility: hidden;
   }
 
+  /* A sideways drag across the well tumbles her, a finger's as well as a mouse's:
+     the stage keeps horizontal moves for the page and leaves vertical ones to the
+     scroll. Without it a touch drag was taken as a scroll and never reached her. */
+  .demo--rabbit-hole .demo__stage {
+    touch-action: pan-y;
+  }
+
   .demo--rabbit-hole .demo__captions {
     /* Sentences fly up out of the depth: the beat is the perspective origin. */
     perspective: 800px;
@@ -108,6 +115,13 @@
   .rh__flat {
     background: radial-gradient(circle at 50% 50%, var(--world-night) 0%, var(--rh-well-deep) 70%);
     opacity: 0;
+  }
+
+  /* One well at a time: the flat one waits under the canvas while WebGL draws,
+     and takes over if the context is lost for good. */
+  .demo--rabbit-hole[data-mode="webgl"] .rh__flat,
+  .demo--rabbit-hole[data-mode="flat"] .rh__well {
+    display: none;
   }
 
   .rh__flat::before {

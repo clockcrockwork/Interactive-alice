@@ -148,7 +148,11 @@ stacks are the one thing set per script, in one `:lang()` rule in `shell.css`'s
 tokens: Japanese is set in the reader's own system fonts (no web font, so no bytes),
 a textbook face where the system has one (UD Digi Kyokasho), else a Mincho
 (Hiragino, Yu, Noto Serif CJK, IPA), as `--demo-serif`, and the display face
-(`--demo-display`, Georgia for Latin) falls back to it. On a phone, in any language,
+(`--demo-display`, Georgia for Latin) falls back to it. The Latin stack names "Times
+New Roman" before the generic `serif`: where none of the book faces is installed,
+every engine then reaches the same metric-compatible face (Liberation Serif on
+Linux), where each engine's own `serif` differs and some are far wider, and captions
+fitted in one browser would wrap into the figures in another. On a phone, in any language,
 the bar keeps its labels at the chrome's floor and wraps to a second row when they do
 not fit one (§3). A quoted run in a caption is held on one line, so a name set apart
 such as the Caucus-race's never breaks inside its brackets.
@@ -247,7 +251,15 @@ pinned stage, the caption layer, a scroll-scrubbed master timeline, the pointer,
 the test seam.
 
 The page arrives as a readable document: the bar, a scroll hint, and the story's
-sentences in reading order inside the track. Attaching moves each beat into a stage
+sentences in reading order inside the track. Everything that places a sentence on
+the stage or hides it is scoped to the attached page (`[data-attached]`), so where
+the script never runs (switched off, or failed to load) every sentence is in the
+flow and the links on and back are where a reader finds them. A demo's staging is
+handed to the shell (`attachDemo({ mount })`); if it throws, the error stays in the
+console and the shell rolls the page back to that same document: its listeners,
+timelines, observers and sound released, the sentences returned to the track, the
+stage and its controls removed. The browser tests check all three cases on a few
+demos in every locale (`tests/fallback.spec.ts`). Attaching moves each beat into a stage
 that stays pinned to the viewport, hides the track, and turns the document's height
 into a GSAP timeline with **one unit of timeline time per beat**. A demo composes
 against that timeline: `master.to(thing, {...}, shell.cue('thump'))` puts a tween
@@ -309,20 +321,41 @@ keeps the slip under it.
 wind and paper, a tremolo'd sawtooth for a purr, sine plinks for drips, a few
 partials for a chime and for breaking glass. No file is fetched. It is off until the
 visitor presses *Sound on* in the bar, which is also the gesture browsers require,
-and it is held silent while motion is paused, so the one pause covers both. Each
+and it is held silent while motion is paused, so the one pause covers both. The
+button shows the visitor's choice at once; the audio device follows when it can (a
+machine with no output may never start it), and only a browser that refuses outright
+turns the button back. Off means off: until that first press nothing makes an
+AudioContext, a source or a timer, whatever a demo plays or levels. Once on, the
+synthesiser's recurring timers (the levels' follower, the drips, the birds, the
+pot's plops) run only while sound is on, motion is not paused and the page is
+shown: they stop and the context is suspended when the page is hidden or put away
+(`pagehide`), come back on `pageshow` from the back-forward cache or when the page
+is visible again, and the context is closed when the page is unloaded. The seam's
+`sound()` reports the context's state and the timers (`src/demos/shell/sound.test.ts`,
+`tests/sound.spec.ts`). Each
 demo levels a continuous cue from its frame loop (wind with the fall, drips over the
 treacle, the purr as you near the Cat) and plays one-shots at its moments.
 
 **Tilt.** On a coarse-pointer device with orientation events, the bar offers *Steer
 by tilting*; a press asks permission where the browser wants one, and from then on
 the phone's tilt drives the shell's pointer, so every demo that leans with the
-pointer leans with the phone. Not offered under reduced motion.
+pointer leans with the phone. It says it is on (`demoTiltOn`) only once the first
+real reading arrives; a device that grants permission and then sends nothing, or
+only nulls, within a second leaves steering with the pointer and says so
+(`demoTiltNone`). The lean is read in the screen's frame, turned by
+`screen.orientation.angle`, so landscape either way steers the way the screen
+leans (`shell/tilt.ts`). Not offered under reduced motion.
 
 **Transitions.** Leaving a page for another sets a view-transition type from the
-destination (`shell/transitions.ts`, on `pageswap` and `pagereveal`): a well, the
-hall or the chimney swallow the screen into a hole; the spiral, the pool and the wood
-whirl it; a court, a race or the index deal it like a card. A browser without the
-Navigation API simply navigates.
+destination: a well, the hall or the chimney swallow the screen into a hole; the
+spiral, the pool and the wood whirl it; a court, a race or the index deal it like a
+card. The leaving page sets it on `pageswap` (`shell/transitions.ts`); the arriving
+page's half runs from a small script in its head (`arrivalScript` in
+`build/demos.ts`), because `pagereveal` fires before any module script, with the
+page's own kind written by the build. That script also absorbs a turn the browser
+skips and marks the root `data-arriving` until the turn is over, so a test waits for
+the page as a reader does. A browser without cross-document view transitions simply
+navigates.
 
 **Going on by itself.** Scroll is the guaranteed path, and the link to the next
 scene is a link. A reader who would rather be carried can turn on *Go on by
@@ -332,6 +365,15 @@ the next scene. The ring round the link fills while it waits (in quarters under
 reduced motion), scrolling back empties it, and the motion pause holds it. Off by
 default, and never the only way forward.
 
+**The walk ends at the trial.** *Decision, 2026-10-20.* The demos are a walk through
+the book, not a loop: the last one a locale publishes (the trial, her sister's dream)
+does not lead round to the riverbank. Its link goes to that locale's demo index and
+is labelled as the bar's back link is (`demoBack`, *All demos*); the page offers no
+*Go on by itself*, and a choice remembered from the pages before it never fires
+there, so the reader is never carried off the end. `nextDemo()` in `build/demos.ts`
+names the index (`DEMO_INDEX`) for the last demo; the build tests and the browser
+tests hold both.
+
 **Keepsakes.** A thing the reader does by hand, rather than the story doing it,
 can be kept: `shell.keep(kind)` records it in the visitor's own browser, under the
 demos' key, and `shell.kept()` reads the list back on any later page. The daisy chain
@@ -340,18 +382,30 @@ comfit fed to a runner, a rose painted red and the lobster thrown out to sea are
 this way, and in the trial's after-time, as her sister pictures her keeping the loving
 heart of her childhood, whatever was kept comes down and lies on the bank, and can be
 given to the children there. Nothing kept, nothing
-shown; it is the reader's record of having played, not a score.
+shown; it is the reader's record of having played, not a score. Where the browser
+refuses to store it (a private window, a full quota), what was kept is still kept
+for the page it was kept on (`shell/kept.ts`).
 
 **Status, bar and settled beats.** The polite live region that announces what the
 reader did is a small slip at the foot of the frame, under the captions and clear of
 the props at the top; it shows for a few seconds and then fades, keeping its text for
 assistive technology, and it speaks only for what the reader did, never for what the
-story does by itself. Every pill in the bar is at least a 24-by-24 pixel target with
+story does by itself. It says what happened, not the words of the control just
+pressed: such a status has a result label of its own (`demo<Control>Done`, or a named
+one such as `demoStruck`), and `scripts/check-frontend.py` (`status-echo`) fails a
+`status()` that passes a key used as a prop's label, an `aria-label` or a button's
+text. Every pill in the bar is at least a 24-by-24 pixel target with
 a label of 12 pixels or more (the pause control is one of them); on a phone the title
 is kept for assistive technology only, and when the pills do not fit one row at that
 size the bar wraps to a second row, in any language, rather than shrink them. The
 shell measures the bar and writes its height as `--demo-bar-height`, so the props and
-captions placed under the bar move down with it. Under reduced motion each
+captions placed under the bar move down with it. The pages ask for the whole screen
+(`viewport-fit=cover`), so the bar pads itself clear of a notch: the top safe-area
+inset above its row and, in landscape, the side insets at either end; the measured
+height includes that padding, and the starting value before the first measure
+includes the top inset (`shell/safe-area.test.ts` reads the stylesheet for it, since
+an inset cannot be emulated in the browser tests). Confirmation on a real notched
+phone is still owed. Under reduced motion each
 beat's sentences are there for the whole of the beat: their cut is placed just
 before the head rather than just after it.
 
@@ -363,7 +417,13 @@ so a keyboard reader looking for a prop is never carried past the scene. A
 full-stage tap target is pointer play: it takes no keyboard focus, and the prop
 button beside it is the keyboard's way. A prop on its way out takes no tap while it
 fades, so where two props share a place (Bill's *Hold up his head* over *Catch him!*)
-the one leaving never catches the press meant for the one arriving.
+the one leaving never catches the press meant for the one arriving. A prop that
+leaves while it has the keyboard's focus hands it on, to the next prop still shown or
+else to the stage (focusable by script only, drawing no ring), so a keyboard reader
+is never left on a hidden button nor sent back to the top of the page. As the beats
+change, only the shown beat's sentences are in the accessibility tree
+(`tests/reading-flow.spec.ts` checks both by aria snapshot and focus on two demos
+each); a run with VoiceOver and NVDA is still owed by a person.
 
 **Sound of the place.** Besides the one-shot cues, the synthesiser has continuous
 ones a demo levels from its timeline: `wind`, `purr` and `drip` as before, and now
@@ -381,7 +441,10 @@ scrolls to a progress and lands the scrubbed timeline there at once. `settled()`
 counts a timeline within a hair of the scroll as settled once its ease has ended or
 it has held still for three frames, and the browser helper that waits on it lands a
 crawling ease through `seek` after a few seconds, so a loaded machine is slower, never
-a timeout.
+a timeout. A demo may add a seam of its own where a test needs to know what only the
+demo knows: Bill's state (`__aliceBill`), and where the things on the rabbit hole's
+shelves are in the frame (`__aliceShelves`), so a test taps one instead of searching
+the frame for a speck in a WebGL well.
 
 The shell also hands every demo the page's **locale profile** (`shell.profile`),
 number formatting in its locale (`shell.locale.numberFormat()`) and its **realia**
@@ -414,7 +477,8 @@ trial on the same high frame of the court. Each demo remains complete on its own
 has a reduced-motion version of cuts and cross-fades, and each is described under its
 two demos below. The pairs with another scene of the book between them (Bill and the
 Caterpillar, the Caterpillar and the kitchen, the Cat and the tea-party) change scene through the page transition and
-nothing more.
+nothing more. The trial joins nothing after it: the walk ends there, and its link goes
+back to the index (above).
 
 ## 4. The nineteen demos
 
@@ -481,7 +545,8 @@ CSS perspective origin and its lines tween in `z`.
 
 **Interaction.** The pointer leans the camera (a fine pointer only; on touch the
 camera sways by itself, or the phone's tilt steers it). Drag across the well and Alice
-tumbles, spinning on and settling by herself; scrolling fast is falling fast, the dust
+tumbles, spinning on and settling by herself (a finger's drag too: the stage keeps
+sideways moves, `touch-action: pan-y`, and leaves vertical ones to the scroll); scrolling fast is falling fast, the dust
 streaks and she tumbles. Tap a book, a jar or a map on a passing shelf (a ray to the
 wall, then the nearest thing to where it lands) and it jumps into her hand; she would
 not drop it, so *Put it back* tucks it into a cupboard. The jar is optional play: tap or click it, or press the
@@ -507,6 +572,13 @@ stepped beat by beat by the shell; the doors are a cut to the open tunnel.
 
 **Degraded mode.** If a WebGL context cannot be created, the well is drawn flat with
 CSS rings that scale with the fall, the page says so, and the seam reports `flat`.
+The well lives with the page: on `pagehide` its draw loop stops (and the renderer is
+released if the page is not kept for a return), on `pageshow` from the back-forward
+cache it draws again, and a lost context (`webglcontextlost`, default prevented)
+stops the loop until the browser restores it; one not restored within three
+seconds becomes the flat well, which waits hidden under the canvas for that. The
+seam `__aliceWell()` reports the loop's state, how many loops are registered and the
+most renders in one frame, which the browser tests hold at one.
 
 **Looking at a map.** While the shelves pass, from *Maps and pictures hung on little pegs* to the cupboard she tucks the jar into, a map on the wall can be looked at: tap one, or press *Look at the map*, and it comes up close and holds still in front, drawn large, a sea with waves, two coasts, a river, hills, a dotted route to a mark and a compass rose, pictures only, while the well goes on falling behind it. *Look away*, a tap on the map, or scrolling out of those beats in either direction puts it back on the wall, with a rustle of paper each way; it works the same over the flat well. Under reduced motion the map fades in and out in place, with no zoom.
 
@@ -1320,7 +1392,7 @@ fall without drifting; the dream's creatures stand still and swap without a fade
 giving is a run of cuts: the child beside the keepsake holding it, then both gone,
 then the child back.
 
-**Dodging the cards.** While the pack flies, her head leans with the pointer, or with the phone's tilt when *Steer by tilting* is on, and the court tilts with it. Every card has a lane, left or right of her face; lean away from a card's lane before it arrives and it whips past on the other side, bigger, with a whoosh, instead of hitting the glass, and the first miss says *Dodged*. *Dodge left* and *Dodge right* are the buttons for a reader with neither: a press leans her that way for about a second. The cards that still hit do what they always did, *Beat them off* still clears them, and the leaves fall whether or not she dodged. Under reduced motion the lean is a cut to the side and a dodged card simply never arrives: it fades out short of her, counted the same.
+**Dodging the cards.** While the pack flies, her head leans with the pointer, or with the phone's tilt when *Steer by tilting* is on, and the court tilts with it. The pointer leans her once it moves during the flight: one resting where it was before (a mouse parked at the frame's edge while the wheel scrolls, or a browser's own hover update after a scroll) is no dodge. Every card has a lane, left or right of her face; lean away from a card's lane before it arrives and it whips past on the other side, bigger, with a whoosh, instead of hitting the glass, and the first miss says *Dodged*. *Dodge left* and *Dodge right* are the buttons for a reader with neither: a press leans her that way for about a second. The cards that still hit do what they always did, *Beat them off* still clears them, and the leaves fall whether or not she dodged. Under reduced motion the lean is a cut to the side and a dodged card simply never arrives: it fades out short of her, counted the same.
 
 ## 5. Checks
 
@@ -1330,7 +1402,9 @@ relative URLs, and a refusal when a segment has no text in the base locale; for 
 other locale, its pages under `demos/<locale>/`, all nineteen in Japanese with
 `lang="ja"` and the Japanese sentence (never the English) for every segment, "Next
 scene" inside the locale, the language switch on every index, a demo with a missing
-sentence left out, carded as pending and skipped in the ring, every page's root
+sentence left out, carded as pending and skipped in the walk, the walk ending at the
+trial (its link the index's, labelled *All demos*, and no *Go on by itself* on it),
+every page's root
 carrying its locale's profile, and each locale's realia written onto a page for just
 the ids its demo reads. `shell/words.test.ts` and `mouse-tale/chunks.test.ts` run the
 word readers, `units()` and the tail's grouping against every locale's own sentences,
@@ -1339,7 +1413,11 @@ and against a sample written without spaces and one written right to left;
 checks that a pause of either width is the stronger break and that no quoted run is
 ever split; `chunks.test.ts` checks that the tail's groups in a word-space locale are
 the book's and that in a phrase-space locale no group runs on past a pause;
-`shell/fit.test.ts` holds the caption fit's arithmetic.
+`shell/fit.test.ts` holds the caption fit's arithmetic; `shell/sound.test.ts` that sound
+off makes no context or timer and that the timers stop while hidden, put away, held or
+off and come back on `pageshow`; `shell/tilt.test.ts` the tilt's mapping in all four
+screen angles; `shell/kept.test.ts` keepsakes kept in memory when storage refuses;
+`shell/safe-area.test.ts` that the bar pads itself with the safe-area insets.
 `src/demos/realia.test.ts` draws and measures every locale's realia, and
 `build/locale-standard.test.ts` breaks a copy of the data (a translation's quotation
 marks, a letter, a moral, a cry, a realia file, the jury's marks, the profile) or of a
@@ -1349,7 +1427,9 @@ Gate, `scripts/check-experience.py`: every demo file against its schema, and its
 staging contract (`reads`) in every locale that publishes it, by that locale's profile
 ([`text-experience-binding.md`](text-experience-binding.md) §9.3).
 
-Browser, `tests/demos.spec.ts`, desktop Chromium on the production build: every demo
+Browser, `tests/demos.spec.ts`, on the production build, desktop Chromium per pull
+request and the full matrix (Chromium desktop and phone, Firefox, WebKit) at
+milestones, every test in every project: every demo
 page loads without console, page or request errors; carries its sentences in order
 before and after the shell attaches; reaches its last beat by scrolling alone; the
 motion toggle pauses and resumes; under reduced motion the note shows and the end is
@@ -1406,6 +1486,32 @@ frame. `tests/play/japanese.spec.ts` also checks
 that the Japanese cards carry no Latin letters, that a name in corner brackets stays on
 one line on a phone, and that no group of the tale runs on past a comma; a test in
 `tests/demos.spec.ts` starves the court's frames and still sees a scroll settle.
+`tests/fallback.spec.ts` holds the readable document on the riverbank, the rabbit hole
+and the trial in every locale with JavaScript off, with the demo's script blocked, and
+with a staging that throws (every sentence shown in the flow, the links working);
+`tests/sound.spec.ts` that a page played through with sound off constructs no
+AudioContext and that the timers follow the page's visibility and `pagehide`/`pageshow`;
+`tests/tilt.spec.ts` (on a coarse pointer: the phone project) that tilt is on only
+after a reading and that none within a second leaves the pointer steering;
+`tests/reading-flow.spec.ts` that only the shown beat is in the accessibility tree and
+that focus does not stay on a control that leaves; `tests/play/rabbit-hole.spec.ts`
+that the well keeps one draw loop through `pagehide`/`pageshow` and a lost and restored
+context, falls back to the flat well when the context is not restored, and lets go of
+a drag on `pointercancel`.
+
+How these tests touch the page is held to the same matrix. A control on the pinned
+stage is pressed where it is (`press`, `tapAt` in `tests/demo-helpers.ts`: a touch tap
+on a touch screen, a click elsewhere, through the browser's own input), never by
+Playwright's `click`, which first scrolls the element "into view" and, for a control
+inside a sticky stage, can carry the page on into a beat where the control is gone. A
+point is chosen from the frame (a fraction of it, or where the figure is), never a
+desktop pixel. A pose that lasts a moment (a stretch, a roll) is watched on every
+frame from inside the page (`watchProperty`), not polled from outside, where on a
+slow machine it can come and go between two readings; a moving target is held still
+with the motion pause before it is tapped. Text on a path is located by its
+characters' extents, since a `tspan` on a `textPath` has no box the engines agree on.
+Hover is the one play a touch screen does not have: the curtain's hover test skips
+where there is no hovering pointer, and its button and its press are tested there.
 
 Bill's catch test presses the pinned control where it is (`press`, `tapAt` in
 `tests/demo-helpers.ts`), with a touch tap on a touch screen and a mouse click
@@ -1416,7 +1522,6 @@ position are still asserted. The Mock Turtle's Drawling-master test starts
 animation frame inside the page, so a brief pose is not lost between external
 polls. It still requires both poses to exceed the same threshold, the faint to
 clear, and the button to become inert after its beat.
-
 What costs frames, and what was done about it, is in
 [`performance-budget.md`](performance-budget.md) §2: a drop-shadow filter on many
 pieces became a shadow at their feet (the trial, the croquet-ground); a layer that a
@@ -1427,7 +1532,8 @@ screen; the WebGL well draws only while it can be seen.
 `npm run check:frontend` covers the demo code with the same rules as the scenes:
 no prose in code, no absolute paths, no inline style writes other than custom
 properties, keyframes on transform and opacity, a reduced-motion block wherever there
-is motion.
+is motion; and one of the demos' own, `status-echo`: no status line repeats the label
+of a control.
 
 ## 6. What is deliberately unfinished
 

@@ -166,11 +166,24 @@ function mount(shell: DemoShell): void {
   }
   // Fit: the tale must end before the spiral does. The text is laid out with
   // geometric precision (see the sheet), so what is measured here is what is drawn
-  // at any zoom of the camera.
+  // at any zoom of the camera. It is measured off the path, on a straight copy: a
+  // browser may leave the characters that run past a path's end out of its text
+  // metrics altogether (WebKit does), so measured on the spiral, a tale too long
+  // for it would read as one that fits, and its last sentences would not exist.
   const spiralLength = spiral.getTotalLength();
+  const straightLength = (): number => {
+    const straight = el('text', { class: 'dm__text', visibility: 'hidden' });
+    for (const span of spans) {
+      straight.append(span.tspan.cloneNode(true));
+    }
+    svg.append(straight);
+    const length = straight.getComputedTextLength();
+    straight.remove();
+    return length;
+  };
   const fitTale = (): void => {
     const room = spiralLength * 0.97;
-    const used = text.getComputedTextLength();
+    const used = straightLength();
     if (used > room) {
       const ratio = room / used;
       for (const span of spans) {
@@ -242,9 +255,12 @@ function mount(shell: DemoShell): void {
     perBeat.set(span.beat, (perBeat.get(span.beat) ?? 0) + 1);
   }
   const seen = new Map<number, number>();
+  // Every character the spiral carries is addressable; should a browser still drop
+  // one past the end, the camera aims at the last it has rather than throwing.
+  const lastChar = Math.max(0, text.getNumberOfChars() - 1);
   for (const span of spans) {
     const length = span.tspan.getNumberOfChars();
-    const mid = charIndex + Math.floor(length / 2);
+    const mid = Math.min(lastChar, charIndex + Math.floor(length / 2));
     const point = text.getStartPositionOfChar(mid);
     let angle = text.getRotationOfChar(mid);
     // Unwrap, so the camera keeps turning the way the spiral turns.
@@ -734,7 +750,7 @@ function mount(shell: DemoShell): void {
     gsap.to(wake, { held: 1, duration: reducedMotion ? 0 : 0.25, onUpdate: applyEffects });
     if (!touched) {
       touched = true;
-      shell.status(shell.ui.demoStirTreacle ?? '');
+      shell.status(shell.ui.demoStirTreacleDone ?? '');
     }
   });
   // A lifted finger lets go; so does one the browser takes over to scroll the page.
@@ -837,11 +853,4 @@ function mount(shell: DemoShell): void {
   });
 }
 
-const shell = attachDemo();
-if (shell) {
-  try {
-    mount(shell);
-  } catch (error) {
-    console.error(error);
-  }
-}
+attachDemo({ mount });

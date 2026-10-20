@@ -18,6 +18,8 @@ own, listed in CLAUDE.md, and each one has already been stated in a document:
                    italic written in a demo's sheet: the shell applies the speech
                    tokens (--demo-say-style, --demo-italic) by the profile
   node-pin         .nvmrc and package.json agree on one Node major
+  status-echo      a demo's status line says what happened, never the words of the
+                   control just pressed (docs/concept-demos.md §3, Status)
 
 A line may opt out with a trailing comment naming the rule and a reason (a CSS
 selector, by a comment on the first line of its block, where the formatter puts it):
@@ -222,6 +224,83 @@ def check_node_pin(problems: list[str]) -> None:
         )
 
 
+# Where a demo names a control by a UI label: a prop's label, an aria-label, or the
+# text a button is given. Those keys are the controls' words.
+PROP_CALL = re.compile(r"\bprop\(")
+ARIA_LABEL = re.compile(
+    r"aria-label=\"\$\{\s*(?:shell\.)?ui\.(\w+)|'aria-label',\s*\(?\s*(?:shell\.)?ui\.(\w+)"
+)
+BUTTON_TEXT = re.compile(r"\w*(?:Button|button)\.textContent\s*=\s*(.*)")
+UI_KEY = re.compile(r"(?:shell\.)?\bui\.(\w+)")
+STATUS_CALL = re.compile(r"\bstatus\(")
+
+
+def call_arguments(text: str, open_at: int) -> str:
+    """The text between a call's opening parenthesis and its matching close."""
+    depth = 0
+    for index in range(open_at, len(text)):
+        char = text[index]
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+            if depth == 0:
+                return text[open_at + 1 : index]
+    return text[open_at + 1 :]
+
+
+def first_argument(arguments: str) -> str:
+    depth = 0
+    for index, char in enumerate(arguments):
+        if char in "([{":
+            depth += 1
+        elif char in ")]}":
+            depth -= 1
+        elif char == "," and depth == 0:
+            return arguments[:index]
+    return arguments
+
+
+def check_status_echo(problems: list[str]) -> None:
+    """A status line must not repeat the label of a control.
+
+    The status is a polite live region for what the reader did: pressing *Blow
+    this moral away* and hearing "Blow this moral away" read back says nothing. A
+    demo gives every such status its own result label (`demo<Control>Done`).
+    """
+    sources = {
+        path: path.read_text(encoding="utf-8")
+        for path in sorted(DEMOS_DIR.rglob("*.ts"))
+        if not path.name.endswith(".test.ts")
+    }
+    controls: set[str] = set()
+    for text in sources.values():
+        for match in PROP_CALL.finditer(text):
+            label = first_argument(call_arguments(text, match.end() - 1))
+            controls.update(UI_KEY.findall(label))
+        for match in ARIA_LABEL.finditer(text):
+            controls.update(key for key in match.groups() if key)
+        for match in BUTTON_TEXT.finditer(text):
+            controls.update(UI_KEY.findall(match.group(1)))
+    for path, text in sources.items():
+        lines = text.splitlines()
+        for match in STATUS_CALL.finditer(text):
+            number = text.count("\n", 0, match.start()) + 1
+            if allowed(lines[number - 1], "status-echo"):
+                continue
+            argument = call_arguments(text, match.end() - 1)
+            for key in UI_KEY.findall(argument):
+                if key in controls:
+                    report(
+                        problems,
+                        path,
+                        number,
+                        "status-echo",
+                        f"status({key}) repeats a control's label; say what happened "
+                        f"(a result label such as {key}Done)",
+                    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--quiet", action="store_true", help="print only problems")
@@ -233,6 +312,7 @@ def main() -> int:
     locales = locale_literal()
     problems: list[str] = []
     check_node_pin(problems)
+    check_status_echo(problems)
     files = [
         path
         for root in roots

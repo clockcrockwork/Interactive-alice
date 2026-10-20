@@ -259,8 +259,19 @@ test('the witnesses: Rule Forty-two is still wet, and looking in the note-book c
   expect(await customProperty(page, '.wt__notebook', '--word-rule')).toBeGreaterThan(0.3);
   await expect(look).toBeVisible();
   const label = (await look.textContent()) ?? '';
+  const caught = await page.evaluate(
+    () =>
+      (
+        JSON.parse(document.getElementById('demo-ui')?.textContent ?? '{}') as Record<
+          string,
+          string
+        >
+      ).demoKingsNotebookDone,
+  );
   await look.click();
-  await expect(page.locator('.demo__status')).toHaveText(label);
+  // What happened, not the button's words again.
+  await expect(page.locator('.demo__status')).toHaveText(caught ?? '-');
+  await expect(page.locator('.demo__status')).not.toHaveText(label);
   await expect
     .poll(() => customProperty(page, '.wt__peek-book', '--peek'), { timeout: 5000 })
     .toBeGreaterThan(0.9);

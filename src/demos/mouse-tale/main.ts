@@ -1083,14 +1083,8 @@ function mount(shell: DemoShell): void {
   });
 }
 
-const shell = attachDemo({
+attachDemo({
+  mount,
   // The verses are drawn on the tail, not in the caption layer.
   caption: (beat) => isVerse(beat),
 });
-if (shell) {
-  try {
-    mount(shell);
-  } catch (error) {
-    console.error(error);
-  }
-}

@@ -93,6 +93,7 @@ const changedDuring = async (
   selector: string,
   attribute: string,
   action: () => Promise<void>,
+  timeout = 5000,
 ) => {
   await page.evaluate(
     ([sel, name]) => {
@@ -111,7 +112,7 @@ const changedDuring = async (
   await action();
   await expect
     .poll(() => page.evaluate(() => (window as unknown as { __changed?: boolean }).__changed), {
-      timeout: 5000,
+      timeout,
     })
     .toBe(true);
 };
@@ -234,7 +235,21 @@ test.describe('the rabbit hole: above ground, the jar, the curtsey and the chase
     expect(second).not.toBe(first);
     const call = page.locator('.rh__prop-call');
     await expect(call).toHaveAttribute('data-shown', '');
-    await changedDuring(page, '.rh__chaser--cat', 'style', () => call.click());
+    const pounces = () => page.evaluate(() => window.__aliceDinahPounces?.() ?? 0);
+    const taken = await pounces();
+    // The press is taken in its window at once; the lunge it starts is drawn on the
+    // next frames, which a software WebGL renderer under load may space seconds
+    // apart, so the drawing gets the same budget as this page's other frames.
+    await changedDuring(
+      page,
+      '.rh__chaser--cat',
+      'style',
+      async () => {
+        await call.click();
+        expect(await pounces()).toBe(taken + 1);
+      },
+      20_000,
+    );
     await atCue(page, 'dream', 0.5);
     await expect.poll(() => opacityOf(page, '.rh__chase'), { timeout: 20_000 }).toBeLessThan(0.05);
     await expect(call).not.toHaveAttribute('data-shown', '');
@@ -255,5 +270,165 @@ test.describe('the rabbit hole: above ground, the jar, the curtsey and the chase
     await atCue(page, 'bats', 0);
     await expect.poll(() => transformOf(page, '.rh__alice').then(upsideDown)).toBe(false);
     await expect(page.locator('.rh__alice')).not.toHaveAttribute('data-bow', '');
+  });
+});
+
+test.describe('the rabbit hole: the WebGL well lives with the page', () => {
+  test.skip(!demo, 'no rabbit-hole page in the manifest');
+  test.slow();
+
+  type Page = import('@playwright/test').Page;
+  const wellOf = (page: Page) => page.evaluate(() => window.__aliceWell?.());
+  const rendersOf = async (page: Page) => (await wellOf(page))?.renders ?? 0;
+  /** It draws, once a frame: renders go up and never twice in one frame. */
+  const drawsOnce = async (page: Page) => {
+    await page.evaluate(() => window.__aliceWellReset?.());
+    const before = await rendersOf(page);
+    await expect.poll(() => rendersOf(page), { timeout: 15_000 }).toBeGreaterThan(before + 2);
+    const well = await wellOf(page);
+    expect(well?.state).toBe('drawing');
+    expect(well?.loops).toBe(1);
+    expect(well?.mostInFrame).toBe(1);
+  };
+  /** It does not draw: the count holds still. */
+  const stillFor = async (page: Page, state: string) => {
+    const before = await rendersOf(page);
+    await page.waitForTimeout(600);
+    const well = await wellOf(page);
+    expect(well?.renders).toBe(before);
+    expect(well?.loops).toBe(0);
+    expect(well?.state).toBe(state);
+  };
+  const lose = (page: Page) =>
+    page.evaluate(() => {
+      const gl = document.querySelector<HTMLCanvasElement>('.rh__canvas')?.getContext('webgl2');
+      const ext = gl?.getExtension('WEBGL_lose_context');
+      (window as unknown as { __lose?: WEBGL_lose_context | null }).__lose = ext;
+      ext?.loseContext();
+    });
+  const restore = (page: Page) =>
+    page.evaluate(() =>
+      (window as unknown as { __lose?: WEBGL_lose_context | null }).__lose?.restoreContext(),
+    );
+
+  test('stops on pagehide, draws again on a pageshow from the cache, one loop either way', async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+    page.on('pageerror', (e) => errors.push(e.message));
+    await page.goto(demo?.url ?? '');
+    await expect(page.locator('.demo')).toHaveAttribute('data-attached', '', { timeout: 30_000 });
+    test.skip(
+      (await page.evaluate(() => window.__aliceDemo?.mode())) !== 'webgl',
+      'this browser draws the flat well',
+    );
+    await atCue(page, 'bats', 0.5);
+    await drawsOnce(page);
+    await page.evaluate(() =>
+      window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true })),
+    );
+    await stillFor(page, 'stopped');
+    await page.evaluate(() =>
+      window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true })),
+    );
+    await drawsOnce(page);
+    // A second pageshow does not start a second loop.
+    await page.evaluate(() =>
+      window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true })),
+    );
+    await drawsOnce(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('a lost context stops the loop, a restored one draws again, and one lost for good is the flat well', async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+    page.on('pageerror', (e) => errors.push(e.message));
+    await page.goto(demo?.url ?? '');
+    await expect(page.locator('.demo')).toHaveAttribute('data-attached', '', { timeout: 30_000 });
+    test.skip(
+      (await page.evaluate(() => window.__aliceDemo?.mode())) !== 'webgl',
+      'this browser draws the flat well',
+    );
+    await atCue(page, 'bats', 0.5);
+    await drawsOnce(page);
+    await lose(page);
+    await expect.poll(async () => (await wellOf(page))?.state).toBe('lost');
+    await stillFor(page, 'lost');
+    await restore(page);
+    await drawsOnce(page);
+    // Lost and never given back: the flat well, said so, and nothing more drawn.
+    await lose(page);
+    await expect
+      .poll(() => page.evaluate(() => window.__aliceDemo?.mode()), { timeout: 10_000 })
+      .toBe('flat');
+    await stillFor(page, 'flat');
+    await expect(page.locator('.rh__flat')).toBeVisible();
+    await expect(page.locator('.rh__well')).toBeHidden();
+    await expect(page.locator('.demo__note')).toBeVisible();
+    expect(await page.evaluate(() => window.__aliceShelves?.() ?? [])).toEqual([]);
+    expect(errors).toEqual([]);
+  });
+});
+
+test.describe('the rabbit hole: a drag the browser takes back', () => {
+  test.skip(!demo, 'no rabbit-hole page in the manifest');
+  test.slow();
+
+  test('a pointercancel lets go of the drag: later moves do not tumble her, and a fresh drag does', async ({
+    page,
+  }) => {
+    await page.goto(demo?.url ?? '');
+    await expect(page.locator('.demo')).toHaveAttribute('data-attached', '', { timeout: 30_000 });
+    await atCue(page, 'bats', 0.5);
+    const tumble = () =>
+      page.evaluate(() =>
+        Math.abs(
+          Number(
+            document.querySelector<HTMLElement>('.rh__alice')?.style.getPropertyValue('--tumble'),
+          ) || 0,
+        ),
+      );
+    /** Pointer events as a touch makes them, dispatched where the browser would. */
+    const pointer = (type: string, x: number, target: 'stage' | 'window') =>
+      page.evaluate(
+        ([kind, clientX, where]) => {
+          const init = {
+            bubbles: true,
+            pointerType: 'touch',
+            pointerId: 7,
+            isPrimary: true,
+            clientX: Number(clientX),
+            clientY: 400,
+          };
+          const el =
+            where === 'stage' ? document.querySelector('.demo__stage') : (window as EventTarget);
+          el?.dispatchEvent(new PointerEvent(String(kind), init));
+        },
+        [type, x, target] as const,
+      );
+    // A horizontal start, then the browser hands the gesture to scrolling.
+    await pointer('pointerdown', 100, 'stage');
+    await pointer('pointermove', 140, 'window');
+    await pointer('pointercancel', 140, 'window');
+    // The start did tumble her (seen on a frame), and that spin settles.
+    await expect.poll(tumble, { timeout: 10_000 }).toBeGreaterThan(0.5);
+    await expect.poll(tumble, { timeout: 15_000 }).toBeLessThan(0.5);
+    // Moves with no press behind them do not tumble her.
+    for (let x = 160; x <= 460; x += 30) {
+      await pointer('pointermove', x, 'window');
+    }
+    await page.waitForTimeout(400);
+    expect(await tumble()).toBeLessThan(0.5);
+    // A fresh drag does.
+    await pointer('pointerdown', 100, 'stage');
+    for (let x = 130; x <= 430; x += 30) {
+      await pointer('pointermove', x, 'window');
+    }
+    await pointer('pointerup', 430, 'window');
+    await expect.poll(tumble, { timeout: 5_000 }).toBeGreaterThan(1);
   });
 });

@@ -6,7 +6,7 @@
  */
 
 import { expect, type Page, test } from '@playwright/test';
-import { atCue, customProperty, demos } from '../demo-helpers.ts';
+import { atCue, customProperty, demos, watchProperty } from '../demo-helpers.ts';
 
 const demo = demos.find((d) => d.demo === 'lobster-quadrille');
 
@@ -86,7 +86,8 @@ test.describe('lobster quadrille: play', () => {
     await atCue(page, 'throw', 0.3);
     await page.locator('.lq__prop--throw').click();
     await expect(page.locator('.lq__ring')).toHaveAttribute('data-thrown', '');
-    await expect(page.locator('.demo__status')).toHaveText('Throw the lobster');
+    // What happened, not the button's words again.
+    await expect(page.locator('.demo__status')).toHaveText('Out to sea goes the lobster.');
     expect(await page.evaluate(() => localStorage.getItem('alice-demos:kept'))).toContain(
       'lobster',
     );
@@ -258,27 +259,32 @@ test.describe('lobster quadrille: phone', () => {
     await expect(page.locator('.lq__prop--somersault')).toBeVisible();
     // A dispatched click, as a tap is: Playwright's own click first scrolls the
     // pinned stage's button "into view", which can carry the page past the sea.
+    // The roll is watched on every frame the page paints: on a phone-sized frame
+    // under load a frame can take a few hundred milliseconds, and the whole 1.1 s
+    // roll can pass between two readings fetched from outside.
+    // So is the page's width: how far it ever reaches past the frame.
+    const roll = await watchProperty(page, '.demo__stage', '--roll');
+    await page.evaluate(() => {
+      const host = window as unknown as { __widest?: number };
+      host.__widest = 0;
+      const sample = (): void => {
+        const root = document.documentElement;
+        host.__widest = Math.max(host.__widest ?? 0, root.scrollWidth - root.clientWidth);
+        requestAnimationFrame(sample);
+      };
+      requestAnimationFrame(sample);
+    });
     await page.locator('.lq__prop--somersault').dispatchEvent('click');
-    // Watch the roll until it has turned (under load, GSAP's lag smoothing
-    // stretches the 1.1 s roll over many seconds),
-    // checking the page's width on every sample.
-    let turned = false;
-    const until = Date.now() + 12_000;
-    while (!turned && Date.now() < until) {
-      await page.waitForTimeout(60);
-      const sample = await page.evaluate(() => ({
-        width: document.documentElement.scrollWidth,
-        client: document.documentElement.clientWidth,
-        roll: Number(
-          getComputedStyle(document.querySelector('.demo__stage') as Element).getPropertyValue(
-            '--roll',
-          ),
-        ),
-      }));
-      turned ||= sample.roll > 30 && sample.roll < 330;
-      expect(sample.width).toBeLessThanOrEqual(sample.client + 1);
-    }
-    expect(turned).toBe(true);
+    // Under load GSAP's lag smoothing stretches the roll over many seconds.
+    await expect
+      .poll(async () => (await roll()).some((value) => value > 30 && value < 330), {
+        timeout: 12_000,
+      })
+      .toBe(true);
+    await expect.poll(async () => (await roll()).at(-1), { timeout: 12_000 }).toBe(0);
+    expect(
+      await page.evaluate(() => (window as unknown as { __widest?: number }).__widest),
+    ).toBeLessThanOrEqual(1);
     // The bar's buttons stay inside the frame.
     const box = await page.locator('.demo__sound').boundingBox();
     expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(391);

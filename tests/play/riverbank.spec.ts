@@ -79,7 +79,11 @@ test.describe('the riverbank: across the field', () => {
     await page.goto(demo?.url ?? '');
     await atCue(page, 'rabbit', 0.4);
     await expect(page.locator('.rb__rabbit')).toHaveAttribute('data-running', '');
-    // Watch for the glance while the page is scrolled hard, frame by frame.
+    // Watch for the glance while the page is scrolled hard to and fro. The scroll
+    // follows the clock (a swing of three tenths of a beat each way, five times a
+    // second), not a step per frame: alternating steps per frame can land in one
+    // scroll event and cancel out on a loaded machine, and long frames would make
+    // a slow reader of the test.
     const glanced = await page.evaluate(
       () =>
         new Promise<boolean>((resolve) => {
@@ -91,14 +95,18 @@ test.describe('the riverbank: across the field', () => {
           if (rabbit) {
             watch.observe(rabbit, { attributes: true });
           }
-          let frames = 0;
+          const beats = document.querySelectorAll('.demo__stage .demo-beat').length;
+          const beat = (document.documentElement.scrollHeight - innerHeight) / beats;
+          const base = scrollY;
+          const start = performance.now();
           const step = (): void => {
-            window.scrollBy(0, frames % 2 === 0 ? 260 : -260);
-            frames += 1;
-            if (frames < 40 && !seen) {
+            const t = (performance.now() - start) / 1000;
+            window.scrollTo(0, Math.round(base + 0.3 * beat * Math.sin(2 * Math.PI * 5 * t)));
+            if (t < 4 && !seen) {
               requestAnimationFrame(step);
             } else {
               watch.disconnect();
+              window.scrollTo(0, base);
               resolve(seen);
             }
           };

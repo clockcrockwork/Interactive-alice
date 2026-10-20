@@ -8,6 +8,12 @@
  * `bubble`, `murmur`) are started once and levelled from a frame loop or a cue;
  * one-shot cues (`thud`, `paper`, `splash`, `chime`, `whoosh`, `glass`) play when
  * asked.
+ *
+ * Off means off: nothing creates an AudioContext, a source or a timer until the
+ * visitor first turns sound on. While sound is off, held, the page hidden or put
+ * away (`pagehide`, the back-forward cache), the recurring timers are cleared and
+ * the context suspended; they come back when the page is shown again and only if
+ * sound is still on. A page that is unloaded closes its context.
  */
 
 export type ContinuousCue = 'wind' | 'purr' | 'drip' | 'river' | 'waves' | 'bubble' | 'murmur';
@@ -15,14 +21,54 @@ export type OneShotCue = 'thud' | 'paper' | 'splash' | 'chime' | 'whoosh' | 'gla
 
 export interface DemoSound {
   readonly enabled: boolean;
-  /** Turns sound on or off; on needs a user gesture to have happened. */
-  toggle(): Promise<boolean>;
+  /**
+   * Turns sound on or off and returns the visitor's choice at once; on needs a user
+   * gesture to have happened. The audio device may take its time to start, or
+   * never start (a machine with no output): the choice does not wait for it.
+   * Where the browser refuses outright, sound goes off again and `onRefused`
+   * (given to `createSound`) says so.
+   */
+  toggle(): boolean;
   /** Mutes without turning off, for the motion pause. */
   hold(muted: boolean): void;
   play(cue: OneShotCue, strength?: number): void;
   /** Sets a continuous cue's level, 0..1. */
   level(cue: ContinuousCue, value: number): void;
+  /** Test seam: the audio's state, serialisable. */
+  state(): SoundState;
+  /** Releases the context, its timers and the page listeners. */
+  dispose(): void;
 }
+
+export interface SoundState {
+  /** `none` until sound is first turned on. */
+  context: 'none' | AudioContextState;
+  /** Whether the recurring timers are scheduled. */
+  running: boolean;
+  /** Timers pending now. */
+  timers: number;
+  /** Timer callbacks run since the page loaded. */
+  ticks: number;
+}
+
+/** What the synthesiser needs from the page; replaced in the unit tests. */
+export interface SoundHost {
+  createContext(): AudioContext;
+  setTimeout(fn: () => void, ms: number): number;
+  clearTimeout(id: number): void;
+  /** Where `pagehide` and `pageshow` arrive. */
+  window: EventTarget;
+  /** Where `visibilitychange` arrives, and whether the page is hidden. */
+  document: EventTarget & { readonly hidden: boolean };
+}
+
+const browserHost = (): SoundHost => ({
+  createContext: () => new AudioContext(),
+  setTimeout: (fn, ms) => window.setTimeout(fn, ms),
+  clearTimeout: (id) => window.clearTimeout(id),
+  window,
+  document,
+});
 
 function noiseBuffer(context: AudioContext): AudioBuffer {
   const seconds = 2;
@@ -37,22 +83,59 @@ function noiseBuffer(context: AudioContext): AudioBuffer {
   return buffer;
 }
 
-export function createSound(): DemoSound {
+export function createSound(
+  onRefused: () => void = () => undefined,
+  host: SoundHost = browserHost(),
+): DemoSound {
   let context: AudioContext | undefined;
   let master: GainNode | undefined;
   let enabled = false;
   let held = false;
+  let hidden = host.document.hidden;
+  let away = false;
+  let closed = false;
   const continuous = new Map<ContinuousCue, { gain: GainNode; target: number }>();
+  /** The recurring timers: how each runs, and when it first runs once started. */
+  const loops: { run: () => void; first: number; next: () => number }[] = [];
+  const timers = new Set<number>();
+  let running = false;
+  let ticks = 0;
+
+  const schedule = (loop: (typeof loops)[number], ms: number): void => {
+    const id = host.setTimeout(() => {
+      timers.delete(id);
+      if (!running) {
+        return;
+      }
+      ticks += 1;
+      loop.run();
+      schedule(loop, loop.next());
+    }, ms);
+    timers.add(id);
+  };
 
   const ensure = (): AudioContext | undefined => {
     if (context) {
       return context;
     }
+    if (closed) {
+      return undefined;
+    }
     try {
-      context = new AudioContext();
+      context = host.createContext();
     } catch {
       return undefined;
     }
+    // A resume still pending when the page asked to stop can land after the
+    // suspend (some engines settle a suspend at once while a resume is under
+    // way): whenever the context comes up while sound should be still, put it
+    // down again.
+    const made = context;
+    made.onstatechange = () => {
+      if (!running && !closed && made.state === 'running') {
+        made.suspend().catch(() => undefined);
+      }
+    };
     master = context.createGain();
     master.gain.value = 0;
     master.connect(context.destination);
@@ -110,9 +193,8 @@ export function createSound(): DemoSound {
         osc.start(now);
         osc.stop(now + 0.3);
       }
-      setTimeout(plink, 400 + Math.random() * 1600);
     };
-    setTimeout(plink, 600);
+    loops.push({ run: plink, first: 600, next: () => 400 + Math.random() * 1600 });
 
     // River: a bright band of noise, and now and then a bird over it.
     const riverSource = context.createBufferSource();
@@ -145,9 +227,8 @@ export function createSound(): DemoSound {
         osc.start(now);
         osc.stop(now + 0.25);
       }
-      setTimeout(chirp, 1800 + Math.random() * 4200);
     };
-    setTimeout(chirp, 1200);
+    loops.push({ run: chirp, first: 1200, next: () => 1800 + Math.random() * 4200 });
 
     // Waves: low noise that swells and falls on a slow breath.
     const wavesSource = context.createBufferSource();
@@ -191,9 +272,8 @@ export function createSound(): DemoSound {
         osc.start(now);
         osc.stop(now + 0.14);
       }
-      setTimeout(plop, 140 + Math.random() * 500);
     };
-    setTimeout(plop, 500);
+    loops.push({ run: plop, first: 500, next: () => 140 + Math.random() * 500 });
 
     // Murmur: a crowd, a middle band of noise that wavers.
     const murmurSource = context.createBufferSource();
@@ -222,15 +302,93 @@ export function createSound(): DemoSound {
           windFilter.frequency.setTargetAtTime(300 + entry.target * 1800, now, 0.2);
         }
       }
-      setTimeout(follow, 100);
     };
-    follow();
+    loops.push({ run: follow, first: 0, next: () => 100 });
     return context;
   };
 
+  /**
+   * Runs the timers and the context only while sound is on, not held, and the page
+   * is shown; stops both otherwise. The one place that decides.
+   */
+  const sync = (): void => {
+    const ctx = context;
+    const live = enabled && !held && !hidden && !away && ctx !== undefined && !closed;
+    if (live === running) {
+      return;
+    }
+    running = live;
+    if (!ctx) {
+      return;
+    }
+    if (live) {
+      for (const loop of loops) {
+        schedule(loop, loop.first);
+      }
+      master?.gain.setTargetAtTime(0.8, ctx.currentTime, 0.1);
+      // Asked whatever the state reads now: a suspend still pending would
+      // otherwise land after this and leave the context silent.
+      if (ctx.state !== 'closed') {
+        ctx.resume().catch(() => {
+          enabled = false;
+          sync();
+          onRefused();
+        });
+      }
+      return;
+    }
+    for (const id of timers) {
+      host.clearTimeout(id);
+    }
+    timers.clear();
+    master?.gain.setTargetAtTime(0, ctx.currentTime, 0.1);
+    // Asked whatever the state reads now: the context may still be starting (a
+    // resume pending), and the browser runs the two in the order they were asked.
+    if (ctx.state !== 'closed') {
+      ctx.suspend().catch(() => undefined);
+    }
+  };
+
+  const lifetime = new AbortController();
+  const { signal } = lifetime;
+  host.document.addEventListener(
+    'visibilitychange',
+    () => {
+      hidden = host.document.hidden;
+      sync();
+    },
+    { signal },
+  );
+  host.window.addEventListener(
+    'pagehide',
+    (event) => {
+      away = true;
+      sync();
+      // Not kept for a return: the context goes with the page.
+      if (!(event as PageTransitionEvent).persisted && context) {
+        closed = true;
+        context.close().catch(() => undefined);
+      }
+    },
+    { signal },
+  );
+  host.window.addEventListener(
+    'pageshow',
+    () => {
+      away = false;
+      hidden = host.document.hidden;
+      sync();
+    },
+    { signal },
+  );
+
   const oneShot = (cue: OneShotCue, strength: number): void => {
-    const ctx = ensure();
-    if (!ctx || !master || !enabled || held) {
+    // Checked before anything is made: sound off creates nothing.
+    if (!enabled || !running) {
+      return;
+    }
+    const ctx = context;
+    if (!ctx || !master) {
       return;
     }
     const now = ctx.currentTime;
@@ -309,39 +467,41 @@ export function createSound(): DemoSound {
     get enabled() {
       return enabled;
     },
-    async toggle() {
+    toggle() {
       enabled = !enabled;
-      const ctx = ensure();
-      if (!ctx || !master) {
+      if (enabled && !ensure()) {
         enabled = false;
-        return false;
       }
-      if (enabled && ctx.state === 'suspended') {
-        try {
-          await ctx.resume();
-        } catch {
-          enabled = false;
-        }
-      }
-      master.gain.setTargetAtTime(enabled ? 0.8 : 0, ctx.currentTime, 0.1);
+      sync();
       return enabled;
     },
     hold(muted) {
       held = muted;
+      sync();
     },
     play(cue, strength = 1) {
       oneShot(cue, strength);
     },
     level(cue, value) {
+      // Only a context the visitor asked for has levels to set.
       const entry = continuous.get(cue);
       if (entry) {
         entry.target = Math.max(0, Math.min(1, value));
-      } else if (enabled) {
-        ensure();
-        const made = continuous.get(cue);
-        if (made) {
-          made.target = Math.max(0, Math.min(1, value));
-        }
+      }
+    },
+    state: () => ({
+      context: context ? context.state : 'none',
+      running,
+      timers: timers.size,
+      ticks,
+    }),
+    dispose() {
+      lifetime.abort();
+      enabled = false;
+      sync();
+      if (context && !closed) {
+        closed = true;
+        context.close().catch(() => undefined);
       }
     },
   };

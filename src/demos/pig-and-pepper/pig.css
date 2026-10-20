@@ -496,12 +496,15 @@
     animation: pp-throw 0.32s ease-in 5;
   }
 
+  /* She takes no tap of her own, and on a narrow frame her figure's box reaches
+     over the cat on the hearth: taps go through her to it. */
   .pp__duchess {
     position: absolute;
     inset-inline-start: 30%;
     inset-block-end: 26%;
     inline-size: clamp(10rem, 34vmin, 21rem);
     translate: -50% 0;
+    pointer-events: none;
   }
 
   .pp__duchess > .art,

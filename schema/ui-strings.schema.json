@@ -38,16 +38,22 @@
         "demoLeanRight",
         "demoPuffHold",
         "demoVanishTail",
+        "demoVanishTailDone",
         "demoVanishHead",
+        "demoVanishHeadDone",
         "demoDirtySeat",
         "demoStrokeFlamingo",
+        "demoStrokeFlamingoDone",
         "demoFlamingoSulks",
         "demoDodgeLeft",
         "demoDodgeRight",
         "demoDodged",
         "demoFlingMoral",
+        "demoFlingMoralDone",
         "demoSuppressGuineaPig",
+        "demoSuppressGuineaPigDone",
         "demoRightLizard",
+        "demoRightLizardDone",
         "demoTurnBottle",
         "demoClimbLeg",
         "demoCryTear",
@@ -55,9 +61,13 @@
         "demoGiveComfit",
         "demoReadTail",
         "demoWiggleFoot",
+        "demoWiggleFootDone",
         "demoHoldHead",
+        "demoHoldHeadDone",
         "demoCatchBill",
+        "demoCatchBillDone",
         "demoDipLeaves",
+        "demoDipLeavesDone",
         "demoHeight",
         "demoHeightUnit",
         "demoOpenLetter",
@@ -68,16 +78,22 @@
         "demoSingAlong",
         "demoAnswerRiddle",
         "demoStirTreacle",
+        "demoStirTreacleDone",
         "demoDrawTreacle",
         "demoDrawM",
         "demoStirQuarrel",
         "demoTurnCard",
         "demoShrug",
         "demoClearThroat",
+        "demoClearThroatDone",
         "demoWakeEel",
+        "demoWakeEelDone",
         "demoKingsNotebook",
+        "demoKingsNotebookDone",
         "demoCloseEyes",
+        "demoCloseEyesDone",
         "demoGiveChildren",
+        "demoGiveChildrenDone",
         "demoCallDinah",
         "demoPageEmpty",
         "demoChainLonger",
@@ -114,6 +130,7 @@
         "demoTechBill",
         "demoTechCheshire",
         "demoSnatch",
+        "demoSnatchDone",
         "demoKick",
         "demoVanish",
         "demoAliceTitle",
@@ -124,6 +141,7 @@
         "demoWayHatter",
         "demoWayHare",
         "demoCallCat",
+        "demoCallCatDone",
         "demoTryDoor",
         "demoTeleportHint",
         "demoPutBack",
@@ -132,6 +150,7 @@
         "demoSoundOff",
         "demoTilt",
         "demoTiltOn",
+        "demoTiltNone",
         "demoTakeKey",
         "demoMyRunner",
         "demoFeed",
@@ -141,28 +160,45 @@
         "demoTechQuadrille",
         "demoPuff",
         "demoNibbleLeft",
+        "demoNibbleLeftDone",
         "demoNibbleRight",
+        "demoNibbleRightDone",
         "demoBendNeck",
         "demoShoo",
+        "demoShooDone",
         "demoPaintRose",
+        "demoPaintRoseDone",
         "demoStrike",
         "demoCatchFlamingo",
+        "demoCatchFlamingoDone",
         "demoHideGardeners",
+        "demoHideGardenersDone",
         "demoThrowLobster",
+        "demoThrowLobsterDone",
         "demoJoinDance",
+        "demoJoinDanceDone",
         "demoSomersault",
+        "demoSomersaultDone",
         "demoOpenEyes",
+        "demoOpenEyesDone",
         "demoSnail",
+        "demoSnailDone",
         "demoTechPig",
         "demoTechMockTurtle",
         "demoBow",
         "demoPepper",
+        "demoPepperDone",
         "demoDuck",
+        "demoDuckDone",
         "demoBatPan",
         "demoHoldTight",
+        "demoHoldTightDone",
         "demoPokeBaby",
+        "demoPokeBabyDone",
         "demoComfort",
+        "demoComfortDone",
         "demoWash",
+        "demoWashDone",
         "demoUglify",
         "demoPullTail",
         "demoUndoKnot",
@@ -262,10 +298,20 @@
           "minLength": 1,
           "description": "Cheshire Cat: the reader chooses the Cat goes tail first; the grin always last."
         },
+        "demoVanishTailDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoVanishTail: what happened (cheshire cat: tail first chosen). Not the button's own words."
+        },
         "demoVanishHead": {
           "type": "string",
           "minLength": 1,
           "description": "Cheshire Cat: the reader chooses the Cat goes head first; the grin always last."
+        },
+        "demoVanishHeadDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoVanishHead: what happened (cheshire cat: head first chosen). Not the button's own words."
         },
         "demoDirtySeat": {
           "type": "string",
@@ -276,6 +322,11 @@
           "type": "string",
           "minLength": 1,
           "description": "Croquet: a button to settle the flamingo before it sulks and twists away."
+        },
+        "demoStrokeFlamingoDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoStrokeFlamingo: what happened (croquet: the flamingo stroked). Not the button's own words."
         },
         "demoFlamingoSulks": {
           "type": "string",
@@ -302,15 +353,30 @@
           "minLength": 1,
           "description": "The Duchess: a button that blows the latest moral ribbon away over the croquet-ground."
         },
+        "demoFlingMoralDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoFlingMoral: what happened (duchess: a moral blown away). Not the button's own words."
+        },
         "demoSuppressGuineaPig": {
           "type": "string",
           "minLength": 1,
           "description": "The witnesses: a button that puts the cheering guinea-pig into the officers' bag before they do."
         },
+        "demoSuppressGuineaPigDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoSuppressGuineaPig: what happened (witnesses: the guinea-pig suppressed). Not the button's own words."
+        },
         "demoRightLizard": {
           "type": "string",
           "minLength": 1,
           "description": "The witnesses: a button that turns the Lizard in the jury-box the right way up before Alice does."
+        },
+        "demoRightLizardDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoRightLizard: what happened (witnesses: the Lizard turned right-side up). Not the button's own words."
         },
         "demoTurnBottle": {
           "type": "string",
@@ -347,20 +413,40 @@
           "minLength": 1,
           "description": "Growing in the House: her foot up the chimney kicks in a puff of soot."
         },
+        "demoWiggleFootDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoWiggleFoot: what happened (rabbit's house: her foot wiggled). Not the button's own words."
+        },
         "demoHoldHead": {
           "type": "string",
           "minLength": 1,
           "description": "There Goes Bill: a guinea-pig holds up Bill's head for the brandy."
+        },
+        "demoHoldHeadDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoHoldHead: what happened (Bill: his head held up). Not the button's own words."
         },
         "demoCatchBill": {
           "type": "string",
           "minLength": 1,
           "description": "There Goes Bill: move the crowd by the hedge under the falling Bill."
         },
+        "demoCatchBillDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoCatchBill: what happened (Bill: the crowd runs to catch him). Not the button's own words."
+        },
         "demoDipLeaves": {
           "type": "string",
           "minLength": 1,
           "description": "Caterpillar: dip her long neck down into the tree tops."
+        },
+        "demoDipLeavesDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoDipLeaves: what happened (caterpillar: dipped into the leaves). Not the button's own words."
         },
         "demoHeight": {
           "type": "string",
@@ -412,6 +498,11 @@
           "minLength": 1,
           "description": "Dormouse: first-touch hint that the treacle can be stirred."
         },
+        "demoStirTreacleDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoStirTreacle: what happened (dormouse: the first touch on the treacle). Not the button's own words."
+        },
         "demoDrawTreacle": {
           "type": "string",
           "minLength": 1,
@@ -442,25 +533,50 @@
           "minLength": 1,
           "description": "Mock Turtle: break the long silence; the Mock Turtle sobs louder."
         },
+        "demoClearThroatDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoClearThroat: what happened (mock turtle: the throat cleared). Not the button's own words."
+        },
         "demoWakeEel": {
           "type": "string",
           "minLength": 1,
           "description": "Mock Turtle: the conger-eel drawls, stretches and faints in coils."
+        },
+        "demoWakeEelDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoWakeEel: what happened (mock turtle: the Drawling-master woken). Not the button's own words."
         },
         "demoKingsNotebook": {
           "type": "string",
           "minLength": 1,
           "description": "The witnesses: catch the King writing Rule Forty-two on the spot."
         },
+        "demoKingsNotebookDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoKingsNotebook: what happened (witnesses: peeking at the King's note-book). Not the button's own words."
+        },
         "demoCloseEyes": {
           "type": "string",
           "minLength": 1,
           "description": "Sentence First: the dream comes back (the other half of Open her eyes)."
         },
+        "demoCloseEyesDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoCloseEyes: what happened (trial: eyes closed again). Not the button's own words."
+        },
         "demoGiveChildren": {
           "type": "string",
           "minLength": 1,
           "description": "Sentence First: hand a keepsake to the little children of the after-time."
+        },
+        "demoGiveChildrenDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoGiveChildren: what happened (trial: a keepsake given to the children). Not the button's own words."
         },
         "demoCallDinah": {
           "type": "string",
@@ -652,6 +768,11 @@
           "minLength": 1,
           "description": "Button that makes the snatch out of the window."
         },
+        "demoSnatchDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoSnatch: what happened (rabbit's house: the snatch). Not the button's own words."
+        },
         "demoKick": {
           "type": "string",
           "minLength": 1,
@@ -702,6 +823,11 @@
           "minLength": 1,
           "description": "Button that calls the Cat to another bough."
         },
+        "demoCallCatDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoCallCat: what happened (croquet: the Cat's head winks). Not the button's own words."
+        },
         "demoTryDoor": {
           "type": "string",
           "minLength": 1,
@@ -741,6 +867,11 @@
           "type": "string",
           "minLength": 1,
           "description": "Status once tilt steering is on."
+        },
+        "demoTiltNone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status when tilt steering was allowed but the device sent no reading: steering stays with the pointer."
         },
         "demoTakeKey": {
           "type": "string",
@@ -802,10 +933,20 @@
           "minLength": 1,
           "description": "Button on the left bit of mushroom: nibbling it makes her taller."
         },
+        "demoNibbleLeftDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoNibbleLeft: what happened (caterpillar: a bite of the left bit). Not the button's own words."
+        },
         "demoNibbleRight": {
           "type": "string",
           "minLength": 1,
           "description": "Button on the right bit of mushroom: nibbling it makes her shorter."
+        },
+        "demoNibbleRightDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoNibbleRight: what happened (caterpillar: a bite of the right bit). Not the button's own words."
         },
         "demoBendNeck": {
           "type": "string",
@@ -817,10 +958,20 @@
           "minLength": 1,
           "description": "Button on the Pigeon: shoo it away for a moment."
         },
+        "demoShooDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoShoo: what happened (caterpillar: the Pigeon shooed). Not the button's own words."
+        },
         "demoPaintRose": {
           "type": "string",
           "minLength": 1,
           "description": "Hint that a drag over a white rose paints it red."
+        },
+        "demoPaintRoseDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoPaintRose: what happened (croquet: a rose painted). Not the button's own words."
         },
         "demoStrike": {
           "type": "string",
@@ -832,35 +983,70 @@
           "minLength": 1,
           "description": "Button that brings the flamingo back."
         },
+        "demoCatchFlamingoDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoCatchFlamingo: what happened (croquet: the flamingo caught). Not the button's own words."
+        },
         "demoHideGardeners": {
           "type": "string",
           "minLength": 1,
           "description": "Button that puts the gardeners into the flower-pot."
+        },
+        "demoHideGardenersDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoHideGardeners: what happened (croquet: the gardeners hidden). Not the button's own words."
         },
         "demoThrowLobster": {
           "type": "string",
           "minLength": 1,
           "description": "Button that throws the lobster out to sea."
         },
+        "demoThrowLobsterDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoThrowLobster: what happened (quadrille: the lobster thrown). Not the button's own words."
+        },
         "demoJoinDance": {
           "type": "string",
           "minLength": 1,
           "description": "Button that puts the reader into the line of dancers."
+        },
+        "demoJoinDanceDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoJoinDance: what happened (quadrille: the dance joined). Not the button's own words."
         },
         "demoSomersault": {
           "type": "string",
           "minLength": 1,
           "description": "Button that turns a somersault in the sea."
         },
+        "demoSomersaultDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoSomersault: what happened (quadrille: a somersault in the sea). Not the button's own words."
+        },
         "demoOpenEyes": {
           "type": "string",
           "minLength": 1,
           "description": "Button that wakes the sister from her dream."
         },
+        "demoOpenEyesDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoOpenEyes: what happened (trial: eyes opened). Not the button's own words."
+        },
         "demoSnail": {
           "type": "string",
           "minLength": 1,
           "description": "Button on the snail in the song: it draws into its shell."
+        },
+        "demoSnailDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoSnail: what happened (quadrille: the snail tapped). Not the button's own words."
         },
         "demoTechPig": {
           "type": "string",
@@ -882,10 +1068,20 @@
           "minLength": 1,
           "description": "Button, and the cauldron's label: more pepper, and a sneeze."
         },
+        "demoPepperDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoPepper: what happened (pig and pepper: pepper shaken). Not the button's own words."
+        },
         "demoDuck": {
           "type": "string",
           "minLength": 1,
           "description": "Button that ducks the reader under the flying pots and pans."
+        },
+        "demoDuckDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoDuck: what happened (pig and pepper: ducked). Not the button's own words."
         },
         "demoBatPan": {
           "type": "string",
@@ -897,20 +1093,40 @@
           "minLength": 1,
           "description": "Button that knots the baby into a bundle in her arms."
         },
+        "demoHoldTightDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoHoldTight: what happened (pig and pepper: the baby held tight). Not the button's own words."
+        },
         "demoPokeBaby": {
           "type": "string",
           "minLength": 1,
           "description": "Label on the baby in her arms: a tap makes it grunt and turn a little more pig."
+        },
+        "demoPokeBabyDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoPokeBaby: what happened (pig and pepper: the next stage early). Not the button's own words."
         },
         "demoComfort": {
           "type": "string",
           "minLength": 1,
           "description": "Button on the Mock Turtle: comforting him makes him sigh harder and the sea heave."
         },
+        "demoComfortDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoComfort: what happened (mock turtle: comforting makes him sigh harder). Not the button's own words."
+        },
         "demoWash": {
           "type": "string",
           "minLength": 1,
           "description": "Button that sends a wave over the subject words written on the sand."
+        },
+        "demoWashDone": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Status after the reader pressed demoWash: what happened (mock turtle: the words washed away). Not the button's own words."
         },
         "demoUglify": {
           "type": "string",

@@ -49,15 +49,4 @@ jobs:
       - name: build, and record the size report
         run: npm run build
       - run: npx playwright install --with-deps chromium
-      - name: compare index transitions on base and head
-        id: transitions
-        if: github.event_name == 'pull_request'
-        continue-on-error: true
-        env:
-          ALICE_DIAGNOSTIC_BASE: ${{ github.event.pull_request.base.sha }}
-          ALICE_DIAGNOSTIC_HEAD: ${{ github.event.pull_request.head.sha }}
-        run: bash scripts/diagnose-transitions.sh
       - run: npm run test:e2e
-      - name: retain transition diagnostic failure
-        if: always() && steps.transitions.outcome == 'failure'
-        run: exit 1

@@ -40,12 +40,7 @@ candidate's hand. These are review limitations, not completed animation work.
 
 ## Intake and cost
 
-The unchanged generated RGBA PNG is both the preserved master and the temporary
-runtime asset. Its prompt and provenance sit beside it under
-`src/assets/images/generated-preview/`. The prompt uses descriptive subject/style
-language without character, project, book or artist proper names. The canonical
-style specification is referenced at its exact main commit in provenance because
-PR #12 does not yet contain that later document.
+The generation master and full prompt remain outside Git, as required by the asset contract. Only the opt-in comparison delivery and short provenance (intent, source hash, dimensions and encoding history) belong in the repository. The canonical style specification is included at `docs/generated-art-style.md` and remains the prompt authority.
 
 Alpha QA found 52.10% fully transparent pixels. Apparent saturated red/yellow fringe
 pixels have only alpha 1–4/255; the figure is not delivered on an opaque backdrop.
@@ -74,30 +69,6 @@ intake would need accepted art, articulated cut-outs and optimized WebP/AVIF del
   claimed. PR #12 already reports three separate timing-sensitive E2E failures in
   Bill, Mock Turtle and trial; this change does not claim to fix them.
 
-## Transition diagnosis (2026-10-15)
+## Consolidated review status
 
-The Japanese-index round-trip failure in PR #17 remains unclassified. Independent
-builds of base `3752d3f` and head `78a5f82` produce byte-identical English/Japanese
-indexes and identical directly loaded JS/CSS for both indexes and Japanese
-riverbank. Riverbank HTML differs only in the three comparison UI strings.
-This excludes a changed executable bundle, not suite-load/timing effects.
-
-A temporary diagnostic in the existing standard-runner `checks` job runs the same
-Japanese-index test five times against each application, base and head, with one
-worker. It observes page lifecycle events, stylesheet responses, readable
-`@view-transition` rules and reduced-motion state. It does not consume transition
-promises, ignore console errors, change thresholds or alter the app. The full gate
-still runs, and diagnostic failures remain failures. Existing Bill and Mock Turtle
-failures stay with PR #12's owner; they are not changed here.
-
-The structured lifecycle trace is printed in the job log, with result statuses in
-the job summary. No new artifact upload or npm cache is introduced. Playwright's
-binary trace is disabled for these additional diagnostic repetitions; the full
-suite keeps its existing configuration. The diagnostic uses the same installed
-dependencies in both isolated trees. Remove this diagnostic once the cause is
-established rather than keeping extra repetitions in routine CI indefinitely.
-
-Local verification of the observer is limited: Chromium exits before any test
-body with `socket() failed: Operation not permitted`. No sandbox setting was
-changed. The non-browser gate passed; browser findings must come from the normal
-CI runner, and no local application reproduction is claimed.
+PR #27's repeated transition diagnostic was scoped to its historical base/head pair. The workflow integration and repeat-run script are removed from this consolidated branch to preserve the current manual-only browser-verification policy from PR #28. The reported Japanese index transition failure must be retested on this merged exact head; no result is carried forward from the old pair.

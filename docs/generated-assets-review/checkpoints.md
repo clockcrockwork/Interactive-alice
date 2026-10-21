@@ -156,3 +156,45 @@ public-access guarantee, production approval or final art acceptance is claimed.
 
 Caterpillar/Bill and the two footmen have generated layers awaiting safe composition;
 image outputs alone do not complete their integration. Work continues independently.
+
+## Continued articulation checkpoint (2026-10-21 05:38 UTC)
+
+Fifteen further scoped actor IDs now have provisional generated rendering: the
+Caterpillar, Bill, both footmen, three Cheshire Cat poses, Hedgehog, the quadrille
+Mock Turtle, three gardeners, garden Rabbit/Pat and Croquet Flamingo. Registry
+whole-source counts remain 28 IDs / 30 variant bindings / 29 files; scoped adapters
+are separate, not a percentage-complete claim. The prior eight layered actors
+bring the current scoped-adapter count to 23.
+
+Specific source defects were repaired rather than deferred as owner decisions:
+Bill's shoulder fragment and pointed neck, Caterpillar's rigid hose, footmen's
+double knees and waist gaps, Cat tail spur and eye fur, gardener's second arm,
+and Flamingo's dangling neck stump. All preserve complete original fallbacks
+until required images decode. Original SVG pips, live pupils/tears, garments,
+scene motion and interaction targets remain where applicable.
+
+- [Caterpillar hose, Bill neck and prop contacts](caterpillar-bill-20261021.md)
+- [Footmen bow, wigs and corrected trouser joins](../footmen-motion-checkpoint-2026-10-21.md)
+- [Cat reveal, disappearing mask, pupils and wink](cheshire-cat-layers-20261021.md)
+- [Hedgehog state switch and quadrille tears](hedgehog-and-turtle-20261021.md)
+- [Gardeners' three pip counts and moving brushes](gardeners-20261021.md)
+- [Garden Rabbit and Pat SVG placement](garden-figures-20261021.md)
+- [Flamingo joint and protagonist garment preservation](flamingo-20261021.md)
+
+The current local unit gate passes 502 tests across 49 files; typecheck and full
+lint pass. Independent static review covered source geometry and offline
+compositions. CSS imports were moved to the runtime loader rather than the
+build-time art module to preserve the Vite configuration build. Full data checks and the production build also pass for this checkpoint. The
+existing story TODO notices and >500 kB bundle warning remain.
+
+The two new Cat/Flamingo browser files register 60 cases across configured
+projects; registration is not execution. In particular, SVG pattern/use CSS
+inheritance, late image decode during paused interaction, real scene contacts,
+phone framing, Firefox and WebKit remain unverified. The new illustration bytes
+increase demo payload; no performance-budget pass or art approval is claimed.
+
+The Mock Turtle chapter remains original: its right-flapper edit returned no
+image after refusal. Available base/left candidates are not assembled into an
+incomplete rig and the refused operation is not repeated via another tool.
+Tucked Flamingo, new protagonist poses, swimming and remaining actors continue
+as separate production work. This checkpoint is not the end of image addition.

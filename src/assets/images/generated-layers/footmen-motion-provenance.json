@@ -1,0 +1,354 @@
+{
+  "batch": "footmen-motion-2026-10-21",
+  "date": "2026-10-21",
+  "status": "provisional generated motion rigs; not owner art acceptance or browser acceptance",
+  "generator": "image_gen",
+  "model": "not exposed by generation tool",
+  "styleId": "IA-ENGRAVED-CUTOUT-V1",
+  "assets": [
+    {
+      "id": "fish-footman",
+      "part": "legs",
+      "asset": "fish-footman~legs.any.generated.webp",
+      "bytes": 115822,
+      "sha256": "9673702c412f562127ea7dc34a87713aeb4fcab6d917b3b5fc572c03dd65babe",
+      "width": 926,
+      "height": 1699,
+      "source": {
+        "filename": "exec-bec6f5fb-d217-4d44-8857-0a275787446e.png",
+        "sha256": "da57ca506ef43f4e6b65bb1d0bdbe08b3e998daaddaf2bdda5b326765c973abc"
+      },
+      "master": {
+        "filename": "exec-868fb8d8-2728-474a-9537-9741b0557b86.png",
+        "sha256": "7da56fd8539a2bbb2fd932403d4c9cba8349e66bcfd2558b7a2c43bd158c25d7"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [107, 79, 865, 1699],
+        "16": [288, 683, 674, 1557],
+        "32": [288, 683, 674, 1557],
+        "128": [289, 684, 673, 1556],
+        "224": [290, 684, 673, 1555]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Extract complete waist-high breeches, stockings and shoes, with hidden waist overlap under the rotating upper body.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      },
+      "fullPrompt": "not available to integration worker; verified intent recorded"
+    },
+    {
+      "id": "fish-footman",
+      "part": "body",
+      "asset": "fish-footman~body.any.generated.webp",
+      "bytes": 369664,
+      "sha256": "ad352a1e1b453b6c36b361b1e1e7561494adb098b9c89b5e4a15b06e1838ff7d",
+      "width": 926,
+      "height": 1699,
+      "source": {
+        "filename": "exec-0bed2628-b434-4c1e-9669-706f98233694.png",
+        "sha256": "20c65c895b1a746ace7afac07b4ca76a1e47bae8ea55e6a67c0d64905e5dbe74"
+      },
+      "master": {
+        "filename": "exec-868fb8d8-2728-474a-9537-9741b0557b86.png",
+        "sha256": "7da56fd8539a2bbb2fd932403d4c9cba8349e66bcfd2558b7a2c43bd158c25d7"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [19, 39, 908, 1661],
+        "16": [137, 182, 830, 1520],
+        "32": [137, 182, 830, 1520],
+        "128": [138, 183, 829, 1520],
+        "224": [139, 184, 829, 1519]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Preserve the footman upper body and coat tails while removing the whole wig and all breeches, legs and shoes for a waist-bowing rig.",
+      "fullPrompt": "Use case: background-extraction. Input image 1 is the edit target: this project's own fish-headed footman master illustration. Make an upper-body animation layer for his bow, on an actually transparent background. Keep exactly the same portrait canvas, scale, position, original engraving details and colours. Keep ONLY his fish head and face, neckcloth, waistcoat, entire brown coat including all long coat tails, both arms and hands. Remove the whole powdered white wig to transparency, revealing the natural fish head beneath it. Remove ALL pale breeches, thighs, knees, stockings and shoes to transparency: the region below the waistcoat between the coat tails must be completely empty transparent, not filled with cloth. This layer will rotate from the waist over a separate fixed pair of breeches and legs. Do not shorten the coat tails, move or enlarge the figure, add extra body parts, add text, add a background or repaint the style. It must contain no trousers or legs whatsoever.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      }
+    },
+    {
+      "id": "fish-footman",
+      "part": "curls",
+      "asset": "fish-footman~curls.any.generated.webp",
+      "bytes": 132434,
+      "sha256": "bc44d3ca0f73a12d1ab7996de2602eb5a9b8cd19bb10f50431b1fddd92723f29",
+      "width": 926,
+      "height": 1699,
+      "source": {
+        "filename": "exec-80215637-80c9-4953-94db-5f8e1dab167e.png",
+        "sha256": "ed8d1bacb7f375b84031cc6c1651eaf757273b4253806da1bc2465c2964dafba"
+      },
+      "master": {
+        "filename": "exec-868fb8d8-2728-474a-9537-9741b0557b86.png",
+        "sha256": "7da56fd8539a2bbb2fd932403d4c9cba8349e66bcfd2558b7a2c43bd158c25d7"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [131, 19, 904, 1450],
+        "16": [152, 204, 813, 763],
+        "32": [152, 204, 813, 763],
+        "128": [153, 205, 812, 762],
+        "224": [154, 206, 812, 760]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Extract the normal powdered curls for the footman upper-body rig.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      },
+      "fullPrompt": "not available to integration worker; verified intent recorded"
+    },
+    {
+      "id": "fish-footman",
+      "part": "tangle",
+      "asset": "fish-footman~tangle.any.generated.webp",
+      "bytes": 249460,
+      "sha256": "151c965008e5b3b54c6b1da112d9fe0222829042c4ce9245e4b36e0a702b2e43",
+      "width": 926,
+      "height": 1699,
+      "source": {
+        "filename": "exec-d23e7216-cb1f-40ab-a2a5-af9cadedbaa0.png",
+        "sha256": "b057d33d49add34e52ab0a90a43c0df1b52b0e57b680a712235e955c8519cead"
+      },
+      "master": {
+        "filename": "exec-868fb8d8-2728-474a-9537-9741b0557b86.png",
+        "sha256": "7da56fd8539a2bbb2fd932403d4c9cba8349e66bcfd2558b7a2c43bd158c25d7"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [30, 125, 912, 1595],
+        "16": [35, 436, 899, 1151],
+        "32": [35, 437, 899, 1151],
+        "128": [36, 438, 898, 1150],
+        "224": [37, 441, 897, 1149]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Create tangled powdered curls as a separate complete wig state.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      },
+      "fullPrompt": "not available to integration worker; verified intent recorded"
+    },
+    {
+      "id": "frog-footman",
+      "part": "legs",
+      "asset": "frog-footman~legs.any.generated.webp",
+      "bytes": 284112,
+      "sha256": "b1cd50c227afe41eb9d3295feaf46f12a49d1765c5e45626986ef789530d4a0a",
+      "width": 926,
+      "height": 1699,
+      "source": {
+        "filename": "exec-64f8db1b-9350-44e8-9c26-0da8a2adb983.png",
+        "sha256": "0cb459278f9bfe88213d0c5d69601a8ab70b1af6ec27a4ba40f27d9ed0f04d33"
+      },
+      "master": {
+        "filename": "exec-94453421-f81c-4db9-b698-b691ec1b1b2e.png",
+        "sha256": "4e285b71c0727ecc4140cec0792910b26921a98073afab6c45d7aa5e598e1b44"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [0, 55, 898, 1675],
+        "16": [213, 225, 747, 1602],
+        "32": [213, 226, 746, 1602],
+        "128": [214, 226, 746, 1602],
+        "224": [215, 227, 745, 1601]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Correct the artificial stacked-knee join in the waist-high breeches plate, preserving a single continuous trouser pair and stockings/shoes.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      },
+      "editReference": {
+        "filename": "exec-1390cb1b-1f35-490c-a2d1-0458fd12d2e9.png",
+        "sha256": "e5bb4de8d3f08730cd1c939ccf1883403486cf8a082dcfd730f7508f7be7901b"
+      },
+      "fullPrompt": "Use case: precise-object-edit. Input image 1 is the edit target: a transparent engraved animation layer showing only this original frog-footman's pale breeches, white stockings and buckled shoes. Correct ONE problem only: the pale breeches currently have an artificial horizontal join around 59% down the canvas that looks like one pair of knees added on top of a second pair. Replace the trouser fabric between the waistband and the lower knee cuffs with ONE continuous natural pair of 18th-century breeches, one thigh per side, one knee per side, and one gathered lower cuff per side just above the stockings. Remove the extra horizontal cut/seam/ledge midway down each trouser leg. Preserve both white stockings and both buckled shoes below the lower cuffs exactly, including position, size, stance, engraving and colours. Preserve the waistband, overall high waist silhouette, transparent background and full portrait canvas. No upper body, no coat, no head, no additional limbs, no new accessories. This is a single anatomical seam correction, not a redesign or reframing."
+    },
+    {
+      "id": "frog-footman",
+      "part": "body",
+      "asset": "frog-footman~body.any.generated.webp",
+      "bytes": 436560,
+      "sha256": "594e8c5e03be6a816e8e572270212125d5921f6f2d47ede690be5ac37332ae91",
+      "width": 926,
+      "height": 1699,
+      "source": {
+        "filename": "exec-feffd35d-aa5c-4cbc-b494-99880fcfeaad.png",
+        "sha256": "862d5aa78d53ea0fa5a2ef95e654d174b2c207601e8e5672c45cb272c4c9aa56"
+      },
+      "master": {
+        "filename": "exec-94453421-f81c-4db9-b698-b691ec1b1b2e.png",
+        "sha256": "4e285b71c0727ecc4140cec0792910b26921a98073afab6c45d7aa5e598e1b44"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [0, 104, 912, 1699],
+        "16": [53, 107, 876, 1493],
+        "32": [53, 107, 876, 1492],
+        "128": [53, 108, 875, 1492],
+        "224": [54, 108, 875, 1491]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Preserve the footman upper body and coat tails while removing the whole wig and all breeches, legs and shoes for a waist-bowing rig.",
+      "fullPrompt": "Use case: background-extraction. Input image 1 is the edit target: this project's own frog-headed footman master illustration. Make an upper-body animation layer for his bow, on an actually transparent background. Keep exactly the same portrait canvas, scale, position, original engraving details and colours. Keep ONLY his frog head and face, neckcloth, waistcoat, entire brown coat including all long coat tails, both arms and hands. Remove the whole powdered white wig to transparency, revealing the natural frog head beneath it. Remove ALL pale breeches, thighs, knees, stockings and shoes to transparency: the region below the waistcoat between the coat tails must be completely empty transparent, not filled with cloth. This layer will rotate from the waist over a separate fixed pair of breeches and legs. Do not shorten the coat tails, move or enlarge the figure, add extra body parts, add text, add a background or repaint the style. It must contain no trousers or legs whatsoever.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      }
+    },
+    {
+      "id": "frog-footman",
+      "part": "curls",
+      "asset": "frog-footman~curls.any.generated.webp",
+      "bytes": 127726,
+      "sha256": "4477407ac528019bda3154afcc694d66bda1696b5755185b1f5796d6606e5876",
+      "width": 926,
+      "height": 1699,
+      "source": {
+        "filename": "exec-856f387a-231f-4396-814f-4df182e3d635.png",
+        "sha256": "d1e2d3edbd92c5a82c3e6fb15ff2a31db4231879c6d2e4b5683cc9093d2cc31e"
+      },
+      "master": {
+        "filename": "exec-94453421-f81c-4db9-b698-b691ec1b1b2e.png",
+        "sha256": "4e285b71c0727ecc4140cec0792910b26921a98073afab6c45d7aa5e598e1b44"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [44, 109, 849, 1585],
+        "16": [113, 114, 814, 629],
+        "32": [114, 114, 814, 629],
+        "128": [114, 115, 813, 628],
+        "224": [115, 115, 813, 628]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Extract the normal powdered curls for the footman upper-body rig.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      },
+      "fullPrompt": "not available to integration worker; verified intent recorded"
+    },
+    {
+      "id": "frog-footman",
+      "part": "tangle",
+      "asset": "frog-footman~tangle.any.generated.webp",
+      "bytes": 186218,
+      "sha256": "05aef9ef339209228be940cbe9d20294a7c3c75a937d9cbc238e12c39f0571db",
+      "width": 926,
+      "height": 1699,
+      "source": {
+        "filename": "exec-34538817-f2ab-4d0b-af0a-bae01d1b8073.png",
+        "sha256": "4f8874c09e6a0835fa44e6ac2378b8ccda28b6ae8db7db32b9455a3274edd727"
+      },
+      "master": {
+        "filename": "exec-94453421-f81c-4db9-b698-b691ec1b1b2e.png",
+        "sha256": "4e285b71c0727ecc4140cec0792910b26921a98073afab6c45d7aa5e598e1b44"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [14, 53, 914, 1633],
+        "16": [19, 199, 909, 757],
+        "32": [19, 199, 909, 757],
+        "128": [20, 200, 909, 757],
+        "224": [21, 201, 908, 756]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Create tangled powdered curls as a separate complete wig state.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      },
+      "fullPrompt": "not available to integration worker; verified intent recorded"
+    }
+  ],
+  "geometry": {
+    "fish-footman": {
+      "viewBox": [0, 0, 120, 220],
+      "stageWidth": 926,
+      "sourceFootY": 1630,
+      "logicalFootY": 216,
+      "sourceWaist": [475, 1045],
+      "layers": {
+        "legs": [82, 354, 0.82],
+        "body": [84, 75, 0.78],
+        "curls": [152, -30, 0.67],
+        "tangle": [232, -186, 0.53]
+      }
+    },
+    "frog-footman": {
+      "viewBox": [0, 0, 120, 220],
+      "stageWidth": 926,
+      "sourceFootY": 1646,
+      "logicalFootY": 216,
+      "sourceWaist": [466, 1005],
+      "layers": {
+        "legs": [178, 685, 0.6],
+        "body": [119, 72, 0.75],
+        "curls": [133, -30, 0.71],
+        "tangle": [164, -95, 0.66]
+      }
+    }
+  },
+  "sourceCorrections": [
+    "Initial body plates included knees, producing doubled breeches during the bow; replaced by upper-body-only edits retaining full coat tails.",
+    "Initial legs ended at the knees or cut upper thighs; replaced by complete waist-high breeches with overlap hidden behind the upper body.",
+    "The first frog waist-high revision stacked two trouser sections; a targeted imagegen correction removed the artificial join."
+  ],
+  "qa": {
+    "originality": "Own engraved fish-headed and frog-headed livery designs; no recognizable later-adaptation design observed.",
+    "inspection": "All accepted source layers inspected; PNG-based static SVG composites checked for neutral, normal wig, tangled wig and 42-degree bow. This is not a browser screenshot.",
+    "runtimeContract": "Fixed legs remain outside the unique pp__body group; pp__curls and pp__tangle remain children and follow the bow. Normal generated wig fully fades away for the alternate tangled wig; original vector behavior remains unchanged.",
+    "fallback": "All four generated layers remain display:none until every source decodes. Any layer failure preserves the full original vector drawing and its fill-box origin.",
+    "motion": "Existing 0.9-second bow and reduced-motion 42-degree still retained. Added only a generated-footman-scoped pause selector; no scene timing code changed.",
+    "knownVisualDifference": "Both leg plates are slimmer than their full masters; neutral and bowed proportions remain coherent and shoes remain grounded. Owner art review remains a later checkpoint.",
+    "browserAcceptance": "not performed in this batch"
+  },
+  "encodingException": "WebP only for this provisional transparent-layer checkpoint. No AVIF pair or responsive resampling has been introduced; source canvas and alpha are intentionally unchanged.",
+  "budget": {
+    "shippingBytes": 1901996,
+    "shippingAssetCount": 8,
+    "scope": "Pig and Pepper engraved concept-demo figures only. Images load/decode as a complete eight-layer pair; the shared asset URLs do not make them load in unrelated scenes.",
+    "storyBudgetImpactBytes": 0,
+    "referenceCriticalBudgetBytes": 400000,
+    "referenceWholeSceneBudgetBytes": 1500000,
+    "acceptance": "Concept demos are explicitly outside story-page image budgets; this checkpoint does not claim production budget acceptance."
+  }
+}

@@ -23,7 +23,18 @@
 
 import { BAKED, BAKED_PARTS } from './baked.ts';
 import { generatedAnimalSvg } from './generated-animal-layers.ts';
+import {
+  generatedBillFragment,
+  generatedCaterpillarBillSvg,
+} from './generated-caterpillar-bill.ts';
+import { generatedCheshireCatSvg } from './generated-cheshire-cat.ts';
+import { generatedFlamingoSvg } from './generated-flamingo.ts';
+import { generatedFootmanSvg } from './generated-footmen.ts';
+import { generatedGardenFigureSvg } from './generated-garden-figures.ts';
+import { generatedGardenerSvg } from './generated-gardeners.ts';
+import { generatedHedgehogSvg } from './generated-hedgehog.ts';
 import { generatedLiveExpressionSvg } from './generated-live-expressions.ts';
+import { generatedMockTurtleSvg } from './generated-mock-turtle.ts';
 import { generatedPigSvg } from './generated-pig-layers.ts';
 import {
   ART,
@@ -152,6 +163,35 @@ export function figure(
 ): string {
   const entry = entryOf(id);
   if (entry.kind === 'vector') {
+    const articulated =
+      generatedCaterpillarBillSvg(id, style, demo) ?? generatedGardenerSvg(id, style, demo);
+    if (articulated) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${articulated}</span>`;
+    }
+    const cat = generatedCheshireCatSvg(id, style, demo);
+    if (cat) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${cat}</span>`;
+    }
+    const garden = generatedGardenFigureSvg(id, style, demo);
+    if (garden) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${garden}</span>`;
+    }
+    const flamingo = generatedFlamingoSvg(id, style, demo);
+    if (flamingo) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${flamingo}</span>`;
+    }
+    const footman = generatedFootmanSvg(id, style, demo);
+    if (footman) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${footman}</span>`;
+    }
+    const mockTurtle = id === 'mock-turtle' ? generatedMockTurtleSvg(style, demo) : undefined;
+    if (mockTurtle) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${mockTurtle}</span>`;
+    }
+    const hedgehog = id === 'hedgehog' ? generatedHedgehogSvg(style, demo) : undefined;
+    if (hedgehog) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${hedgehog}</span>`;
+    }
     const expression = generatedLiveExpressionSvg(id, style, demo);
     if (expression) {
       return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${expression}</span>`;
@@ -215,6 +255,14 @@ export function svgFigure(
   const entry = entryOf(id);
   const at = `data-art="${id}" transform="translate(${x} ${y})"`;
   if (entry.kind === 'vector') {
+    const bill = id === 'bill' ? generatedBillFragment(style, demo) : undefined;
+    if (bill) {
+      return `<g class="art art--cut art--generated ${className}" ${at} data-generated=""><g transform="scale(${width / 120} ${height / 100})">${bill}</g></g>`;
+    }
+    const garden = generatedGardenFigureSvg(id, style, demo);
+    if (garden) {
+      return `<g class="art art--cut art--generated ${className}" ${at} data-generated=""><g transform="scale(${width / entry.box[0]} ${height / entry.box[1]})">${garden}</g></g>`;
+    }
     const [boxW, boxH] = entry.box;
     const generatedVariant = entry.generated?.[variant] ? variant : 'any';
     const generated = style === 'engraved' ? entry.generated?.[generatedVariant] : undefined;

@@ -1,0 +1,139 @@
+{
+  "status": "integrated-review-checkpoint-browser-validation-pending",
+  "generatedAt": "2026-10-21",
+  "generator": "OpenAI built-in image_gen; model not exposed",
+  "styleId": "IA-ENGRAVED-CUTOUT-V1",
+  "promptIntent": "Separate original Caterpillar and Bill masters into articulated engraved plates, then correct the Caterpillar head to remove the fixed hose and Bill neck plates to remove false shoulders and exposed spikes.",
+  "assets": [
+    {
+      "asset": "caterpillar~body.any.generated.webp",
+      "source": {
+        "filename": "exec-68c6a288-2d9e-4e4b-a824-78de951672ea.png",
+        "sha256": "4ed46a1135fb0679068af11cd765e53fa274370931895844cc81439ec860a9d8"
+      },
+      "width": 1374,
+      "height": 1145,
+      "alphaAbove32Bounds": [29, 320, 1157, 1094],
+      "bytes": 206462,
+      "sha256": "d6234fd4e8260d08f4eb6d52686a5fba3152e61dbecc24476c9e67a6db6d6164",
+      "alphaPreservedExactly": true,
+      "what": "Original engraved Caterpillar body without head or hookah.",
+      "encoding": "WebP quality 92, method 6, exact alpha, metadata stripped; no crop, resize, cleanup, recolour or alpha edit."
+    },
+    {
+      "asset": "caterpillar~head.any.generated.webp",
+      "source": {
+        "filename": "exec-6ba6b691-5471-41cc-a3e1-ebe8d08d85ae.png",
+        "sha256": "7a80a29fbe3b4a9eee5139d04624debca4f73f68deecf9c2f1758ad618d450c2"
+      },
+      "width": 1374,
+      "height": 1145,
+      "alphaAbove32Bounds": [919, 34, 1292, 412],
+      "bytes": 52764,
+      "sha256": "b5e19489f2ec3bfba29882058438466643099d2559c55262e5a99f86b5661362",
+      "alphaPreservedExactly": true,
+      "what": "Corrected original Caterpillar head with antennae and short mouthpiece, no hose.",
+      "encoding": "WebP quality 92, method 6, exact alpha, metadata stripped; no crop, resize, cleanup, recolour or alpha edit."
+    },
+    {
+      "asset": "caterpillar~hookah.any.generated.webp",
+      "source": {
+        "filename": "exec-4fbf66f9-f82a-432c-a0fb-c1c1c60a3b17.png",
+        "sha256": "d56d2c78e797ae167d4db82553022302a29bbe90ff8e50c116a1d22d71a2497b"
+      },
+      "width": 1374,
+      "height": 1145,
+      "alphaAbove32Bounds": [1087, 554, 1314, 1106],
+      "bytes": 63898,
+      "sha256": "7ef5bcf9c3636314b790f5034711a7006d0fc85fca2c3717d2380a49fb8c188e",
+      "alphaPreservedExactly": true,
+      "what": "Independent original floral brass-and-ceramic hookah.",
+      "encoding": "WebP quality 92, method 6, exact alpha, metadata stripped; no crop, resize, cleanup, recolour or alpha edit."
+    },
+    {
+      "asset": "bill~body.any.generated.webp",
+      "source": {
+        "filename": "exec-7e802666-c160-437d-a813-aeb34c9eda03.png",
+        "sha256": "db0b172fda0e59bce808b0439f7b0e3514f6dbb3aaca2d378f8d6f3ece6446c3"
+      },
+      "width": 1374,
+      "height": 1145,
+      "alphaAbove32Bounds": [46, 294, 1362, 1065],
+      "bytes": 225408,
+      "sha256": "65e099e81566d1eaebbbb88dd04dbd0429ad1ec66ab3364b80f6a510f118d456",
+      "alphaPreservedExactly": true,
+      "what": "Corrected original Bill body with low rounded neck seat and unchanged tail and feet.",
+      "encoding": "WebP quality 92, method 6, exact alpha, metadata stripped; no crop, resize, cleanup, recolour or alpha edit."
+    },
+    {
+      "asset": "bill~head.any.generated.webp",
+      "source": {
+        "filename": "exec-abd9fc1a-87f0-4eea-bee9-8dfd82174b5c.png",
+        "sha256": "8907dcee831d4bd733a6d42012c53bc3b037ef326db393d998c62d748e570cce"
+      },
+      "width": 1374,
+      "height": 1145,
+      "alphaAbove32Bounds": [753, 410, 1314, 883],
+      "bytes": 90308,
+      "sha256": "cd31d19e2062c093f929ccd03f8a0ae4adddc3e61d00730e5b05597e1ec4bcb6",
+      "alphaPreservedExactly": true,
+      "what": "Corrected original Bill head with rounded overlapping neck and no shoulder or foreleg.",
+      "encoding": "WebP quality 92, method 6, exact alpha, metadata stripped; no crop, resize, cleanup, recolour or alpha edit."
+    }
+  ],
+  "runtime": {
+    "caterpillar": {
+      "demos": ["caterpillar"],
+      "logicalBox": [240, 200],
+      "sourceStage": [1374, 1145],
+      "uniformScale": "270/1374",
+      "sourceFootY": 1106,
+      "headSourceMap": {
+        "scale": 0.94,
+        "translate": [36.6, 44]
+      },
+      "headPaintBounds": [173.5, -2.5, 85.5, 103.5],
+      "motion": "Original GSAP 30% 80% and peek CSS 20% 90% origins retained through the original stroke-inclusive head paint box. No padded raster participates in the moving head fill-box.",
+      "hose": "Three simple SVG strokes, transformed mouth endpoint and stationary hookah port. Updated inside the existing scene frame callback and head tween callbacks, plus one synchronization on decode completion and peek activation. Connected/ready guards, singular-matrix protection and unchanged-path deduplication apply. No new timer.",
+      "smoke": "Original CSS/SVG smoke, ember and charge behavior unchanged."
+    },
+    "bill": {
+      "demos": ["bill-the-lizard", "rabbit-house"],
+      "logicalBox": [120, 100],
+      "sourceStage": [1374, 1145],
+      "uniformScale": "115/1374",
+      "sourceFootY": 1065,
+      "headSourceMap": {
+        "scale": 0.88,
+        "translate": [195, 28]
+      },
+      "sourceHeadPivot": [900, 720],
+      "sourcePropAnchor": [1185, 503],
+      "paintBounds": [0, 0, 120, 100],
+      "sceneColor": "A 30% multiply wash uses --bl-lizard with #9c9169 fallback; no source file recolouring.",
+      "motion": "Unique bill__head definition shared by fallback and generated paint through SVG use. Existing -12 to +40 degree motion preserved.",
+      "props": "Generated head anchor applied only after all layers decode; pending and failed loads retain original hx=.767,hy=.383. House fragment retains explicit120x100 viewport and caller translation/non-uniform placement scale."
+    }
+  },
+  "validation": {
+    "inspectedSourceImages": 10,
+    "alphaIntegrity": "All five shipped WebP alpha channels compare byte-for-byte equal with their PNG sources.",
+    "staticComposition": "Original PNGs embedded into actual module SVG markup and rendered offline. Caterpillar neutral, y=-6, explain scale1.3/x=-6/y8, peek16 degrees, reduced14 degrees, body breathing1.04; Bill neutral,-12,+40 degrees.",
+    "browser": "Pending. Offline SVG evidence does not verify browser pattern/use CSS transforms, GSAP timing, asynchronous reveal, interactions, navigation teardown, pause, reduced-motion behavior or prop contact.",
+    "limitations": [
+      "Rounded Bill neck overlap remains visible as paper articulation.",
+      "Caterpillar hose is deliberately simple live SVG, not generated engraving.",
+      "Full-resolution source alpha, including low-alpha noise, is retained unchanged in shipping files.",
+      "The Caterpillar head presentation is bounded by its original motion box; the source file remains unmodified.",
+      "Review checkpoint uses WebP-only q92 encodings; final responsive/AVIF optimization remains separate."
+    ]
+  },
+  "budget": {
+    "shippingBytes": 638840,
+    "caterpillarBytes": 323124,
+    "billBytes": 315716,
+    "class": "Concept-demo raster assets, outside story page budgets.",
+    "criticality": "Requested with figure markup; no new lazy-loading path.",
+    "storyPageImageBudgetImpactBytes": 0
+  }
+}

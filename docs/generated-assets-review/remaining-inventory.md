@@ -1,6 +1,6 @@
 # Generated-image production inventory
 
-Production snapshot: **2026-10-21 05:06 UTC**. Checked against `ART`,
+Production snapshot: **2026-10-21 05:38 UTC**. Checked against `ART`,
 `LIVE_PARTS`, `CUT_OUTS`, renderer modules, actual scene selectors, generation
 results and batch records. A generated master, separated layers, runtime use,
 static verification and browser verification are different milestones. This is
@@ -8,22 +8,22 @@ not an art-acceptance or percentage-complete claim.
 
 ## Recommendation and next independent work
 
-1. Finish the combined regression gates for the newly integrated **seven animal
-   layers** and **six expression layers**. Their adapters are wired into runtime;
-   browser validation is still pending. Do not generate duplicate inputs.
-2. Continue Caterpillar, Bill and both footmen from their **four existing
-   masters**. All **thirteen layers now exist**, but visual/alpha/coordinate QA
-   and integration remain pending. Cat head and Mock Turtle masters also exist;
-   the Cat's other two poses and separated face parts are planned/in progress,
-   with no usable output verified at this snapshot.
-3. Other independent production remains: House kneeling/filling, paired hands,
-   Rabbit garden/Pat, diving Rabbit feet, gardeners, flamingos, hedgehog, bat,
-   pig-baby, jury and swimming integration. Scope each by its actual selectors;
-   none waits on approval of an unrelated portrait.
-4. For delivery weight, start with consumer-specific Herald, King, witness-box
-   and tarts derivatives. **Do not uniformly shrink all images or shrink rear
-   Alice to the apparent 16rem CSS cap.** Growth and perspective matter; see the
-   read-only audit below.
+1. Finish the combined gates for the current articulated batch. Caterpillar/Bill,
+   both footmen, all three Cat consumers, gardeners, Hedgehog and the quadrille
+   Mock Turtle are now integrated, not merely generated. Actual browser playback
+   remains unverified. Garden Rabbit/Pat fragments also have a provisional adapter.
+2. Croquet Flamingo now has its repaired head/body adapter. The original tucked
+   bird still needs articulated inputs. Complete only reviewed consumers; do not
+   flatten moving necks, pupils or jaws.
+3. New protagonist kneeling/filling/hands/from-above candidates are arriving, but
+   are not yet integrated or accepted. Other masters/parts for Gryphon, running/
+   diving Rabbit, bat, jury and baby-pig are separate intake work. Running Rabbit,
+   diving Rabbit and bat are not intentional vector exclusions.
+4. Mock Turtle chapter right-flapper generation returned no output after refusal.
+   Its original chapter drawing remains; no alternative editing route is used.
+   The independently completed quadrille host and all other work continue.
+5. Delivery-weight work remains measured proposal only. Growth and perspective
+   prohibit shrinking every source to an apparent CSS cap. See the audit below.
 
 ## Stable denominator and numerical states
 
@@ -44,21 +44,17 @@ therefore **71 IDs**, classified exactly once in sections A–E:
 The saved `11fb5dac` tree has **25 registry IDs** with generated whole-image
 sources, plus **one separate three-layer Pig rig**, six new scene-local props,
 the opt-in Mushroom and non-runtime Duchess candidate. Inspected protagonist
-working changes add **three IDs / five variants**, yielding **28 whole-source
+checkpoint changes added **three IDs / five variants**, yielding **28 whole-source
 IDs, 30 variant bindings and 29 distinct source files**. Crab is one file reused
-for two IDs. This local count does not establish publication.
+for two IDs. These sources were published in `4b9786fc`, without implying art acceptance.
 
-The thirteen animal/expression layers now have runtime adapters for **seven
-additional scoped actors**. Together with Pig, this is **eight layered actors /
-sixteen delivery layers**, separate from the 28 whole-source IDs. Their combined
-regression gates and browser verification are not implied by integration. The
-next four actors have **thirteen generated layers awaiting intake**, and Cat
-head/Mock Turtle have **two masters awaiting intake**. Generation request counts
-are not completed character counts. Source PNG masters remain
-outside Git. Ordinary `.webp` files are often baked project SVGs, not generated
-illustration; neither file count nor a single completion percentage is honest.
-
-## Matrix conventions and evidence
+The published `4b9786fc` checkpoint adds the thirteen animal/expression layers
+and five protagonist variants; all 436 unit tests / 40 files and other local gates
+passed there. It has eight scoped layered actors, separate from whole-source IDs.
+The current working batch adds fifteen further scoped actor IDs (including three
+Cat poses, three gardener numbers, one Croquet Flamingo and two garden fragments). These adapters do
+not add global registry sources or establish browser acceptance. Source masters
+and incomplete generation candidates remain outside Git.
 
 - **Master candidate** counts usable generated candidates, not approved identity.
   **Layers generated** counts available separated raster inputs. `N/A` means a
@@ -120,17 +116,17 @@ block independent production.
 | `tortoise-master` (1) | 1 | **2/2**: body, cane/arm | Generated rig in Mock Turtle | Exact alpha, measured joints, neutral/−22° composition; 14-test animal suite/typecheck passed | Pending |
 | `guinea-pig` (1) | 1 | **2/2**: body, paw | Generated rig in Bill and Witnesses; unrelated SVG fragments unchanged | Exact alpha, explicit pivot and −70°/+45° composition; 14-test animal suite/typecheck passed | Pending |
 | `pigeon` (1) | 1 | **3/3**: body, left wing, right wing | Generated rig in Caterpillar | Exact alpha, neutral/±30°/±35° and reduced ±16° compositions; 14-test animal suite/typecheck passed | Pending |
-| `hatter` (1) | 1 | **2/2**: body, hat; live eyes remain SVG | Generated rig wired; live SVG eyes/hat hooks retained | Exact alpha, 11-state source-PNG composition; prior expression/loader 14-test gate/typecheck passed; latest scene-gate/full-suite pending | Pending |
-| `dormouse` (1) | 1 | **1/1**: neutral-eye body; open/shut eyes remain SVG | Generated rig wired; live SVG eye states | Exact alpha, 11-state source-PNG composition; prior expression/loader 14-test gate/typecheck passed; latest scene-gate/full-suite pending | Pending |
-| `queen-of-hearts` (1) | 1 | **1/1**: neutral-mouth body; mouth remains SVG | Generated rig wired; live SVG mouth | Exact alpha, 11-state source-PNG composition; prior expression/loader 14-test gate/typecheck passed; latest scene-gate/full-suite pending | Pending |
-| `cook` (1) | 1 | **2/2**: body, arm/ladle | Generated rig wired; separate throwing arm | Exact alpha, 11-state source-PNG composition; prior expression/loader 14-test gate/typecheck passed; latest scene-gate/full-suite pending | Pending |
-| `caterpillar` (1) | 1 | **3/3 available**: body, head, hookah | Original | Files exist; visual/alpha/coordinate intake and head/hose/smoke integration pending | Not begun |
-| `bill` (1) | 1 | **2/2 available**: body, head | Original | Files exist; intake pending; Bill head, House colours and SVG-fragment constraints remain | Not begun |
-| `fish-footman` (1) | 1 | **4/4 available**: legs, upper body, curls, tangled curls | Original | Files exist; visual/alpha/coordinate intake and bow/curl/tangle composition pending | Not begun |
-| `frog-footman` (1) | 1 | **4/4 available**: legs, upper body, curls, tangled curls | Original | Files exist; visual/alpha/coordinate intake and bow/curl/tangle composition pending | Not begun |
-| `cheshire-cat/head` (1) | **1; intake pending** | 0 verified; separation in progress | Original | Master file verified; ears/face/eyes/pupils/grin stay independently addressable | Not begun |
-| `cheshire-cat/on-bough`, `cheshire-cat/on-hearth` (2) | **0 verified; planned/in progress**, references exist | 0 | Original | Shared identity; bough mask spares branch/last grin; hearth keeps right-eye wink | Not begun |
-| `mock-turtle` (1) | **1; intake pending** | 0 | Original | Master file verified; body plus two live tears, separate flippers/screen drops | Not begun |
+| `hatter` (1) | 1 | **2/2**: body, hat; live eyes remain SVG | Generated rig wired; live SVG eyes/hat hooks retained | Exact alpha, 11-state source-PNG composition; 436-unit published checkpoint passed | Pending |
+| `dormouse` (1) | 1 | **1/1**: neutral-eye body; open/shut eyes remain SVG | Generated rig wired; live SVG eye states | Exact alpha, 11-state source-PNG composition; 436-unit published checkpoint passed | Pending |
+| `queen-of-hearts` (1) | 1 | **1/1**: neutral-mouth body; mouth remains SVG | Generated rig wired; live SVG mouth | Exact alpha, 11-state source-PNG composition; 436-unit published checkpoint passed | Pending |
+| `cook` (1) | 1 | **2/2**: body, arm/ladle | Generated rig wired; separate throwing arm | Exact alpha, 11-state source-PNG composition; 436-unit published checkpoint passed | Pending |
+| `caterpillar` (1) | 1 + corrected head | 3/3 | Generated head/body/hookah; flexible SVG hose | Source defects repaired; fixed head paint-box, CTM hose and paused readiness guards; static review | Pending |
+| `bill` (1) | 1 + corrected head/body | 2/2 | Bill chapter and House SVG fragment | Neck/shoulder artifacts repaired; prop anchor follows same head rotation; static review | Pending |
+| `fish-footman` (1) | 1 + corrected body/legs | 4/4 | Bowing upper body, fixed legs, alternate wigs | No double knee/waist gap at 42°; 17 focused checks cover pair | Pending |
+| `frog-footman` (1) | 1 + corrected body/legs | 4/4 | Bowing upper body, fixed legs, alternate wigs | Trouser join repaired; no double knee/waist gap; static review | Pending |
+| `cheshire-cat/head` (1) | 1 | 5/5; pupils remain SVG | Croquet staged ears/face/eyes/pupils/grin | Right eye fur corrected; bounded pupil apertures; static review | Pending |
+| `cheshire-cat/on-bough`, `cheshire-cat/on-hearth` (2) | 2 | Body/tail/body plus shared head plates | Masked bough disappearance and hearth wink | Tail spur removed; mapped joints and wink; static review | Pending |
+| `mock-turtle` (1) | 1 | Whole quadrille master; chapter body/left only, right refused | Quadrille body + live SVG tears; chapter original | Tear starts mapped; partial chapter rig not enabled | Pending |
 
 Do not flatten a moving actor because its whole master looks finished. Consume
 existing animal/expression inputs before new requests. Animal deliveries add
@@ -152,18 +148,18 @@ A pending output is never evidence of a generated layer.
 
 | IDs (count) | Master candidate | Layers generated | Runtime integration | Static verification / next constraint | Browser verification |
 | --- | --- | --- | --- | --- | --- |
-| `gardener/two`, `gardener/five`, `gardener/seven` (3) | 0 | 0; body/brush per identity needed | Original baked cut-outs | Retain ranks/brushes, flip/back geometry and painting targets | Not begun |
-| `hedgehog` (1) | 0 | 0; ball/walk states needed | Original baked cut-outs | Retain roll/walk switch and tap target | Not begun |
-| `flamingo` (1) | 0 | 0; body/head and live details | Original baked cut-outs | Head pivot, neck motion and eye/pupil behavior | Not begun |
-| `flamingo/tucked` (1) | 0 | 0 | Original | Neck/reach/head/jaw/pupil selectors; not a static independent bird | Not begun |
-| `gryphon` (1) | 0 | 0 | Original | Quadrille own colours and separate paw overlays prohibit unconditional whole-image replacement | Not begun |
+| `gardener/two`, `gardener/five`, `gardener/seven` (3) | 1 + corrected base | 2 shared parts | Shared base/brush and original SVG 2/5/7 pips | Extra arm removed; three-angle proof; 6 focused tests | Pending |
+| `hedgehog` (1) | 2 poses | Ball/walk | Original state switch, walking hook and atomic fallback | Measured common ground and ready pivot; 4 tests | Pending |
+| `flamingo` (1) | 1 + corrected compact head | 2/2 | Croquet head/body; live original hands/dress | 12-pose proof, unique hooks, ready-only joint mapping; 14 focused tests | Pending |
+| `flamingo/tucked` (1) | 1 | Separation pending | Original | Neck/head/jaw/pupil still require articulated inputs | Not begun |
+| `gryphon` (1) | Corrected one-tail master | Paw separation pending | Original | Own colours and separate paw overlays require scoped adapter | Not begun |
 | `mouse/swimming` (1) | 0 | N/A; Canvas adapter needed | Procedural Canvas | Same issue as Alice; other six swimmers lie outside these two registry placeholders | Not begun |
-| `white-rabbit/running` (1) | 0 | 0 | Original | Audit Mouse's Tale live behavior and scene colours before replacing | Not begun |
-| `white-rabbit/diving` (1) | 0 | 0; body and kicking feet needed | Original | Preserve hole-lip crop and separate `foot-left` / `foot-right` | Not begun |
-| `white-rabbit/garden`, `pat` (2) | 0 | N/A planned | Original SVG fragments | Art can proceed; shared `svgFigure()` adapter exists, but fragment placements/tumbles need QA | Not begun |
-| `bat` (1) | 0 | 0; body and wings needed | Original | Retain `.rh__wing`, scene colours and tea-tray overlay | Not begun |
+| `white-rabbit/running` (1) | 1 generated | Whole-body adapter possible | Original | Mouse Tale outer SVG bounce must remain | Not begun |
+| `white-rabbit/diving` (1) | Rabbit-paw corrected master | Body/kicking feet in production | Original | Keep hole lip and independent foot pivots | Not begun |
+| `white-rabbit/garden`, `pat` (2) | 2 | N/A | Scoped atomic SVG-fragment adapters | Ground/fixed paint-box; 6 tests; Rabbit shorter silhouette is a checkpoint | Pending |
+| `bat` (1) | 1 generated | Body/wings in production | Original | Different wing pivots in Rabbit Hole and Tea Party; tea-tray overlay retained | Not begun |
 | `pig-baby` (1) | 0 | 0 | Original | Face/limbs and Duchess/hands contact need coherent layers | Not begun |
-| `jury` (1) | 0 | 0; bodies can retain SVG slates | Original | Slates/scribbles/marks/pennies/buttons and tip/sprawl behavior are functional | Not begun |
+| `jury` (1) | 12-animal master generated | SVG slates retained; intake pending | Original | Check all 12 face/slate overlaps and functional pennies/buttons | Not begun |
 | `dinah-cat`, `dinah-cat/pouncing` (2) | Intentionally none | N/A | **Retain colour-driven vector ghosts** | Rabbit Hole/Pool/Mouse's Tale supply `currentColor`, opacity and blur; raster not required | No conversion planned |
 | `guinea-pigs` (1) | None requested | N/A | **Unused registry/baked crowd entry** | No runtime consumer found; distinct from active singular `guinea-pig` | No new generation planned |
 

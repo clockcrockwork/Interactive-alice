@@ -14,6 +14,8 @@
 
 import gsap from 'gsap';
 import { figure, svgFigure } from '../art/art.ts';
+import { generatedBillHeadAnchor } from '../art/generated-caterpillar-bill.ts';
+import { hydrateGeneratedRig } from '../art/generated-rig.ts';
 import '../rabbit-house/house.css';
 import { RIM_SVG } from '../rabbit-house/figures.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
@@ -362,11 +364,16 @@ function mount(shell: DemoShell): void {
   let holds = 0;
   let outcome: 'none' | 'catch' | 'miss' = 'none';
 
-  const headAt = (r: number, sit: number): { x: number; y: number } => {
+  const billRig = garden.querySelector<SVGSVGElement>('svg[data-generated-rig="bill"]');
+  const headAt = (r: number, sit: number, head: number): { x: number; y: number } => {
     // His head in his own box (120 by 100, as shares of his width), turned with
     // him about the box's centre and then with the sitting up about his tail.
-    const hx = 0.767;
-    const hy = 0.383;
+    const generated = generatedBillHeadAnchor(
+      billRig?.hasAttribute('data-rig-ready') ?? false,
+      head,
+    );
+    const hx = generated ? generated.x / 120 : 0.767;
+    const hy = generated ? generated.y / 120 : 0.383;
     const cx = 0.5;
     const cy = 0.417;
     const a = (r * Math.PI) / 180;
@@ -408,7 +415,7 @@ function mount(shell: DemoShell): void {
     const lift = Math.max(nurse.lift, holdFx.lift);
     // On his back his head lolls to the grass; held up, it comes off it.
     const head = mix(mix(-12, 40, lift), -6, roll);
-    const at = headAt(r, sitUp);
+    const at = headAt(r, sitUp, head);
     const upside = (1 - Math.cos((r * Math.PI) / 180)) / 2;
     const style = garden.style;
     style.setProperty('--bill-x', pose.x.toFixed(4));
@@ -427,6 +434,11 @@ function mount(shell: DemoShell): void {
     garden.dataset.daze = String(fall.t < 1 ? 0 : Math.max(0, dazeLevel() - holds));
   };
   applyGarden();
+  if (billRig) {
+    void hydrateGeneratedRig(billRig).then((ready) => {
+      if (ready && billRig.isConnected) applyGarden();
+    });
+  }
 
   master.fromTo(
     fall,

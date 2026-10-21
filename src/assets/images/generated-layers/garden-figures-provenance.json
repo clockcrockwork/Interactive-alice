@@ -1,0 +1,30 @@
+{
+  "status": "provisional, browser unverified",
+  "generator": "image_gen",
+  "prompt": "original layout refs plus established engraving style; full prompt unavailable",
+  "encoding": "WebP q92 unchanged canvas and exact alpha",
+  "images": [
+    {
+      "id": "white-rabbit-garden",
+      "source": "exec-86ae9b05-3fe7-4f01-a251-83b69f61f484.png",
+      "sourceSha256": "60ac05256fc3b3d7bc5507fd0f49bc5d8eff9446174dd8b47e128fcb97fccebf",
+      "file": "src/assets/images/generated-layers/white-rabbit-garden~whole.any.generated.webp",
+      "sha256": "dd1dd9c7f990e66ecb65fcb54efb4c5ea47ee5ed046f358bcbdb526eb6718b54",
+      "bytes": 480280,
+      "width": 1402,
+      "height": 1122,
+      "bounds": [160, 16, 1354, 1079]
+    },
+    {
+      "id": "pat",
+      "source": "exec-167e530d-bf5d-4789-8a3c-a990e2c0aca8.png",
+      "sourceSha256": "6e53597d988b59e2941cd3b717917eaa35dae32ab53dc328795ae012551b3517",
+      "file": "src/assets/images/generated-layers/pat~whole.any.generated.webp",
+      "sha256": "4cf44cc9c895b09a1694002bb2af8c2ff1b4c5af75f4643ba23a793136f8fc83",
+      "bytes": 474406,
+      "width": 1182,
+      "height": 1330,
+      "bounds": [220, 18, 1047, 1297]
+    }
+  ]
+}

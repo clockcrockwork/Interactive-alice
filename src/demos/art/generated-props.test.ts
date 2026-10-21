@@ -71,10 +71,9 @@ describe('generated whole-prop cut-outs', () => {
     });
   }
 
-  it('leaves the unsupported mushroom and moving creature rigs unchanged', () => {
+  it('keeps the remaining unsupported candidates on their original routes', () => {
     for (const [id, scene] of [
       ['mushroom', 'caterpillar'],
-      ['caterpillar', 'caterpillar'],
       ['duchess', 'pig-and-pepper'],
       ['duchess', 'duchess'],
       ['runner/alice', 'caucus-race'],

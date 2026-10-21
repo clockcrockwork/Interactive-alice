@@ -1,3 +1,6 @@
+import './generated-flamingo.css';
+import './generated-cheshire-cat.css';
+import './generated-footmen.css';
 /** Atomic generated-layer readiness, including figures inserted after shell setup. */
 import './generated-rig.css';
 

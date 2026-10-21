@@ -1362,6 +1362,7 @@ export interface LocaleUIStrings {
      */
     demoLanguages: string;
     demoGeneratedMaster: string;
+    demoGeneratedUnavailable: string;
     demoGeneratedLimit: string;
     demoCompareArt: string;
   };

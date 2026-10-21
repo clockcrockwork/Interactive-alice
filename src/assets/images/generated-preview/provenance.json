@@ -31,7 +31,27 @@
     "Hair is lighter than canonical chestnut and identity still requires review.",
     "Held-object anchor is unchanged and may not meet the generated hand.",
     "Original articulated figure remains available through the checkbox.",
-    "Only the yellow candidate exists; it remains yellow even when the original comparison uses the blue look."
+    "Yellow and blue are separate unapproved candidates selected by the existing page colour preference."
   ],
-  "rights": "Project-owned generated candidate; no licence grant. No third-party artwork copied into runtime."
+  "rights": "Project-owned generated candidate; no licence grant. No third-party artwork copied into runtime.",
+  "blueCandidate": {
+    "asset": "alice--falling-overhead.blue.candidate-v1.webp",
+    "status": "unapproved-scene-comparison-candidate",
+    "generatedAt": "2026-10-21",
+    "generator": "OpenAI built-in image_gen",
+    "referenceAsset": "alice--falling-overhead.yellow.candidate-v1.webp",
+    "referenceSha256": "05ee0aec4986548051dcd77183fc1a9007492092c6393282ef21c4eda271dafd",
+    "sourceMasterSha256": "8e5fa47403fc12057babf23658de51196576019edcd9986036b8b74d640d5c56",
+    "sha256": "40c502bdfa41f6979b3e58da577ec9f627995583f0e69688ca9258d57cd17dc5",
+    "width": 1206,
+    "height": 1305,
+    "bytes": 1563228,
+    "alphaAbove32Bounds": [52, 10, 1205, 1286],
+    "transforms": "Lossless WebP encoding only; alpha and every nontransparent RGBA pixel match source PNG.",
+    "limitations": [
+      "Reference edit changed small facial, line and silhouette details; not a pixel-identical recolour.",
+      "Right fingertips approach canvas edge; framing needs visual review.",
+      "Static whole-image candidate, no arm or held-object rig."
+    ]
+  }
 }

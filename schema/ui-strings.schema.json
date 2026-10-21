@@ -218,6 +218,7 @@
         "demoMoveRound",
         "demoLanguages",
         "demoGeneratedMaster",
+        "demoGeneratedUnavailable",
         "demoGeneratedLimit",
         "demoCompareArt"
       ],
@@ -1204,6 +1205,10 @@
           "description": "Demo index: the name of the language switch, read by assistive technology; each choice is named in its own language."
         },
         "demoGeneratedMaster": {
+          "type": "string",
+          "minLength": 1
+        },
+        "demoGeneratedUnavailable": {
           "type": "string",
           "minLength": 1
         },

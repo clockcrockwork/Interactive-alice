@@ -1,7 +1,7 @@
 # Rabbit-hole overhead master comparison
 
-This Draft PR is stacked on PR #12, branch `claude/dreamy-franklin-xq89iv`,
-verified at `3752d3ff05056c33ebba7627ed92c3f2edbadd7a` before implementation.
+This comparison is consolidated in Draft PR #29. Its historical implementation
+started on PR #12 at `3752d3ff05056c33ebba7627ed92c3f2edbadd7a`.
 It does not replace the shared `alice/falling` registry entry or change main.
 
 ## Open the comparison
@@ -12,7 +12,7 @@ On this branch's protected preview, open:
 - `demos/ja/rabbit-hole/?artPreview=overhead`
 
 Scroll into the fall. Open “Compare artwork” in the lower-left. Its checkbox switches between the
-unapproved generated yellow master and the original articulated drawing at the
+unapproved generated master in the selected colour and the original articulated drawing at the
 same scroll position. Without the explicit query parameter the original remains
 unchanged. The panel starts collapsed to reduce obstruction on small screens.
 The fixed comparison control sits over the lower-left scene edge. At a 390x844
@@ -23,7 +23,9 @@ does take pointer input in that small rectangle, so a drag that starts there doe
 not tumble Alice; the rest of the stage remains available. It covers decorative
 floor art in the captured fall scene, not a caption or active scene control. The
 other three demos reusing `alice/falling` are unchanged.
-The yellow master deliberately remains yellow even if the original is set to blue.
+Choose yellow or blue from the existing demo-index colour control before opening
+the comparison. Only the selected candidate is fetched. The original remains
+visible until the candidate loads, and is retained if the download fails.
 
 ## Scope and camera
 
@@ -35,7 +37,7 @@ review point.
 
 The original SVG remains mounted with all moving groups and keeps its layout box.
 The generated image overlays it only while the checkbox is checked. The master
-keeps its natural 1206:1304 aspect ratio and matches the old canvas height rather
+keeps its natural aspect ratio (yellow 1206:1304; blue 1206:1305) and matches the old canvas height rather
 than shrinking into the old narrow width. It is never stretched. This deliberately
 lets its silhouette spread wider for in-scene review.
 
@@ -51,7 +53,12 @@ The generation master and full prompt remain outside Git, as required by the ass
 
 Alpha QA found 52.10% fully transparent pixels. Apparent saturated red/yellow fringe
 pixels have only alpha 1–4/255; the figure is not delivered on an opaque backdrop.
-The figure is fully in-frame. This is numerical image QA, not browser acceptance.
+This paragraph describes the original yellow file, not later candidates.
+The blue reference edit is 1206×1305 and 1,563,228 bytes, with 42.01% fully
+transparent pixels. Its alpha >32 bounds are (52,10)–(1205,1286); right fingertips
+approach the edge. Facial details, linework and silhouette differ slightly from
+yellow, so it is not a pixel-identical recolour. This is numerical image QA, not
+browser or art acceptance.
 
 The preview delivers a losslessly encoded WebP copy of the source master. The source
 master and full prompt are retained outside Git; the repository records only the
@@ -95,9 +102,10 @@ intake would need accepted art, articulated cut-outs and optimized WebP/AVIF del
 ## Consolidated review status
 
 PR #27's repeated transition diagnostic was reproduced against the exact PR #12
-base and this exact consolidated head. The workflow integration and repeat-run
-script are removed from this consolidated branch to preserve the manual-only
-browser-verification policy from PR #28. The screenshot contact sheet below
+base and this exact consolidated head. The repeated diagnostic workflow and script were removed from this consolidated
+branch. However, inspection on 2026-10-21 confirmed that this branch's `checks.yml`
+still contains PR-triggered frontend E2E; removing the diagnostic did not establish
+a manual-only browser-verification policy. Runner policy is a separate follow-up. The screenshot contact sheet below
 records selected scene states; it does not replace continuous-motion or real-device
 testing.
 
@@ -113,3 +121,9 @@ positions, not continuous-motion or real-device tests. The phone screenshot show
 the comparison control over decorative floor art; the measured input footprint
 and bounded drag impact are described above. Final visual acceptance of the
 generated Alice artwork remains a human decision.
+
+## Current consolidated checkpoint list
+
+See [review checkpoints](generated-assets-review/checkpoints.md) for the single
+review entry point and the later verified CI evidence. Earlier test counts above
+are historical and must not be mistaken for coverage of later edits.

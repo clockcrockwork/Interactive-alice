@@ -198,7 +198,8 @@
     "demoUndoKnot": "むすびめを ほどく",
     "demoKnotHolds": "むすびめは ほどけない。ネズミは おこって しまった",
     "demoBirdLeave": "この ひとを かえらせる",
-    "demoGeneratedMaster": "生成した黄色の原画を表示（未採用の比較用）",
+    "demoGeneratedMaster": "生成した原画を表示（未採用の比較用）",
+    "demoGeneratedUnavailable": "候補画像を読み込めませんでした。元の動きを表示しています。",
     "demoGeneratedLimit": "外すと元の動きに戻ります。部位は動きません。手・髪・角度は確認中。",
     "demoCompareArt": "画像を比較"
   }

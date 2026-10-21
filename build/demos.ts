@@ -378,6 +378,7 @@ const UI_FOR_SCRIPT = [
   'demoCompareArt',
   'demoGeneratedMaster',
   'demoGeneratedLimit',
+  'demoGeneratedUnavailable',
   'demoReducedMotion',
   'demoPuff',
   'demoNibbleLeft',

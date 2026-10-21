@@ -1,0 +1,16 @@
+{
+  "id": "white-rabbit/running",
+  "source": "exec-0e4c811a-97f2-40c4-a19f-f163b7edb2f8.png",
+  "sourceSha256": "f8848658c75bbc288bb8b25db42e2c3c8800395423b9b14359fa0b23f8e7358d",
+  "encodedSha256": "2dc37454896ac530a5dc8254d698e57ce88428fbc23bdd5df7441d79d09adf60",
+  "bytes": 500756,
+  "dimensions": [1402, 1122],
+  "encoding": "WebP quality92 method6 exact true; unchanged dimensions and exact alpha",
+  "alphaBoundsAbove32": [34, 24, 1393, 1068],
+  "groundSourceY": 1067,
+  "logicalGroundY": 98,
+  "logicalBox": [120, 100],
+  "sourceIntent": "running white rabbit, original RABBIT_SVG layout reference and herald generated style; no watch because separate original watch overlay",
+  "promptHash": null,
+  "verification": "source visually inspected; offline placement and unit contracts; browser not executed"
+}

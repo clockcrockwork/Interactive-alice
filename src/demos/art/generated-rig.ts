@@ -1,3 +1,5 @@
+import './generated-alice-poses.css';
+import './generated-bat-diving.css';
 import './generated-flamingo.css';
 import './generated-cheshire-cat.css';
 import './generated-footmen.css';

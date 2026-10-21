@@ -198,3 +198,38 @@ image after refusal. Available base/left candidates are not assembled into an
 incomplete rig and the refused operation is not repeated via another tool.
 Tucked Flamingo, new protagonist poses, swimming and remaining actors continue
 as separate production work. This checkpoint is not the end of image addition.
+
+## House, hands, swimming and small actors (2026-10-21 05:56 UTC)
+
+Five further protagonist pose IDs now have both-colour scoped rendering: House
+kneeling/filling, left/right hands and Caterpillar's headless top-down shoulders.
+The two hand-contact adaptations only activate after successful image decode;
+original placement is retained on load/error. House growth keeps its fixed paint
+box and room crop; the overhead body maps to the existing live-neck junction.
+
+- [House, paired hands and shoulders](alice-house-hands-shoulders.md)
+- [All eight swimmers through the actual Canvas path](swimming-canvas-20261021.md)
+- [Bat wing designs and diving Rabbit feet](bat-diving-20261021.md)
+- [Twelve live jury slates and running Rabbit](jury-running-rabbit-20261021.md)
+
+Swimming reuses seven existing animal images and adds only Alice's two dedicated
+upper-body sources. The nine assets serve eight character kinds, not nine new
+characters. Direction, slope, jump, transparency, zoom, Mouse's nine bristles and
+front water remain procedural; decode failure retains the original drawing.
+Bat and diving Rabbit keep their distinct moving parts and original scene
+contracts. Jury keeps twelve original slates/marks/pennies and unchanged buttons.
+Running Rabbit retains the outer SVG used by its existing run/bounce/mirror.
+
+The combined local gate passes 545 unit tests across 55 files, typecheck, full
+lint, data checks and production build. Independent static review covered the
+new geometry and fallback logic. Browser contract preparation/listing and
+untouched-source offline composition are not browser execution. All real scene
+playback, phone/desktop contact, browser-specific pattern/use/Canvas behavior,
+reduced motion and performance remain unverified. The twenty new runtime images total 7,734,364 bytes, before reuse and review
+illustrations. No performance-budget pass is claimed.
+
+This is another intermediate save, not image-task completion. Duchess hand/chin
+contacts, Mushroom cap support, Gryphon palette/paws, tucked Flamingo and remaining
+protagonist motion continue. Refused standing/rear blue, Mock Turtle right flapper,
+baby-pig limb and falling-leg edits are not retried through alternate tools;
+only dependent rigs remain original while independent work proceeds.

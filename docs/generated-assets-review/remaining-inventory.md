@@ -1,6 +1,6 @@
 # Generated-image production inventory
 
-Production snapshot: **2026-10-21 05:38 UTC**. Checked against `ART`,
+Production snapshot: **2026-10-21 05:55 UTC**. Checked against `ART`,
 `LIVE_PARTS`, `CUT_OUTS`, renderer modules, actual scene selectors, generation
 results and batch records. A generated master, separated layers, runtime use,
 static verification and browser verification are different milestones. This is
@@ -15,10 +15,10 @@ not an art-acceptance or percentage-complete claim.
 2. Croquet Flamingo now has its repaired head/body adapter. The original tucked
    bird still needs articulated inputs. Complete only reviewed consumers; do not
    flatten moving necks, pupils or jaws.
-3. New protagonist kneeling/filling/hands/from-above candidates are arriving, but
-   are not yet integrated or accepted. Other masters/parts for Gryphon, running/
-   diving Rabbit, bat, jury and baby-pig are separate intake work. Running Rabbit,
-   diving Rabbit and bat are not intentional vector exclusions.
+3. Five new protagonist pose groups now have both-colour scoped adapters; all
+   eight swimmers use the real Canvas path. Running/diving Rabbit, Bat and Jury
+   are provisionally integrated, not art-accepted. Gryphon/Duchess contact work
+   continues independently; baby-pig remains incomplete after a refused part.
 4. Mock Turtle chapter right-flapper generation returned no output after refusal.
    Its original chapter drawing remains; no alternative editing route is used.
    The independently completed quadrille host and all other work continue.
@@ -51,9 +51,11 @@ for two IDs. These sources were published in `4b9786fc`, without implying art ac
 The published `4b9786fc` checkpoint adds the thirteen animal/expression layers
 and five protagonist variants; all 436 unit tests / 40 files and other local gates
 passed there. It has eight scoped layered actors, separate from whole-source IDs.
-The current working batch adds fifteen further scoped actor IDs (including three
+The published `4e5e8790` checkpoint adds fifteen further scoped actor IDs (including three
 Cat poses, three gardener numbers, one Croquet Flamingo and two garden fragments). These adapters do
-not add global registry sources or establish browser acceptance. Source masters
+not add global registry sources or establish browser acceptance. The next working batch adds nine SVG
+scoped IDs (five protagonist poses, Bat, diving/running Rabbit and Jury), while
+eight swimmers use a separate Canvas adapter. Source masters
 and incomplete generation candidates remain outside Git.
 
 - **Master candidate** counts usable generated candidates, not approved identity.
@@ -96,11 +98,11 @@ registry sources is historical: the three static IDs below now have candidates.
 | `alice/standing` (1) | 1 yellow; blue refused, no output | N/A | Yellow HTML/SVG source; original blue | Placement-sized SVG paint rectangle; static ground checks at 0.55/1/1.6; 404-unit checkpoint | Riverbank jump/House growth-crossfade pending |
 | `alice/falling` (1) | Yellow/blue overhead comparisons, not an accepted rig | 3 study images, anatomically inconsistent; not usable runtime layers | Original animation; comparison opt-in | Shoulder/arm mismatch documented; real head/legs/hair/skirt/arms exceed a three-part rig | Identity, seams, bow, fingers and jar contact pending |
 | `alice/running-away`, `alice/sitting` (2) | 0 | 0 | Original | Running needs legs/soles/arms; sitting needs arm/head/lids despite absence from `LIVE_PARTS` | Not begun |
-| `alice/kneeling`, `alice/filling` (2) | 0 | N/A planned | Original House fragments | Whole-pose art can proceed; keep growth/crossfade and separate window hand/chimney leg | Not begun |
-| `alice/hand-left`, `alice/hand-right` (2) | 0 | N/A planned | Original | Paired contacts for mushroom pieces, baby and lobster; fingers do not move independently | Not begun |
-| `alice/from-above` (1) | 0 | N/A planned | Original SVG fragment | Shoulders under Caterpillar's long neck, **not** the falling-overhead candidate; preserve junction | Not begun |
+| `alice/kneeling`, `alice/filling` (2) | 4 colour candidates | N/A | Scoped atomic House fragments, fixed growth box | Mapped head/room crop and offline growth proof; focused tests | Pending |
+| `alice/hand-left`, `alice/hand-right` (2) | 4 colour candidates | N/A | Caterpillar/Pig/Lobster scoped hands; ready-only prop contact anchors | Phone/desktop offline contact proofs; original failure placement retained | Pending |
+| `alice/from-above` (1) | Corrected top-down candidates, both colours | N/A | Scoped Caterpillar shoulders under live neck | Original neck junction (60,52) mapped, offline proof | Pending |
 | `runner/alice` (1) | 0 | 0; holding-arm strategy needed | Original | Adapter exists; pocket (60,88), hand (77,84) and `.cr__arm--hold` constrain artwork | Not begun |
-| `alice/swimming` (1) | 0 | N/A; Canvas adapter needed | Procedural Canvas | `sea.ts` does not call `loadArtImage()`; registry-only changes would do nothing | Not begun |
+| `alice/swimming` (1) | 2 colour candidates | N/A | Actual Canvas drawing with procedural fallback | Head/chest waterline, asynchronous cache and foreground-water contracts | Pending |
 | `alice/silhouette` (1) | Intentionally none | N/A | **Retain vector** | Shared colour-driven shadow/children geometry; not an obligatory generated portrait | No conversion planned |
 
 Baseline `alice/from-behind` is outside these fourteen IDs. Yellow remains a
@@ -142,7 +144,7 @@ A pending output is never evidence of a generated layer.
 | IDs (count) | Master candidate | Layers generated | Runtime integration | Static verification | Browser verification |
 | --- | --- | --- | --- | --- | --- |
 | `mushroom` (1) | 1 | N/A | **Opt-in only**, `artPreview=mushroom`; default original | [Support geometry/fallback](../generated-mushroom-preview.md) measured | Creature/cap support overlap pending |
-| `duchess` (1) | 1 | N/A; contact correction needed | **Original retained** in Kitchen and walk | Hands roughly 40–60 logical pixels high; chin/shoulder mismatch and tight margins recorded | Corrected contact candidate unavailable |
+| `duchess` (1) | Several seated corrections under evaluation | Contact correction ongoing | Original retained in Kitchen and walk | Latest source height improved; hands still too central, exact correction measured | Pending |
 
 ### E. Other actors and retained geometry: 18 IDs
 
@@ -153,13 +155,13 @@ A pending output is never evidence of a generated layer.
 | `flamingo` (1) | 1 + corrected compact head | 2/2 | Croquet head/body; live original hands/dress | 12-pose proof, unique hooks, ready-only joint mapping; 14 focused tests | Pending |
 | `flamingo/tucked` (1) | 1 | Separation pending | Original | Neck/head/jaw/pupil still require articulated inputs | Not begun |
 | `gryphon` (1) | Corrected one-tail master | Paw separation pending | Original | Own colours and separate paw overlays require scoped adapter | Not begun |
-| `mouse/swimming` (1) | 0 | N/A; Canvas adapter needed | Procedural Canvas | Same issue as Alice; other six swimmers lie outside these two registry placeholders | Not begun |
-| `white-rabbit/running` (1) | 1 generated | Whole-body adapter possible | Original | Mouse Tale outer SVG bounce must remain | Not begun |
-| `white-rabbit/diving` (1) | Rabbit-paw corrected master | Body/kicking feet in production | Original | Keep hole lip and independent foot pivots | Not begun |
+| `mouse/swimming` (1) | Existing runner source reused | N/A | Canvas adapter; all seven animal swimmers reuse existing images | Nine live bristles, jump/full-body emergence and front water preserved | Pending |
+| `white-rabbit/running` (1) | 1 | N/A | Four-scene atomic whole adapter, original SVG wrapper | Ground98/fixed120×100 box, watch overlay unchanged; 5 tests | Pending |
+| `white-rabbit/diving` (1) | Corrected rabbit soles | 3/3 | Riverbank body/independent kicking feet | Explicit source maps, original foot motion distance, static proof | Browser fill-box measurement pending |
 | `white-rabbit/garden`, `pat` (2) | 2 | N/A | Scoped atomic SVG-fragment adapters | Ground/fixed paint-box; 6 tests; Rabbit shorter silhouette is a checkpoint | Pending |
-| `bat` (1) | 1 generated | Body/wings in production | Original | Different wing pivots in Rabbit Hole and Tea Party; tea-tray overlay retained | Not begun |
-| `pig-baby` (1) | 0 | 0 | Original | Face/limbs and Duchess/hands contact need coherent layers | Not begun |
-| `jury` (1) | 12-animal master generated | SVG slates retained; intake pending | Original | Check all 12 face/slate overlaps and functional pennies/buttons | Not begun |
+| `bat` (1) | 1 | 3/3 | Rabbit Hole/Tea Party body and wings | Different scene pivots preserved; six-pose proof and focused contracts | Pending |
+| `pig-baby` (1) | Endpoint masters | 9 available; pig limbs refused | Original staged morph retained | Incomplete rig not enabled; refused operation not retried | Not integrated |
+| `jury` (1) | 12-animal master | Original live SVG slates | Trial/Witnesses decoration plus twelve unchanged slates | Ready-only parent offsets, faces clear, pennies/buttons retained; 3 tests | Pending |
 | `dinah-cat`, `dinah-cat/pouncing` (2) | Intentionally none | N/A | **Retain colour-driven vector ghosts** | Rabbit Hole/Pool/Mouse's Tale supply `currentColor`, opacity and blur; raster not required | No conversion planned |
 | `guinea-pigs` (1) | None requested | N/A | **Unused registry/baked crowd entry** | No runtime consumer found; distinct from active singular `guinea-pig` | No new generation planned |
 
@@ -169,7 +171,7 @@ A pending output is never evidence of a generated layer.
 | --- | --- | --- | --- | --- | --- |
 | Marmalade jar, brandy bottle, jellyfish, tarts table, witness box, cauldron (6) | 6 | N/A; scribble/steam separate | Six generated props | 3,044,646 bytes; source alpha/canvas, eight tarts and witness gaps checked; 391-unit checkpoint | Rail/witness occlusion, hand contact and motion pending |
 | Earlier kitchen, tea-table and witness small props | Existing deliveries | Existing lid/front/back and other layers | See individual batch records | Do not regenerate/count as new character IDs | Current-tree confirmation pending |
-| Bill hedge, Caterpillar held mushroom pieces, Croquet cushion/card props, Pool table/key/eight swimmers | No new candidates recorded here | Not produced in this batch | Original SVG/CSS/Canvas | Audit consumers first; ranks/text/hit areas/colour geometry may remain vector. Generated fan does not finish Pool. | Not begun |
+| Bill hedge, Caterpillar held mushroom pieces, Croquet cushion/card props, Pool table/key | No new candidates recorded here | Not produced in this batch | Original SVG/CSS | Audit consumers first; ranks/text/hit areas/colour geometry may remain vector. Generated fan does not finish Pool. | Not begun |
 
 ## Read-only CSS delivery-size audit
 

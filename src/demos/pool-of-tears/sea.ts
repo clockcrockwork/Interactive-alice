@@ -6,6 +6,7 @@
  */
 
 import { mix, seeded } from '../shell/shell.ts';
+import { createSwimmingArt } from './generated-swimmers.ts';
 
 export interface Swimmer {
   /** Position across the water, 0..1, and the side it faces. */
@@ -107,6 +108,9 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
   const rings: Ring[] = [];
   const tears: Tear[] = [];
   const random = seeded(23);
+  // Start decoding without delaying the scene. Its procedural art remains the
+  // load/error fallback, including on a flat or paper page.
+  const swimmingArt = createSwimmingArt(() => canvas.isConnected);
   const colours = readColours({
     hall: '--pt-hall',
     hallDeep: '--pt-hall-deep',
@@ -209,6 +213,17 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
     ctx.scale(swimmer.dir, 1);
     const s = (Math.min(width, height) / 900) * state.zoom;
     ctx.scale(s, s);
+    if (
+      swimmingArt.draw(
+        ctx,
+        swimmer,
+        (swimmer.jump * 90 - (1 - swimmer.show) * 40) / s,
+        colours.mouse,
+      )
+    ) {
+      ctx.restore();
+      return;
+    }
     switch (swimmer.kind) {
       case 'mouse': {
         const spike = swimmer.bristle;
@@ -378,6 +393,7 @@ export function createSea(canvas: HTMLCanvasElement, reduced: boolean): Sea | un
       }
     },
     draw() {
+      swimmingArt.select();
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       if (state.covered) {
         return;

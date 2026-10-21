@@ -65,19 +65,33 @@ export const MAP_SVG = `
   </g>
 </svg>`;
 
+const JAR_SCRIBBLE = `  <path d="M19 40 H41 M19 45 H37 M19 50 H33" stroke="var(--ink-secondary)" stroke-width="2" stroke-linecap="round"/>`;
+
 export const JAR_SVG = `
 <svg viewBox="0 0 60 80" focusable="false">
   <rect x="14" y="4" width="32" height="12" rx="3" fill="var(--sepia-light)"/>
   <path d="M10 16 L50 16 L52 70 Q52 78 44 78 L16 78 Q8 78 8 70 Z" fill="var(--rh-marmalade)" opacity="0.92"/>
   <path d="M14 22 L18 22 L18 66 L14 66 Z" fill="var(--world-glow)" opacity="0.5"/>
   <rect x="14" y="34" width="32" height="20" rx="2" fill="var(--paper-base)"/>
-  <path d="M19 40 H41 M19 45 H37 M19 50 H33" stroke="var(--ink-secondary)" stroke-width="2" stroke-linecap="round"/>
+${JAR_SCRIBBLE}
 </svg>`;
+
+/** The same centred jar on its track and in her hand; the label stays a vector scribble. */
+export function jarMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return JAR_SVG;
+  const src = new URL(
+    '../../assets/images/figures/marmalade-jar.any.generated.webp',
+    import.meta.url,
+  ).href;
+  return `<svg viewBox="0 0 60 80" focusable="false" data-generated-marmalade-jar=""><image href="${src}" x="0" y="0" width="60" height="80" preserveAspectRatio="xMidYMid meet"/>${JAR_SCRIBBLE}</svg>`;
+}
 
 /** A thing off a shelf, in her hand: a book of the colour it was, a jar, or a map. */
 export const heldSvg = (kind: 'book' | 'jar' | 'map', color = 'var(--rh-book-1)'): string => {
   if (kind === 'jar') {
-    return JAR_SVG;
+    return jarMarkup();
   }
   if (kind === 'map') {
     return `

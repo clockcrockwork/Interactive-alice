@@ -54,6 +54,10 @@ export const HEARTH_SVG = `
   <path d="M100 300 h200" stroke="var(--pp-stone-deep)" stroke-width="10"/>
 </svg>`;
 
+const CAULDRON_STEAM = `  <g class="pp__steam">
+    <path d="M86 54 q-10 -18 0 -34 M120 50 q-12 -20 0 -40 M154 54 q-10 -18 0 -34" stroke="var(--pp-steam)" stroke-width="6" fill="none" stroke-linecap="round"/>
+  </g>`;
+
 export const CAULDRON_SVG = `
 <svg viewBox="0 0 240 200" focusable="false">
   <path d="M120 30 L60 8 M120 30 L180 8" stroke="var(--pp-iron)" stroke-width="6" stroke-linecap="round"/>
@@ -61,10 +65,20 @@ export const CAULDRON_SVG = `
   <ellipse cx="120" cy="70" rx="80" ry="18" fill="var(--pp-iron-rim)"/>
   <ellipse cx="120" cy="68" rx="66" ry="11" fill="var(--pp-soup)"/>
   <path d="M30 76 q-14 4 -8 18 M210 76 q14 4 8 18" stroke="var(--pp-iron)" stroke-width="8" fill="none" stroke-linecap="round"/>
-  <g class="pp__steam">
-    <path d="M86 54 q-10 -18 0 -34 M120 50 q-12 -20 0 -40 M154 54 q-10 -18 0 -34" stroke="var(--pp-steam)" stroke-width="6" fill="none" stroke-linecap="round"/>
-  </g>
+${CAULDRON_STEAM}
 </svg>`;
+
+/** The engraved iron and soup sit beneath the original independently animated steam. */
+export function cauldronMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return CAULDRON_SVG;
+  const src = new URL(
+    '../../assets/images/figures/cauldron-body.any.generated.webp',
+    import.meta.url,
+  ).href;
+  return `<svg viewBox="0 0 240 200" focusable="false" data-generated-cauldron-body=""><image href="${src}" x="0" y="0" width="240" height="200" preserveAspectRatio="xMidYMid meet"/>${CAULDRON_STEAM}</svg>`;
+}
 
 /** A line of writing as a scribble: no letters, only the hand's wave. */
 const scribble = (y: number, x0: number, x1: number, wave = 3.2): string => {

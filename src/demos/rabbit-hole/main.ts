@@ -16,7 +16,7 @@ import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { createStride, fieldHtml } from '../riverbank/field.ts';
 import { attachDemo, type Beat, type DemoShell, mix } from '../shell/shell.ts';
-import { heldSvg, JAR_SVG, mapSheetMarkup } from './figures.ts';
+import { heldSvg, jarMarkup, mapSheetMarkup } from './figures.ts';
 import { installGeneratedPreview } from './generated-preview.ts';
 import './rabbit-hole.css';
 import { TUNNEL_DOORS, trapdoorHtml } from './trapdoor.ts';
@@ -84,7 +84,7 @@ function mount(shell: DemoShell): void {
   props.innerHTML =
     `<div class="rh__cupboard"></div>` +
     `<div class="rh__alice">${figure('alice/falling')}<div class="rh__hand"></div></div>` +
-    `<div class="rh__jar-track"><div class="rh__jar" data-jar>${JAR_SVG}</div></div>` +
+    `<div class="rh__jar-track"><div class="rh__jar" data-jar>${jarMarkup()}</div></div>` +
     `<div class="rh__dinah">${figure('dinah-cat')}</div>` +
     `<div class="rh__rabbit">${figure('white-rabbit/running')}</div>`;
   installGeneratedPreview(shell.root, shell.ui);

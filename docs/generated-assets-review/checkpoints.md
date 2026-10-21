@@ -26,7 +26,7 @@ scene; a coloured PNG/WebP cannot be recoloured by the page's CSS tokens.
 
 Every route also has a `demos/ja/…` equivalent. Review at desktop and phone width,
 with ordinary motion and reduced motion. Ordinary flat/paper pages must keep their original vector paths. The explicit
-`artPreview=overhead` URL is a deliberate comparison exception, regardless of
+`artPreview=overhead` and `artPreview=mushroom` URLs is a deliberate comparison exception, regardless of
 selected treatment; it must not change ordinary pages.
 
 ## Deferred art decisions, not technical passes
@@ -88,3 +88,40 @@ in `rig-candidates/`, or serve the repository root locally to inspect compositio
 Cloud UI could not reach the local development server, so no new runtime visual
 acceptance was recorded. Previous preview URLs and the contact sheet remain
 historical until an exact-new-head deployment is independently verified.
+
+## Continuing production beyond the first checkpoint
+
+The [complete production inventory](remaining-inventory.md) separates independent
+whole drawings from coherent-layer and renderer-adapter work. The
+[2026-10-21 whole-cutout batch](whole-cutout-batch-20261021.md) adds fifteen
+non-protagonist illustrations (fourteen runtime sources plus one Duchess candidate) and records measured delivery sizes and source
+geometry. This does not complete the image-addition task. Mushroom is an opt-in
+comparison, not a default replacement; the Pig rig has a first coherent three-layer review checkpoint, while the
+overhead rig still needs coherent anatomy/layers. Continue independent production rather than treating
+later art review as a global stop.
+
+Mushroom comparison: `demos/caterpillar/?artPreview=mushroom` and its Japanese
+equivalent. See [measured support geometry and fallback](../generated-mushroom-preview.md).
+
+## Expanded production checkpoint (2026-10-21 04:39 UTC)
+
+This intermediate save has 25 registry IDs with generated whole-image sources,
+including the reused runner Crab, plus a separate three-layer pig rig in its two
+animated scenes. It is not 25 new illustrations and not completion of all 75 IDs.
+Six additional scene props and the opt-in Mushroom comparison are included.
+Duchess remains original at runtime because of measured contact mismatch.
+
+All 391 unit tests across 36 files, typecheck, lint, data checks and production
+build passed locally on Node 24.19.0 (not the pinned Node 22). Independent static
+review found no high-confidence blocker in the retained runtime changes. Existing
+story-staging TODO notices and the build's >500 kB chunk warning remain.
+
+The two focused Playwright files register 196 cases across configured projects;
+registration is not execution. No new-head browser/E2E, phone, Firefox or WebKit
+pass is claimed. Local browser execution remains restricted. Exact preview source
+SHA must be checked after publication before treating that deployment as current.
+The commit uses `[skip ci]` to avoid retriggering the costly branch workflow; this
+means required checks on the new head may remain pending, not satisfied.
+
+Next independent work continues with first-person protagonist views, the standing
+SVG adapter, and small-part character rigs. No final art approval is inferred.

@@ -1126,6 +1126,613 @@
       "sourceHeight": 1075,
       "styleSpecification": "IA-ENGRAVED-CUTOUT-V1",
       "placement": "x-3.035811 y12.483784 width302.485135 height222.263514 inside original 300x220 canvas; whole-source framing with xMidYMid meet, original wrapper and independent SVG overlays retained."
+    },
+    {
+      "file": "figures/conger-eel.any.generated.webp",
+      "what": "Registry figure conger-eel, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated herald style reference while preserving the existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1536,
+      "height": 1024,
+      "footY": 888,
+      "bytes": 305236,
+      "sourceSha256": "0c65a44fc9bca4dbeb314eacbeef9d0ebc3bc22e471b0512b1b88a74c0aa4c37",
+      "sha256": "e67e595f5ba7870f50e09cc5bc48851b19cf63f98c8057200a2b2815a21ea4f6",
+      "references": [
+        {
+          "file": "conger-eel.any.webp",
+          "sha256": "9f63a0d73f43e3981dc90ca10c3e6033d48a87886aa15e410b365cfa7a0b56b8"
+        },
+        {
+          "file": "white-rabbit--herald.any.generated.webp",
+          "role": "style only",
+          "sha256": "a792c03bf4181596764f704be694e7bb0d48641c3b3ae08e0b4c3f74bee75518"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [34, 280, 1498, 889]
+    },
+    {
+      "file": "figures/march-hare.any.generated.webp",
+      "what": "Registry figure march-hare, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated herald style reference while preserving the existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 984,
+      "height": 1599,
+      "footY": 1580,
+      "bytes": 456080,
+      "sourceSha256": "6f6f9fefdecba75ad05d440908581fc7ae6ca43dcd74c1657cc8975fd273758c",
+      "sha256": "a813537404d47492cb80aa456e1dc3e94c5ddce1627c346d47a7ee38cb38c49e",
+      "references": [
+        {
+          "file": "march-hare.any.webp",
+          "sha256": "23601ae39ffe102ef28845ae9c4a74b30db9eaae221841b782c72b06d8901d47"
+        },
+        {
+          "file": "white-rabbit--herald.any.generated.webp",
+          "role": "style only",
+          "sha256": "a792c03bf4181596764f704be694e7bb0d48641c3b3ae08e0b4c3f74bee75518"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [171, 16, 902, 1581]
+    },
+    {
+      "file": "figures/dancer--seal.any.generated.webp",
+      "what": "Registry figure dancer/seal, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated style reference while preserving existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1254,
+      "height": 1254,
+      "footY": 1170,
+      "bytes": 420354,
+      "sourceSha256": "3fc743dcc9d4699e223355ad902a5a32df681bb49e35efbe4b50f1f604443f56",
+      "sha256": "967cfb9e6ba1ebfa3fc3d492309c4d1b3d116a6b28aefdeb01026fb73a1bed9e",
+      "references": [
+        {
+          "file": "dancer--seal.any.webp",
+          "role": "layout",
+          "sha256": "603a9a80273d48b7c161dcbc55298afbe8489b68a2d0dab89f6d808de1b63817"
+        },
+        {
+          "file": "lobster.any.generated.webp",
+          "role": "style only",
+          "sha256": "5721115b79fa146f635e803dd9b644356ead968782856cb9a036ba2a342637d2"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [110, 108, 1169, 1171]
+    },
+    {
+      "file": "figures/dancer--turtle.any.generated.webp",
+      "what": "Registry figure dancer/turtle, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated style reference while preserving existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1254,
+      "height": 1254,
+      "footY": 1101,
+      "bytes": 406608,
+      "sourceSha256": "95b27c7fd885fb326f22284583efafc3ab382f9f48adc7ed4fb6266e9fd01201",
+      "sha256": "21ff8ae7f747d545d066e10a3182d126e60f7aebd062746328b8c650b65b5dca",
+      "references": [
+        {
+          "file": "dancer--turtle.any.webp",
+          "role": "layout",
+          "sha256": "16a3e5335ad809febe538d01f8d5f61281eb8fc85c0273ea4e75d85c2811124a"
+        },
+        {
+          "file": "lobster.any.generated.webp",
+          "role": "style only",
+          "sha256": "5721115b79fa146f635e803dd9b644356ead968782856cb9a036ba2a342637d2"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [27, 192, 1233, 1102]
+    },
+    {
+      "file": "figures/dancer--snail.any.generated.webp",
+      "what": "Registry figure dancer/snail, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated style reference while preserving existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1254,
+      "height": 1254,
+      "footY": 981,
+      "bytes": 388340,
+      "sourceSha256": "b42975974e91ad57a07aeef729532834d4a4e71d6c84616fcdc984b3ab607003",
+      "sha256": "e25f4df66adc22a0d00bdbb23c08353a8f64d8daab8b391b7c65ce8f7a2a5b9f",
+      "references": [
+        {
+          "file": "dancer--snail.any.webp",
+          "role": "layout",
+          "sha256": "e0b2953c08808fc774e648ca4e1017ad245d5296d45dede8e0a982c91d390e7f"
+        },
+        {
+          "file": "lobster.any.generated.webp",
+          "role": "style only",
+          "sha256": "5721115b79fa146f635e803dd9b644356ead968782856cb9a036ba2a342637d2"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [41, 329, 1229, 982]
+    },
+    {
+      "file": "figures/dancer--porpoise.any.generated.webp",
+      "what": "Registry figure dancer/porpoise, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated style reference while preserving existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1254,
+      "height": 1254,
+      "footY": 900,
+      "bytes": 219524,
+      "sourceSha256": "34043daacb834aba3265acaace4aac066f251d33964ab97761b8507d4950b020",
+      "sha256": "19230bde3b1fadf176e38c994f1fbe9c1d837b0872fe68710c05751cb429eb83",
+      "references": [
+        {
+          "file": "dancer--porpoise.any.webp",
+          "role": "layout",
+          "sha256": "28a4283e628c9dc294d670a6082f383d3a77f8e0f41af19ecdb23888ba462770"
+        },
+        {
+          "file": "lobster.any.generated.webp",
+          "role": "style only",
+          "sha256": "5721115b79fa146f635e803dd9b644356ead968782856cb9a036ba2a342637d2"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [34, 346, 1235, 901]
+    },
+    {
+      "file": "figures/king-of-hearts.any.generated.webp",
+      "what": "Registry figure king-of-hearts, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated style reference while preserving existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1024,
+      "height": 1536,
+      "footY": 1504,
+      "bytes": 496960,
+      "sourceSha256": "d7b64b30871bb3d903bcc355ca230bca3c204f828dc106b093e3e87efbc617ab",
+      "sha256": "37b7f2feb2c23d5a2e0db339289839940cf79b3340289cd5f1bc00e9d5e12327",
+      "references": [
+        {
+          "file": "king-of-hearts.any.webp",
+          "role": "layout",
+          "sha256": "cf958ccc87aa38d016d03d43cd5ca035cfad577b354da95d6518d7b1a6749569"
+        },
+        {
+          "file": "white-rabbit--herald.any.generated.webp",
+          "role": "style only",
+          "sha256": "a792c03bf4181596764f704be694e7bb0d48641c3b3ae08e0b4c3f74bee75518"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [84, 11, 940, 1505]
+    },
+    {
+      "file": "figures/knave-of-hearts.any.generated.webp",
+      "what": "Registry figure knave-of-hearts, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated style reference while preserving existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1000,
+      "height": 1573,
+      "footY": 1505,
+      "bytes": 369792,
+      "sourceSha256": "fc9e4ff7ea5515e0d76b3ccb56c1e46923b4fa6ce1e561a029b8f9baafe69d3a",
+      "sha256": "c0edee45216accd28760ea0ed8ac295bc388f258a853344b6011ab3bbccab521",
+      "references": [
+        {
+          "file": "knave-of-hearts.any.webp",
+          "role": "layout",
+          "sha256": "4ff45325eee9d5f654b6ab03ae1721aa5bda68d37f19f67c3c24c965a3c5a0da"
+        },
+        {
+          "file": "white-rabbit--herald.any.generated.webp",
+          "role": "style only",
+          "sha256": "a792c03bf4181596764f704be694e7bb0d48641c3b3ae08e0b4c3f74bee75518"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [132, 120, 869, 1506]
+    },
+    {
+      "file": "figures/card-soldier.any.generated.webp",
+      "what": "Registry figure card-soldier, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated style reference while preserving existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 927,
+      "height": 1697,
+      "footY": 1648,
+      "bytes": 337110,
+      "sourceSha256": "e774b17c163201ddff955fc1decf94bc9089441c12932eaf5024da144d6fb36a",
+      "sha256": "adbdc9c5f86bb2ecff2c2c2d7b26c084d48714d780d37674c1fad5f03902ec4f",
+      "references": [
+        {
+          "file": "card-soldier.any.webp",
+          "role": "layout",
+          "sha256": "4b1ea2347e4705ac714a2d4cc12c185bdc951fc6362e68171294ef05a875738e"
+        },
+        {
+          "file": "white-rabbit--herald.any.generated.webp",
+          "role": "style only",
+          "sha256": "a792c03bf4181596764f704be694e7bb0d48641c3b3ae08e0b4c3f74bee75518"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [118, 34, 870, 1649]
+    },
+    {
+      "file": "figures/duchess.any.generated.webp",
+      "what": "Registry figure duchess, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated style reference while preserving existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1205,
+      "height": 1305,
+      "footY": 1299,
+      "bytes": 545860,
+      "sourceSha256": "cfda472817167c7771ff287278d120c0740e717b643c84c3750a54626d2e3fd1",
+      "sha256": "1afca7a000012be1f840efecd0671621608ad40d45d1950c18b49470140e1230",
+      "references": [
+        {
+          "file": "duchess.any.webp",
+          "role": "layout",
+          "sha256": "e4b97741745632524ebd6481869319f2a2c5585b159575f197e11de3fd7921ca"
+        },
+        {
+          "file": "white-rabbit--herald.any.generated.webp",
+          "role": "style only",
+          "sha256": "a792c03bf4181596764f704be694e7bb0d48641c3b3ae08e0b4c3f74bee75518"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [5, 2, 1199, 1300]
+    },
+    {
+      "file": "figures/dancer--salmon.any.generated.webp",
+      "what": "Registry figure dancer/salmon, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated style reference while preserving existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1254,
+      "height": 1254,
+      "footY": 1207,
+      "bytes": 185398,
+      "sourceSha256": "aab7d00a53da6918b1b3285193f0573cc1f7bb5fffbf0ed06f145d12f7523625",
+      "sha256": "5fa4ae6b711e79992c8f9bce0876ece149a98a111e7989b4d964364b3317b4cb",
+      "references": [
+        {
+          "file": "dancer--salmon.any.webp",
+          "role": "layout",
+          "sha256": "3950818f4ab12f7848cf2d891aebaf54bf28fa779ef6166f0032d2b46832ff19"
+        },
+        {
+          "file": "white-rabbit--herald.any.generated.webp",
+          "role": "style only",
+          "sha256": "a792c03bf4181596764f704be694e7bb0d48641c3b3ae08e0b4c3f74bee75518"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [436, 56, 824, 1208]
+    },
+    {
+      "file": "figures/dancer--whiting.any.generated.webp",
+      "what": "Registry figure dancer/whiting, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated style reference while preserving existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1254,
+      "height": 1254,
+      "footY": 1194,
+      "bytes": 209690,
+      "sourceSha256": "73a528fc2752e769cabc652df4b6c6e320d24ef6c7ff65a5a299ee83b752765e",
+      "sha256": "482f0a98ace29eb03c7aa4dda0f11346ed9a2d70def36f66517218996cd158db",
+      "references": [
+        {
+          "file": "dancer--whiting.any.webp",
+          "role": "layout",
+          "sha256": "4e9df99f68504951f7006be4928b88a3bc05a323573549d669e88c1ed42e283e"
+        },
+        {
+          "file": "white-rabbit--herald.any.generated.webp",
+          "role": "style only",
+          "sha256": "a792c03bf4181596764f704be694e7bb0d48641c3b3ae08e0b4c3f74bee75518"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [389, 46, 896, 1195]
+    },
+    {
+      "file": "figures/card-arch.any.generated.webp",
+      "what": "Registry figure card-arch, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated style reference while preserving existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1499,
+      "height": 1049,
+      "footY": 990,
+      "bytes": 308914,
+      "sourceSha256": "7ad79acab6cb89b0699b10ef909bdd974fb8009624146c09e499f8753c4a8fdb",
+      "sha256": "14c61355d6959968b9e78664c55e7b0c370aa24a1d167f3ee5f03cbdc1926b37",
+      "references": [
+        {
+          "file": "card-arch.any.webp",
+          "role": "layout",
+          "sha256": "d553262c1b95f2517fe5155f59b213b99ce5550939f61a45ff268fd06d9be1a1"
+        },
+        {
+          "file": "white-rabbit--herald.any.generated.webp",
+          "role": "style only",
+          "sha256": "a792c03bf4181596764f704be694e7bb0d48641c3b3ae08e0b4c3f74bee75518"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [28, 66, 1470, 991]
+    },
+    {
+      "file": "figures/alices-sister.any.generated.webp",
+      "what": "Registry figure alices-sister, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Create a seated reader on a low bank without a book, retaining the scene separate book overlay.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1536,
+      "height": 1024,
+      "footY": 1002,
+      "bytes": 398702,
+      "sourceSha256": "9b7d6ebcbad5a34f8ae4e637e64f0fd046a5bfe5bde04295642a04f4defb518c",
+      "sha256": "7728c78cd003de37987bc9f5984c5c4fcffbe89638a8574cd87efd18d787ad2d",
+      "references": [
+        {
+          "file": "alices-sister.any.webp",
+          "role": "layout",
+          "sha256": "59de82ce1bbd6f5c2937a9ed21f3f4fb41466bb904ac6a9eb86f1eca4a55e74c"
+        },
+        {
+          "file": "white-rabbit--herald.any.generated.webp",
+          "role": "style only",
+          "sha256": "a792c03bf4181596764f704be694e7bb0d48641c3b3ae08e0b4c3f74bee75518"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [15, 29, 1521, 1003]
+    },
+    {
+      "file": "figures/rose-tree.any.generated.webp",
+      "what": "Registry figure rose-tree, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Create foliage and trunk only, leaving all ten existing rose buttons separate and preserving their target positions.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1182,
+      "height": 1330,
+      "footY": 1315,
+      "bytes": 621238,
+      "sourceSha256": "16ae95c9632665dc36fa9c983d40fe10fd5f807b410f8331731353d0005956b9",
+      "sha256": "6ef13c7ccd209abeeb89e66a83d26fe51c5b03507b6cab94e18a9d5fbe76626a",
+      "references": [
+        {
+          "file": "rose-tree.any.webp",
+          "role": "layout",
+          "sha256": "84606d729423e7c643805cf17ca53bbd74153c60e8fdfe16495abdda3eef6cc1"
+        },
+        {
+          "file": "lobster.any.generated.webp",
+          "role": "style only",
+          "sha256": "5721115b79fa146f635e803dd9b644356ead968782856cb9a036ba2a342637d2"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [17, 100, 1173, 1316]
+    },
+    {
+      "file": "figures/runner--duck.any.generated.webp",
+      "what": "Registry figure runner/duck, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated style reference while preserving existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1165,
+      "height": 1350,
+      "footY": 1252,
+      "bytes": 390336,
+      "sourceSha256": "211e1086e89cdae4231b74ef090166decf142f66e34a5c91f0063c423a057c17",
+      "sha256": "fbee55b3210c14902acd14f20af7ca845a4fe74a7bc7130a784be6d01e5e3317",
+      "references": [
+        {
+          "file": "lobster.any.generated.webp",
+          "role": "style only",
+          "sha256": "5721115b79fa146f635e803dd9b644356ead968782856cb9a036ba2a342637d2"
+        },
+        {
+          "file": "runner-duck-vector-reference@4x.png",
+          "role": "layout rendered from original runnerSvg; reference outside Git",
+          "sha256": "c4305c5881d0182784a0837fc392a71f466ad501095f89c30895dd0a79325d05"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [16, 232, 1149, 1253]
+    },
+    {
+      "file": "figures/runner--eaglet.any.generated.webp",
+      "what": "Registry figure runner/eaglet, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated style reference while preserving existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1166,
+      "height": 1349,
+      "footY": 1166,
+      "bytes": 338508,
+      "sourceSha256": "58bd589fc3523fb666564c8db8944d4fd5968241f0f5d07cc3fe7e278eb47b47",
+      "sha256": "232983712f6024f4d3c722916702db3686f104be02d82d4ab4f94eba7cfdd27a",
+      "references": [
+        {
+          "file": "lobster.any.generated.webp",
+          "role": "style only",
+          "sha256": "5721115b79fa146f635e803dd9b644356ead968782856cb9a036ba2a342637d2"
+        },
+        {
+          "file": "runner-eaglet-vector-reference@4x.png",
+          "role": "layout rendered from original runnerSvg; reference outside Git",
+          "sha256": "3541d784cb99fdbb64d0da4659936bcc1353a3112caa80ac44c5efb6ad8c4d90"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [27, 313, 1145, 1167]
+    },
+    {
+      "file": "figures/runner--lory.any.generated.webp",
+      "what": "Registry figure runner/lory, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated style reference while preserving existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1164,
+      "height": 1351,
+      "footY": 1211,
+      "bytes": 312184,
+      "sourceSha256": "6e3cbc5e8b64996aeb1e75fd48a0b825a163114f9021f43e4249dca448970135",
+      "sha256": "9b7621f4d710de3edb4ea86f8d33ff4a66845bdaad952a177f4094be562edccc",
+      "references": [
+        {
+          "file": "lobster.any.generated.webp",
+          "role": "style only",
+          "sha256": "5721115b79fa146f635e803dd9b644356ead968782856cb9a036ba2a342637d2"
+        },
+        {
+          "file": "runner-lory-vector-reference@4x.png",
+          "role": "layout rendered from original runnerSvg; reference outside Git",
+          "sha256": "e1289c730c4ee68d00820a6d5b5fcca6716fd406a60443499537d10c564d37fc"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [12, 341, 1140, 1212]
+    },
+    {
+      "file": "figures/runner--mouse.any.generated.webp",
+      "what": "Registry figure runner/mouse, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated style reference while preserving existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1164,
+      "height": 1351,
+      "footY": 1117,
+      "bytes": 299808,
+      "sourceSha256": "24a268f41b4b11ba50d9fb04f4ce6df3cda024d44911b5f30ea63c4a09faeef7",
+      "sha256": "e67edc18550e70339947173c0f3e25f70ab69935a58cfe27efdee1086e0682eb",
+      "references": [
+        {
+          "file": "lobster.any.generated.webp",
+          "role": "style only",
+          "sha256": "5721115b79fa146f635e803dd9b644356ead968782856cb9a036ba2a342637d2"
+        },
+        {
+          "file": "runner-mouse-vector-reference@4x.png",
+          "role": "layout rendered from original runnerSvg; reference outside Git",
+          "sha256": "f37460f743a17f97d4fd655428bcf9e6606ce8ef035f85b77996b76ccdd4502f"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [36, 434, 1154, 1118]
+    },
+    {
+      "file": "figures/runner--magpie.any.generated.webp",
+      "what": "Registry figure runner/magpie, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated style reference while preserving existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1164,
+      "height": 1351,
+      "footY": 1252,
+      "bytes": 284634,
+      "sourceSha256": "96d8a071d098388c5808965078b95e2a91f7c2583d104329b58dc49219fc281a",
+      "sha256": "52022650f9ba74901a215e53234138459d11f5e1af31098461524dfc6b7212ba",
+      "references": [
+        {
+          "file": "lobster.any.generated.webp",
+          "role": "style only",
+          "sha256": "5721115b79fa146f635e803dd9b644356ead968782856cb9a036ba2a342637d2"
+        },
+        {
+          "file": "runner-magpie-vector-reference@4x.png",
+          "role": "layout rendered from original runnerSvg; reference outside Git",
+          "sha256": "bb5631ab5364729708b82278c1fc2d3fd53343bf36371ab65ed049f7fd7dc7eb"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [6, 372, 1151, 1253]
+    },
+    {
+      "file": "figures/runner--dodo.any.generated.webp",
+      "what": "Registry figure runner/dodo, original engraved whole cutout.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Use project vector layout and generated style reference while preserving existing whole-figure motion.",
+      "date": "2026-10-21",
+      "styleId": "IA-ENGRAVED-CUTOUT-V1",
+      "edits": "WebP quality 92 encoding only; original canvas and alpha unchanged. No resize, crop, recolour or cleanup. Master/full prompt retained outside Git.",
+      "width": 1164,
+      "height": 1351,
+      "footY": 1342,
+      "bytes": 416672,
+      "sourceSha256": "585d79fd8f7960a343c656aa7f564d25c98c8b061222032c01e87f6d76395445",
+      "sha256": "4bc17ab5b56437793ec0e0ecb5602248bfdebf83bf5b45a6bfbe731296888538",
+      "references": [
+        {
+          "file": "lobster.any.generated.webp",
+          "role": "style only",
+          "sha256": "5721115b79fa146f635e803dd9b644356ead968782856cb9a036ba2a342637d2"
+        },
+        {
+          "file": "runner-dodo-vector-reference@4x.png",
+          "role": "layout rendered from original runnerSvg; reference outside Git",
+          "sha256": "dc867493f24d32c30a40d07287bbc1eab9b088c93139baeaab32a753555b80af"
+        }
+      ],
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [57, 334, 1158, 1343]
     }
   ]
 }

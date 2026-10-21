@@ -22,6 +22,7 @@
  */
 
 import { BAKED, BAKED_PARTS } from './baked.ts';
+import { generatedPigSvg } from './generated-pig-layers.ts';
 import {
   ART,
   type ArtEntry,
@@ -149,6 +150,10 @@ export function figure(
 ): string {
   const entry = entryOf(id);
   if (entry.kind === 'vector') {
+    const pig = id === 'pig/trotting' ? generatedPigSvg(style, demo) : undefined;
+    if (pig) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="pig/trotting">${pig}</span>`;
+    }
     const generatedVariant = entry.generated?.[variant] ? variant : 'any';
     const generated = style === 'engraved' ? entry.generated?.[generatedVariant] : undefined;
     if (generated) {
@@ -158,9 +163,13 @@ export function figure(
       const height = generated.height * scale;
       const x = (w - width) / 2;
       const y = h - generated.footY * scale;
+      const image = `<image class="art__image" data-variant="${generatedVariant}" href="${generated.src}" x="${x}" y="${y}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet"/>`;
+      // Runners animate this group; their arms and scarf are inserted into it in
+      // the same logical coordinates, above the picture and moving with it.
+      const drawing = id.startsWith('runner/') ? `<g class="cr__figure">${image}</g>` : image;
       // Keep the scene's original layout/growth box. Only the image moves within
       // it: its visible soles, rather than its transparent padding, meet h.
-      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated=""><svg viewBox="0 0 ${w} ${h}" focusable="false"><image class="art__image" data-variant="${generatedVariant}" href="${generated.src}" x="${x}" y="${y}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet"/></svg></span>`;
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated=""><svg viewBox="0 0 ${w} ${h}" focusable="false">${drawing}</svg></span>`;
     }
     const cut = cutOutsFor(id, style, demo);
     if (cut) {

@@ -17,6 +17,16 @@ export const JELLY_SVG = `
   <circle cx="32" cy="26" r="2.5" fill="var(--ink-primary)"/><circle cx="48" cy="26" r="2.5" fill="var(--ink-primary)"/>
 </svg>`;
 
+/** A whole jellyfish inside the original bouncing SVG and its unchanged hit area. */
+export function jellyMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return JELLY_SVG;
+  const src = new URL('../../assets/images/figures/jellyfish.any.generated.webp', import.meta.url)
+    .href;
+  return `<svg viewBox="0 0 80 80" focusable="false" data-generated-jellyfish=""><image href="${src}" x="0" y="0" width="80" height="80" preserveAspectRatio="xMidYMid meet"/></svg>`;
+}
+
 const TUREEN_SHADOW = `  <ellipse cx="100" cy="120" rx="70" ry="12" fill="oklch(from var(--ink-primary) l c h / 0.2)"/>`;
 
 const TUREEN_STEAM = `  <g class="lq__steam">

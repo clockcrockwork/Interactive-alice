@@ -76,7 +76,7 @@ const cutout = async (figure: Locator, id: string, width: number, height: number
   await expect(image).toHaveAttribute('data-variant', 'any');
   await expect(image).toHaveAttribute('preserveAspectRatio', 'xMidYMid meet');
   const source = (await image.getAttribute('href')) ?? '';
-  expect(source).toContain(`${id}.any.generated`);
+  expect(source).toContain(`${id.replaceAll('/', '--')}.any.generated`);
   const measured = await image.evaluate(async (el) => {
     const raster = new Image();
     raster.src = el.getAttribute('href') ?? '';
@@ -423,13 +423,19 @@ for (const style of ['flat', 'paper']) {
     test.slow();
     const requests: string[] = [];
     page.on('request', (request) => {
-      if (/(?:lobster|crab|mushroom|wall-map)\.any\.generated/.test(request.url()))
+      if (
+        /(?:lobster|crab|mushroom|wall-map|conger-eel|march-hare)\.any\.generated/.test(
+          request.url(),
+        )
+      )
         requests.push(request.url());
     });
     await page.addInitScript((art) => localStorage.setItem('alice-demos:art', art), style);
     for (const [scene, selector, viewBox] of [
       ['lobster-quadrille', '[data-art="lobster"]', '0 0 160 120'],
       ['mock-turtle', '[data-art="crab"]', '0 0 200 120'],
+      ['mock-turtle', '[data-art="conger-eel"]', '0 0 300 200'],
+      ['tea-party', '[data-art="march-hare"]', '0 0 160 260'],
       ['caterpillar', '[data-art="mushroom"]', '0 0 400 320'],
       ['rabbit-hole', '.rh__map-sheet', '0 0 400 300'],
     ] as const) {
@@ -447,4 +453,166 @@ for (const style of ['flat', 'paper']) {
     }
     expect(requests).toEqual([]);
   });
+}
+
+for (const locale of ['', 'ja/']) {
+  for (const motion of ['reduce', 'no-preference'] as const) {
+    test(`whole-figure eel and hare preserve their scene boxes: ${locale || 'en-simple'} ${motion}`, async ({
+      page,
+    }) => {
+      test.slow();
+      const errors = collectErrors(page);
+      for (const [scene, id, w, h] of [
+        ['mock-turtle', 'conger-eel', 300, 200],
+        ['tea-party', 'march-hare', 160, 260],
+        ['witnesses', 'march-hare', 160, 260],
+      ] as const) {
+        await visit(page, scene, locale, motion);
+        const figure = page.locator(`[data-art="${id}"]`);
+        await cutout(figure, id, w, h);
+        for (const progress of [0, 0.25, 0.5, 0.75, 1, 0.5, 0]) {
+          await page.evaluate((value) => window.__aliceDemo?.seek(value), progress);
+          await settled(page);
+          await expect(figure).toHaveAttribute('data-art', id);
+          await expect(figure.locator('image')).toHaveCount(1);
+        }
+        await noPageOverflow(page);
+      }
+      expect(errors).toEqual([]);
+    });
+  }
+}
+
+for (const locale of ['', 'ja/']) {
+  for (const style of ['engraved', 'flat', 'paper'] as const) {
+    test(`generated shore dancers retain whole-card motion and style fallback: ${locale || 'en-simple'} ${style}`, async ({
+      page,
+    }) => {
+      await page.addInitScript((art) => localStorage.setItem('alice-demos:art', art), style);
+      const requests: string[] = [];
+      page.on('request', (request) => {
+        if (/dancer--.*[.]any[.]generated/.test(request.url())) requests.push(request.url());
+      });
+      await page.goto(`/demos/${locale}lobster-quadrille/`);
+      await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
+      for (const kind of ['seal', 'turtle', 'snail', 'porpoise', 'salmon', 'whiting']) {
+        const figures = page.locator(`[data-art="dancer/${kind}"]`);
+        expect(await figures.count()).toBeGreaterThan(0);
+        for (const figure of await figures.all()) {
+          if (style === 'engraved') await cutout(figure, `dancer/${kind}`, 140, 140);
+          else {
+            await expect(figure).not.toHaveAttribute('data-generated');
+            await expect(figure.locator('image,img')).toHaveCount(0);
+          }
+        }
+      }
+      for (const progress of [0.25, 0.5, 0.75, 1, 0.5, 0]) {
+        await page.evaluate((value) => window.__aliceDemo?.seek(value), progress);
+        await settled(page);
+      }
+      await noPageOverflow(page);
+      if (style !== 'engraved') expect(requests).toEqual([]);
+    });
+  }
+}
+
+for (const locale of ['', 'ja/']) {
+  for (const style of ['engraved', 'flat', 'paper'] as const) {
+    test(`new court and bank cutouts retain overlays and original styles: ${locale || 'en-simple'} ${style}`, async ({
+      page,
+    }) => {
+      test.slow();
+      await page.addInitScript((art) => localStorage.setItem('alice-demos:art', art), style);
+      const errors = collectErrors(page);
+      for (const [scene, ids] of [
+        [
+          'trial',
+          [
+            ['king-of-hearts', 160, 240],
+            ['knave-of-hearts', 140, 220],
+            ['card-soldier', 120, 220],
+          ],
+        ],
+        [
+          'croquet',
+          [
+            ['card-arch', 200, 140],
+            ['rose-tree', 320, 360],
+          ],
+        ],
+        ['riverbank', [['alices-sister', 300, 200]]],
+      ] as const) {
+        await page.goto(`/demos/${locale}${scene}/`);
+        await expect(page.locator('.demo')).toHaveAttribute('data-attached', '', {
+          timeout: 30_000,
+        });
+        await settled(page);
+        for (const [id, w, h] of ids) {
+          const figures = page.locator(`[data-art="${id}"]`);
+          expect(await figures.count()).toBeGreaterThan(0);
+          for (const figure of await figures.all()) {
+            if (style === 'engraved') await cutout(figure, id, w, h);
+            else {
+              await expect(figure).not.toHaveAttribute('data-generated');
+              await expect(figure.locator('image,img')).toHaveCount(0);
+            }
+          }
+        }
+        if (scene === 'riverbank') await expect(page.locator('.rb__book')).toHaveCount(1);
+        if (scene === 'croquet') {
+          const roses = page.locator('.cq__rose');
+          await expect(roses).toHaveCount(10);
+          await roses.first().evaluate((el) => (el as HTMLButtonElement).click());
+          await expect(roses.first()).toHaveAttribute('aria-pressed', 'true');
+        }
+        for (const progress of [0, 0.5, 1, 0]) {
+          await page.evaluate((value) => window.__aliceDemo?.seek(value), progress);
+          await settled(page);
+        }
+        await noPageOverflow(page);
+      }
+      expect(errors).toEqual([]);
+    });
+  }
+}
+
+for (const locale of ['', 'ja/']) {
+  for (const style of ['engraved', 'flat', 'paper'] as const) {
+    test(`generated runners keep animated groups and style fallback: ${locale || 'en-simple'} ${style}`, async ({
+      page,
+    }) => {
+      test.slow();
+      await page.addInitScript((art) => localStorage.setItem('alice-demos:art', art), style);
+      for (const scene of ['caucus-race', 'mouse-tale']) {
+        await page.goto(`/demos/${locale}${scene}/`);
+        await expect(page.locator('.demo')).toHaveAttribute('data-attached', '', {
+          timeout: 30_000,
+        });
+        await settled(page);
+        for (const kind of ['duck', 'eaglet', 'lory', 'mouse', 'crab', 'dodo', 'magpie']) {
+          const figures = page.locator(`[data-art="runner/${kind}"]`);
+          expect(await figures.count()).toBeGreaterThan(0);
+          for (const figure of await figures.all()) {
+            await expect(figure.locator('.cr__figure')).toHaveCount(1);
+            if (style === 'engraved') {
+              await expect(figure).toHaveAttribute('data-generated', '');
+              await expect(figure.locator('.cr__figure > image')).toHaveCount(1);
+              await expect(figure.locator(':scope > svg')).toHaveAttribute(
+                'viewBox',
+                '0 0 100 116',
+              );
+            } else {
+              await expect(figure).not.toHaveAttribute('data-generated');
+              await expect(figure.locator('image,img')).toHaveCount(0);
+            }
+          }
+        }
+        for (const progress of [0, 0.5, 1, 0]) {
+          await page.evaluate((value) => window.__aliceDemo?.seek(value), progress);
+          await settled(page);
+        }
+        await noPageOverflow(page);
+      }
+    });
+  }
 }

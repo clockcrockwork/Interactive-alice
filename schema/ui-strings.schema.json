@@ -220,7 +220,10 @@
         "demoGeneratedMaster",
         "demoGeneratedUnavailable",
         "demoGeneratedLimit",
-        "demoCompareArt"
+        "demoCompareArt",
+        "demoGeneratedMushroom",
+        "demoGeneratedMushroomLimit",
+        "demoGeneratedMushroomUnavailable"
       ],
       "additionalProperties": false,
       "properties": {
@@ -1217,6 +1220,18 @@
           "minLength": 1
         },
         "demoCompareArt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "demoGeneratedMushroom": {
+          "type": "string",
+          "minLength": 1
+        },
+        "demoGeneratedMushroomLimit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "demoGeneratedMushroomUnavailable": {
           "type": "string",
           "minLength": 1
         }

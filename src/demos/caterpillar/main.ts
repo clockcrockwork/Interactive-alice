@@ -21,7 +21,9 @@ import {
   seeded,
 } from '../shell/shell.ts';
 import './caterpillar.css';
+import './generated-preview.css';
 import { ASK_SVG, LEFT_BIT_SVG, RIGHT_BIT_SVG } from './figures.ts';
+import { installGeneratedPreview } from './generated-preview.ts';
 import { INCHES, onNotch, reading, THREE } from './measure.ts';
 
 /** Her height in inches: three on the mushroom (THREE, in measure.ts), one with her
@@ -120,6 +122,7 @@ function mount(shell: DemoShell): void {
   // Its head is a group of its own; the body breathes by a CSS animation.
   const catHead = caterpillar?.querySelector<SVGGElement>('.ct__head') ?? caterpillar;
   const peek = meadow.querySelector<HTMLElement>('.ct__peek');
+  installGeneratedPreview(shell.stage, shell.ui);
 
   // --- Above the trees: a sea of leaves far below and her neck running down into it.
   const treetops = shell.layer('ct__treetops');

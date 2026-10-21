@@ -18,7 +18,7 @@ import '../rabbit-house/house.css';
 import { RIM_SVG } from '../rabbit-house/figures.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import './bill.css';
-import { BOTTLE_SVG, CLUMP_SVG, GARDEN_HOUSE_SVG, LEAVES } from './figures.ts';
+import { bottleMarkup, CLUMP_SVG, GARDEN_HOUSE_SVG, LEAVES } from './figures.ts';
 
 /** Where Bill comes down, as a share of the frame's width. */
 const LAND_X = 0.64;
@@ -103,7 +103,7 @@ function mount(shell: DemoShell): void {
     '<div class="bl__bill-hit"></div></div>' +
     `<div class="bl__clump">${CLUMP_SVG}</div>` +
     `<div class="bl__leaves">${LEAVES}</div>` +
-    `<div class="bl__nurse"><div class="bl__nurse-pig">${pig}</div><div class="bl__bottle">${BOTTLE_SVG}</div></div>` +
+    `<div class="bl__nurse"><div class="bl__nurse-pig">${pig}</div><div class="bl__bottle">${bottleMarkup()}</div></div>` +
     '<div class="bl__drag"></div>';
   garden.style.setProperty('--land-x', String(LAND_X));
   const faller = garden.querySelector<HTMLElement>('.bl__faller');

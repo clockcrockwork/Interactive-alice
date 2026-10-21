@@ -20,7 +20,7 @@ import { closeBough } from '../cheshire-cat/figures.ts';
 import { attachDemo, type DemoShell, mix, REDUCED_SETTLE, seeded } from '../shell/shell.ts';
 import './pig.css';
 import {
-  CAULDRON_SVG,
+  cauldronMarkup,
   DOOR_LEAF_SVG,
   HEARTH_SVG,
   HOUSE_SVG,
@@ -134,7 +134,7 @@ function mount(shell: DemoShell): void {
     '<div class="pp__room">' +
     '<div class="pp__wall"></div><div class="pp__shelf"></div><div class="pp__floor"></div>' +
     `<div class="pp__hearth">${HEARTH_SVG}<div class="pp__cat">${figure('cheshire-cat/on-hearth')}</div></div>` +
-    `<div class="pp__cauldron">${CAULDRON_SVG}</div>` +
+    `<div class="pp__cauldron">${cauldronMarkup()}</div>` +
     `<div class="pp__cook">${figure('cook')}</div>` +
     `<div class="pp__duchess">${figure('duchess')}<div class="pp__baby-in-arms" data-stage="0">${figure('pig-baby')}</div></div>` +
     '<div class="pp__smoke"></div><div class="pp__anger"></div>' +

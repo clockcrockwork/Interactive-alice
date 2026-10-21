@@ -1365,5 +1365,8 @@ export interface LocaleUIStrings {
     demoGeneratedUnavailable: string;
     demoGeneratedLimit: string;
     demoCompareArt: string;
+    demoGeneratedMushroom: string;
+    demoGeneratedMushroomLimit: string;
+    demoGeneratedMushroomUnavailable: string;
   };
 }

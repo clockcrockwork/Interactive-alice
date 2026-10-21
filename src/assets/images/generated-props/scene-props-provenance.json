@@ -1,0 +1,290 @@
+{
+  "generatedAt": "2026-10-21",
+  "generator": "OpenAI built-in image_gen",
+  "model": "not exposed by generation tool",
+  "styleId": "IA-ENGRAVED-CUTOUT-V1",
+  "styleSpecification": {
+    "path": "docs/generated-art-style.md",
+    "sha256": "93d40b219be3755199b333b48260709907d69ab02ea239ee7a4b37c084f7d0ba"
+  },
+  "promptRecord": "The full prompt text and prompt hashes were not available to this intake; prompt intent and reference roles come from the generation handoff.",
+  "generationMethod": "Fresh illustrations informed by layout and style references, not pixel-preserving edits.",
+  "sourceMasterStorage": "Original PNG masters remain outside Git in generation source storage.",
+  "format": "WebP quality 92, method 6, with lossless alpha.",
+  "transforms": "Encoding only. Original source canvas and alpha bytes retained; no raster crop, resize, cleanup, recolour, or retouch. RGB is lossy WebP compression. Scene SVG image placement uses uniform scaling only.",
+  "rights": "Project-owned generated artwork; no licence grant.",
+  "verification": {
+    "performed": [
+      "Source illustrations visually inspected; eight tarts, four jellyfish tentacles, blank jar and bottle labels, transparent witness gaps, and absent baked steam checked.",
+      "Source and original-vector alpha bounds compared. Delivery dimensions and alpha bytes checked against source.",
+      "Tarts-table visible span aligned to x10..250 and baseline y140 using uniform SVG image placement only.",
+      "Witness step aligned to baseline y180 using uniform SVG image placement; original outer wrapper and depth order unchanged.",
+      "All six original SVG fallback strings compared byte-for-byte with the existing HEAD and verified unchanged.",
+      "Focused Vitest regression suite passed 16 tests, including all three art styles, both Alice colour settings, locale independence, jar reuse, cauldron steam, bounds and file hashes. TypeScript typecheck and formatting checks passed."
+    ],
+    "pending": [
+      "Current-head browser visual QA, including witness-body occlusion, phone/desktop crops, motion and both Alice colours/locales; no browser pass claimed.",
+      "Page transfer totals after production build. Concept demos are outside story budgets; these eagerly instantiated decorative images are demo-initial requests, not claimed lazy assets."
+    ],
+    "limitations": [
+      "Low-alpha source fringe is preserved, not cleaned. Visible geometry uses alpha above 32.",
+      "Witness rail top is approximately 4 logical pixels lower than the original after step alignment; panel detail is a new illustration rather than identical vector geometry.",
+      "Full-resolution WebP-only delivery retains original canvas by instruction; AVIF and responsive derivatives are not supplied in this checkpoint."
+    ]
+  },
+  "assets": [
+    {
+      "id": "marmalade-jar",
+      "file": "src/assets/images/figures/marmalade-jar.any.generated.webp",
+      "intent": "An upright marmalade jar with a blank paper label, retaining the shelf and held-jar canvas; vector scribble overlays the label.",
+      "sourceMasterSha256": "7523b55221a1a4c92133088135e62f0758bece3dafb27455f02247590155e0d4",
+      "sourceCanvas": [1086, 1448],
+      "references": [
+        {
+          "asset": "marmalade-jar@4x.png",
+          "role": "Original project vector rendered at 4x for layout only; held outside Git.",
+          "sha256": "a06b86a979daa0dbf145bb13b0e2792094dcba0139de301dd5f48df4b7ff4d48",
+          "vectorSource": "src/demos/rabbit-hole/figures.ts"
+        },
+        {
+          "asset": "src/assets/images/figures/lobster.any.generated.webp",
+          "role": "Engraved print style only, not prop geometry.",
+          "sha256": "5721115b79fa146f635e803dd9b644356ead968782856cb9a036ba2a342637d2"
+        }
+      ],
+      "sha256": "31c357c0e8fe8c16e9e3d06534aa1497d804988f4d66edfec678e4c1411d7957",
+      "bytes": 638492,
+      "width": 1086,
+      "height": 1448,
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [110, 91, 976, 1398],
+      "originalLogicalAlphaBounds": [8, 4, 52, 78],
+      "placement": {
+        "logicalBox": [60, 80],
+        "x": 0,
+        "y": 0,
+        "width": 60,
+        "height": 80,
+        "uniformScale": 0.055248618784530384,
+        "mappedVisibleBounds": [
+          6.077348066298343, 5.027624309392265, 53.92265193370166, 77.18232044198895
+        ],
+        "preserveAspectRatio": "xMidYMid meet"
+      }
+    },
+    {
+      "id": "brandy-bottle",
+      "file": "src/assets/images/figures/brandy-bottle.any.generated.webp",
+      "intent": "A small upright corked brandy bottle with a blank label, retaining the bottle-tip pivot and neck position.",
+      "sourceMasterSha256": "beedcfecf5cc478a7c7ad5a5e8a94fb5acd04d7c5a8770292e29afc5e706c73b",
+      "sourceCanvas": [836, 1881],
+      "references": [
+        {
+          "asset": "brandy-bottle@4x.png",
+          "role": "Original project vector rendered at 4x for layout only; held outside Git.",
+          "sha256": "1206bd3a4969fff7bef374a850fd3114660fb2ef184727728de063205ec1db68",
+          "vectorSource": "src/demos/bill-the-lizard/figures.ts"
+        },
+        {
+          "asset": "src/assets/images/figures/lobster.any.generated.webp",
+          "role": "Engraved print style only, not prop geometry.",
+          "sha256": "5721115b79fa146f635e803dd9b644356ead968782856cb9a036ba2a342637d2"
+        }
+      ],
+      "sha256": "26a03b66abcf2070ec780250e5f875fe2d275b37f288c19c3b075a6844f849eb",
+      "bytes": 667486,
+      "width": 836,
+      "height": 1881,
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [35, 44, 801, 1838],
+      "originalLogicalAlphaBounds": [2, 2, 38, 88],
+      "placement": {
+        "logicalBox": [40, 90],
+        "x": 0,
+        "y": 0,
+        "width": 40,
+        "height": 90,
+        "uniformScale": 0.04784688995215311,
+        "mappedVisibleBounds": [
+          1.674641148325359, 2.1052631578947367, 38.32535885167464, 87.89473684210526
+        ],
+        "preserveAspectRatio": "xMidYMid meet"
+      }
+    },
+    {
+      "id": "jellyfish",
+      "file": "src/assets/images/figures/jellyfish.any.generated.webp",
+      "intent": "A pale sea-green jellyfish with two eyes and four loose tentacles, retaining the original independent whole-prop bounce.",
+      "sourceMasterSha256": "6f40ea691ff754a49cc93826003f593b17fce7382af139963e28dedb2f54894d",
+      "sourceCanvas": [1254, 1254],
+      "references": [
+        {
+          "asset": "jellyfish@4x.png",
+          "role": "Original project vector rendered at 4x for layout only; held outside Git.",
+          "sha256": "d740f906b16165a0137cbcfec961adda0c56833c1a0d10c688f2f9ada51dc0e3",
+          "vectorSource": "src/demos/lobster-quadrille/figures.ts"
+        },
+        {
+          "asset": "src/assets/images/figures/lobster.any.generated.webp",
+          "role": "Engraved print style only, not prop geometry.",
+          "sha256": "5721115b79fa146f635e803dd9b644356ead968782856cb9a036ba2a342637d2"
+        }
+      ],
+      "sha256": "a3f02c60f99855365180461665f1902906277d1ba8b87f6fc91288de72534906",
+      "bytes": 409874,
+      "width": 1254,
+      "height": 1254,
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [104, 114, 1150, 1186],
+      "originalLogicalAlphaBounds": [8, 8, 72, 77.5],
+      "placement": {
+        "logicalBox": [80, 80],
+        "x": 0,
+        "y": 0,
+        "width": 80,
+        "height": 80,
+        "uniformScale": 0.06379585326953748,
+        "mappedVisibleBounds": [
+          6.634768740031898, 7.2727272727272725, 73.3652312599681, 75.59808612440192
+        ],
+        "preserveAspectRatio": "xMidYMid meet"
+      }
+    },
+    {
+      "id": "tarts-table",
+      "file": "src/assets/images/figures/tarts-table.any.generated.webp",
+      "intent": "A wooden table and white platter with exactly eight red jam tarts in the original five-front and three-back order.",
+      "sourceMasterSha256": "01ce8fe22ef84de1a17c753bc1b89d7713bd2f5b6396257eb520665c97f6cc9d",
+      "sourceCanvas": [1871, 841],
+      "references": [
+        {
+          "asset": "tarts-table@4x.png",
+          "role": "Original project vector rendered at 4x for layout only; held outside Git.",
+          "sha256": "9cea16751a95e8b316b1f07a85e77bfa32496fe1cfcc28a88656215c8a9f3bec",
+          "vectorSource": "src/demos/trial/figures.ts"
+        },
+        {
+          "asset": "src/assets/images/figures/lobster.any.generated.webp",
+          "role": "Engraved print style only, not prop geometry.",
+          "sha256": "5721115b79fa146f635e803dd9b644356ead968782856cb9a036ba2a342637d2"
+        }
+      ],
+      "sha256": "5139b627f7c31aca0152617953c8c74c1a0ed1e50cde77f8b130928cd359dd02",
+      "bytes": 364740,
+      "width": 1871,
+      "height": 841,
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [42, 113, 1830, 811],
+      "originalLogicalAlphaBounds": [10, 45, 250, 140],
+      "placement": {
+        "logicalBox": [260, 140],
+        "x": 4.362416107382543,
+        "y": 31.2751677852349,
+        "width": 251.14093959731542,
+        "height": 112.88590604026845,
+        "uniformScale": 0.1342281879194631,
+        "mappedVisibleBounds": [9.999999999999993, 46.442953020134226, 250, 140],
+        "preserveAspectRatio": "xMidYMid meet"
+      }
+    },
+    {
+      "id": "witness-box",
+      "file": "src/assets/images/figures/witness-box.any.generated.webp",
+      "intent": "An empty wooden witness box with five bars, four transparent rail gaps, front panel and step, preserving independent witnesses behind it.",
+      "sourceMasterSha256": "f24c4a896bc9c2877b7b9225d7800672200809069f547e52e074416e4ed0f5f0",
+      "sourceCanvas": [1322, 1190],
+      "references": [
+        {
+          "asset": "witness-box@4x.png",
+          "role": "Original project vector rendered at 4x for layout only; held outside Git.",
+          "sha256": "4b70eddbb6232ff0722f3730be59102adb413add2efb4cb387d85065f2c2e692",
+          "vectorSource": "src/demos/trial/figures.ts"
+        },
+        {
+          "asset": "src/assets/images/figures/lobster.any.generated.webp",
+          "role": "Engraved print style only, not prop geometry.",
+          "sha256": "5721115b79fa146f635e803dd9b644356ead968782856cb9a036ba2a342637d2"
+        }
+      ],
+      "sha256": "0a12bf8674a1a3ab44b038c0b755dac5d46cfd5399987b49bdbe6ab9d828e7cc",
+      "bytes": 457858,
+      "width": 1322,
+      "height": 1190,
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [108, 327, 1214, 1161],
+      "originalLogicalAlphaBounds": [20, 50, 180, 180],
+      "placement": {
+        "logicalBox": [200, 180],
+        "x": 0,
+        "y": 4.508320726172457,
+        "width": 200,
+        "height": 180.03025718608168,
+        "uniformScale": 0.15128593040847202,
+        "mappedVisibleBounds": [16.338880484114977, 53.9788199697428, 183.66111951588502, 180],
+        "preserveAspectRatio": "xMidYMid meet"
+      },
+      "railGapAlphaSamples": [
+        {
+          "x": 365,
+          "y": 450,
+          "alpha": 0
+        },
+        {
+          "x": 560,
+          "y": 450,
+          "alpha": 0
+        },
+        {
+          "x": 760,
+          "y": 450,
+          "alpha": 0
+        },
+        {
+          "x": 950,
+          "y": 450,
+          "alpha": 0
+        }
+      ]
+    },
+    {
+      "id": "cauldron-body",
+      "file": "src/assets/images/figures/cauldron-body.any.generated.webp",
+      "intent": "A dark engraved cauldron with soup surface, side handles and upper suspension lines, omitting steam so the original SVG steam remains independent.",
+      "sourceMasterSha256": "0c23272a074da86fb675326240aced56f343630babb7c39cc3d28d0885ff3880",
+      "sourceCanvas": [1374, 1145],
+      "references": [
+        {
+          "asset": "cauldron-body@4x.png",
+          "role": "Original project vector rendered at 4x for layout only; held outside Git.",
+          "sha256": "38768700b022f0f0366c08cfd7008ecc2a3781fa29032a12ba88f302331c61c0",
+          "vectorSource": "src/demos/pig-and-pepper/figures.ts"
+        },
+        {
+          "asset": "src/assets/images/figures/lobster.any.generated.webp",
+          "role": "Engraved print style only, not prop geometry.",
+          "sha256": "5721115b79fa146f635e803dd9b644356ead968782856cb9a036ba2a342637d2"
+        }
+      ],
+      "sha256": "2382ee30d095cac5f8ac50be2dfe1147ac5c800a89c13c6a2146524659ba1c44",
+      "bytes": 506196,
+      "width": 1374,
+      "height": 1145,
+      "alphaEncodingUnchanged": true,
+      "alphaAbove32Bounds": [82, 22, 1292, 1098],
+      "originalLogicalAlphaBounds": [16, 5, 224, 190],
+      "placement": {
+        "logicalBox": [240, 200],
+        "x": 0,
+        "y": 0,
+        "width": 240,
+        "height": 200,
+        "uniformScale": 0.17467248908296942,
+        "mappedVisibleBounds": [
+          14.323144104803493, 3.8427947598253276, 225.6768558951965, 191.61572052401746
+        ],
+        "preserveAspectRatio": "xMidYMid meet"
+      }
+    }
+  ],
+  "totalDeliveryBytes": 3044646
+}

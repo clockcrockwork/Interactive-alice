@@ -1,0 +1,72 @@
+{
+  "status": "integrated-review-checkpoint-browser-validation-pending",
+  "generatedAt": "2026-10-21",
+  "generator": "OpenAI built-in image_gen",
+  "styleId": "IA-ENGRAVED-CUTOUT-V1",
+  "figure": "pig/trotting",
+  "demos": ["pig-and-pepper", "cheshire-cat"],
+  "promptIntent": "Separate a shared original engraved trotting-pig master into a body with its head and curled tail, forelegs and hindlegs while retaining common coordinates and scale.",
+  "sourceReferenceSha256": "5c03cafb7aa44d4c2d56147dcb0e18abc59d6f6b7d6f7f97c7dab573f211407b",
+  "transforms": "WebP quality 92 encoding, method 6, exact alpha. No source crop, resize, cleanup, recolouring or alpha edits. Runtime SVG applies one common uniform source-to-logical scale and centres the 1499-pixel body in the 1500-pixel stage.",
+  "logicalBox": [200, 140],
+  "sourceStage": [1500, 1049],
+  "visibleFootY": 957,
+  "sourcePivots": {
+    "legs-fore": [532, 533],
+    "legs-hind": [1162.5, 447]
+  },
+  "composition": "Hind legs, forelegs, then body. Generated-only view-box transform origins use projected visible upper-leg pivots; original scene rotation, phase, outer bounce, pause and reduced-motion rules are retained.",
+  "validation": {
+    "inspectedSourceImages": 4,
+    "alphaIntegrity": "All three WebP alpha channels exactly match their source PNG.",
+    "staticComposition": "Neutral and opposing +/-24 degree poses rendered as SVG and inspected. Body covers upper joins; four hooves remain part of the unchanged leg images.",
+    "browser": "Pending: actual rendering, CSS pivots, animation and pause/reduced-motion in both scenes have not been browser-verified.",
+    "limitations": [
+      "At extreme pose the hind leg extends outside the original 200-unit viewport; the existing generated-art overflow rule preserves it.",
+      "The tail remains part of the static body. No current pig scene animates a tail hook.",
+      "Faint low-alpha generation noise is retained without cleanup.",
+      "This is a review checkpoint, not a claim that final art or motion review is complete."
+    ]
+  },
+  "budget": {
+    "shippingBytes": 440418,
+    "class": "concept-demo raster assets; outside story page budgets",
+    "criticality": "Requested with the demo figure markup, not newly lazy-loaded.",
+    "storyPageImageBudgetImpactBytes": 0
+  },
+  "assets": [
+    {
+      "part": "body",
+      "asset": "pig--trotting~body.any.generated.webp",
+      "width": 1499,
+      "height": 1049,
+      "alphaAbove32Bounds": [74, 114, 1448, 745],
+      "sourceSha256": "ce88fa7826e7d14bfb71cc5277154a33576b32c3994a4472552981c728269250",
+      "sha256": "8e1c81dfe10b91f1080fe3c3360c5d5a3df4d05953550ea7d5e43079d25a1580",
+      "bytes": 274316,
+      "alphaPreservedExactly": true
+    },
+    {
+      "part": "legs-fore",
+      "asset": "pig--trotting~legs-fore.any.generated.webp",
+      "width": 1500,
+      "height": 1049,
+      "alphaAbove32Bounds": [278, 533, 786, 957],
+      "sourceSha256": "96188c2fdb0dfdc1f8f2d94a20c5c46ff24591cfac7fa94e461146b2e9288ca3",
+      "sha256": "0914a2472e9cc4095ae5a68e5c0d7e057a9a3f5df4ccca6a5442b3a9e0679199",
+      "bytes": 78284,
+      "alphaPreservedExactly": true
+    },
+    {
+      "part": "legs-hind",
+      "asset": "pig--trotting~legs-hind.any.generated.webp",
+      "width": 1500,
+      "height": 1049,
+      "alphaAbove32Bounds": [890, 447, 1435, 944],
+      "sourceSha256": "db97bd41c2778f05c1b9955ad4bfceb6169acd99cc65f9daac164a1229cbfc28",
+      "sha256": "7caa3923925939ef7fd9d027044854ea5e75abd261c53ccb16fab320a7354b97",
+      "bytes": 87818,
+      "alphaPreservedExactly": true
+    }
+  ]
+}

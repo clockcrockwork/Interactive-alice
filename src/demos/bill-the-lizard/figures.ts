@@ -5,6 +5,8 @@
  * the rooftop he starts on is the house's own (`RIM_SVG` in rabbit-house).
  */
 
+import { type ArtStyle, artStyle } from '../art/treatments.ts';
+
 /** The corner of the house, at the left of the garden: its feet on the ground line. */
 export const GARDEN_HOUSE_SVG = `
 <svg class="bl__g-house-svg" viewBox="0 0 300 500" preserveAspectRatio="xMinYMax meet" focusable="false">
@@ -39,6 +41,18 @@ export const BOTTLE_SVG = `
   <path d="M14 12 h12 v16 q12 6 12 22 v34 q0 4 -4 4 h-28 q-4 0 -4 -4 v-34 q0 -16 12 -22 z" fill="var(--bl-brandy)"/>
   <rect x="8" y="50" width="24" height="16" rx="2" fill="var(--paper-warm)"/>
 </svg>`;
+
+/** Only the drawing changes; the enclosing bottle still owns its mouthward tip. */
+export function bottleMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return BOTTLE_SVG;
+  const src = new URL(
+    '../../assets/images/figures/brandy-bottle.any.generated.webp',
+    import.meta.url,
+  ).href;
+  return `<svg viewBox="0 0 40 90" focusable="false" data-generated-brandy-bottle=""><image href="${src}" x="0" y="0" width="40" height="90" preserveAspectRatio="xMidYMid meet"/></svg>`;
+}
 
 /** Leaves knocked out of the hedge: each one carries its own flight. */
 export const LEAVES = Array.from({ length: 10 }, (_, i) => {

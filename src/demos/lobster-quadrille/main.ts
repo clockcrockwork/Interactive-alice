@@ -28,7 +28,7 @@ import {
   seeded,
 } from '../shell/shell.ts';
 import { exclaims, type LocaleProfile, pageProfile, units } from '../shell/words.ts';
-import { COURT_DOORS, HANDS_WITH_LOBSTER, JELLY_SVG, tureenMarkup } from './figures.ts';
+import { COURT_DOORS, HANDS_WITH_LOBSTER, jellyMarkup, tureenMarkup } from './figures.ts';
 import './quadrille.css';
 import './shore.css';
 
@@ -228,7 +228,7 @@ function mount(shell: DemoShell): void {
   const jellies = [-0.4, 0.08, 0.5].map((x) => {
     const el = document.createElement('div');
     el.className = 'lq__item lq__jelly';
-    el.innerHTML = JELLY_SVG;
+    el.innerHTML = jellyMarkup();
     ring.append(el);
     return { el, x };
   });

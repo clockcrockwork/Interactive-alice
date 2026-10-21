@@ -12,7 +12,7 @@ import { figure } from '../art/art.ts';
 import { type MarkShape, slateMark } from '../art/vectors.ts';
 import type { DemoShell } from '../shell/shell.ts';
 import { seeded } from '../shell/shell.ts';
-import { TARTS_SVG, WITNESS_BOX_SVG } from './figures.ts';
+import { tartsMarkup, witnessBoxMarkup } from './figures.ts';
 import './court.css';
 
 const SUITS = [
@@ -59,8 +59,8 @@ export function buildCourt(court: HTMLElement): void {
     piece('tr__throne tr__throne--king', figure('king-of-hearts')) +
     piece('tr__throne tr__throne--queen', figure('queen-of-hearts')) +
     piece('tr__herald', figure('white-rabbit/herald')) +
-    piece('tr__witness-box', WITNESS_BOX_SVG) +
-    piece('tr__tarts', TARTS_SVG) +
+    piece('tr__witness-box', witnessBoxMarkup()) +
+    piece('tr__tarts', tartsMarkup()) +
     '<div class="tr__pack"></div>';
 }
 

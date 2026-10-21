@@ -156,9 +156,9 @@ describe('the baked pictures', () => {
   });
 
   it('puts the picture beside the vector, so the page can show either', () => {
-    const flat = figure('king-of-hearts', '', 'flat');
+    const flat = figure('queen-of-hearts', '', 'flat');
     expect(flat).not.toContain('<img');
-    const baked = figure('king-of-hearts', 'x', 'engraved');
+    const baked = figure('queen-of-hearts', 'x', 'engraved');
     expect(baked).toContain('class="art art--baked x"');
     expect(baked).toContain('<svg');
     expect(baked).toMatch(/<img class="art__image art__image--baked" data-variant="any"/);

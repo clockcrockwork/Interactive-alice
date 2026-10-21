@@ -1,0 +1,52 @@
+@layer scene {
+  .ct__mushroom > .art {
+    position: relative;
+  }
+
+  /* Hide only the mushroom's own drawing/bake. The separate Caterpillar stays put. */
+  .ct__mushroom > .art[data-generated-mushroom-preview] > :not(.ct__generated-mushroom) {
+    visibility: hidden;
+  }
+
+  .ct__generated-mushroom {
+    position: absolute;
+    inset-inline-start: var(--preview-x);
+    inset-block-start: var(--preview-y);
+    inline-size: var(--preview-width);
+    block-size: auto;
+    max-inline-size: none;
+  }
+
+  .ct__generated-mushroom[hidden] {
+    display: none;
+  }
+
+  .ct__preview-controls {
+    position: fixed;
+    z-index: 30;
+    inset-inline-start: var(--space-2);
+    inset-block-end: var(--space-2);
+    max-inline-size: min(26rem, calc(100vw - 2 * var(--space-2)));
+    padding: var(--space-2);
+    color: var(--ink-primary);
+    background: var(--paper-base);
+    border: 1px solid var(--ink-faded);
+    font-size: 0.75rem;
+  }
+
+  .ct__preview-controls summary {
+    min-block-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  .ct__preview-controls label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-block-size: 2rem;
+  }
+
+  .ct__preview-controls p {
+    margin: var(--space-1) 0 0;
+  }
+}

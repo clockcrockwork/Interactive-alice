@@ -5,8 +5,31 @@ import { ART } from './registry.ts';
 import type { ArtStyle } from './treatments.ts';
 
 const props = [
+  ['runner/dodo', 'caucus-race', 100, 116],
+  ['runner/magpie', 'caucus-race', 100, 116],
+
+  ['runner/duck', 'caucus-race', 100, 116],
+  ['runner/eaglet', 'caucus-race', 100, 116],
+  ['runner/lory', 'caucus-race', 100, 116],
+  ['runner/mouse', 'caucus-race', 100, 116],
+
+  ['rose-tree', 'croquet', 320, 360],
+  ['card-arch', 'croquet', 200, 140],
+  ['alices-sister', 'riverbank', 300, 200],
+  ['dancer/salmon', 'lobster-quadrille', 140, 140],
+  ['dancer/whiting', 'lobster-quadrille', 140, 140],
+  ['king-of-hearts', 'trial', 160, 240],
+  ['knave-of-hearts', 'trial', 140, 220],
+  ['card-soldier', 'trial', 120, 220],
+
   ['lobster', 'lobster-quadrille', 160, 120],
   ['crab', 'mock-turtle', 200, 120],
+  ['conger-eel', 'mock-turtle', 300, 200],
+  ['march-hare', 'tea-party', 160, 260],
+  ['dancer/seal', 'lobster-quadrille', 140, 140],
+  ['dancer/turtle', 'lobster-quadrille', 140, 140],
+  ['dancer/snail', 'lobster-quadrille', 140, 140],
+  ['dancer/porpoise', 'lobster-quadrille', 140, 140],
 ] as const;
 
 // Removing a generated registry source must fail these behavior checks. The
@@ -17,7 +40,7 @@ describe('generated whole-prop cut-outs', () => {
       const markup = figure(id, '', 'engraved', scene, 'yellow');
       expect(markup).toContain('data-generated=""');
       expect(markup).toContain(`viewBox="0 0 ${w} ${h}"`);
-      expect(markup).toContain(`${id}.any.generated.webp`);
+      expect(markup).toContain(`${id.replaceAll('/', '--')}.any.generated.webp`);
       expect(markup).toBe(figure(id, '', 'engraved', scene, 'blue'));
       const entry = ART[id];
       expect(entry?.kind).toBe('vector');
@@ -52,8 +75,9 @@ describe('generated whole-prop cut-outs', () => {
     for (const [id, scene] of [
       ['mushroom', 'caterpillar'],
       ['caterpillar', 'caterpillar'],
-      ['runner/crab', 'caucus-race'],
-      ['conger-eel', 'mock-turtle'],
+      ['duchess', 'pig-and-pepper'],
+      ['duchess', 'duchess'],
+      ['runner/alice', 'caucus-race'],
     ]) {
       expect(figure(id ?? '', '', 'engraved', scene)).not.toContain('data-generated');
     }
@@ -79,5 +103,18 @@ describe('the opened map only', () => {
     expect(render('flat')).toBe(mapArt.MAP_SVG);
     expect(render('paper')).toBe(mapArt.MAP_SVG);
     expect(mapArt.heldSvg('map')).not.toContain('.generated.webp');
+  });
+});
+
+describe('reused generated runner crab', () => {
+  it('keeps the runner logical box and motion group without duplicating the source', () => {
+    const markup = figure('runner/crab', '', 'engraved', 'caucus-race');
+    expect(markup).toContain('viewBox="0 0 100 116"');
+    expect(markup).toContain('class="cr__figure"');
+    expect(markup).toContain('crab.any.generated.webp');
+    expect(markup).not.toContain('runner--crab.any.generated.webp');
+    for (const style of ['flat', 'paper'] as const) {
+      expect(figure('runner/crab', '', style, 'caucus-race')).not.toContain('data-generated');
+    }
   });
 });

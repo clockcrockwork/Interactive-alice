@@ -22,6 +22,8 @@
  */
 
 import { BAKED, BAKED_PARTS } from './baked.ts';
+import { generatedAnimalSvg } from './generated-animal-layers.ts';
+import { generatedLiveExpressionSvg } from './generated-live-expressions.ts';
 import { generatedPigSvg } from './generated-pig-layers.ts';
 import {
   ART,
@@ -150,6 +152,14 @@ export function figure(
 ): string {
   const entry = entryOf(id);
   if (entry.kind === 'vector') {
+    const expression = generatedLiveExpressionSvg(id, style, demo);
+    if (expression) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${expression}</span>`;
+    }
+    const animal = generatedAnimalSvg(id, style, demo);
+    if (animal) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${animal}</span>`;
+    }
     const pig = id === 'pig/trotting' ? generatedPigSvg(style, demo) : undefined;
     if (pig) {
       return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="pig/trotting">${pig}</span>`;
@@ -185,6 +195,8 @@ export function figure(
   return `<span class="art ${className}" data-art="${id}">${imgTags(entry.sources, 'art__image')}</span>`;
 }
 
+let generatedPaintId = 0;
+
 /**
  * A figure for an SVG context, placed in a box in user units with its feet at
  * (x, y + height) and its centre at x + width / 2.
@@ -196,15 +208,35 @@ export function svgFigure(
   width: number,
   height: number,
   className = '',
+  style: ArtStyle = pageStyle(),
+  demo: string | undefined = pageDemo(),
+  variant: AliceVariant = inBrowser ? aliceVariant() : 'yellow',
 ): string {
   const entry = entryOf(id);
   const at = `data-art="${id}" transform="translate(${x} ${y})"`;
   if (entry.kind === 'vector') {
     const [boxW, boxH] = entry.box;
+    const generatedVariant = entry.generated?.[variant] ? variant : 'any';
+    const generated = style === 'engraved' ? entry.generated?.[generatedVariant] : undefined;
+    if (generated) {
+      const scale = Math.min(boxW / generated.width, boxH / generated.height);
+      const imageW = generated.width * scale;
+      const imageH = generated.height * scale;
+      const imageX = (boxW - imageW) / 2;
+      const imageY = boxH - generated.footY * scale;
+      const paintId = `art-generated-paint-${++generatedPaintId}`;
+      // A paint server keeps the group's fill-box exactly the placement box.
+      // Transparent pixels below the aligned soles must not move a scene's
+      // 50% 100% growth pivot. Bottom padding stays outside the paint box.
+      const image = `<image class="art__image" data-variant="${generatedVariant}" href="${generated.src}" x="${imageX}" y="${imageY}" width="${imageW}" height="${imageH}" preserveAspectRatio="xMidYMid meet"/>`;
+      const paint = `<defs><pattern id="${paintId}" width="${boxW}" height="${boxH}" patternUnits="userSpaceOnUse" patternContentUnits="userSpaceOnUse" patternTransform="scale(${width / boxW} ${height / boxH})" overflow="hidden">${image}</pattern></defs>`;
+      return `<g class="art art--cut art--generated ${className}" ${at} data-generated="">${paint}<rect width="${width}" height="${height}" fill="url(#${paintId})"/></g>`;
+    }
     const drawing = `<g transform="scale(${width / boxW} ${height / boxH})">${entry.fragment ?? entry.markup}</g>`;
-    const baked = bakedFor(id);
+    const baked = bakedFor(id, style, demo);
     if (baked) {
-      return `<g class="art art--baked ${className}" ${at}>${drawing}${imageTags(baked, 'art__image art__image--baked', width, height)}</g>`;
+      const sources = baked.any ? { any: baked.any } : { [variant]: baked[variant] };
+      return `<g class="art art--baked ${className}" ${at}>${drawing}${imageTags(sources, 'art__image art__image--baked', width, height)}</g>`;
     }
     return `<g class="art ${className}" ${at}>${drawing}</g>`;
   }

@@ -26,7 +26,8 @@
       "The tail remains part of the static body. No current pig scene animates a tail hook.",
       "Faint low-alpha generation noise is retained without cleanup.",
       "This is a review checkpoint, not a claim that final art or motion review is complete."
-    ]
+    ],
+    "loadFallback": "Original complete vector remains until all three source URLs decode. Generated groups are display:none before readiness, preserving original fill-box pivots. Any decode failure keeps the original; shared lifecycle observer is disconnected at scene detach."
   },
   "budget": {
     "shippingBytes": 440418,

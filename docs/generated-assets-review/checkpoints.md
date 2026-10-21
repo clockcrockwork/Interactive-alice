@@ -125,3 +125,34 @@ means required checks on the new head may remain pending, not satisfied.
 
 Next independent work continues with first-person protagonist views, the standing
 SVG adapter, and small-part character rigs. No final art approval is inferred.
+
+## Static protagonist and articulated-character checkpoint (2026-10-21 05:10 UTC)
+
+The next checkpoint adds five protagonist files: yellow/blue first-person skirt
+and foot views, plus yellow standing. Standing blue retains its existing original;
+there is no generated result for that attempted edit. The standing SVG adapter
+keeps a fixed logical paint box for growth. Hair colour and the shifted foot
+silhouette remain later visual checks, not accepted identity art.
+
+Three animals (Tortoise master, Guinea-pig, Pigeon) and four expressive characters
+(Hatter, Dormouse, Queen, Cook) now use coherent images with their existing motion
+hooks, SVG facial states and scene-specific placement. All layers must decode
+before generated artwork appears; an error keeps the complete original. Hidden
+raster canvases do not alter the fallback's fill-box. Pig now shares that atomic
+fallback. Actual scene consumers are gated; no-demo previews keep originals.
+
+- [Protagonist crop/standing checks](alice-static-views-20261021.md)
+- [Animal joints and movement limits](animal-motion-20261021.md)
+- [Live expression and loading checks](live-expressions-20261021.md)
+- [Production matrix with separate stages](remaining-inventory.md)
+
+All 436 unit tests across 40 files, typecheck, lint, data checks and build passed.
+The same Node24 versus pinned Node22 caveat and chunk-size advisory remain.
+Independent review inspected geometry, preserved selectors, error fallback and
+static SVG compositions. These compositions used source PNGs because the offline
+renderer does not render WebP; they are not browser screenshots or proof of CSS
+motion. Browser tests are definitions only. No new E2E/phone/Firefox/WebKit pass,
+public-access guarantee, production approval or final art acceptance is claimed.
+
+Caterpillar/Bill and the two footmen have generated layers awaiting safe composition;
+image outputs alone do not complete their integration. Work continues independently.

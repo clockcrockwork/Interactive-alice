@@ -1,0 +1,219 @@
+{
+  "batch": "alice-static-views-2026-10-21",
+  "date": "2026-10-21",
+  "status": "integrated provisional candidates; not art acceptance or browser acceptance",
+  "generator": "image_gen",
+  "model": "not exposed by generation tool",
+  "styleId": "IA-ENGRAVED-CUTOUT-V1",
+  "fullPrompt": "not available to integration worker; intent recorded per asset",
+  "fullPromptHash": null,
+  "assets": [
+    {
+      "id": "alice/looking-down",
+      "variant": "yellow",
+      "asset": "figures/alice--looking-down.yellow.generated.webp",
+      "bytes": 455508,
+      "sha256": "79185db34001ae48b0df22f3a0610706a9400d717db659b379703d5d6748e78a",
+      "width": 1691,
+      "height": 930,
+      "logicalBox": [400, 220],
+      "footY": 930,
+      "anchorMeaning": "intentional bottom crop, not the shoe",
+      "source": {
+        "filename": "exec-7254fbbc-5f22-4659-9bde-872662b42ab7.png",
+        "bytes": 2434434,
+        "sha256": "3dd2069dcbe154d6955e71f2f157a219f50c3dd4145ef3e6be9ddefa41af6268"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [0, 21, 1691, 930],
+        "greaterThan16": [0, 157, 1691, 930],
+        "greaterThan128": [0, 158, 1691, 930],
+        "greaterThan224": [0, 159, 1690, 930]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      },
+      "reference": "original alice--looking-down.yellow.webp geometry; provisional overhead yellow identity candidate",
+      "promptIntent": "First-person downward view of an engraved skirt and ivory apron cropped at the sides and bottom, with two shoes visible beyond the upper hem."
+    },
+    {
+      "id": "alice/looking-down",
+      "variant": "blue",
+      "asset": "figures/alice--looking-down.blue.generated.webp",
+      "bytes": 299018,
+      "sha256": "6aa70aab125ff356736d2333ca52d782cd20bcd961dbf3281c65c18ca925d0e8",
+      "width": 1691,
+      "height": 930,
+      "logicalBox": [400, 220],
+      "footY": 930,
+      "anchorMeaning": "intentional bottom crop, not the shoe",
+      "source": {
+        "filename": "exec-3a97cf80-873c-4b8c-8b73-aad826f98c7d.png",
+        "bytes": 2215825,
+        "sha256": "24359b13dbc33cd2aab16a29a001caebc17bfaff35b4eadbf7d70fe9a4192ba5"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [0, 23, 1691, 930],
+        "greaterThan16": [0, 153, 1691, 930],
+        "greaterThan128": [0, 154, 1691, 930],
+        "greaterThan224": [0, 155, 1691, 930]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      },
+      "reference": "corresponding generated yellow candidate; edit is not pixel-identical",
+      "promptIntent": "First-person downward view of an engraved skirt and ivory apron cropped at the sides and bottom, with two shoes visible beyond the upper hem."
+    },
+    {
+      "id": "alice/foot",
+      "variant": "yellow",
+      "asset": "figures/alice--foot.yellow.generated.webp",
+      "bytes": 169286,
+      "sha256": "a0880e4bdc89046db8f8bca7b3491f51145a8568250c08bb0b56bb4fe9f5fb98",
+      "width": 1100,
+      "height": 1430,
+      "logicalBox": [200, 260],
+      "footY": 1430,
+      "anchorMeaning": "intentional bottom crop, not the shoe",
+      "source": {
+        "filename": "exec-13957398-ee23-47a2-94b4-c74bfaf5093d.png",
+        "bytes": 925209,
+        "sha256": "b1bcf381118bfc74168e2d9ea590cbff73534d995705a1c96d02de12fd39a064"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [138, 60, 1039, 1430],
+        "greaterThan16": [410, 226, 825, 1430],
+        "greaterThan128": [411, 227, 825, 1430],
+        "greaterThan224": [411, 227, 824, 1430]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      },
+      "reference": "original alice--foot.yellow.webp geometry; provisional overhead yellow identity candidate",
+      "promptIntent": "First-person raised stocking and strap shoe, with dress-colour accents and the stocking cropped by the bottom edge."
+    },
+    {
+      "id": "alice/foot",
+      "variant": "blue",
+      "asset": "figures/alice--foot.blue.generated.webp",
+      "bytes": 134808,
+      "sha256": "6dab70f0774fcfd271a991b6cf9220f3b03886a8fd4ea56c2bf8cdad39349e85",
+      "width": 1100,
+      "height": 1430,
+      "logicalBox": [200, 260],
+      "footY": 1430,
+      "anchorMeaning": "intentional bottom crop, not the shoe",
+      "source": {
+        "filename": "exec-f7d1c937-4a8a-40a3-8bbc-dd2bd3052b69.png",
+        "bytes": 842774,
+        "sha256": "ab0ee8b38ac9c9b261e24a270a92856a6ced7dc4a1c78efc0b925724abad46a6"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [74, 117, 1005, 1430],
+        "greaterThan16": [409, 225, 828, 1430],
+        "greaterThan128": [409, 225, 827, 1430],
+        "greaterThan224": [410, 226, 827, 1430]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      },
+      "reference": "corresponding generated yellow candidate; edit is not pixel-identical",
+      "promptIntent": "First-person raised stocking and strap shoe, with dress-colour accents and the stocking cropped by the bottom edge."
+    },
+    {
+      "id": "alice/standing",
+      "variant": "yellow",
+      "asset": "figures/alice--standing.yellow.generated.webp",
+      "bytes": 479058,
+      "sha256": "f7dea64b895b234091efb718e4f4b01f52fba3b4bf685749ae6941bb52519488",
+      "width": 1024,
+      "height": 1536,
+      "logicalBox": [80, 110],
+      "footY": 1511,
+      "anchorMeaning": "visible sole lower edge at alpha > 128",
+      "source": {
+        "filename": "exec-a635e39d-0e38-4534-90e0-f62eb78f403a.png",
+        "bytes": 2769081,
+        "sha256": "5efa05cd10765f9bb2c8559462c9982a7c63afff7f6f7cd41ea7f3f0fa9e7e0e"
+      },
+      "alphaExtrema": [0, 254],
+      "alphaBounds": {
+        "greaterThan0": [0, 13, 1008, 1518],
+        "greaterThan16": [110, 15, 950, 1512],
+        "greaterThan128": [110, 16, 949, 1511],
+        "greaterThan224": [111, 16, 948, 1510]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      },
+      "reference": "original alice--standing.yellow.webp geometry; provisional overhead yellow identity candidate",
+      "promptIntent": "Full-length front-facing engraved girl with a yellow dress, ivory apron and open hands, centered over the original standing ground anchor."
+    }
+  ],
+  "budget": {
+    "shippingBytes": 1537678,
+    "scope": "concept demos only, excluded from story-page budgets",
+    "encodingLimitations": "Full-resolution q92 WebP review candidates; responsive sizes and AVIF alternatives are not included. No production image-budget pass is claimed.",
+    "criticality": "Images are referenced when their demo figure markup is created. This batch adds no lazy-loading path; offscreen placement is not evidence of deferred fetching.",
+    "storyPageImageBudgetImpactBytes": 0
+  },
+  "variantLimitations": [
+    "Blue standing output was refused. The operation was not retried and no alternate recolouring route was used. Blue retains its original baked/vector drawing.",
+    "Looking-down and foot blue are reference edits of their yellow candidates, not pixel-identical recolours.",
+    "The yellow standing candidate has light/golden hair rather than the canonical brunette target; identity and palette remain unaccepted."
+  ],
+  "placementLimitations": [
+    "Foot artwork is right of the old centerline and extends farther upward than the prototype; chimney and Caterpillar contact require visual review.",
+    "First-person crop anchors deliberately use full canvas height; aligning to visible shoes would break composition.",
+    "Standing uses a fixed 80 by 110 SVG paint rectangle so transparent source padding cannot move the House fill-box growth pivot."
+  ],
+  "acceptanceChecks": [
+    "Drink Me final frame to Pool opening join in both colours, phone and desktop.",
+    "Caterpillar smaller looking-down presentation, foot rise and impact.",
+    "Bill chimney alignment, full kick and reverse scrolling.",
+    "Standing at Riverbank jump and House scales 0.55 to 1.6, including transition to kneeling.",
+    "Ordinary and reduced-motion behavior, pause, and forward/reverse navigation."
+  ],
+  "validation": {
+    "sourceInspection": "All five PNG sources inspected before integration.",
+    "alphaIntegrity": "All five WebP alpha channels exactly match the PNG masters; source dimensions preserved.",
+    "staticSvg": "Standing pattern placement rendered with resvg at 1x, 0.55x and 1.6x (3x display magnification) using the original PNG because the available resvg decoder did not render WebP. Soles align to the common ground and the full figure remains within the intended paint box. This is not browser evidence.",
+    "browser": "Not run. Existing browser-launch restriction was not retried or bypassed. Phone/desktop CSS fill-box, actual WebP browser rendering, motion and scene joins remain unverified.",
+    "localChecks": "13 focused tests and all 404 unit tests, typecheck, lint, data checks and build passed on Node 24.19.0, outside the pinned Node 22 engine range.",
+    "warnings": "Existing staged-text TODO output and Vite chunk-size warning remain. No workflow was dispatched."
+  }
+}

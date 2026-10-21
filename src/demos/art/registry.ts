@@ -225,8 +225,50 @@ export const ART: Record<string, ArtEntry> = {
     },
   },
   'alice/sitting': vector(ALICE_SITTING_SVG, [160, 150]),
-  'alice/foot': vector(FOOT_SVG, [200, 260]),
-  'alice/looking-down': vector(ALICE_LOOKING_DOWN_SVG, [400, 220]),
+  'alice/foot': {
+    ...vector(FOOT_SVG, [200, 260]),
+    generated: {
+      yellow: {
+        src: new URL(
+          '../../assets/images/figures/alice--foot.yellow.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 1100,
+        height: 1430,
+        footY: 1430,
+      },
+      blue: {
+        src: new URL('../../assets/images/figures/alice--foot.blue.generated.webp', import.meta.url)
+          .href,
+        width: 1100,
+        height: 1430,
+        footY: 1430,
+      },
+    },
+  },
+  'alice/looking-down': {
+    ...vector(ALICE_LOOKING_DOWN_SVG, [400, 220]),
+    generated: {
+      yellow: {
+        src: new URL(
+          '../../assets/images/figures/alice--looking-down.yellow.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 1691,
+        height: 930,
+        footY: 930,
+      },
+      blue: {
+        src: new URL(
+          '../../assets/images/figures/alice--looking-down.blue.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 1691,
+        height: 930,
+        footY: 930,
+      },
+    },
+  },
   'alice/from-above': vector(ALICE_FROM_ABOVE_SVG, [120, 120], ALICE_FROM_ABOVE_INNER),
   'alice/hand-left': vector(handSvg('left'), [120, 200]),
   'alice/hand-right': vector(handSvg('right'), [120, 200]),
@@ -316,7 +358,20 @@ export const ART: Record<string, ArtEntry> = {
       ];
     }),
   ),
-  'alice/standing': vector('', [80, 110], feetAtOrigin(HOUSE_STANDING, 80, 110)),
+  'alice/standing': {
+    ...vector('', [80, 110], feetAtOrigin(HOUSE_STANDING, 80, 110)),
+    generated: {
+      yellow: {
+        src: new URL(
+          '../../assets/images/figures/alice--standing.yellow.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 1024,
+        height: 1536,
+        footY: 1511,
+      },
+    },
+  },
   'alice/kneeling': vector('', [230, 230], feetAtOrigin(HOUSE_KNEELING, 230, 230)),
   'alice/filling': vector('', [720, 330], feetAtOrigin(HOUSE_FILLING, 720, 330)),
   // The pool draws her and the Mouse itself unless an image is registered here.

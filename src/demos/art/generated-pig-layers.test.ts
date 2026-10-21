@@ -47,7 +47,13 @@ describe('generated trotting pig layers', () => {
       expect(markup.indexOf('data-part="legs-fore"')).toBeLessThan(
         markup.indexOf('data-part="body"'),
       );
-      expect(markup).not.toContain('<path');
+      expect(markup).toContain('<path');
+      expect(markup.match(/data-rig-fallback=/g)).toHaveLength(3);
+      expect(
+        markup.match(/data-rig-generated="" visibility="hidden" display="none"/g),
+      ).toHaveLength(3);
+      expect(markup.match(/data-part="legs-fore"/g)).toHaveLength(1);
+      expect(markup.match(/data-part="legs-hind"/g)).toHaveLength(1);
       expect(markup).toBe(figure('pig/trotting', 'fixture-pig', 'engraved', scene, 'blue'));
     });
 
@@ -67,7 +73,7 @@ describe('generated trotting pig layers', () => {
     const markup = figure('pig/trotting', '', 'engraved', 'pig-and-pepper');
     const pivots = [
       ...markup.matchAll(
-        /<g data-part="(legs-[a-z]+)" style="transform-box: view-box; transform-origin: ([\d.]+)px ([\d.]+)px"/g,
+        /<g data-part="(legs-[a-z]+)" data-rig-part="" style="--rig-origin: ([\d.]+)px ([\d.]+)px"/g,
       ),
     ];
     expect(pivots).toHaveLength(2);

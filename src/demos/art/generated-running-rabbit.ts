@@ -6,7 +6,7 @@ const source = new URL(
   '../../assets/images/figures/white-rabbit--running.any.generated.webp',
   import.meta.url,
 ).href;
-const scenes = ['riverbank', 'rabbit-hole', 'pool-of-tears', 'mouse-tale'];
+const scenes = ['riverbank', 'rabbit-hole', 'pool-of-tears', 'mouse-tale', 'trial'];
 let serial = 0;
 export function generatedRunningRabbitSvg(
   id: string,

@@ -1,8 +1,8 @@
 {
   "asset": "mushroom.any.candidate-v1.webp",
-  "status": "unapproved-scene-comparison-candidate",
+  "status": "scene-scoped-engraved-introduction-browser-unverified",
   "semanticRole": "caterpillar/mushroom",
-  "intent": "Compare an engraved mushroom candidate while retaining the original 400x320 layout box, visible stem baseline and separate Caterpillar position.",
+  "intent": "Introduce the engraved mushroom inside the Caterpillar scene while retaining its original 400x320 layout box, visible stem baseline, independent character motion and nibble buttons.",
   "generatedAt": "2026-10-21",
   "generator": "OpenAI built-in image_gen",
   "model": "not exposed by generation tool",
@@ -43,11 +43,11 @@
     "scope": "Only the mushroom image inside the existing .ct__mushroom > .art; no Caterpillar wrapper changes."
   },
   "limitations": [
-    "Explicit artPreview=mushroom comparison only; not selected by the default art registry.",
-    "Cap support is approximately 16-19 logical pixels higher than the original under the Caterpillar feet; overlap needs visual review.",
-    "Stem-ground alignment is measured; cap support, margins, fine linework and alpha edges are not visually accepted in the running scene.",
+    "Used on normal engraved Caterpillar pages; artPreview=mushroom adds an optional comparison. Flat/paper defaults and other scenes are unchanged.",
+    "Neutral, breathing and charged support are checked by source-only offline composition; the new cap and spot layout are not required to reproduce the prototype.",
+    "Stem-ground alignment is measured. Runtime motion, phone/desktop edge quality and source linework remain browser-unverified.",
     "Source generation is a new illustration using references, not a pixel-preserving edit.",
-    "Original baked or vector mushroom remains until the candidate loads, on load error and whenever its checkbox is unchecked.",
+    "Original baked or vector mushroom remains until loading and decoding succeed, on either failure and whenever the comparison checkbox is unchecked.",
     "No browser visual QA pass is claimed; the existing local Chromium launch restriction remains."
   ],
   "rights": "Project-owned generated candidate; no licence grant. No third-party artwork copied into runtime."

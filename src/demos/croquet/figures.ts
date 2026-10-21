@@ -1,3 +1,6 @@
+import { generatedSceneProp } from '../art/generated-scene-prop.ts';
+import type { ArtStyle } from '../art/treatments.ts';
+
 /**
  * The croquet-ground's own card people and props, drawn once as SVG in the
  * card soldier's box (120 by 220, feet on the bottom edge): the procession by
@@ -115,3 +118,14 @@ export const EXECUTIONER_SVG = `
     <path d="M190 84 L210 64 Q230 88 210 112 L190 92 Z" fill="var(--paper-shadow)" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
   </g>
 </svg>`;
+
+/** Keep the original wrapper, placement and motion. */
+export function cushionMarkup(style?: ArtStyle): string {
+  return generatedSceneProp(
+    'crown-cushion',
+    CUSHION_SVG,
+    [100, 60],
+    [0, 3.577825818406424, 100.0, 59.97529339098209],
+    style,
+  );
+}

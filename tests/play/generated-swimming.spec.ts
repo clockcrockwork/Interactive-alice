@@ -22,7 +22,11 @@ async function probe(page: Page, variant: string, style = 'engraved') {
         source: CanvasImageSource,
         ...coordinates: number[]
       ) {
-        if (this.canvas.classList.contains('pt__canvas') && source instanceof HTMLImageElement) {
+        if (
+          this.canvas.classList.contains('pt__canvas') &&
+          source instanceof HTMLImageElement &&
+          !source.src.includes('pool-glass-table')
+        ) {
           if (!window.__swimmingProbe.sources.includes(source.src))
             window.__swimmingProbe.sources.push(source.src);
         }

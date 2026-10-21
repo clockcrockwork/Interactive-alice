@@ -22,7 +22,7 @@ import {
   CARD_BACK_SVG,
   CLUB_SOLDIER_SVG,
   COURTIER_SVG,
-  CUSHION_SVG,
+  cushionMarkup,
   EXECUTIONER_SVG,
   ROYAL_CHILD_SVG,
 } from './figures.ts';
@@ -256,7 +256,11 @@ function mount(shell: DemoShell): void {
       6,
     ]),
     ['cq__rabbit', figure('white-rabbit/herald'), 8],
-    ['cq__knave', `${figure('knave-of-hearts')}<div class="cq__cushion">${CUSHION_SVG}</div>`, 8],
+    [
+      'cq__knave',
+      `${figure('knave-of-hearts')}<div class="cq__cushion">${cushionMarkup()}</div>`,
+      8,
+    ],
     ['cq__king', figure('king-of-hearts'), 10],
     ['cq__queen', figure('queen-of-hearts'), 10],
   ];

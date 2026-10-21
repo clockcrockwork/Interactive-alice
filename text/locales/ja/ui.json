@@ -202,8 +202,8 @@
     "demoGeneratedUnavailable": "候補画像を読み込めませんでした。元の動きを表示しています。",
     "demoGeneratedLimit": "外すと元の動きに戻ります。部位は動きません。手・髪・角度は確認中。",
     "demoCompareArt": "画像を比較",
-    "demoGeneratedMushroom": "生成したキノコを表示（未採用の比較用）",
-    "demoGeneratedMushroomLimit": "外すと元のキノコ。傘が高く、イモムシの足との重なりは確認中。位置は未変更。",
-    "demoGeneratedMushroomUnavailable": "候補のキノコ画像を読み込めませんでした。元のキノコを表示しています。"
+    "demoGeneratedMushroom": "生成したキノコを表示",
+    "demoGeneratedMushroomLimit": "外すと元のキノコ。イモムシの動きと左右のかじるボタンはそのまま。",
+    "demoGeneratedMushroomUnavailable": "生成したキノコを読み込めませんでした。元のキノコを表示しています。"
   }
 }

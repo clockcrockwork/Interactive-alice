@@ -1,4 +1,4 @@
-/** The quadrille host: generated body plus original live SVG tears. */
+/** Whole-actor consumers: generated body plus the original separate SVG tears. */
 import type { ArtStyle } from './treatments.ts';
 import { MOCK_TURTLE_SVG } from './vectors.ts';
 
@@ -8,8 +8,8 @@ const src = new URL(
 ).href;
 
 export function generatedMockTurtleSvg(style: ArtStyle, demo?: string): string | undefined {
-  // The other scene has independent flappers. Do not duplicate those limbs.
-  if (style !== 'engraved' || demo !== 'lobster-quadrille') return undefined;
+  // The chapter has independent flappers. Whole-actor consumers do not.
+  if (style !== 'engraved' || (demo !== 'lobster-quadrille' && demo !== 'trial')) return undefined;
   const inner = MOCK_TURTLE_SVG.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
   const tears = [...inner.matchAll(/<path class="lq__tear"[^>]*\/>/g)].map((m) => m[0]);
   const body = inner.replace(/<path class="lq__tear"[^>]*\/>/g, '');

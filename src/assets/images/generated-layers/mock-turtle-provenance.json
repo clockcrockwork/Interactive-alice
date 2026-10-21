@@ -1,5 +1,5 @@
 {
-  "status": "provisional; lobster-quadrille only; mock-turtle flapper layering not yet integrated",
+  "status": "provisional whole adapters in lobster-quadrille and Trial dream; mock-turtle chapter flapper layering not integrated",
   "sourceFile": "exec-3123e97a-aa0d-4caa-a440-0880155dff1b.png",
   "sourceSha256": "b86db396335416a4cb06d6016ffa995f07fc4831322d2f348f7744b893961ba5",
   "file": "src/assets/images/generated-layers/mock-turtle~whole.any.generated.webp",
@@ -22,5 +22,11 @@
     "baseCandidate": "exec-b7811c40-a71b-4848-9a8c-81c7f8d87888.png",
     "leftCandidate": "exec-1ac2cb05-27f8-4b2a-bb97-51b96c6e3bff.png",
     "rightCandidate": "no output: image_gen output-stage refusal; no retry or alternate editing route"
+  },
+  "consumers": {
+    "demos": ["lobster-quadrille", "trial"],
+    "trial": "Uses the coherent whole body with exactly two pre-existing SVG tears. Trial has no sob controller: tears keep static opacity 1, and ready-only parent maps move them to the source eyes. Whole-wrapper drift, 0.75 opacity, sepia, blur and dream/real crossfade remain unchanged. No chapter flappers are enabled.",
+    "palette": "Fixed generated calf/shell engraving replaces default sepia vector or baked colours. Source pixels do not track lq-turtle or lq-turtle-shell CSS tokens; original vector retains palette-aware pending/error and flat/paper states.",
+    "browser": "Regression registered but not executed in this environment."
   }
 }

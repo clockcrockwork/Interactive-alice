@@ -1,3 +1,6 @@
+import './generated-alice-runner.css';
+import './generated-alice-sitting.css';
+import './generated-gryphon.css';
 import './generated-alice-poses.css';
 import './generated-bat-diving.css';
 import './generated-flamingo.css';

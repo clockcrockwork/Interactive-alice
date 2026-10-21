@@ -24,7 +24,7 @@ import {
 } from '../shell/shell.ts';
 import './caterpillar.css';
 import './generated-preview.css';
-import { ASK_SVG, LEFT_BIT_SVG, RIGHT_BIT_SVG } from './figures.ts';
+import { ASK_SVG, mushroomPieceMarkup } from './figures.ts';
 import { installGeneratedPreview } from './generated-preview.ts';
 import { INCHES, onNotch, reading, THREE } from './measure.ts';
 
@@ -602,9 +602,9 @@ function mount(shell: DemoShell): void {
   const hands = shell.layer('ct__hands');
   hands.innerHTML =
     `<button type="button" class="ct__bit ct__bit--left" aria-label="${shell.ui.demoNibbleLeft ?? ''}">` +
-    `<span class="ct__bit-hand">${figure('alice/hand-left')}</span><span class="ct__bit-piece">${LEFT_BIT_SVG}</span></button>` +
+    `<span class="ct__bit-hand">${figure('alice/hand-left')}</span><span class="ct__bit-piece">${mushroomPieceMarkup(false)}</span></button>` +
     `<button type="button" class="ct__bit ct__bit--right" aria-label="${shell.ui.demoNibbleRight ?? ''}">` +
-    `<span class="ct__bit-hand">${figure('alice/hand-right')}</span><span class="ct__bit-piece">${RIGHT_BIT_SVG}</span></button>`;
+    `<span class="ct__bit-hand">${figure('alice/hand-right')}</span><span class="ct__bit-piece">${mushroomPieceMarkup(true)}</span></button>`;
   const bitLeft = hands.querySelector<HTMLButtonElement>('.ct__bit--left');
   const bitRight = hands.querySelector<HTMLButtonElement>('.ct__bit--right');
   const bites = { left: 0, right: 0 };

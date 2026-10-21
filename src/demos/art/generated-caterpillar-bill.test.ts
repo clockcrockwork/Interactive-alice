@@ -9,6 +9,7 @@ describe('Caterpillar and Bill articulated intake contract', () => {
   for (const [id, scene, box, hooks, images] of [
     ['caterpillar', 'caterpillar', [240, 200], ['ct__head', 'ct__body'], 3],
     ['bill', 'bill-the-lizard', [120, 100], ['bill__head'], 2],
+    ['bill', 'witnesses', [120, 100], ['bill__head'], 2],
   ] as const) {
     it(`routes ${id} to a complete load-gated rig without duplicating selectors`, () => {
       const markup = figure(id, 'fixture', 'engraved', scene);

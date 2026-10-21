@@ -12,5 +12,11 @@
   "logicalBox": [120, 100],
   "sourceIntent": "running white rabbit, original RABBIT_SVG layout reference and herald generated style; no watch because separate original watch overlay",
   "promptHash": null,
-  "verification": "source visually inspected; offline placement and unit contracts; browser not executed"
+  "verification": "source visually inspected; offline placement and unit contracts; browser not executed",
+  "consumers": {
+    "demos": ["riverbank", "rabbit-hole", "pool-of-tears", "mouse-tale", "trial"],
+    "trial": "Uses the unchanged fixed 120x100 motion box and logical ground98. Only the outer ghost wrapper drifts, pauses and fades into real grass; no watch overlay exists in this consumer.",
+    "palette": "Generated cream fur and red coat replace Trial currentColor sepia-dark fur and wonder-red coat. Existing ghost sepia/blur filter stays on the wrapper; no exact CSS palette-match claim. Original vector remains pending/error and flat/paper fallback.",
+    "browser": "Regression registered but not executed in this environment."
+  }
 }

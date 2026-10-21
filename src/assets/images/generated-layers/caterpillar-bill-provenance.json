@@ -98,7 +98,7 @@
       "smoke": "Original CSS/SVG smoke, ember and charge behavior unchanged."
     },
     "bill": {
-      "demos": ["bill-the-lizard", "rabbit-house"],
+      "demos": ["bill-the-lizard", "rabbit-house", "witnesses"],
       "logicalBox": [120, 100],
       "sourceStage": [1374, 1145],
       "uniformScale": "115/1374",
@@ -112,7 +112,13 @@
       "paintBounds": [0, 0, 120, 100],
       "sceneColor": "A 30% multiply wash uses --bl-lizard with #9c9169 fallback; no source file recolouring.",
       "motion": "Unique bill__head definition shared by fallback and generated paint through SVG use. Existing -12 to +40 degree motion preserved.",
-      "props": "Generated head anchor applied only after all layers decode; pending and failed loads retain original hx=.767,hy=.383. House fragment retains explicit120x100 viewport and caller translation/non-uniform placement scale."
+      "props": "Generated head anchor applied only after all layers decode; pending and failed loads retain original hx=.767,hy=.383. House fragment retains explicit120x100 viewport and caller translation/non-uniform placement scale.",
+      "witnessesConsumer": {
+        "motion": "Whole .art rotates 172 to 188 degrees while upside down, then returns upright through the existing story or put-back button. The unique head definition remains neutral; no independent tail motion is added.",
+        "palette": "The reused generated pixels and existing 30% multiply wash default to #9c9169. This is not the exact original Witnesses vector mix of world-leaf 70% and sepia-mid, and does not guarantee runtime CSS recolouring. The exact palette-aware vector remains the pending/error and flat/paper fallback.",
+        "overlays": "Original righting button and prop remain outside the art wrapper. No prop anchor remapping is needed.",
+        "browser": "Regression registered but not executed in this environment."
+      }
     }
   },
   "validation": {

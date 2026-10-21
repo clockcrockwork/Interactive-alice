@@ -23,6 +23,8 @@
 
 import { BAKED, BAKED_PARTS } from './baked.ts';
 import { generatedAlicePoseSvg } from './generated-alice-poses.ts';
+import { generatedAliceRunnerSvg } from './generated-alice-runner.ts';
+import { generatedAliceSittingSvg } from './generated-alice-sitting.ts';
 import { generatedAnimalSvg } from './generated-animal-layers.ts';
 import { generatedBatDivingSvg } from './generated-bat-diving.ts';
 import {
@@ -30,16 +32,22 @@ import {
   generatedCaterpillarBillSvg,
 } from './generated-caterpillar-bill.ts';
 import { generatedCheshireCatSvg } from './generated-cheshire-cat.ts';
+import { generatedFallingCardSvg } from './generated-falling-card.ts';
 import { generatedFlamingoSvg } from './generated-flamingo.ts';
+import { generatedFlyingPigSvg } from './generated-flying-pig.ts';
 import { generatedFootmanSvg } from './generated-footmen.ts';
 import { generatedGardenFigureSvg } from './generated-garden-figures.ts';
 import { generatedGardenerSvg } from './generated-gardeners.ts';
+import { generatedGryphonSvg } from './generated-gryphon.ts';
 import { generatedHedgehogSvg } from './generated-hedgehog.ts';
 import { generatedJurySvg } from './generated-jury.ts';
 import { generatedLiveExpressionSvg } from './generated-live-expressions.ts';
 import { generatedMockTurtleSvg } from './generated-mock-turtle.ts';
 import { generatedPigSvg } from './generated-pig-layers.ts';
 import { generatedRunningRabbitSvg } from './generated-running-rabbit.ts';
+import { generatedSeatedDuchessSvg } from './generated-seated-duchess.ts';
+import { generatedTrialMouseSvg } from './generated-trial-mouse.ts';
+import { generatedWalkingDuchessSvg } from './generated-walking-duchess.ts';
 import {
   ART,
   type ArtEntry,
@@ -167,14 +175,23 @@ export function figure(
 ): string {
   const entry = entryOf(id);
   if (entry.kind === 'vector') {
-    const alicePose = generatedAlicePoseSvg(id, style, demo, variant);
+    const alicePose =
+      generatedAlicePoseSvg(id, style, demo, variant) ??
+      generatedFallingCardSvg(id, style, demo, variant) ??
+      generatedAliceSittingSvg(id, style, demo, variant) ??
+      generatedAliceRunnerSvg(id, style, demo, variant);
     if (alicePose) {
       return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="">${alicePose}</span>`;
     }
     const articulated =
+      generatedTrialMouseSvg(id, style, demo) ??
       generatedCaterpillarBillSvg(id, style, demo) ??
       generatedGardenerSvg(id, style, demo) ??
       generatedJurySvg(id, style, demo) ??
+      generatedSeatedDuchessSvg(id, style, demo) ??
+      generatedWalkingDuchessSvg(id, style, demo) ??
+      generatedFlyingPigSvg(id, style, demo) ??
+      generatedGryphonSvg(id, style, demo) ??
       generatedRunningRabbitSvg(id, style, demo) ??
       generatedBatDivingSvg(id, style, demo);
     if (articulated) {
@@ -267,11 +284,19 @@ export function svgFigure(
   const entry = entryOf(id);
   const at = `data-art="${id}" transform="translate(${x} ${y})"`;
   if (entry.kind === 'vector') {
-    const alicePose = generatedAlicePoseSvg(id, style, demo, variant);
+    const alicePose =
+      generatedAlicePoseSvg(id, style, demo, variant) ??
+      generatedFallingCardSvg(id, style, demo, variant) ??
+      generatedAliceSittingSvg(id, style, demo, variant) ??
+      generatedAliceRunnerSvg(id, style, demo, variant);
     if (alicePose) {
       return `<g class="art art--cut art--generated ${className}" ${at} data-generated=""><g transform="scale(${width / entry.box[0]} ${height / entry.box[1]})">${alicePose}</g></g>`;
     }
-    const batDiving = generatedBatDivingSvg(id, style, demo);
+    const batDiving =
+      generatedBatDivingSvg(id, style, demo) ??
+      generatedTrialMouseSvg(id, style, demo) ??
+      generatedSeatedDuchessSvg(id, style, demo) ??
+      generatedWalkingDuchessSvg(id, style, demo);
     if (batDiving) {
       return `<g class="art art--cut art--generated ${className}" ${at} data-generated=""><g transform="scale(${width / entry.box[0]} ${height / entry.box[1]})">${batDiving}</g></g>`;
     }

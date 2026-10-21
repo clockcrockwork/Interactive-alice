@@ -1,76 +1,78 @@
-# Mushroom comparison checkpoint
+# Mushroom introduction and comparison checkpoint
 
-The generated mushroom is a **scene-local, unapproved candidate**, not a default
-registry replacement. Its cap still needs support-geometry review under the
-existing Caterpillar. That review does not block work on other assets.
+The generated mushroom now replaces the standing mushroom **only on engraved
+Caterpillar pages**, after its image has loaded and decoded. The original remains
+an atomic fallback. The shared art registry, character motion and nibble controls
+are unchanged. Flat/paper defaults and other scenes retain their existing art.
 
-## Review routes
+## Routes and fallback
 
-- English: `demos/caterpillar/?artPreview=mushroom`
-- Japanese: `demos/ja/caterpillar/?artPreview=mushroom`
+- Normal English: `demos/caterpillar/`
+- Normal Japanese: `demos/ja/caterpillar/`
+- Optional comparison: append `?artPreview=mushroom` to either route.
 
-Open **Compare artwork** and uncheck/recheck the generated mushroom at the same
-scroll position. The native disclosure starts closed. It does not pause, replace
-or reposition the Caterpillar, and closing it does not change the art selection.
-The page returns to the original mushroom when the box is unchecked. No choice is
-persisted. The ordinary route, other query values and other scenes stay unchanged.
+Only the explicit comparison adds **Compare artwork**, a native disclosure that
+starts closed. Uncheck/recheck the generated mushroom at the same scroll position.
+Closing the disclosure does not alter the art selection; nothing is persisted.
+The comparison can explicitly preview the generated mushroom in flat/paper too.
 
-Until the candidate loads, and if it fails, the original baked/vector mushroom
-remains. A load failure disables the checkbox and explains the fallback in the
-page's language. An unchecked box stays unchecked even if a slow image finishes
-loading afterwards. The comparison is an explicit exception to the selected art
-treatment; ordinary flat/paper pages keep their original vectors.
+Until loading **and decoding** finish, and on either failure, the original baked
+or vector mushroom remains visible. Failure disables the comparison checkbox and
+shows a localized fallback notice, if that panel exists. Ordinary pages do not
+add a panel. A slow image cannot override a checkbox that was already unchecked.
 
-## Geometry and known limitation
+## Geometry and interactions
 
 The source canvas is 1402×1122, with alpha-above-32 bounds `[3, 28, 1398, 1108]`
 (right and bottom exclusive). The measured visible stem baseline is source y=1107.
-The original logical mushroom box remains 400×320. The candidate uses one uniform
-scale, `min(400/1402, 320/1122)`, approximately 0.285205, with logical x≈0.071301
-and y≈4.278075. Its visible stem therefore meets y=320 without cropping, stretching
-or editing the raster. Transparent padding may extend beyond the logical box.
+The existing logical box stays 400×320. One uniform scale,
+`min(400/1402, 320/1122)` ≈0.285205, and translation x≈0.071301, y≈4.278075 place
+that stem at logical y=320. No raster is cropped, stretched or painted.
 
-The candidate cap sits approximately 16–19 logical pixels higher than the original
-at the Caterpillar's feet. The `.ct__caterpillar` wrapper, head/body parts, smoke
-origin and timeline are not moved to conceal that mismatch. Review cap/feet overlap,
-stem contact, edge transparency and linework at desktop and phone sizes, in normal
-and reduced motion, including forward and reverse scrolling. This is not visual
-acceptance or a completed default mushroom replacement.
+The new cap and white spots intentionally need not reproduce the old prototype.
+The earlier 16–19-unit spot discrepancy did not establish a support defect and
+is **not a reason to regenerate or block introduction**. The four feet and hookah
+base remain on painted cap in neutral, maximum breathing and full-charge/breathing
+offline compositions. The two bite pieces live in independent real buttons, not
+in the standing mushroom. Meadow scaling moves the new image and its original
+layout box together, preserving their floor relationship through size changes.
 
-## Source and delivery
+See [support and interaction evidence](generated-assets-review/mushroom-support-20261021.md)
+and the [offline composition](generated-assets-review/mushroom-introduction-20261021.png).
+This is source/code evidence, not a browser motion, hit-testing or visual QA pass.
+Desktop/phone quality, normal/reduced-motion playback and reverse scrolling remain
+registered browser checks.
+
+## Source and budget
 
 See [dedicated provenance](../src/assets/images/generated-preview/mushroom-provenance.json).
-The generation used the existing mushroom for layout and the generated herald for
-print style only. Their hashes and the source/delivery hashes are recorded. The
-full generation prompt/hash were unavailable to this intake and are not invented.
+The generation used the original mushroom for layout and the generated herald for
+print style only. Source/reference/delivery hashes are recorded. The full generation
+prompt/hash were unavailable to this intake and have not been invented.
 
 The delivered WebP is **519,918 bytes** (about 508 KiB), quality 92 / method 6.
-Only encoding was performed: no resize, crop, paint, alpha cleanup or raster
-transform. Its canvas and every alpha byte match the PNG source; RGB is lossy.
-The PNG master stays outside Git. This adds an optional comparison payload and
-small scene code/style additions, not a production image-budget pass. The candidate
-request is created only inside the explicit query guard; browser network behavior
-still needs the registered test run.
+Encoding alone preserved canvas dimensions and every alpha byte; RGB is lossy.
+No resize, crop, paint, alpha cleanup or raster transform was performed. The PNG
+master stays outside Git. Unlike the initial opt-in checkpoint, ordinary engraved
+Caterpillar pages now request this additional payload; this is not a production
+image-budget pass. The offline PNG is documentation, not a runtime asset.
 
-## Verification recorded on 2026-10-21
+## Verification on 2026-10-21
 
-Checks below ran on Node 24.19.0, outside the project's pinned Node 22 range.
+- Focused unit tests: **13 passed**, including style/query selection, load/decode
+  readiness and failure, disconnected/empty images, dimensions and floor mapping.
+- Focused Biome and whitespace checks pass for the Mushroom-owned changes.
+  Both UI JSON schemas validate, and the changed copy is within locale budgets.
+- Independent read-only code/support-proof review found no blocker; this does
+  not replace browser visual, input or accessibility execution.
+- **14 Desktop Chromium cases are registered**, covering both languages,
+  desktop/narrow sizes, reduced motion, comparison keyboard toggles, disclosure
+  closing, late loading, fallback, normal engraved nibble/size restoration,
+  flat/paper no-fetch behavior and other-scene isolation.
+- Browser cases were **not executed**. The established local browser launch
+  restriction (`socket() EPERM`) was not retried or bypassed.
+- Node is 24.19.0, outside the project's pinned Node 22 range. Aggregate tests,
+  typecheck and build belong to the stable parent batch checkpoint, not this
+  concurrent scoped edit. No broad pass is claimed here.
 
-- Seven focused unit cases pass: explicit query selection, natural dimensions,
-  uniform scale, preserved logical box and measured ground alignment.
-- The current worktree's full unit suite passes: **328 tests / 33 files**.
-- Data checks, typecheck and production build pass. Build output includes the
-  hashed candidate asset; the existing large-chunk warning remains.
-- Changed mushroom source, tests and provenance pass focused Biome checks. A full
-  lint attempt found formatting changes in the concurrently edited main image
-  provenance file, not in this comparison; that file was not modified here.
-- Eleven Desktop Chromium browser cases are registered: two languages at desktop
-  and narrow/reduced-motion sizes, repeated keyboard toggles, disclosure closing,
-  reverse scrolling and wrapper geometry, both localized error fallbacks, a late
-  load after unchecking, ordinary engraved/flat/paper isolation, and another-scene
-  isolation.
-- Browser cases were **not executed** in this task. The previously established
-  local browser launch restriction (`socket() EPERM`) was not retried or bypassed.
-  No running-scene screenshot, browser geometry pass or visual approval is claimed.
-
-No commit, push, CI dispatch, merge or deployment is part of this checkpoint.
+No commit, push, CI dispatch, merge or deployment was performed by this task.

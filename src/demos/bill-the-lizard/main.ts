@@ -20,7 +20,7 @@ import '../rabbit-house/house.css';
 import { RIM_SVG } from '../rabbit-house/figures.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import './bill.css';
-import { bottleMarkup, CLUMP_SVG, GARDEN_HOUSE_SVG, LEAVES } from './figures.ts';
+import { bottleMarkup, clumpMarkup, GARDEN_HOUSE_SVG, LEAVES } from './figures.ts';
 
 /** Where Bill comes down, as a share of the frame's width. */
 const LAND_X = 0.64;
@@ -103,7 +103,7 @@ function mount(shell: DemoShell): void {
     '<div class="bl__at-head"><span class="bl__stars"><i></i><i></i><i></i></span>' +
     '<span class="bl__drops"><b></b><b></b><b></b><b></b></span></div>' +
     '<div class="bl__bill-hit"></div></div>' +
-    `<div class="bl__clump">${CLUMP_SVG}</div>` +
+    `<div class="bl__clump">${clumpMarkup()}</div>` +
     `<div class="bl__leaves">${LEAVES}</div>` +
     `<div class="bl__nurse"><div class="bl__nurse-pig">${pig}</div><div class="bl__bottle">${bottleMarkup()}</div></div>` +
     '<div class="bl__drag"></div>';

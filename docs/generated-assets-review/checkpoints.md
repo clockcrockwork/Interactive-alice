@@ -1,3 +1,49 @@
+# アリス画像追加：一括確認入口（PR #29）
+
+更新：2026-10-21。画像制作・統合は進行中です。**生成済み、コード統合済み、静的合成確認済み、ブラウザ確認済みは別の段階**です。旧原画を残す箇所があるため「全画像完了」ではありません。確認のためのPRはこの1本に集約しています。
+
+## 現状と確認する順番
+
+1. **人物と持ち物の接点**：座るアリスの花、黄色runnerの指ぬき、Duchessの赤ちゃん、両手のキノコ片、Knaveの冠クッション。
+2. **可動部品と場面のつながり**：Gryphonの前脚と共有opening、Catの目/消失、Billの頭、Flamingo、動物の翼/脚。元の操作・動きを残した別部品構成です。
+3. **全体の画風と色**：顔・髪・衣装の一貫性、小さい表示での読みやすさ。黄青は別生成編集なので厳密な線画一致を保証しません。
+4. **実ブラウザの動作**：ロード失敗時の元描画、停止中の読込、reverse/reduced motion、電話幅、接触/はみ出し。現在の証拠は静的確認とローカル検証で、ブラウザ再生合格ではありません。
+
+## 最新の保存と検証
+
+- 直前の保存：`53bf33641ff2df4088ba61b894abdd91377dc35c`。545 unit tests / 55 files等が通過した過去の基準です。今回の正本headとexact-tree結果はPR #29本文の最上段で照合してください。
+- 今回の固定snapshot検証：659 unit tests / 69 files、typecheck、lint、data、build。実際の公開headとのtree一致を確認してPR本文へ記録します。実ブラウザ実行はしていません。
+- Previewは[PR #29](https://github.com/clockcrockwork/Interactive-alice/pull/29)に記載した**同じhead**のURLを使用してください。deployment READYだけでは閲覧可能/視認済みとは言いません。
+- 現時点の75 registry IDs中69 IDsには何らかの生成runtimeがあります。全色・全consumer対応数ではなく、部分対応も含む棚卸しです。
+
+## 場面別の確認資料
+
+| 確認対象 | 最新資料 | 実際の範囲 |
+| --- | --- | --- |
+| 座るアリス | [4層と花の接点](alice-sitting-20261021.md) | Riverbank、黄青 |
+| 黄色runner | [受取/お辞儀/指ぬき](alice-runner-20261021.md) | Caucus Race / Pool / Mouse Tale。青は元描画 |
+| 静止falling / 飛ぶpiglet | [限定consumerと残件](static-pose-consumers-20261021.md) | fallingはDrink Me/Trial、pigletはDuchessのみ |
+| Gryphon | [色と前脚](gryphon-20261021.md) | 章の3層、Duchess共有opening、Trial全身 |
+| 座るDuchess | [赤ちゃん支持](duchess-seated-contact-20261021.md)、[Croquet登場](duchess-croquet-arrival-20261021.md)、[歩き姿と肩接触](duchess-standing-composition-20261021.md) | Kitchenと到着場面。歩きは立ち姿専用map |
+| Mushroom | [支持/操作](mushroom-support-20261021.md) | 通常engravedへ導入。比較入口も維持 |
+| 既存画像の追加利用 | [5consumerの差分](actor-consumers-20261021.md) | Bill / Gryphon / Mock Turtle / Rabbit |
+| Trial Mouse | [夢のMouse](trial-mouse-dream-20261021.md) | 空だった120×60描画枠への限定reuse |
+| 新しい小物 | [持ち物/前景の合成](final-scene-props-20261021.md) | Hedge、左右キノコ片、冠クッション、Pool table |
+| 不成立候補 | [tucked Flamingo](tucked-flamingo-20261021.md) | neck拒否後のhybrid不成立、元描画維持 |
+| 全体棚卸し | [残作業と範囲](remaining-inventory.md) | source/部品/統合/検証を分離 |
+
+## 元描画を残している主な箇所
+
+- 青い後ろ姿・立ち姿・runner。生成結果が無いものを青新画像として扱いません。
+- Mock Turtle章のflapper、Kitchenの段階的pig morph、Rabbit Holeの関節付きfalling、running-away、tucked Flamingo。拒否された部品の別手段生成や、不自然なhybridの採用は行っていません。
+- 意図的なシルエット、Dinah ghosts、カード記号/数字、slates、key等の機能するSVG/Canvasは維持します。
+- Duchess歩きは元のアリス/鳥を保って立ち姿のみ導入。生成fallingをこの場面に使うと鳥のbiteが胸/首へ寄るため、このconsumerでは元描画を残しています。確認待ちは他の独立制作を止める条件ではありません。
+
+## 過去の記録（最新の合格証拠ではありません）
+
+<details>
+<summary>旧チェックポイント、旧テスト数、旧contact sheetを開く</summary>
+
 # Consolidated generated-art review checkpoints
 
 This is the single review checklist for Draft PR #29. It supersedes the split
@@ -233,3 +279,40 @@ contacts, Mushroom cap support, Gryphon palette/paws, tucked Flamingo and remain
 protagonist motion continue. Refused standing/rear blue, Mock Turtle right flapper,
 baby-pig limb and falling-leg edits are not retried through alternate tools;
 only dependent rigs remain original while independent work proceeds.
+
+## Fifth production checkpoint, 2026-10-21 (local integration)
+
+This is an intermediate production checkpoint, not all-image completion. New
+runtime deliveries currently comprise 21 unchanged-canvas WebP files (7,262,640
+bytes). Raw PNG masters remain outside Git; source reuse is not new generation.
+
+- Riverbank sitting Alice: both colours, four layers; review eyelids, head droop,
+  reaching hand and flower-chain contact.
+- Yellow runner Alice: rest/carry poses and ready-only natural hand/pocket
+  metadata. Check receiving, bowing, storing and paused late loads. Blue and
+  failed loads retain original coordinates and artwork.
+- Falling cards: Drink Me and Trial only; Rabbit Hole's articulated figure and
+  Duchess shoulder contact are not replaced by this whole source.
+- Gryphon: mapped chapter forelegs; Duchess reuses the exact neutral chapter
+  drawing for the shared opening. Trial keeps a whole dream depiction.
+- Kitchen Duchess: existing baby world box/motion unchanged; fingers support its
+  sides at rest. Continuous grasp while rocking is not claimed. Other consumers
+  require separate composition verification.
+- Flying piglet: Duchess cutaway with original paper wings. Kitchen staged morph
+  remains original; unavailable limbs were not reconstructed.
+- Mushroom: ordinary engraved pages now load the new source with original
+  fallback. Support is checked at neutral/breath/charge poses; old spot positions
+  are not an aesthetic requirement. Optional comparison remains available.
+- Other source reuse preserves Bill's Witnesses motion and Trial's Mock Turtle
+  and running Rabbit wrappers. Fixed raster tint differences are documented.
+
+Original-only dependencies include blue rear/standing/runner, chapter Mock Turtle
+flapper, Kitchen pig morph, articulated falling/running-away, and tucked Flamingo.
+Failed hybrids are not enabled. Functional ranks/slates/key, Dinah ghosts and
+intentional silhouettes do not require new raster art.
+
+Evidence is source inspection and offline composition, not browser playback.
+Pattern/use, CSS bow projection, late decode, pause/reduced motion and phone
+interaction remain real-browser checkpoints. Access restrictions were not bypassed.
+
+</details>

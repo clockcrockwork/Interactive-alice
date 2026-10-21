@@ -74,12 +74,13 @@ describe('generated whole-prop cut-outs', () => {
   it('keeps the remaining unsupported candidates on their original routes', () => {
     for (const [id, scene] of [
       ['mushroom', 'caterpillar'],
-      ['duchess', 'pig-and-pepper'],
-      ['duchess', 'duchess'],
-      ['runner/alice', 'caucus-race'],
+      ['duchess', 'trial'],
     ]) {
       expect(figure(id ?? '', '', 'engraved', scene)).not.toContain('data-generated');
     }
+    expect(figure('runner/alice', '', 'engraved', 'caucus-race', 'blue')).not.toContain(
+      'data-generated',
+    );
   });
 });
 

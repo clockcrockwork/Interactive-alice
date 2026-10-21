@@ -3,7 +3,7 @@ import { figure } from './art.ts';
 import { RABBIT_SVG } from './vectors.ts';
 
 describe('running rabbit outer-motion adapter', () => {
-  for (const demo of ['riverbank', 'rabbit-hole', 'pool-of-tears', 'mouse-tale']) {
+  for (const demo of ['riverbank', 'rabbit-hole', 'pool-of-tears', 'mouse-tale', 'trial']) {
     it(`${demo} retains SVG, fixed motion box and atomic fallback`, () => {
       const html = figure('white-rabbit/running', '', 'engraved', demo);
       expect(html).toContain('data-generated-rig="white-rabbit/running"');
@@ -13,12 +13,15 @@ describe('running rabbit outer-motion adapter', () => {
       expect(html).not.toContain('data-rig-ready');
       expect(html).not.toContain('rb__watch');
     });
+    it(`${demo} preserves the flat and paper originals`, () => {
+      for (const style of ['flat', 'paper'] as const)
+        expect(figure('white-rabbit/running', '', style, demo)).toContain(RABBIT_SVG);
+    });
   }
-  it('keeps other styles and the court evidence original', () => {
-    for (const style of ['flat', 'paper'] as const)
-      expect(figure('white-rabbit/running', '', style, 'riverbank')).toContain(RABBIT_SVG);
-    expect(figure('white-rabbit/running', '', 'engraved', 'trial')).not.toContain(
-      'data-generated-rig',
-    );
+  it('does not replace unrelated or unknown consumers', () => {
+    for (const demo of ['witnesses', 'duchess', undefined])
+      expect(figure('white-rabbit/running', '', 'engraved', demo)).not.toContain(
+        'data-generated-rig',
+      );
   });
 });

@@ -1,6 +1,23 @@
-/** Scene-local review only: the cap does not yet match the Caterpillar's support. */
+import { type ArtStyle, artStyle } from '../art/treatments.ts';
+
+/** The comparison controls remain opt-in; ordinary engraved pages use the new art. */
 export const previewEnabled = (search: string): boolean =>
   new URLSearchParams(search).get('artPreview') === 'mushroom';
+
+export const mushroomEnabled = (search: string, style: ArtStyle): boolean =>
+  style === 'engraved' || previewEnabled(search);
+
+/** Loading is not sufficient: keep the complete original until decoding succeeds. */
+export async function decodedMushroom(
+  image: Pick<HTMLImageElement, 'decode' | 'naturalWidth' | 'isConnected'>,
+): Promise<boolean> {
+  try {
+    await image.decode();
+    return image.isConnected && image.naturalWidth > 0;
+  } catch {
+    return false;
+  }
+}
 
 export const previewSource = () => ({
   src: new URL(
@@ -28,7 +45,7 @@ export const previewPlacement = () => {
 };
 
 export function installGeneratedPreview(root: HTMLElement, ui: Record<string, string>): void {
-  if (!previewEnabled(window.location.search)) return;
+  if (!mushroomEnabled(window.location.search, artStyle())) return;
   const figure = root.querySelector<HTMLElement>('.ct__mushroom > .art');
   if (!figure) return;
   const source = previewSource();
@@ -39,7 +56,7 @@ export function installGeneratedPreview(root: HTMLElement, ui: Record<string, st
   image.alt = '';
   image.hidden = true;
   image.decoding = 'async';
-  image.fetchPriority = 'low';
+  if (previewEnabled(window.location.search)) image.fetchPriority = 'low';
   image.className = 'ct__generated-mushroom';
   image.dataset.generatedMushroom = '';
   image.style.setProperty('--preview-x', `${(placement.x / placement.box[0]) * 100}%`);
@@ -47,42 +64,55 @@ export function installGeneratedPreview(root: HTMLElement, ui: Record<string, st
   image.style.setProperty('--preview-width', `${(placement.width / placement.box[0]) * 100}%`);
   figure.append(image);
 
-  const panel = document.createElement('details');
-  panel.className = 'ct__preview-controls';
-  const summary = document.createElement('summary');
-  summary.textContent = ui.demoCompareArt ?? '';
-  const label = document.createElement('label');
-  const toggle = document.createElement('input');
-  toggle.type = 'checkbox';
-  toggle.id = 'ct-generated-preview-toggle';
-  toggle.checked = true;
-  toggle.dataset.generatedMushroomToggle = '';
-  label.htmlFor = toggle.id;
-  label.append(toggle, document.createTextNode(ui.demoGeneratedMushroom ?? ''));
-  const note = document.createElement('p');
-  note.id = 'ct-generated-preview-note';
-  note.textContent = ui.demoGeneratedMushroomLimit ?? '';
-  toggle.setAttribute('aria-describedby', note.id);
-  panel.append(summary, label, note);
-  root.append(panel);
+  let toggle: HTMLInputElement | undefined;
+  let note: HTMLParagraphElement | undefined;
+  if (previewEnabled(window.location.search)) {
+    const panel = document.createElement('details');
+    panel.className = 'ct__preview-controls';
+    const summary = document.createElement('summary');
+    summary.textContent = ui.demoCompareArt ?? '';
+    const label = document.createElement('label');
+    toggle = document.createElement('input');
+    toggle.type = 'checkbox';
+    toggle.id = 'ct-generated-preview-toggle';
+    toggle.checked = true;
+    toggle.dataset.generatedMushroomToggle = '';
+    label.htmlFor = toggle.id;
+    label.append(toggle, document.createTextNode(ui.demoGeneratedMushroom ?? ''));
+    note = document.createElement('p');
+    note.id = 'ct-generated-preview-note';
+    note.textContent = ui.demoGeneratedMushroomLimit ?? '';
+    toggle.setAttribute('aria-describedby', note.id);
+    panel.append(summary, label, note);
+    root.append(panel);
+  }
 
   let loaded = false;
+  let failed = false;
   const update = (): void => {
-    const show = loaded && toggle.checked;
-    figure.toggleAttribute('data-generated-mushroom-preview', show);
+    const show = loaded && !failed && (toggle?.checked ?? true);
+    figure.toggleAttribute('data-generated-mushroom-active', show);
     image.hidden = !show;
   };
-  image.addEventListener('load', () => {
-    loaded = image.naturalWidth > 0;
-    update();
-  });
-  image.addEventListener('error', () => {
+  const fail = (): void => {
+    failed = true;
     loaded = false;
-    toggle.disabled = true;
-    note.textContent = ui.demoGeneratedMushroomUnavailable ?? '';
+    if (toggle) toggle.disabled = true;
+    if (note) note.textContent = ui.demoGeneratedMushroomUnavailable ?? '';
     update();
+  };
+  image.addEventListener('load', () => {
+    void decodedMushroom(image).then((ready) => {
+      if (!ready) {
+        fail();
+        return;
+      }
+      loaded = true;
+      update();
+    });
   });
-  toggle.addEventListener('change', update);
+  image.addEventListener('error', fail);
+  toggle?.addEventListener('change', update);
   image.src = source.src;
   update();
 }

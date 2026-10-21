@@ -32,7 +32,9 @@ describe('generated runner adapter', () => {
     it(`keeps ${kind}'s image inside the untransformed motion and overlay group`, () => {
       withGeneratedEntry(`runner/${kind}`, () => {
         for (const demo of ['caucus-race', 'mouse-tale']) {
-          const markup = figure(`runner/${kind}`, '', 'engraved', demo);
+          // Yellow Alice has a scene-specific two-pose adapter. The unchanged
+          // blue route still exercises a generic generated registry entry.
+          const markup = figure(`runner/${kind}`, '', 'engraved', demo, 'blue');
           expect(markup).toContain('data-generated=""');
           expect(markup).toContain('viewBox="0 0 100 116"');
           expect(markup.match(/class="cr__figure"/g)).toHaveLength(1);

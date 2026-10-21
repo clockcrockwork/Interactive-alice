@@ -1,0 +1,137 @@
+{
+  "artId": "flamingo/tucked",
+  "styleId": "IA-ENGRAVED-CUTOUT-V1",
+  "date": "2026-10-21",
+  "status": "Rejected hybrid checkpoint; original runtime unchanged; no owner art approval or browser pass.",
+  "generator": "OpenAI image_gen; exact model, seed and prompt hashes unavailable to this worker.",
+  "operation": "New pose master followed by separate body/head/jaw edits supplied by parent.",
+  "neck": "Original FLAMINGO_TUCKED_SVG path retained without artwork changes. Raster neck request refused with no output; not retried or recreated.",
+  "sourceRasterModification": "None. Original PNG bytes embedded whole for SVG composition; no crop, cleanup, recolour, mask or raster resize.",
+  "sources": [
+    {
+      "part": "master",
+      "sourceFile": "exec-b1ed3a2a-3b6c-47be-ab65-358111f56037.png",
+      "bytes": 1266137,
+      "sha256": "57dc183df9f31ea7c7778ccd888c61482bd2ebcf45627ff3fc963e259ad58453",
+      "width": 1402,
+      "height": 1122,
+      "bounds": {
+        "0": {
+          "bounds": [0, 20, 1385, 1089],
+          "count": 448540
+        },
+        "32": {
+          "bounds": [118, 99, 1284, 1087],
+          "count": 430683
+        },
+        "128": {
+          "bounds": [119, 100, 1283, 1087],
+          "count": 426816
+        }
+      }
+    },
+    {
+      "part": "body",
+      "sourceFile": "exec-df8dc5da-5226-4d4b-bd75-f647318cd40e.png",
+      "bytes": 1085103,
+      "sha256": "453e2445cde86728fffb08a15e8a73b28854246ab8d9443dd0c40231bd61079e",
+      "width": 1402,
+      "height": 1122,
+      "bounds": {
+        "0": {
+          "bounds": [33, 55, 1302, 1121],
+          "count": 402447
+        },
+        "32": {
+          "bounds": [93, 447, 1251, 1102],
+          "count": 390262
+        },
+        "128": {
+          "bounds": [94, 448, 1250, 1101],
+          "count": 388069
+        }
+      },
+      "exploratoryMap": {
+        "x": -4.6,
+        "y": 31.9,
+        "uniformScale": 0.1141
+      }
+    },
+    {
+      "part": "head",
+      "sourceFile": "exec-8c216caf-123c-468f-a3a8-1350a2e7406f.png",
+      "bytes": 1089186,
+      "sha256": "e985f7407d4810f3ce1389c3633c16e076b44549489df9ccb3e413b2bf0a139b",
+      "width": 1402,
+      "height": 1122,
+      "bounds": {
+        "0": {
+          "bounds": [0, 19, 1371, 1121],
+          "count": 419864
+        },
+        "32": {
+          "bounds": [235, 94, 1316, 884],
+          "count": 396776
+        },
+        "128": {
+          "bounds": [236, 95, 1315, 883],
+          "count": 393081
+        }
+      },
+      "exploratoryMap": {
+        "x": 102.5,
+        "y": 19,
+        "uniformScale": 0.05
+      }
+    },
+    {
+      "part": "jaw",
+      "sourceFile": "exec-6ae48392-5f07-433e-b838-034c9bb2d375.png",
+      "bytes": 112065,
+      "sha256": "2748cee3eda5e5b96013c8277eb7f8f23b371228996c1e723a58e5d3f9a62189",
+      "width": 1402,
+      "height": 1122,
+      "bounds": {
+        "0": {
+          "bounds": [444, 209, 1258, 953],
+          "count": 19902
+        },
+        "32": {
+          "bounds": [816, 213, 1027, 427],
+          "count": 18117
+        },
+        "128": {
+          "bounds": [816, 214, 1026, 426],
+          "count": 17658
+        }
+      },
+      "exploratoryMap": {
+        "x": 30.7,
+        "y": 19.3,
+        "uniformScale": 0.103
+      }
+    }
+  ],
+  "geometry": {
+    "logicalBox": [200, 160],
+    "diagnosticViewBox": [-100, -40, 320, 220],
+    "bodyCentre": [90, 110],
+    "neckRoot": [136, 100],
+    "neckTip": [150, 44],
+    "headPivot": [150, 48],
+    "jawHinge": [140, 50],
+    "originalPupil": [155, 31, 2.2],
+    "exploratoryPupilTranslation": [-12.1, 3.9],
+    "pointerRange": [-2, 2]
+  },
+  "diagnostic": {
+    "file": "docs/generated-assets-review/tucked-flamingo-hybrid-20261021.png",
+    "bytes": 353017,
+    "sha256": "c162aa78d7c65c786aaed11ee8f3075fbfa9e47b6443238e69ce8d44ae34d4d4",
+    "width": 1920,
+    "height": 960,
+    "states": ["neutral", "eye-left", "eye-right", "bite-half", "bite-open", "bite-snap"],
+    "browserScreenshot": false
+  },
+  "shippingBytesAdded": 0
+}

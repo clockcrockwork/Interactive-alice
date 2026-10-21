@@ -1,3 +1,4 @@
+import { generatedSceneProp } from '../art/generated-scene-prop.ts';
 /**
  * Bill the Lizard's garden, where he comes down: the corner of the Rabbit's house
  * with its ladder and the chimney he left, a clump of the hedge he may go into,
@@ -62,3 +63,14 @@ export const LEAVES = Array.from({ length: 10 }, (_, i) => {
   const spin = ((i * 67) % 240) - 120;
   return `<span class="bl__leaf" style="--dx: ${dx}; --dy: ${dy}; --land: ${land}; --spin: ${spin}"></span>`;
 }).join('');
+
+/** Keep the original wrapper, placement and motion. */
+export function clumpMarkup(style?: ArtStyle): string {
+  return generatedSceneProp(
+    'hedge-clump',
+    CLUMP_SVG,
+    [200, 140],
+    [0, 4.442961974649762, 200.0, 139.9599733155437],
+    style,
+  );
+}

@@ -128,7 +128,11 @@ export function generatedCaterpillarBillSvg(
 ): string | undefined {
   if (style !== 'engraved' || !demo) return undefined;
   if (id === 'caterpillar' && demo === 'caterpillar') return caterpillar();
-  if (id === 'bill' && (demo === 'bill-the-lizard' || demo === 'rabbit-house')) return bill();
+  if (
+    id === 'bill' &&
+    (demo === 'bill-the-lizard' || demo === 'rabbit-house' || demo === 'witnesses')
+  )
+    return bill();
   return undefined;
 }
 

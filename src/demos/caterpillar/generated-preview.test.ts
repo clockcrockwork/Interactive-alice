@@ -1,5 +1,62 @@
 import { describe, expect, it } from 'vitest';
-import { previewEnabled, previewPlacement, previewSource } from './generated-preview.ts';
+import {
+  decodedMushroom,
+  mushroomEnabled,
+  previewEnabled,
+  previewPlacement,
+  previewSource,
+} from './generated-preview.ts';
+
+describe('scene-local mushroom introduction', () => {
+  it('introduces the generated source on ordinary engraved pages', () => {
+    expect(mushroomEnabled('', 'engraved')).toBe(true);
+  });
+
+  it.each(['flat', 'paper'] as const)('retains the ordinary %s drawing', (style) => {
+    expect(mushroomEnabled('', style)).toBe(false);
+    expect(mushroomEnabled('?artPreview=other', style)).toBe(false);
+    expect(mushroomEnabled('?artPreview=mushroom', style)).toBe(true);
+  });
+
+  it('does not publish readiness until decoding finishes', async () => {
+    let release = (): void => {};
+    const pending = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const image = { decode: () => pending, naturalWidth: 1402, isConnected: true };
+    let result: boolean | undefined;
+    const completed = decodedMushroom(image).then((ready) => {
+      result = ready;
+    });
+    await Promise.resolve();
+    expect(result).toBeUndefined();
+    release();
+    await completed;
+    expect(result).toBe(true);
+  });
+
+  it('retains fallback after a decode failure', async () => {
+    const image = {
+      decode: async () => {
+        throw new Error('decode failed');
+      },
+      naturalWidth: 1402,
+      isConnected: true,
+    };
+    expect(await decodedMushroom(image)).toBe(false);
+  });
+
+  it('does not reveal a disconnected or empty image', async () => {
+    for (const [naturalWidth, isConnected] of [
+      [1402, false],
+      [0, true],
+    ] as const) {
+      expect(await decodedMushroom({ decode: async () => {}, naturalWidth, isConnected })).toBe(
+        false,
+      );
+    }
+  });
+});
 
 describe('mushroom comparison opt-in', () => {
   it.each(['', '?artPreview=overhead', '?artPreview=other', '?artPreview=Mushroom'])(

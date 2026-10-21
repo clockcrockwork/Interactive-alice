@@ -14,6 +14,7 @@
 
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
+import { hydrateGeneratedRig } from '../art/generated-rig.ts';
 import { DISTANT_HOUSE, HOUSE_FRONT_SVG } from '../rabbit-house/front.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import './caucus.css';
@@ -25,6 +26,7 @@ import {
   OPENING,
   RUNNERS,
   type RunnerKind,
+  runnerAnchor,
   THIMBLE_SVG,
 } from './figures.ts';
 
@@ -150,10 +152,10 @@ function mount(shell: DemoShell): void {
   ring.append(carry);
   const thimble = { show: 0, leg: 0, spin: 0 };
   const holds = [
-    { who: alice, hand: HANDS.alicePocket, size: 0.75 },
-    { who: dodo, hand: HANDS.dodoHand, size: 0.85 },
-    { who: dodo, hand: HANDS.dodoRaised, size: 1.5 },
-    { who: alice, hand: HANDS.aliceHand, size: 0.8 },
+    { who: alice, hand: () => runnerAnchor(alice?.el, 'pocket', HANDS.alicePocket), size: 0.75 },
+    { who: dodo, hand: () => HANDS.dodoHand, size: 0.85 },
+    { who: dodo, hand: () => HANDS.dodoRaised, size: 1.5 },
+    { who: alice, hand: () => runnerAnchor(alice?.el, 'hand', HANDS.aliceHand), size: 0.8 },
   ];
   const holdAt = (index: number) => {
     const hold = holds[index] ?? holds[0];
@@ -170,17 +172,25 @@ function mount(shell: DemoShell): void {
       return;
     }
     // The shorter way round the ring, and a little arc through the air.
+    const aHand = a.hold.hand();
+    const bHand = b.hold.hand();
     const turn = ((((b.at.angle - a.at.angle) % 360) + 540) % 360) - 180;
     carry.style.setProperty('--a', (a.at.angle + turn * f).toFixed(2));
     carry.style.setProperty('--r', mix(a.at.radius, b.at.radius, f).toFixed(3));
-    carry.style.setProperty('--u', mix(a.hold.hand.u, b.hold.hand.u, f).toFixed(1));
+    carry.style.setProperty('--u', mix(aHand.u, bHand.u, f).toFixed(1));
     carry.style.setProperty(
       '--v',
-      (mix(a.hold.hand.v, b.hold.hand.v, f) - Math.sin(Math.PI * f) * 30).toFixed(1),
+      (mix(aHand.v, bHand.v, f) - Math.sin(Math.PI * f) * 30).toFixed(1),
     );
     carry.style.setProperty('--s', (mix(a.hold.size, b.hold.size, f) * thimble.show).toFixed(3));
     carry.style.setProperty('--rot', thimble.spin.toFixed(1));
   };
+  const aliceRig = alice?.el.querySelector<SVGElement>('svg[data-generated-rig="runner/alice"]');
+  // A late decode must move the prop even when the scene's clock is paused.
+  if (aliceRig)
+    void hydrateGeneratedRig(aliceRig).then(() => {
+      if (aliceRig.isConnected) placeThimble();
+    });
 
   const apply = (): void => {
     runners.forEach((runner, index) => {
@@ -421,8 +431,9 @@ function mount(shell: DemoShell): void {
     const box = shell.stage.getBoundingClientRect();
     const from = alice?.el.getBoundingClientRect();
     const to = runner.el.getBoundingClientRect();
-    const sx = from ? from.left - box.left + from.width * 0.62 : box.width / 2;
-    const sy = from ? from.top - box.top + from.height * 0.74 : box.height / 2;
+    const pocket = runnerAnchor(alice?.el, 'pocket', { u: 62, v: 0.74 * 116 });
+    const sx = from ? from.left - box.left + (from.width * pocket.u) / 100 : box.width / 2;
+    const sy = from ? from.top - box.top + (from.height * pocket.v) / 116 : box.height / 2;
     const ex = to.left - box.left + to.width * 0.8;
     const ey = to.top - box.top + to.height * 0.42;
     const sweet = document.createElement('div');

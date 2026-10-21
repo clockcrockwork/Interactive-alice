@@ -4,7 +4,7 @@
   }
 
   /* Hide only the mushroom's own drawing/bake. The separate Caterpillar stays put. */
-  .ct__mushroom > .art[data-generated-mushroom-preview] > :not(.ct__generated-mushroom) {
+  .ct__mushroom > .art[data-generated-mushroom-active] > :not(.ct__generated-mushroom) {
     visibility: hidden;
   }
 

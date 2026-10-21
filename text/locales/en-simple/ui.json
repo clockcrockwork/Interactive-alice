@@ -202,8 +202,8 @@
     "demoGeneratedUnavailable": "The candidate could not load. The original animation is shown.",
     "demoGeneratedLimit": "Uncheck: original animation. No moving parts; hand, hair and angle still need review.",
     "demoCompareArt": "Compare artwork",
-    "demoGeneratedMushroom": "Show generated mushroom (unapproved preview)",
-    "demoGeneratedMushroomLimit": "Uncheck: original. Higher cap; Caterpillar feet need review. Its position is unchanged.",
-    "demoGeneratedMushroomUnavailable": "The mushroom candidate could not load. The original mushroom is shown."
+    "demoGeneratedMushroom": "Show generated mushroom",
+    "demoGeneratedMushroomLimit": "Uncheck: original. Caterpillar movement and both nibble buttons stay unchanged.",
+    "demoGeneratedMushroomUnavailable": "The generated mushroom could not load. The original mushroom is shown."
   }
 }

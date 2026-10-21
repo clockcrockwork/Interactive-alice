@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-21",
+  "generator": "OpenAI built-in image_gen; model not exposed",
+  "promptHash": null,
+  "method": "New source illustrations from original layout and generated style references. WebP q92 encoding only; unchanged canvas and byte-identical alpha.",
+  "verification": "Source inspection and measured uniform composition; browser not executed.",
+  "assets": [
+    {
+      "id": "hedge-clump",
+      "source": "exec-2ad5e3ec-6e0a-4ce9-a2fc-3be4c58cc9aa.png",
+      "sourceSha256": "d9be016b2e3e886261fd7e183ddd1198726dc8b15f9bacfb04adf97a33728734",
+      "asset": "figures/hedge-clump.any.generated.webp",
+      "sha256": "a19a05a259565ef210b33e5ecdd9dda6c60d085b251679871277f38ef053273f",
+      "bytes": 790094,
+      "dimensions": [1499, 1049],
+      "alphaBoundsAbove32": [13, 43, 1485, 1017],
+      "logicalBox": [200, 140],
+      "placement": [0, 4.442961974649762, 200.0, 139.9599733155437]
+    },
+    {
+      "id": "mushroom-piece",
+      "source": "exec-9a94861b-f928-423c-a7f6-2d55a607084b.png",
+      "sourceSha256": "631759f80a22c8b86a513364977801dfa787682d831040e8e43fb1ccb3751b5c",
+      "asset": "figures/mushroom-piece.any.generated.webp",
+      "sha256": "7a39c00f8e8cdeadccaf94f7d640d2701d67b219a40b1d2a724558774d27330e",
+      "bytes": 566664,
+      "dimensions": [1402, 1122],
+      "alphaBoundsAbove32": [52, 81, 1375, 1006],
+      "logicalBox": [200, 160],
+      "placement": [0, 6.633380884450787, 200.0, 160.05706134094152]
+    },
+    {
+      "id": "crown-cushion",
+      "source": "exec-4c298901-21ff-4f2e-bee3-9f111ff227df.png",
+      "sourceSha256": "730f27653c887da760f2dabb5e8f925be5881608ef6b73ebf71e3f72bf2b6c54",
+      "asset": "figures/crown-cushion.any.generated.webp",
+      "sha256": "090c0599bba693478d519044471cab88990b6521828feec0eff5ecabdf64412b",
+      "bytes": 435776,
+      "dimensions": [1619, 971],
+      "alphaBoundsAbove32": [19, 102, 1600, 874],
+      "logicalBox": [100, 60],
+      "placement": [0, 3.577825818406424, 100.0, 59.97529339098209]
+    }
+  ]
+}

@@ -143,7 +143,11 @@ def plan(scene: dict, locale: str) -> dict:
             beat_costs.append((beat["id"], cost * shot_weight))
         shot_costs.append((shot["id"], shot_weight * total))
 
-    whole = sum(cost for _, cost in shot_costs)
+    # Match the runtime's ordered Array.reduce: Python 3.12+ sum() uses
+    # compensated float summation, which changes the golden fixture's last bits.
+    whole = 0.0
+    for _, cost in shot_costs:
+        whole += cost
     return {
         "scene": scene["id"],
         "locale": locale,

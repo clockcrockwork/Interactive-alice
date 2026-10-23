@@ -143,9 +143,8 @@ def plan(scene: dict, locale: str) -> dict:
             beat_costs.append((beat["id"], cost * shot_weight))
         shot_costs.append((shot["id"], shot_weight * total))
 
-    # Added left to right, as the runtime adds them: the built-in sum() of floats is
-    # compensated from Python 3.12 on, which would make the fixture depend on the
-    # interpreter's version by one rounding step.
+    # Match the runtime's ordered Array.reduce: Python 3.12+ sum() uses
+    # compensated float summation, which changes the golden fixture's last bits.
     whole = 0.0
     for _, cost in shot_costs:
         whole += cost

@@ -17,12 +17,14 @@
 
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
+import { hydrateGeneratedRig } from '../art/generated-rig.ts';
 import {
   dressRunner,
   HANDS,
   huddleSlot,
   RUNNERS,
   type RunnerKind,
+  runnerAnchor,
   THIMBLE_SVG,
 } from '../caucus-race/figures.ts';
 import { DISTANT_HOUSE, HOUSE_FRONT_SVG } from '../rabbit-house/front.ts';
@@ -201,8 +203,18 @@ function mount(shell: DemoShell): void {
   const carry = document.createElement('div');
   carry.className = 'cr__carry';
   carry.innerHTML = `<div class="cr__thimble">${THIMBLE_SVG}</div>`;
-  carry.style.setProperty('--u', String(HANDS.aliceHand.u));
-  carry.style.setProperty('--v', String(HANDS.aliceHand.v));
+  const placeThimble = (): void => {
+    const hand = runnerAnchor(alice?.el, 'hand', HANDS.aliceHand);
+    carry.style.setProperty('--u', String(hand.u));
+    carry.style.setProperty('--v', String(hand.v));
+  };
+  placeThimble();
+  const aliceRig = alice?.el.querySelector<SVGElement>('svg[data-generated-rig="runner/alice"]');
+  // Readiness, not an animation frame, switches both picture and contact point.
+  if (aliceRig)
+    void hydrateGeneratedRig(aliceRig).then(() => {
+      if (aliceRig.isConnected) placeThimble();
+    });
   carry.style.setProperty('--s', '0.8');
   ring.append(carry);
   alice?.el.setAttribute('data-holding', '');

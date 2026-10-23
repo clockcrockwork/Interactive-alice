@@ -1,0 +1,199 @@
+{
+  "batch": "swimming-canvas-2026-10-21",
+  "date": "2026-10-21",
+  "status": "integrated candidate; offline placement reviewed, browser and art acceptance pending",
+  "styleId": "IA-ENGRAVED-CUTOUT-V1",
+  "runtime": "src/demos/pool-of-tears/generated-swimmers.ts",
+  "waterlineMeaning": "Each source waterline maps to local y=0. Four local units below the waterline render at 28% opacity. Jump and entrance motion move the source cut to the actual waterline.",
+  "fullPrompt": "not available to integration worker; prompt intent retained per Alice source; generation transcript held by producing task",
+  "assets": [
+    {
+      "id": "alice",
+      "variant": "yellow",
+      "asset": "figures/alice--swimming.yellow.generated.webp",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 662394,
+      "sha256": "e48fb5fbb2e0c0de9c684a6413ce2fa609268c313113b51aca6eb25cfba7ef59",
+      "placement": {
+        "centreX": 630,
+        "waterlineY": 975,
+        "scale": 0.05741626794258373
+      },
+      "alphaAbove32Bounds": [55, 43, 1208, 1151],
+      "rasterEdits": "none; runtime source-rectangle clipping only",
+      "generator": "OpenAI image_gen; model not exposed",
+      "source": {
+        "filename": "exec-3d7e25af-23bb-48be-a143-2c05aebb06b3.png",
+        "sha256": "fc67d214f358cb75a757ced5afe61a0d83971ef7c8044b14235402a4b27d4e36",
+        "bytes": 2896053
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true
+      },
+      "promptIntent": "Dedicated head-and-shoulders engraved swimming cutout with the established face, hair and pinafore identity; no painted water or background."
+    },
+    {
+      "id": "alice",
+      "variant": "blue",
+      "asset": "figures/alice--swimming.blue.generated.webp",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 481352,
+      "sha256": "74699cbafa046caab4fc21e19fbaeda25051354b3d82a127407e61f111123929",
+      "placement": {
+        "centreX": 630,
+        "waterlineY": 975,
+        "scale": 0.05741626794258373
+      },
+      "alphaAbove32Bounds": [53, 43, 1209, 1153],
+      "rasterEdits": "none; runtime source-rectangle clipping only",
+      "generator": "OpenAI image_gen; model not exposed",
+      "source": {
+        "filename": "exec-699bbcde-0ccc-44e1-93cf-63e35427ad84.png",
+        "sha256": "2293402099cd5f2f72bd8bd388fd96c184beb0e751eb543f7c361f795b4e85e8",
+        "bytes": 2612104
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true
+      },
+      "promptIntent": "Dedicated head-and-shoulders engraved swimming cutout with the established face, hair and pinafore identity; no painted water or background."
+    },
+    {
+      "id": "mouse",
+      "variant": "any",
+      "asset": "figures/runner--mouse.any.generated.webp",
+      "width": 1164,
+      "height": 1351,
+      "bytes": 299808,
+      "sha256": "e67edc18550e70339947173c0f3e25f70ab69935a58cfe27efdee1086e0682eb",
+      "placement": {
+        "centreX": 710,
+        "waterlineY": 975,
+        "scale": 0.0979381443298969
+      },
+      "alphaAbove32Bounds": [36, 434, 1154, 1118],
+      "rasterEdits": "none; runtime source-rectangle clipping only",
+      "generator": "reused existing image_gen cutout; see provenance.json",
+      "existingProvenance": "provenance.json#figures/runner--mouse.any.generated.webp"
+    },
+    {
+      "id": "duck",
+      "variant": "any",
+      "asset": "figures/runner--duck.any.generated.webp",
+      "width": 1165,
+      "height": 1350,
+      "bytes": 390336,
+      "sha256": "fbee55b3210c14902acd14f20af7ca845a4fe74a7bc7130a784be6d01e5e3317",
+      "placement": {
+        "centreX": 560,
+        "waterlineY": 950,
+        "scale": 0.06866952789699571
+      },
+      "alphaAbove32Bounds": [16, 232, 1149, 1253],
+      "rasterEdits": "none; runtime source-rectangle clipping only",
+      "generator": "reused existing image_gen cutout; see provenance.json",
+      "existingProvenance": "provenance.json#figures/runner--duck.any.generated.webp"
+    },
+    {
+      "id": "dodo",
+      "variant": "any",
+      "asset": "figures/runner--dodo.any.generated.webp",
+      "width": 1164,
+      "height": 1351,
+      "bytes": 416672,
+      "sha256": "4bc17ab5b56437793ec0e0ecb5602248bfdebf83bf5b45a6bfbe731296888538",
+      "placement": {
+        "centreX": 500,
+        "waterlineY": 1050,
+        "scale": 0.07560137457044673
+      },
+      "alphaAbove32Bounds": [57, 334, 1158, 1343],
+      "rasterEdits": "none; runtime source-rectangle clipping only",
+      "generator": "reused existing image_gen cutout; see provenance.json",
+      "existingProvenance": "provenance.json#figures/runner--dodo.any.generated.webp"
+    },
+    {
+      "id": "lory",
+      "variant": "any",
+      "asset": "figures/runner--lory.any.generated.webp",
+      "width": 1164,
+      "height": 1351,
+      "bytes": 312184,
+      "sha256": "9b7621f4d710de3edb4ea86f8d33ff4a66845bdaad952a177f4094be562edccc",
+      "placement": {
+        "centreX": 560,
+        "waterlineY": 950,
+        "scale": 0.06872852233676977
+      },
+      "alphaAbove32Bounds": [12, 341, 1140, 1212],
+      "rasterEdits": "none; runtime source-rectangle clipping only",
+      "generator": "reused existing image_gen cutout; see provenance.json",
+      "existingProvenance": "provenance.json#figures/runner--lory.any.generated.webp"
+    },
+    {
+      "id": "eaglet",
+      "variant": "any",
+      "asset": "figures/runner--eaglet.any.generated.webp",
+      "width": 1166,
+      "height": 1349,
+      "bytes": 338508,
+      "sha256": "232983712f6024f4d3c722916702db3686f104be02d82d4ab4f94eba7cfdd27a",
+      "placement": {
+        "centreX": 560,
+        "waterlineY": 950,
+        "scale": 0.07032590051457976
+      },
+      "alphaAbove32Bounds": [27, 313, 1145, 1167],
+      "rasterEdits": "none; runtime source-rectangle clipping only",
+      "generator": "reused existing image_gen cutout; see provenance.json",
+      "existingProvenance": "provenance.json#figures/runner--eaglet.any.generated.webp"
+    },
+    {
+      "id": "crab",
+      "variant": "any",
+      "asset": "figures/crab.any.generated.webp",
+      "width": 384,
+      "height": 230,
+      "bytes": 40052,
+      "sha256": "ec33773263053dc14a5afadf31c2cad639dc623a711c92dc08e35b08b407dc9d",
+      "placement": {
+        "centreX": 192,
+        "waterlineY": 153,
+        "scale": 0.21354166666666666
+      },
+      "alphaAbove32Bounds": [13, 21, 371, 209],
+      "rasterEdits": "none; runtime source-rectangle clipping only",
+      "generator": "reused existing image_gen cutout; see provenance.json",
+      "existingProvenance": "provenance.json#figures/crab.any.generated.webp"
+    },
+    {
+      "id": "magpie",
+      "variant": "any",
+      "asset": "figures/runner--magpie.any.generated.webp",
+      "width": 1164,
+      "height": 1351,
+      "bytes": 284634,
+      "sha256": "52022650f9ba74901a215e53234138459d11f5e1af31098461524dfc6b7212ba",
+      "placement": {
+        "centreX": 560,
+        "waterlineY": 960,
+        "scale": 0.070446735395189
+      },
+      "alphaAbove32Bounds": [6, 372, 1151, 1253],
+      "rasterEdits": "none; runtime source-rectangle clipping only",
+      "generator": "reused existing image_gen cutout; see provenance.json",
+      "existingProvenance": "provenance.json#figures/runner--magpie.any.generated.webp"
+    }
+  ]
+}

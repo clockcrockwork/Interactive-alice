@@ -1,0 +1,61 @@
+@layer tokens, base, layout, scene, utilities;
+
+@layer scene {
+  svg[data-generated-rig] [data-rig-generated] {
+    display: none;
+    visibility: hidden;
+  }
+
+  svg[data-generated-rig][data-rig-ready] [data-rig-generated] {
+    display: inline;
+    visibility: visible;
+  }
+
+  svg[data-generated-rig][data-rig-ready] [data-rig-fallback] {
+    display: none;
+  }
+
+  svg[data-generated-rig][data-rig-ready] [data-rig-part] {
+    transform-box: view-box;
+    transform-origin: var(--rig-origin);
+  }
+
+  svg[data-generated-rig][data-rig-ready] [data-rig-map] {
+    transform-box: view-box;
+    transform-origin: 0 0;
+    transform: var(--rig-map);
+  }
+
+  svg[data-generated-rig="hatter"][data-rig-ready] .tp__hatter-eyes ellipse {
+    fill: #f4e6d1;
+    stroke: #61412b;
+    stroke-width: 0.8;
+  }
+}
+
+@layer scene {
+  .tp__hatter-turn:has([data-generated-rig="hatter"][data-rig-ready])
+    .tp__frown
+    [data-live-frown-map] {
+    transform-box: view-box;
+    transform-origin: 0 0;
+  }
+
+  .tp__hatter-turn:has([data-generated-rig="hatter"][data-rig-ready])
+    .tp__frown
+    [data-live-frown-map="brows"] {
+    transform: matrix(0.4, 0, 0, 0.4, 48, 11.5);
+  }
+
+  .tp__hatter-turn:has([data-generated-rig="hatter"][data-rig-ready])
+    .tp__frown
+    [data-live-frown-map="mouth"] {
+    transform: matrix(0.5, 0, 0, 0.5, 39.35, 6.5);
+  }
+
+  .tp__hatter-turn:has([data-generated-rig="hatter"][data-rig-ready]) .tp__mouth ellipse {
+    fill: #f0d1b1;
+    rx: 16px;
+    ry: 7px;
+  }
+}

@@ -43,6 +43,22 @@ function textFor(scene: SceneMapping, locale: string): Record<string, string> {
 }
 
 describe('planScene', () => {
+  it('regenerates the committed pacing fixture byte-for-byte', () => {
+    const [command, ...prefix] = pythonCommand();
+    if (!command) throw new Error('Python launcher returned no interpreter');
+    const output = execFileSync(
+      command,
+      [...prefix, 'scripts/show-scene.py', '--all', '--plan', '--json'],
+      {
+        cwd: root,
+        encoding: 'utf8',
+      },
+    );
+    expect(output.replaceAll('\r\n', '\n')).toBe(
+      readFileSync(join(root, 'tests', 'fixtures', 'plans.json'), 'utf8').replaceAll('\r\n', '\n'),
+    );
+  });
+
   it('has a fixture for every scene the story lists', () => {
     for (const sceneId of scenes.keys()) {
       expect(

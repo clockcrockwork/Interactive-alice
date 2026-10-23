@@ -22,6 +22,32 @@
  */
 
 import { BAKED, BAKED_PARTS } from './baked.ts';
+import { generatedAlicePoseSvg } from './generated-alice-poses.ts';
+import { generatedAliceRunnerSvg } from './generated-alice-runner.ts';
+import { generatedAliceSittingSvg } from './generated-alice-sitting.ts';
+import { generatedAnimalSvg } from './generated-animal-layers.ts';
+import { generatedBatDivingSvg } from './generated-bat-diving.ts';
+import {
+  generatedBillFragment,
+  generatedCaterpillarBillSvg,
+} from './generated-caterpillar-bill.ts';
+import { generatedCheshireCatSvg } from './generated-cheshire-cat.ts';
+import { generatedFallingCardSvg } from './generated-falling-card.ts';
+import { generatedFlamingoSvg } from './generated-flamingo.ts';
+import { generatedFlyingPigSvg } from './generated-flying-pig.ts';
+import { generatedFootmanSvg } from './generated-footmen.ts';
+import { generatedGardenFigureSvg } from './generated-garden-figures.ts';
+import { generatedGardenerSvg } from './generated-gardeners.ts';
+import { generatedGryphonSvg } from './generated-gryphon.ts';
+import { generatedHedgehogSvg } from './generated-hedgehog.ts';
+import { generatedJurySvg } from './generated-jury.ts';
+import { generatedLiveExpressionSvg } from './generated-live-expressions.ts';
+import { generatedMockTurtleSvg } from './generated-mock-turtle.ts';
+import { generatedPigSvg } from './generated-pig-layers.ts';
+import { generatedRunningRabbitSvg } from './generated-running-rabbit.ts';
+import { generatedSeatedDuchessSvg } from './generated-seated-duchess.ts';
+import { generatedTrialMouseSvg } from './generated-trial-mouse.ts';
+import { generatedWalkingDuchessSvg } from './generated-walking-duchess.ts';
 import {
   ART,
   type ArtEntry,
@@ -145,9 +171,85 @@ export function figure(
   className = '',
   style: ArtStyle = pageStyle(),
   demo: string | undefined = pageDemo(),
+  variant: AliceVariant = inBrowser ? aliceVariant() : 'yellow',
 ): string {
   const entry = entryOf(id);
   if (entry.kind === 'vector') {
+    const alicePose =
+      generatedAlicePoseSvg(id, style, demo, variant) ??
+      generatedFallingCardSvg(id, style, demo, variant) ??
+      generatedAliceSittingSvg(id, style, demo, variant) ??
+      generatedAliceRunnerSvg(id, style, demo, variant);
+    if (alicePose) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="">${alicePose}</span>`;
+    }
+    const articulated =
+      generatedTrialMouseSvg(id, style, demo) ??
+      generatedCaterpillarBillSvg(id, style, demo) ??
+      generatedGardenerSvg(id, style, demo) ??
+      generatedJurySvg(id, style, demo) ??
+      generatedSeatedDuchessSvg(id, style, demo) ??
+      generatedWalkingDuchessSvg(id, style, demo) ??
+      generatedFlyingPigSvg(id, style, demo) ??
+      generatedGryphonSvg(id, style, demo) ??
+      generatedRunningRabbitSvg(id, style, demo) ??
+      generatedBatDivingSvg(id, style, demo);
+    if (articulated) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${articulated}</span>`;
+    }
+    const cat = generatedCheshireCatSvg(id, style, demo);
+    if (cat) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${cat}</span>`;
+    }
+    const garden = generatedGardenFigureSvg(id, style, demo);
+    if (garden) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${garden}</span>`;
+    }
+    const flamingo = generatedFlamingoSvg(id, style, demo);
+    if (flamingo) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${flamingo}</span>`;
+    }
+    const footman = generatedFootmanSvg(id, style, demo);
+    if (footman) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${footman}</span>`;
+    }
+    const mockTurtle = id === 'mock-turtle' ? generatedMockTurtleSvg(style, demo) : undefined;
+    if (mockTurtle) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${mockTurtle}</span>`;
+    }
+    const hedgehog = id === 'hedgehog' ? generatedHedgehogSvg(style, demo) : undefined;
+    if (hedgehog) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${hedgehog}</span>`;
+    }
+    const expression = generatedLiveExpressionSvg(id, style, demo);
+    if (expression) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${expression}</span>`;
+    }
+    const animal = generatedAnimalSvg(id, style, demo);
+    if (animal) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${animal}</span>`;
+    }
+    const pig = id === 'pig/trotting' ? generatedPigSvg(style, demo) : undefined;
+    if (pig) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="pig/trotting">${pig}</span>`;
+    }
+    const generatedVariant = entry.generated?.[variant] ? variant : 'any';
+    const generated = style === 'engraved' ? entry.generated?.[generatedVariant] : undefined;
+    if (generated) {
+      const [w, h] = entry.box;
+      const scale = Math.min(w / generated.width, h / generated.height);
+      const width = generated.width * scale;
+      const height = generated.height * scale;
+      const x = (w - width) / 2;
+      const y = h - generated.footY * scale;
+      const image = `<image class="art__image" data-variant="${generatedVariant}" href="${generated.src}" x="${x}" y="${y}" width="${width}" height="${height}" preserveAspectRatio="xMidYMid meet"/>`;
+      // Runners animate this group; their arms and scarf are inserted into it in
+      // the same logical coordinates, above the picture and moving with it.
+      const drawing = id.startsWith('runner/') ? `<g class="cr__figure">${image}</g>` : image;
+      // Keep the scene's original layout/growth box. Only the image moves within
+      // it: its visible soles, rather than its transparent padding, meet h.
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated=""><svg viewBox="0 0 ${w} ${h}" focusable="false">${drawing}</svg></span>`;
+    }
     const cut = cutOutsFor(id, style, demo);
     if (cut) {
       return `<span class="art art--cut ${className}" data-art="${id}">${cutOutSvg(entry, cut)}</span>`;
@@ -162,6 +264,8 @@ export function figure(
   return `<span class="art ${className}" data-art="${id}">${imgTags(entry.sources, 'art__image')}</span>`;
 }
 
+let generatedPaintId = 0;
+
 /**
  * A figure for an SVG context, placed in a box in user units with its feet at
  * (x, y + height) and its centre at x + width / 2.
@@ -173,15 +277,59 @@ export function svgFigure(
   width: number,
   height: number,
   className = '',
+  style: ArtStyle = pageStyle(),
+  demo: string | undefined = pageDemo(),
+  variant: AliceVariant = inBrowser ? aliceVariant() : 'yellow',
 ): string {
   const entry = entryOf(id);
   const at = `data-art="${id}" transform="translate(${x} ${y})"`;
   if (entry.kind === 'vector') {
+    const alicePose =
+      generatedAlicePoseSvg(id, style, demo, variant) ??
+      generatedFallingCardSvg(id, style, demo, variant) ??
+      generatedAliceSittingSvg(id, style, demo, variant) ??
+      generatedAliceRunnerSvg(id, style, demo, variant);
+    if (alicePose) {
+      return `<g class="art art--cut art--generated ${className}" ${at} data-generated=""><g transform="scale(${width / entry.box[0]} ${height / entry.box[1]})">${alicePose}</g></g>`;
+    }
+    const batDiving =
+      generatedBatDivingSvg(id, style, demo) ??
+      generatedTrialMouseSvg(id, style, demo) ??
+      generatedSeatedDuchessSvg(id, style, demo) ??
+      generatedWalkingDuchessSvg(id, style, demo);
+    if (batDiving) {
+      return `<g class="art art--cut art--generated ${className}" ${at} data-generated=""><g transform="scale(${width / entry.box[0]} ${height / entry.box[1]})">${batDiving}</g></g>`;
+    }
+    const bill = id === 'bill' ? generatedBillFragment(style, demo) : undefined;
+    if (bill) {
+      return `<g class="art art--cut art--generated ${className}" ${at} data-generated=""><g transform="scale(${width / 120} ${height / 100})">${bill}</g></g>`;
+    }
+    const garden = generatedGardenFigureSvg(id, style, demo);
+    if (garden) {
+      return `<g class="art art--cut art--generated ${className}" ${at} data-generated=""><g transform="scale(${width / entry.box[0]} ${height / entry.box[1]})">${garden}</g></g>`;
+    }
     const [boxW, boxH] = entry.box;
+    const generatedVariant = entry.generated?.[variant] ? variant : 'any';
+    const generated = style === 'engraved' ? entry.generated?.[generatedVariant] : undefined;
+    if (generated) {
+      const scale = Math.min(boxW / generated.width, boxH / generated.height);
+      const imageW = generated.width * scale;
+      const imageH = generated.height * scale;
+      const imageX = (boxW - imageW) / 2;
+      const imageY = boxH - generated.footY * scale;
+      const paintId = `art-generated-paint-${++generatedPaintId}`;
+      // A paint server keeps the group's fill-box exactly the placement box.
+      // Transparent pixels below the aligned soles must not move a scene's
+      // 50% 100% growth pivot. Bottom padding stays outside the paint box.
+      const image = `<image class="art__image" data-variant="${generatedVariant}" href="${generated.src}" x="${imageX}" y="${imageY}" width="${imageW}" height="${imageH}" preserveAspectRatio="xMidYMid meet"/>`;
+      const paint = `<defs><pattern id="${paintId}" width="${boxW}" height="${boxH}" patternUnits="userSpaceOnUse" patternContentUnits="userSpaceOnUse" patternTransform="scale(${width / boxW} ${height / boxH})" overflow="hidden">${image}</pattern></defs>`;
+      return `<g class="art art--cut art--generated ${className}" ${at} data-generated="">${paint}<rect width="${width}" height="${height}" fill="url(#${paintId})"/></g>`;
+    }
     const drawing = `<g transform="scale(${width / boxW} ${height / boxH})">${entry.fragment ?? entry.markup}</g>`;
-    const baked = bakedFor(id);
+    const baked = bakedFor(id, style, demo);
     if (baked) {
-      return `<g class="art art--baked ${className}" ${at}>${drawing}${imageTags(baked, 'art__image art__image--baked', width, height)}</g>`;
+      const sources = baked.any ? { any: baked.any } : { [variant]: baked[variant] };
+      return `<g class="art art--baked ${className}" ${at}>${drawing}${imageTags(sources, 'art__image art__image--baked', width, height)}</g>`;
     }
     return `<g class="art ${className}" ${at}>${drawing}</g>`;
   }

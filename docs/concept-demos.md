@@ -1513,6 +1513,15 @@ characters' extents, since a `tspan` on a `textPath` has no box the engines agre
 Hover is the one play a touch screen does not have: the curtain's hover test skips
 where there is no hovering pointer, and its button and its press are tested there.
 
+Bill's catch test presses the pinned control where it is (`press`, `tapAt` in
+`tests/demo-helpers.ts`), with a touch tap on a touch screen and a mouse click
+elsewhere, through the browser's own input. It does not scroll the control into view
+or dispatch a synthetic click. The catch and miss outcomes and the crowd's required
+position are still asserted. The Mock Turtle's Drawling-master test starts
+`watchProperty` before activation and samples the stretch and faint on every
+animation frame inside the page, so a brief pose is not lost between external
+polls. It still requires both poses to exceed the same threshold, the faint to
+clear, and the button to become inert after its beat.
 What costs frames, and what was done about it, is in
 [`performance-budget.md`](performance-budget.md) §2: a drop-shadow filter on many
 pieces became a shadow at their feet (the trial, the croquet-ground); a layer that a

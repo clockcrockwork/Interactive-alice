@@ -16,12 +16,34 @@ that property and on the contracts around it, and leaves taste to human review.
 | Layer | Tool | Runs | Proves |
 | --- | --- | --- | --- |
 | Unit | Vitest | every PR | pure logic: progress mapping, the pacing plan, lifecycle transitions, capability selection, text resolution |
-| Browser, fast | Playwright, desktop Chromium | every PR | every page in the generated manifest loads, each scene reaches start and end, no console, page or request errors |
+| Browser, fast | Playwright, desktop Chromium | explicit exact-head verification before merge; not every work commit or Draft update | every page in the generated manifest loads, each scene reaches start and end, no console, page or request errors |
 | Browser, full | Playwright, Chromium desktop and phone, Firefox, WebKit (`npm run test:e2e:full`) | interaction milestones and before a release | shot boundaries, reverse reconstruction, resize, portrait, keyboard, reduced motion, degraded modes, locales, back-navigation restore |
-| Accessibility | axe inside Playwright, plus an ARIA snapshot | every PR, on load and mid-scene | semantics, labels, focus order, contrast where measurable; and that a staged scene keeps every segment it stages in the accessibility tree, in reading order |
+| Accessibility | axe inside Playwright, plus an ARIA snapshot | with the explicit browser verification, on load and mid-scene | semantics, labels, focus order, contrast where measurable; and that a staged scene keeps every segment it stages in the accessibility tree, in reading order |
 | Visual | Playwright screenshots at named checkpoints | opt-in, after art stabilizes | that a deliberate composition has not silently changed |
 | Rendered pixels | hashing a canvas's own `getImageData` in Playwright | where a renderer's output *is* the contract | that a composition really changed, and really came back — for a layer whose state is not readable off the DOM |
 | Performance | traces, size output, Lighthouse | milestones | see `performance-budget.md`; evidence, not pass/fail in CI |
+
+### Deliberate browser execution
+
+Pull requests and `main` pushes keep the inexpensive repository, generated-schema,
+lint, type, unit and build checks automatic. Work commits and Draft updates do not
+install a browser or run E2E remotely. Run the applicable browser tests locally
+while editing, then reuse a successful result for the exact settled source head.
+
+When remote browser verification is needed, invoke `checks.yml` with
+`workflow_dispatch` from `main` and supply the full 40-character `target_sha`.
+The trusted workflow verifies that the commit exists in this repository, checks
+out that exact SHA and builds its own `dist/` before desktop Chromium and
+accessibility tests. Its job is capped at 20 minutes and uploads no artifacts or
+dependency cache. It does not deploy the site.
+
+Record the run URL and verified checkout SHA in the pull request. A changed PR
+head invalidates the relevance of the old result; reassess and verify the new
+exact source before merge. The run summary separates the target SHA from the
+trusted workflow SHA: this manual evidence is **not a PR required check**.
+An automatic browser job marked `skipped` is not an E2E pass. Before enabling
+branch protection, design and verify the required-check contract rather than
+requiring the manual job or treating its skipped status as validation.
 
 ### Unit layer
 

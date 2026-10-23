@@ -1,3 +1,6 @@
+import { generatedSceneProp } from '../art/generated-scene-prop.ts';
+import type { ArtStyle } from '../art/treatments.ts';
+
 /** The Caterpillar demo's props: the two bits of mushroom, one in each hand. */
 
 const bit = (flip: boolean): string => `
@@ -19,3 +22,14 @@ export const ASK_SVG = `
   <path d="M9 17 Q9 4 21 4 Q33 4 33 16 Q33 25 21 30 L21 40" stroke="var(--ct-smoke)" stroke-width="6" fill="none" stroke-linecap="round"/>
   <circle cx="21" cy="52" r="4" fill="var(--ct-smoke)"/>
 </svg>`;
+
+/** Right-hand reuse retains the original root mirror exactly once. */
+export function mushroomPieceMarkup(flip: boolean, style?: ArtStyle): string {
+  return generatedSceneProp(
+    'mushroom-piece',
+    flip ? RIGHT_BIT_SVG : LEFT_BIT_SVG,
+    [200, 160],
+    [0, 6.633380884450787, 200.0, 160.05706134094152],
+    style,
+  );
+}

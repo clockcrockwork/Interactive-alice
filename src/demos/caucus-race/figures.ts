@@ -101,6 +101,69 @@ export const HANDS = {
   dodoRaised: { u: 88, v: 22 },
 } as const;
 
+/** Generated contacts become authoritative only after both whole poses decode. */
+export function runnerAnchor(
+  el: HTMLElement | undefined,
+  anchor: 'hand' | 'pocket',
+  fallback: { readonly u: number; readonly v: number },
+): { readonly u: number; readonly v: number } {
+  const rig = el?.querySelector<SVGSVGElement>(
+    'svg[data-generated-rig="runner/alice"][data-rig-ready]',
+  );
+  const u = rig?.getAttribute(`data-runner-${anchor}-u`);
+  const v = rig?.getAttribute(`data-runner-${anchor}-v`);
+  if (!u?.trim() || !v?.trim()) return fallback;
+  const point = { u: Number(u), v: Number(v) };
+  if (
+    !(
+      Number.isFinite(point.u) &&
+      Number.isFinite(point.v) &&
+      point.u >= 0 &&
+      point.u <= 100 &&
+      point.v >= 0 &&
+      point.v <= 116
+    )
+  )
+    return fallback;
+  const offset = anchor === 'hand' ? Number(rig?.getAttribute('data-runner-hand-rim-offset')) : 0;
+  if (!Number.isFinite(offset) || offset < 0 || offset > 116) return point;
+  try {
+    const frame = rig?.getCTM?.();
+    const motion = rig?.querySelector<SVGGraphicsElement>('.cr__figure')?.getCTM?.();
+    if (!frame || !motion) return point;
+    if (
+      ![
+        frame.a,
+        frame.b,
+        frame.c,
+        frame.d,
+        frame.e,
+        frame.f,
+        motion.a,
+        motion.b,
+        motion.c,
+        motion.d,
+        motion.e,
+        motion.f,
+      ].every(Number.isFinite)
+    )
+      return point;
+    const determinant = frame.a * frame.d - frame.b * frame.c;
+    if (!Number.isFinite(determinant) || Math.abs(determinant) < 1e-9) return point;
+    // Map the actual support point, not the prop centre, through the current
+    // pose. Cancel the viewport map; the separate thimble stays upright.
+    const x = motion.a * point.u + motion.c * (point.v + offset) + motion.e - frame.e;
+    const y = motion.b * point.u + motion.d * (point.v + offset) + motion.f - frame.f;
+    const mapped = {
+      u: (frame.d * x - frame.c * y) / determinant,
+      v: (frame.a * y - frame.b * x) / determinant - offset,
+    };
+    return Number.isFinite(mapped.u) && Number.isFinite(mapped.v) ? mapped : point;
+  } catch {
+    return point;
+  }
+}
+
 /**
  * The race's opening frame, which the pool of tears ends on: the camera low at
  * the water, and the party just out of it in a loose two-row group along the

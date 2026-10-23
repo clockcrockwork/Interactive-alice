@@ -156,9 +156,9 @@ describe('the baked pictures', () => {
   });
 
   it('puts the picture beside the vector, so the page can show either', () => {
-    const flat = figure('king-of-hearts', '', 'flat');
+    const flat = figure('queen-of-hearts', '', 'flat');
     expect(flat).not.toContain('<img');
-    const baked = figure('king-of-hearts', 'x', 'engraved');
+    const baked = figure('queen-of-hearts', 'x', 'engraved');
     expect(baked).toContain('class="art art--baked x"');
     expect(baked).toContain('<svg');
     expect(baked).toMatch(/<img class="art__image art__image--baked" data-variant="any"/);
@@ -201,18 +201,17 @@ describe('the cut-outs', () => {
     expect(cutOutsFor('guinea-pig', 'engraved', 'bill-the-lizard')).toBeUndefined();
   });
 
-  it("stacks the pictures in the drawing's own root, each part in its own group", () => {
-    // Off its stage the flamingo is its vector; in croquet, its cut-outs.
+  it('keeps the original cut-out metadata while the generated rig preserves live targets', () => {
     expect(figure('flamingo', 'y', 'engraved', 'duchess')).not.toContain('art--cut');
     const html = figure('flamingo', 'y', 'engraved', 'croquet');
-    expect(html).toMatch(
-      /^<span class="art art--cut y" data-art="flamingo"><svg viewBox="0 0 300 420"/,
-    );
-    expect(html).not.toContain('<path');
-    expect(html).toMatch(
-      /<g class="cq__flamingo-body"><image class="art__image" data-variant="any"/,
-    );
-    expect(html).toMatch(/<g class="cq__flamingo-head"><image [^>]*width="300" height="420"/);
+    expect(html).toContain('data-generated-rig="flamingo"');
+    expect(html).toContain('viewBox="0 0 300 420"');
+    expect(html).toContain('data-rig-fallback=""');
+    expect(html).toContain('var(--alice-dress)');
+    for (const hook of ['cq__flamingo-body', 'cq__flamingo-head']) {
+      expect(html.match(new RegExp(`class="${hook}"`, 'g'))).toHaveLength(1);
+    }
+    expect(html.match(/data-rig-image=""/g)).toHaveLength(2);
     const cut = cutOutsFor('flamingo', 'engraved', 'croquet');
     expect(cut?.parts.map(([part]) => part)).toEqual(['cq__flamingo-body', 'cq__flamingo-head']);
     // The base shows Alice's arm and sleeve: one picture per Alice.

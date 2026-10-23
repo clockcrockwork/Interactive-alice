@@ -50,6 +50,12 @@ production is built and deployed by the host from a separate branch.
 - [`docs/deployment.md`](docs/deployment.md) — preview and production
 - [`CLAUDE.md`](CLAUDE.md) — the short list of rules, and where each decision lives
 
+## Generated-art review
+
+The Draft integration has a [single checkpoint list](docs/generated-assets-review/checkpoints.md)
+for reviewing characters, props, colour variants and known verification limits.
+Candidate integration does not imply final visual acceptance.
+
 ## Rights and licensing
 
 This repository is **public for source visibility and build transparency**, but the

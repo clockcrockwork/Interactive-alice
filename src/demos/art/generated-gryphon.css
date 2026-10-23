@@ -1,0 +1,22 @@
+@layer tokens, base, layout, scene, utilities;
+
+@layer scene {
+  /* Scene-owned --hide is reversible, paused and reduced by the original timeline. */
+  svg[data-generated-rig="gryphon"][data-gryphon-scene="mock-turtle"][data-rig-ready]
+  [data-gryphon-part="near"] {
+    transform: rotate(calc(var(--hide) * -137deg));
+  }
+
+  svg[data-generated-rig="gryphon"][data-gryphon-scene="mock-turtle"][data-rig-ready]
+    [data-gryphon-part="far"] {
+    transform: translateY(calc(var(--hide) * var(--gryphon-lift)))
+      rotate(calc(var(--hide) * -158deg));
+  }
+
+  /* Only a complete decoded chapter rig replaces the two original raised paws. */
+  .mt__gryphon:has(
+    > .art > svg[data-generated-rig="gryphon"][data-gryphon-scene="mock-turtle"][data-rig-ready]
+  ) > svg.mt__paws {
+    display: none;
+  }
+}

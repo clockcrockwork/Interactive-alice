@@ -1,0 +1,57 @@
+{
+  "asset": "alice--falling-overhead.yellow.candidate-v1.webp",
+  "status": "unapproved-scene-comparison-candidate",
+  "semanticRole": "rabbit-hole/falling-overhead",
+  "intent": "Scene-local visual comparison of a yellow overhead Alice fall candidate against the existing articulated drawing.",
+  "generatedAt": "2026-10-14",
+  "generator": "OpenAI built-in image_gen",
+  "model": "not exposed by generation tool",
+  "sourceMasterSha256": "1e53647bafa3db33f911429d0dfab89cb059e0c706243f88289ba25f0820ffbe",
+  "sourceMasterStorage": "Outside Git in local review source storage, retained with the full prompt.",
+  "promptSha256": "6898e9b6f295c945bb5f59e34f4a8f80a993990611eceefe438957d335e0eb9d",
+  "styleId": "IA-ENGRAVED-CUTOUT-V1",
+  "styleSpecification": {
+    "path": "docs/generated-art-style.md",
+    "repository": "clockcrockwork/Interactive-alice",
+    "commit": "3eefd290e96059d3af1acba8d0379326bfd12ffb"
+  },
+  "reference": {
+    "role": "approved identity and print-style sheet; not a pose reference",
+    "sha256": "56a760f810339781e1b70c08b6070822a821ee359491b09b77f9f3f4549b648c"
+  },
+  "sha256": "05ee0aec4986548051dcd77183fc1a9007492092c6393282ef21c4eda271dafd",
+  "bytes": 1376930,
+  "width": 1206,
+  "height": 1304,
+  "format": "Lossless WebP with alpha",
+  "transforms": "Lossless WebP encoding only; 1206x1304 canvas retained. Decoded RGBA pixels and alpha match the source master for every nontransparent pixel; transparent RGB values are immaterial.",
+  "limitations": [
+    "Unsplit static master: no head, arm, leg, hair or skirt rig.",
+    "Oblique overhead candidate, not a verified 90-degree plan view.",
+    "Hair is lighter than canonical chestnut and identity still requires review.",
+    "Held-object anchor is unchanged and may not meet the generated hand.",
+    "Original articulated figure remains available through the checkbox.",
+    "Yellow and blue are separate unapproved candidates selected by the existing page colour preference."
+  ],
+  "rights": "Project-owned generated candidate; no licence grant. No third-party artwork copied into runtime.",
+  "blueCandidate": {
+    "asset": "alice--falling-overhead.blue.candidate-v1.webp",
+    "status": "unapproved-scene-comparison-candidate",
+    "generatedAt": "2026-10-21",
+    "generator": "OpenAI built-in image_gen",
+    "referenceAsset": "alice--falling-overhead.yellow.candidate-v1.webp",
+    "referenceSha256": "05ee0aec4986548051dcd77183fc1a9007492092c6393282ef21c4eda271dafd",
+    "sourceMasterSha256": "8e5fa47403fc12057babf23658de51196576019edcd9986036b8b74d640d5c56",
+    "sha256": "40c502bdfa41f6979b3e58da577ec9f627995583f0e69688ca9258d57cd17dc5",
+    "width": 1206,
+    "height": 1305,
+    "bytes": 1563228,
+    "alphaAbove32Bounds": [52, 10, 1205, 1286],
+    "transforms": "Lossless WebP encoding only; alpha and every nontransparent RGBA pixel match source PNG.",
+    "limitations": [
+      "Reference edit changed small facial, line and silhouette details; not a pixel-identical recolour.",
+      "Right fingertips approach canvas edge; framing needs visual review.",
+      "Static whole-image candidate, no arm or held-object rig."
+    ]
+  }
+}

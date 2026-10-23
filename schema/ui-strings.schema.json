@@ -216,7 +216,14 @@
         "demoButterWatch",
         "demoWhisperTime",
         "demoMoveRound",
-        "demoLanguages"
+        "demoLanguages",
+        "demoGeneratedMaster",
+        "demoGeneratedUnavailable",
+        "demoGeneratedLimit",
+        "demoCompareArt",
+        "demoGeneratedMushroom",
+        "demoGeneratedMushroomLimit",
+        "demoGeneratedMushroomUnavailable"
       ],
       "additionalProperties": false,
       "properties": {
@@ -1199,6 +1206,34 @@
           "type": "string",
           "minLength": 1,
           "description": "Demo index: the name of the language switch, read by assistive technology; each choice is named in its own language."
+        },
+        "demoGeneratedMaster": {
+          "type": "string",
+          "minLength": 1
+        },
+        "demoGeneratedUnavailable": {
+          "type": "string",
+          "minLength": 1
+        },
+        "demoGeneratedLimit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "demoCompareArt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "demoGeneratedMushroom": {
+          "type": "string",
+          "minLength": 1
+        },
+        "demoGeneratedMushroomLimit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "demoGeneratedMushroomUnavailable": {
+          "type": "string",
+          "minLength": 1
         }
       }
     }

@@ -1,0 +1,225 @@
+# Generated-image production inventory
+
+Production snapshot: **2026-10-21 06:43 UTC**. Checked against `ART`,
+`LIVE_PARTS`, `CUT_OUTS`, renderer modules, actual scene selectors, generation
+results and batch records. A generated master, separated layers, runtime use,
+static verification and browser verification are different milestones. This is
+not an art-acceptance or percentage-complete claim.
+
+## Recommendation and next independent work
+
+1. Finish the combined gates for the current articulated batch. Caterpillar/Bill,
+   both footmen, all three Cat consumers, gardeners, Hedgehog and the quadrille
+   Mock Turtle are now integrated, not merely generated. Actual browser playback
+   remains unverified. Garden Rabbit/Pat fragments also have a provisional adapter.
+2. Croquet Flamingo now has its repaired head/body adapter. The tucked
+   hybrid is rejected after a refused neck and visibly incoherent original-neck
+   composition; retain that actor rather than flatten its neck/pupil/jaw motion.
+3. Five new protagonist pose groups now have both-colour scoped adapters; all
+   eight swimmers use the real Canvas path. Running/diving Rabbit, Bat and Jury
+   are provisionally integrated, not art-accepted. Gryphon and Kitchen-only Duchess are now integrated provisionally. Baby-pig
+   remains original in the Kitchen but has an independent whole flying cutaway.
+4. Mock Turtle chapter right-flapper generation returned no output after refusal.
+   Its original chapter drawing remains; no alternative editing route is used.
+   The independently completed quadrille host and all other work continue.
+5. Delivery-weight work remains measured proposal only. Growth and perspective
+   prohibit shrinking every source to an apparent CSS cap. See the audit below.
+
+## Stable denominator and numerical states
+
+The baseline is PR #29 head `718e0343`: **75 registry IDs**, of which **four**
+already had generated registry sources: `alice/from-behind` (yellow only),
+`white-rabbit/herald`, `lobster` and `crab`. The original unconverted set is
+therefore **71 IDs**, classified exactly once in sections A–E:
+
+| Original 71-ID classification | IDs |
+| --- | ---: |
+| A. Later whole-source figures and non-protagonist runners | 21 |
+| B. Other protagonist IDs, including its intentional silhouette | 14 |
+| C. Named layered/expression/vanishing actors | 16 |
+| D. Mushroom and Duchess candidates | 2 |
+| E. Other actors, intentional colour silhouettes and unused crowd ID | 18 |
+| **Total** | **71** |
+
+The saved `11fb5dac` tree has **25 registry IDs** with generated whole-image
+sources, plus **one separate three-layer Pig rig**, six new scene-local props,
+the opt-in Mushroom and non-runtime Duchess candidate. Inspected protagonist
+checkpoint changes added **three IDs / five variants**, yielding **28 whole-source
+IDs, 30 variant bindings and 29 distinct source files**. Crab is one file reused
+for two IDs. These sources were published in `4b9786fc`, without implying art acceptance.
+
+The published `4b9786fc` checkpoint adds the thirteen animal/expression layers
+and five protagonist variants; all 436 unit tests / 40 files and other local gates
+passed there. It has eight scoped layered actors, separate from whole-source IDs.
+The published `4e5e8790` checkpoint adds fifteen further scoped actor IDs (including three
+Cat poses, three gardener numbers, one Croquet Flamingo and two garden fragments). These adapters do
+not add global registry sources or establish browser acceptance. The published `53bf3364` checkpoint adds nine SVG
+scoped IDs (five protagonist poses, Bat, diving/running Rabbit and Jury), while
+eight swimmers use a separate Canvas adapter. Its exact-tree gates passed
+545 unit tests / 55 files, typecheck, lint, data checks and build. The next batch
+adds sitting, scoped whole falling cards, shore Gryphon, Kitchen Duchess, the
+Duchess flying pig and normal Mushroom introduction; source reuse may extend
+individual consumers without adding a registry ID. Source masters
+and incomplete generation candidates remain outside Git.
+
+Current coverage accounting (not completion): **69 of the 75 IDs have some generated runtime coverage**: 28 registry whole-source IDs, 38 additional scoped SVG IDs, two Canvas IDs and one scene-local Mushroom ID. Two IDs remain wholly original (`alice/running-away`, `flamingo/tucked`); four are deliberate non-targets or unused (`alice/silhouette`, both Dinah ghosts, `guinea-pigs`). This does not mean every colour, scene or articulated consumer is converted. In particular blue runner/rear/standing, Rabbit Hole falling, Kitchen morph and chapter Mock Turtle retain their original drawing where dependencies are unavailable. Walking Duchess and the bounded props are already integrated; their contact/readability and failure/motion behavior still need exact-head browser verification and later visual acceptance.
+
+- **Master candidate** counts usable generated candidates, not approved identity.
+  **Layers generated** counts available separated raster inputs. `N/A` means a
+  whole-image source is appropriate. Live SVG eyes, mouths, tears, slates and
+  other overlays are not missing raster files.
+- **Runtime integration** describes the consumer, not registry metadata alone.
+  `Original` means the existing vector/baked path is retained.
+- **Static verification** distinguishes source inspection from code/test evidence.
+  The [saved batch](whole-cutout-batch-20261021.md) and
+  [checkpoint](checkpoints.md) record the 391-unit gate for `11fb5dac`.
+  The [five protagonist deliveries](alice-static-views-20261021.md) record the
+  later 404-unit gate before the next rigs. Neither validates unfinished work.
+- **Browser verification** is pending for every new batch. Historical CI and the
+  old contact sheet do not prove the current tree. Phone/desktop, motion/reduced
+  motion, both languages and both protagonist looks still need scene checks.
+
+### A. Whole-source figures and runners: 21 IDs
+
+| IDs (count) | Master candidate | Layers generated | Runtime integration | Static verification | Browser verification |
+| --- | --- | --- | --- | --- | --- |
+| `conger-eel`, `march-hare` (2) | 2 | N/A | Generated whole images | Canvas/alpha/grounding; 391-unit checkpoint. Eel stretch/faint and Hare lean stay on wrappers. | Pending |
+| `dancer/seal`, `dancer/turtle`, `dancer/salmon`, `dancer/whiting`, `dancer/snail`, `dancer/porpoise` (6) | 6 | N/A | Generated whole images | Whole-card choreography/drag targets retained; 391-unit checkpoint | Pending, including phone readability |
+| `king-of-hearts`, `knave-of-hearts`, `card-soldier` (3) | 3 | N/A | Generated whole images | Logical boxes/outer motion retained; 391-unit checkpoint | Pending court depth |
+| `card-arch` (1) | 1 | N/A | Generated whole image | Transparent opening retained; 391-unit checkpoint | Pending |
+| `alices-sister` (1) | 1 | N/A | Generated body; separate page-turn book | No book baked into body; 391-unit checkpoint | Hand/lap/book contact pending |
+| `rose-tree` (1) | 1 | N/A | Generated tree; ten separate rose buttons | All ten button centres map to source alpha 252–253; 391-unit checkpoint | Painting/occlusion/phone placement pending |
+| `runner/dodo`, `runner/duck`, `runner/lory`, `runner/eaglet`, `runner/mouse`, `runner/magpie` (6) | 6 | N/A; arm/scarf overlays remain separate | Generated images inside `.cr__figure` | Adapter coverage/source geometry; 391-unit checkpoint | Dodo arm contacts, Magpie scarf, run/pant/shiver/bow pending |
+| `runner/crab` (1) | Existing Crab reused; no new master | N/A | Generated image inside `.cr__figure` | Visible floor about logical y116.021; 391-unit checkpoint | Pending |
+
+### B. Other protagonist sources: 14 IDs
+
+The [protagonist production queue](protagonist-production-queue.md) supplies
+per-consumer geometry. Its initial statement that fourteen IDs lack generated
+registry sources is historical: the three static IDs below now have candidates.
+
+| IDs (count) | Master candidate | Layers generated | Runtime integration | Static verification | Browser verification |
+| --- | --- | --- | --- | --- | --- |
+| `alice/looking-down`, `alice/foot` (2) | 4: yellow/blue for each | N/A | Four variant-specific images | Unchanged alpha/canvas; crop-edge anchors, not shoes; 404-unit checkpoint | Five consumer occurrences and Drink Me/Pool join pending |
+| `alice/standing` (1) | 1 yellow; blue refused, no output | N/A | Yellow HTML/SVG source; original blue | Placement-sized SVG paint rectangle; static ground checks at 0.55/1/1.6; 404-unit checkpoint | Riverbank jump/House growth-crossfade pending |
+| `alice/falling` (1) | New whole masters in both colours; older overhead comparisons separate | Five new parts available, leg part refused; old three-part study not usable | Whole cards only in Drink Me/Trial; Rabbit Hole rig and Duchess contacts original | 5 scoped contracts; full source inspection; no refused leg reconstruction | Pending |
+| `alice/running-away` (1) | Yellow whole/body/arms | Three available parts; original-leg hybrid rejected visually | Original running rig | Rest and both strides show disconnected flat shoes/stockings under engraving; no equivalent refused leg cutout retry | Original retained |
+| `alice/sitting` (1) | Both colour candidates | Four layers per colour, seven unique files | Riverbank head/arm/lids/body with atomic fallback | Per-layer maps, rotated lid reveal, daisy contact and eight-state proof; focused tests | Pending |
+| `alice/kneeling`, `alice/filling` (2) | 4 colour candidates | N/A | Scoped atomic House fragments, fixed growth box | Mapped head/room crop and offline growth proof; focused tests | Pending |
+| `alice/hand-left`, `alice/hand-right` (2) | 4 colour candidates | N/A | Caterpillar/Pig/Lobster scoped hands; ready-only prop contact anchors | Phone/desktop offline contact proofs; original failure placement retained | Pending |
+| `alice/from-above` (1) | Corrected top-down candidates, both colours | N/A | Scoped Caterpillar shoulders under live neck | Original neck junction (60,52) mapped, offline proof | Pending |
+| `runner/alice` (1) | Yellow rest and natural right-hand carry | Two whole-pose states integrated provisionally | Caucus Race, Pool and Mouse Tale; blue original | Original HANDS fallback retained; ready-only hand/pocket metadata. Peak-bow contact correction and paused-decode regression coverage integrated; not playback-approved | Pending |
+| `alice/swimming` (1) | 2 colour candidates | N/A | Actual Canvas drawing with procedural fallback | Head/chest waterline, asynchronous cache and foreground-water contracts | Pending |
+| `alice/silhouette` (1) | Intentionally none | N/A | **Retain vector** | Shared colour-driven shadow/children geometry; not an obligatory generated portrait | No conversion planned |
+
+Baseline `alice/from-behind` is outside these fourteen IDs. Yellow remains a
+candidate and blue remains original. Refused blue rear/standing operations must
+not be retried through a different image tool. These unavailable variants do not
+block independent production.
+
+### C. Layered, expression and vanishing actors: 16 IDs
+
+| IDs (count) | Master candidate | Layers generated | Runtime integration | Static verification | Browser verification |
+| --- | --- | --- | --- | --- | --- |
+| `pig/trotting` (1) | 1 | **3/3**: body, forelegs, hindlegs | Generated rig in Kitchen and Cheshire Cat only | Same-master layers, measured view-box pivots, neutral/opposite ±24° inspection; 391-unit checkpoint | Stride/joins/overflow/pause/reduced motion pending |
+| `tortoise-master` (1) | 1 | **2/2**: body, cane/arm | Generated rig in Mock Turtle | Exact alpha, measured joints, neutral/−22° composition; 14-test animal suite/typecheck passed | Pending |
+| `guinea-pig` (1) | 1 | **2/2**: body, paw | Generated rig in Bill and Witnesses; unrelated SVG fragments unchanged | Exact alpha, explicit pivot and −70°/+45° composition; 14-test animal suite/typecheck passed | Pending |
+| `pigeon` (1) | 1 | **3/3**: body, left wing, right wing | Generated rig in Caterpillar | Exact alpha, neutral/±30°/±35° and reduced ±16° compositions; 14-test animal suite/typecheck passed | Pending |
+| `hatter` (1) | 1 | **2/2**: body, hat; live eyes remain SVG | Generated rig wired; live SVG eyes/hat hooks retained | Exact alpha, 11-state source-PNG composition; 436-unit published checkpoint passed | Pending |
+| `dormouse` (1) | 1 | **1/1**: neutral-eye body; open/shut eyes remain SVG | Generated rig wired; live SVG eye states | Exact alpha, 11-state source-PNG composition; 436-unit published checkpoint passed | Pending |
+| `queen-of-hearts` (1) | 1 | **1/1**: neutral-mouth body; mouth remains SVG | Generated rig wired; live SVG mouth | Exact alpha, 11-state source-PNG composition; 436-unit published checkpoint passed | Pending |
+| `cook` (1) | 1 | **2/2**: body, arm/ladle | Generated rig wired; separate throwing arm | Exact alpha, 11-state source-PNG composition; 436-unit published checkpoint passed | Pending |
+| `caterpillar` (1) | 1 + corrected head | 3/3 | Generated head/body/hookah; flexible SVG hose | Source defects repaired; fixed head paint-box, CTM hose and paused readiness guards; static review | Pending |
+| `bill` (1) | 1 + corrected head/body | 2/2 | Bill chapter, House SVG fragment and Witnesses | Neck/shoulder artifacts repaired; prop anchor follows same head rotation; static review | Pending |
+| `fish-footman` (1) | 1 + corrected body/legs | 4/4 | Bowing upper body, fixed legs, alternate wigs | No double knee/waist gap at 42°; 17 focused checks cover pair | Pending |
+| `frog-footman` (1) | 1 + corrected body/legs | 4/4 | Bowing upper body, fixed legs, alternate wigs | Trouser join repaired; no double knee/waist gap; static review | Pending |
+| `cheshire-cat/head` (1) | 1 | 5/5; pupils remain SVG | Croquet staged ears/face/eyes/pupils/grin | Right eye fur corrected; bounded pupil apertures; static review | Pending |
+| `cheshire-cat/on-bough`, `cheshire-cat/on-hearth` (2) | 2 | Body/tail/body plus shared head plates | Masked bough disappearance and hearth wink | Tail spur removed; mapped joints and wink; static review | Pending |
+| `mock-turtle` (1) | 1 | Whole quadrille master; chapter body/left only, right refused | Quadrille and Trial whole body + live SVG tears; chapter original | Tear starts mapped; partial chapter rig not enabled | Pending |
+
+Do not flatten a moving actor because its whole master looks finished. Consume
+existing animal/expression inputs before new requests. Animal deliveries add
+**1,284,540 bytes** and expression deliveries **1,619,866 bytes**. Provenance is
+recorded in `animal-motion-provenance.json` and `live-expressions-provenance.json`
+under `src/assets/images/generated-layers/`. Shared all-or-nothing decode keeps
+original rig drawings until every layer is ready. Offline composition is not
+proof of browser decode/fallback, CSS pivots, interaction, pause or reduced motion.
+A pending output is never evidence of a generated layer.
+
+### D. Standalone candidates: 2 IDs
+
+| IDs (count) | Master candidate | Layers generated | Runtime integration | Static verification | Browser verification |
+| --- | --- | --- | --- | --- | --- |
+| `mushroom` (1) | 1 | N/A | Normal engraved Caterpillar introduction with load/decode fallback; comparison retained | 15 support samples alpha252–253; no old-spot dependency; independent nibble buttons | Pending |
+| `duchess` (1) | Seated and existing standing candidates | N/A | Kitchen seated, Croquet arrival and Duchess standing adapters | Neutral baby support at width180; standing chin/floor uniformfit; literal chin contact and continuous rocking grasp remain unverified | Pending |
+
+### E. Other actors and retained geometry: 18 IDs
+
+| IDs (count) | Master candidate | Layers generated | Runtime integration | Static verification / next constraint | Browser verification |
+| --- | --- | --- | --- | --- | --- |
+| `gardener/two`, `gardener/five`, `gardener/seven` (3) | 1 + corrected base | 2 shared parts | Shared base/brush and original SVG 2/5/7 pips | Extra arm removed; three-angle proof; 6 focused tests | Pending |
+| `hedgehog` (1) | 2 poses | Ball/walk | Original state switch, walking hook and atomic fallback | Measured common ground and ready pivot; 4 tests | Pending |
+| `flamingo` (1) | 1 + corrected compact head | 2/2 | Croquet head/body; live original hands/dress | 12-pose proof, unique hooks, ready-only joint mapping; 14 focused tests | Pending |
+| `flamingo/tucked` (1) | Corrected tucked master | Body/head/jaw; raster neck refused | Original retained | Existing-neck hybrid visibly mismatched at root/material/hinge; rejected checkpoint, no needless head-only regeneration | Not enabled |
+| `gryphon` (1) | Corrected one-tail shore-palette master | Whole plus body/two forelegs | Quadrille/Trial whole; chapter face-hiding rig; Duchess identical neutral chapter assembly | Explicit individual maps and ready-only old-paw suppression; independent static review | Pending |
+| `mouse/swimming` (1) | Existing runner source reused | N/A | Canvas adapter; all seven animal swimmers reuse existing images | Nine live bristles, jump/full-body emergence and front water preserved | Pending |
+| `white-rabbit/running` (1) | 1 | N/A | Five-scene atomic whole adapter, original SVG wrapper | Ground98/fixed120×100 box, watch overlay unchanged; 5 tests | Pending |
+| `white-rabbit/diving` (1) | Corrected rabbit soles | 3/3 | Riverbank body/independent kicking feet | Explicit source maps, original foot motion distance, static proof | Browser fill-box measurement pending |
+| `white-rabbit/garden`, `pat` (2) | 2 | N/A | Scoped atomic SVG-fragment adapters | Ground/fixed paint-box; 6 tests; Rabbit shorter silhouette is a checkpoint | Pending |
+| `bat` (1) | 1 | 3/3 | Rabbit Hole/Tea Party body and wings | Different scene pivots preserved; six-pose proof and focused contracts | Pending |
+| `pig-baby` (1) | Endpoint masters | Nine available; pig limbs refused | Duchess flying cutaway whole only; Kitchen staged morph original | Three paper-wing states and scope/fallback contracts; no morph flattening | Pending |
+| `jury` (1) | 12-animal master | Original live SVG slates | Trial/Witnesses decoration plus twelve unchanged slates | Ready-only parent offsets, faces clear, pennies/buttons retained; 3 tests | Pending |
+| `dinah-cat`, `dinah-cat/pouncing` (2) | Intentionally none | N/A | **Retain colour-driven vector ghosts** | Rabbit Hole/Pool/Mouse's Tale supply `currentColor`, opacity and blur; raster not required | No conversion planned |
+| `guinea-pigs` (1) | None requested | N/A | **Unused registry/baked crowd entry** | No runtime consumer found; distinct from active singular `guinea-pig` | No new generation planned |
+
+## Scene-local production outside the 75-ID denominator
+
+| Assets | Master candidate | Layers generated | Runtime integration | Static verification | Browser verification |
+| --- | --- | --- | --- | --- | --- |
+| Marmalade jar, brandy bottle, jellyfish, tarts table, witness box, cauldron (6) | 6 | N/A; scribble/steam separate | Six generated props | 3,044,646 bytes; source alpha/canvas, eight tarts and witness gaps checked; 391-unit checkpoint | Rail/witness occlusion, hand contact and motion pending |
+| Earlier kitchen, tea-table and witness small props | Existing deliveries | Existing lid/front/back and other layers | See individual batch records | Do not regenerate/count as new character IDs | Current-tree confirmation pending |
+| Bill hedge, held mushroom pieces, Croquet crown/cushion, Pool glass table | Four generated sources | N/A | Three SVG props and Pool Canvas table body | One mushroom piece reuses original mirror; source/decode fallback and support proof. Key, ranks, simple cards and functional hit geometry remain vector | Browser pending |
+
+## Read-only CSS delivery-size audit
+
+No image was encoded, resized, cropped or replaced for this audit. All current
+masters and deliveries remain. Decimal sizes are actual file bytes, not estimates.
+
+| Delivery | Current pixels / bytes | Layout-width constraint | Transform caveat and 2× derivative candidate |
+| --- | --- | --- | --- |
+| Herald | 1001×1572 / **1,346,634 B** | Court `clamp(7rem,20vmin,12rem)`; Croquet 8rem. At 16 px/rem: ≤192 / 128 CSS px before transforms. | Court 1200 px perspective; Croquet 1000 px perspective/zoom up to 1.3. **640 px-wide** candidate only after verifying projected image width ≤320 CSS px in both consumers. Naive 384 px is not proven safe. |
+| Yellow rear Alice | 926×1698 / **1,067,572 B** | Desktop `clamp(8rem,26vmin,16rem)`; ≤600 px viewport switches to **23dvh**, without a fixed rem cap. | Witnesses scale ≤2.6; Trial **3.4**. Desktop reaches **870.4 CSS px** at 16 px/rem, needing about **1741 px** for genuine 2×. Mobile reaches **78.2dvh** (634.984 CSS px at 812 dvh). **No globally safe smaller 2× derivative** from 926 px; retain source. |
+| King | 1024×1536 / **496,960 B** | Court `clamp(10rem,26vmin,16rem)`; Croquet 10rem. At 16 px/rem: ≤256 / 160 CSS px before transforms. | Perspective, Croquet zoom and approach to z220 enlarge it. **768 px-wide** candidate only if peak projected image width ≤384 CSS px. Naive 512 px is not a verified maximum. |
+| Witness box | 1322×1190 / **457,858 B** | `clamp(9rem,26vmin,16rem)`; ≤256 CSS px before transforms; image spans SVG width. | Court push-in applies even when not the speaker. **896 px-wide** candidate only with projected width ≤448 CSS px. Do not assume 512 px suffices. |
+| Tarts table | 1871×841 / **364,740 B** | `clamp(12rem,34vmin,22rem)`; ≤352 CSS px before transforms; image uses 251.14094/260 of SVG width. | Perspective applies at positive z40 depth. **1280 px-wide** candidate only with projected image width ≤640 CSS px. Naive 704 px omits magnification. |
+
+These are **validation candidates, not universal safe replacements**. Their 2×
+conditions prevent confusing layout clamps with rendered maxima. This read-only
+audit establishes no project-wide maximum viewport height, rem size or projected
+width. Keep original large-display fallbacks; do not upscale just to label a
+source 2×. Preserve aspect, transparent canvas and proportionally scaled anchors.
+
+Source constraints: [`court.css`](../../src/demos/trial/court.css),
+[`court.ts`](../../src/demos/trial/court.ts),
+[`witnesses/main.ts`](../../src/demos/witnesses/main.ts),
+[`trial/main.ts`](../../src/demos/trial/main.ts),
+[`croquet.css`](../../src/demos/croquet/croquet.css),
+[`croquet/main.ts`](../../src/demos/croquet/main.ts), and measured prop placement
+in [`trial/figures.ts`](../../src/demos/trial/figures.ts).
+
+Before choosing derivatives, record peak image scale across scroll beats,
+motion/reduced motion, mobile/desktop, viewport/font sizes, then compare thin
+lines and alpha edges at 2×. Savings, compiled page transfer and decode cost have
+**not** been measured. These five current files total **3,733,764 bytes**, a file
+sum rather than a network/page budget. Concept demos are outside story budgets
+in [`performance-budget.md`](../performance-budget.md); that does not make their
+payload free or establish a production-budget pass.
+
+## Exit and continuation
+
+Inspect alpha, intended framing and logical placement; preserve masters outside
+Git. Add narrow adapters/regression tests, retain flat/paper and missing-variant
+originals, measure delivery, review and consolidate into Draft PR #29 without
+merge or production release. Do not claim browser/art acceptance from static
+rendering. Continue independent rows while identity, overlap and hand-contact
+checkpoints wait for later review.

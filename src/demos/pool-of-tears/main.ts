@@ -17,7 +17,7 @@ import { figure } from '../art/art.ts';
 import { dressRunner, OPENING, RUNNERS } from '../caucus-race/figures.ts';
 import '../caucus-race/caucus.css';
 import { attachDemo, type DemoShell, mix } from '../shell/shell.ts';
-import { FAN_SVG, TEAR_DROP_SVG } from './figures.ts';
+import { fanMarkup, TEAR_DROP_SVG } from './figures.ts';
 import './pool.css';
 import { createSea, type Swimmer } from './sea.ts';
 
@@ -67,7 +67,7 @@ function mount(shell: DemoShell): void {
   props.innerHTML =
     `<div class="pt__rabbit">${figure('white-rabbit/running')}</div>` +
     `<div class="pt__dinah">${figure('dinah-cat')}</div>` +
-    `<div class="pt__fan">${FAN_SVG}</div>`;
+    `<div class="pt__fan">${fanMarkup()}</div>`;
   const rabbit = props.querySelector<HTMLElement>('.pt__rabbit');
   const dinah = props.querySelector<HTMLElement>('.pt__dinah');
   const fan = props.querySelector<HTMLElement>('.pt__fan');

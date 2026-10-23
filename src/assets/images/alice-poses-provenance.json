@@ -1,0 +1,468 @@
+{
+  "batch": "alice-house-hands-shoulders-2026-10-21",
+  "date": "2026-10-21",
+  "status": "provisional integrated candidates; pending browser and owner art review",
+  "generator": "image_gen",
+  "model": "not exposed by generation tool",
+  "styleId": "IA-ENGRAVED-CUTOUT-V1",
+  "fullPrompt": "not available to integration worker; supplied intent recorded, not reconstructed as an exact prompt",
+  "fullPromptHash": null,
+  "assets": [
+    {
+      "id": "alice/kneeling",
+      "variant": "yellow",
+      "asset": "figures/alice--kneeling.yellow.generated.webp",
+      "bytes": 525134,
+      "sha256": "d4909c38f3c977de65b3ed8b643583ac41d837a6361205198c5e5c0f4f56febd",
+      "width": 1254,
+      "height": 1254,
+      "logicalBox": [230, 230],
+      "consumers": ["rabbit-house"],
+      "placement": {
+        "scale": 0.18341307814992025,
+        "x": 0,
+        "y": 4.585326953748023
+      },
+      "anchor": {
+        "source": [627, 1229],
+        "logical": [115, 230],
+        "meaning": "measured opaque skirt/knee floor; centreline unchanged"
+      },
+      "source": {
+        "filename": "exec-5f9ade84-fd25-461d-9929-46e85ecfa5f4.png",
+        "bytes": 2467186,
+        "sha256": "0d343b88142fc4f84699adfb068675a063929c406f5fdb93dacf0b78a2e7a7ec"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [0, 7, 1198, 1238],
+        "greaterThan16": [108, 11, 1195, 1230],
+        "greaterThan128": [109, 12, 1194, 1229],
+        "greaterThan224": [110, 13, 1193, 1228]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      },
+      "promptIntent": "A complete crouching or kneeling Victorian girl in a cramped-room pose, without room or props.",
+      "reference": "existing vector geometry and provisional generated identity; not owner-approved artwork"
+    },
+    {
+      "id": "alice/kneeling",
+      "variant": "blue",
+      "asset": "figures/alice--kneeling.blue.generated.webp",
+      "bytes": 410502,
+      "sha256": "f16ca75774f354618941b446387755550da3ea044e69254505115efc44a3fe5d",
+      "width": 1254,
+      "height": 1254,
+      "logicalBox": [230, 230],
+      "consumers": ["rabbit-house"],
+      "placement": {
+        "scale": 0.18341307814992025,
+        "x": 0,
+        "y": 4.4019138755980975
+      },
+      "anchor": {
+        "source": [627, 1230],
+        "logical": [115, 230],
+        "meaning": "measured opaque skirt/knee floor; centreline unchanged"
+      },
+      "source": {
+        "filename": "exec-ead57639-53b9-4fa9-ade9-c7d498e0d12b.png",
+        "bytes": 2213281,
+        "sha256": "1895e89db7eec1c27aafa3bc5a93a6aab5cd291e563747d1433e0a63ba8f828b"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [0, 9, 1248, 1235],
+        "greaterThan16": [108, 11, 1197, 1231],
+        "greaterThan128": [109, 12, 1196, 1230],
+        "greaterThan224": [109, 13, 1195, 1229]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      },
+      "promptIntent": "A complete crouching or kneeling Victorian girl in a cramped-room pose, without room or props.",
+      "reference": "existing vector geometry and corresponding yellow generated pose for the blue edit"
+    },
+    {
+      "id": "alice/filling",
+      "variant": "yellow",
+      "asset": "figures/alice--filling.yellow.generated.webp",
+      "bytes": 626994,
+      "sha256": "a0207e8281e3639b79a6ad547ac70e5f6b09cd31a5e9750d41e5fe1630ae9ddf",
+      "width": 1851,
+      "height": 849,
+      "logicalBox": [720, 330],
+      "consumers": ["rabbit-house"],
+      "placement": {
+        "scale": 0.48582995951417,
+        "x": -103.7651821862348,
+        "y": -75.1821862348178
+      },
+      "anchor": {
+        "source": [440, 340],
+        "logical": [110, 90],
+        "meaning": "visually measured face centre, preserving intentional left/top room crop",
+        "floorSourceY": 834,
+        "floorLogicalY": 330
+      },
+      "source": {
+        "filename": "exec-7fd3bf38-cf99-460c-afe9-b434dc15ad6e.png",
+        "bytes": 2834970,
+        "sha256": "681617d9c74c8f4d2eebbb252802623b45af26df1f982a6d750df5c99b091261"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [28, 10, 1843, 837],
+        "greaterThan16": [33, 12, 1820, 835],
+        "greaterThan128": [34, 13, 1819, 834],
+        "greaterThan224": [39, 14, 1818, 834]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      },
+      "promptIntent": "A naturally curled reclining Victorian girl, face at left and dress/body at right, without house, external window hand or chimney foot.",
+      "reference": "existing vector geometry and provisional generated identity; not owner-approved artwork"
+    },
+    {
+      "id": "alice/filling",
+      "variant": "blue",
+      "asset": "figures/alice--filling.blue.generated.webp",
+      "bytes": 460810,
+      "sha256": "a5d4e8dfa4360ebd1dffb08d1383cf143a0ef074fdfa37341096f7784a37012a",
+      "width": 1851,
+      "height": 850,
+      "logicalBox": [720, 330],
+      "consumers": ["rabbit-house"],
+      "placement": {
+        "scale": 0.482897384305835,
+        "x": -102.47484909456742,
+        "y": -74.18511066398389
+      },
+      "anchor": {
+        "source": [440, 340],
+        "logical": [110, 90],
+        "meaning": "visually measured face centre, preserving intentional left/top room crop",
+        "floorSourceY": 837,
+        "floorLogicalY": 330
+      },
+      "source": {
+        "filename": "exec-31678479-9a44-4cd9-81be-53b3c9e73a45.png",
+        "bytes": 2593101,
+        "sha256": "97cad0fe29a983f87f04db36fe724d2e7c818c3df024cee5f3f9915bea5bfc30"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [28, 10, 1824, 850],
+        "greaterThan16": [31, 12, 1822, 837],
+        "greaterThan128": [31, 12, 1821, 837],
+        "greaterThan224": [32, 13, 1821, 836]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      },
+      "promptIntent": "A naturally curled reclining Victorian girl, face at left and dress/body at right, without house, external window hand or chimney foot.",
+      "reference": "existing vector geometry and corresponding yellow generated pose for the blue edit"
+    },
+    {
+      "id": "alice/hand-left",
+      "variant": "yellow",
+      "asset": "figures/alice--hand-left.yellow.generated.webp",
+      "bytes": 516356,
+      "sha256": "0594f5c872a3ce6527a5d99ef984fec8d47ac579ebaf59f7b8356da788331a64",
+      "width": 972,
+      "height": 1619,
+      "logicalBox": [120, 200],
+      "consumers": ["caterpillar", "pig-and-pepper", "lobster-quadrille"],
+      "placement": {
+        "scale": 0.12345679012345678,
+        "x": 0.0,
+        "y": 0.12345679012346977
+      },
+      "anchor": {
+        "source": [486.0, 1619],
+        "logical": [60, 200],
+        "meaning": "intentional sleeve bottom crop; no transparent padding added"
+      },
+      "source": {
+        "filename": "exec-446098c9-72a8-46d9-888b-04db291bfbd1.png",
+        "bytes": 2540119,
+        "sha256": "b1d9ed90a673df99f78bab8bb531385566941ff1d16a1f7b427239a55ec511b2"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [0, 20, 972, 1619],
+        "greaterThan16": [0, 33, 972, 1619],
+        "greaterThan128": [1, 34, 971, 1619],
+        "greaterThan224": [1, 35, 971, 1619]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      },
+      "promptIntent": "First-person left cupped palm facing viewer, five fingers, inward thumb and sleeve cropped at the bottom.",
+      "reference": "existing vector geometry and provisional generated identity; not owner-approved artwork"
+    },
+    {
+      "id": "alice/hand-left",
+      "variant": "blue",
+      "asset": "figures/alice--hand-left.blue.generated.webp",
+      "bytes": 379180,
+      "sha256": "befeec836168d54752c643c1b9f02bf59e8e0ee3bbf3675cbf227b7155507ded",
+      "width": 972,
+      "height": 1619,
+      "logicalBox": [120, 200],
+      "consumers": ["caterpillar", "pig-and-pepper", "lobster-quadrille"],
+      "placement": {
+        "scale": 0.12345679012345678,
+        "x": 0.0,
+        "y": 0.12345679012346977
+      },
+      "anchor": {
+        "source": [486.0, 1619],
+        "logical": [60, 200],
+        "meaning": "intentional sleeve bottom crop; no transparent padding added"
+      },
+      "source": {
+        "filename": "exec-8da0a14f-de2a-41c0-a18d-1052dd8700a5.png",
+        "bytes": 2260000,
+        "sha256": "c08402a448fbbd542da6c3d76cae4958e7e61860851681003820fba6545a593c"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [0, 30, 972, 1619],
+        "greaterThan16": [0, 32, 972, 1619],
+        "greaterThan128": [0, 33, 972, 1619],
+        "greaterThan224": [0, 34, 972, 1619]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      },
+      "promptIntent": "First-person left cupped palm facing viewer, five fingers, inward thumb and sleeve cropped at the bottom.",
+      "reference": "existing vector geometry and corresponding yellow generated pose for the blue edit"
+    },
+    {
+      "id": "alice/hand-right",
+      "variant": "yellow",
+      "asset": "figures/alice--hand-right.yellow.generated.webp",
+      "bytes": 505620,
+      "sha256": "db8cad0bc53bc0e4eee75d381204091d88e943dca24ed6a151d3923dd6abac82",
+      "width": 971,
+      "height": 1619,
+      "logicalBox": [120, 200],
+      "consumers": ["caterpillar", "pig-and-pepper", "lobster-quadrille"],
+      "placement": {
+        "scale": 0.12353304508956146,
+        "x": 0.024706609017911774,
+        "y": 0.0
+      },
+      "anchor": {
+        "source": [485.5, 1619],
+        "logical": [60, 200],
+        "meaning": "intentional sleeve bottom crop; no transparent padding added"
+      },
+      "source": {
+        "filename": "exec-04e2af74-d7a6-41e3-a575-00b33dc019b3.png",
+        "bytes": 2339761,
+        "sha256": "7ba7f62e3241f40d29654a12aea389b2b2c8628633d2cadf6e40ff2bf366f881"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [47, 17, 971, 1619],
+        "greaterThan16": [60, 31, 971, 1619],
+        "greaterThan128": [61, 31, 971, 1619],
+        "greaterThan224": [62, 32, 970, 1619]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      },
+      "promptIntent": "First-person right cupped palm facing viewer, five fingers, inward thumb and sleeve cropped at the bottom.",
+      "reference": "existing vector geometry and provisional generated identity; not owner-approved artwork"
+    },
+    {
+      "id": "alice/hand-right",
+      "variant": "blue",
+      "asset": "figures/alice--hand-right.blue.generated.webp",
+      "bytes": 344508,
+      "sha256": "4f97db0f2a3cbe941ec118bf8465ce0a447ca18a82562ffc39ba8a873ef0ebd6",
+      "width": 971,
+      "height": 1619,
+      "logicalBox": [120, 200],
+      "consumers": ["caterpillar", "pig-and-pepper", "lobster-quadrille"],
+      "placement": {
+        "scale": 0.12353304508956146,
+        "x": 0.024706609017911774,
+        "y": 0.0
+      },
+      "anchor": {
+        "source": [485.5, 1619],
+        "logical": [60, 200],
+        "meaning": "intentional sleeve bottom crop; no transparent padding added"
+      },
+      "source": {
+        "filename": "exec-e406459f-91c6-416b-8473-fbe64d5fd6e5.png",
+        "bytes": 2078884,
+        "sha256": "dad8cdce1abbc643cc21b5a23b372350b2d49e0426a547c6af8dbbc439b4f711"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [41, 27, 971, 1619],
+        "greaterThan16": [59, 30, 971, 1619],
+        "greaterThan128": [60, 31, 971, 1619],
+        "greaterThan224": [61, 31, 971, 1619]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      },
+      "promptIntent": "First-person right cupped palm facing viewer, five fingers, inward thumb and sleeve cropped at the bottom.",
+      "reference": "existing vector geometry and corresponding yellow generated pose for the blue edit"
+    },
+    {
+      "id": "alice/from-above",
+      "variant": "yellow",
+      "asset": "figures/alice--from-above.yellow.generated.webp",
+      "bytes": 364598,
+      "sha256": "eb3d661a8c361d4cccac722af2eee384386a16f480b4c0a5c9c858ecc8076935",
+      "width": 1254,
+      "height": 1254,
+      "logicalBox": [120, 120],
+      "consumers": ["caterpillar"],
+      "placement": {
+        "scale": 0.084,
+        "x": 7.2479999999999976,
+        "y": 22.18
+      },
+      "anchor": {
+        "source": [628, 355],
+        "logical": [60, 52],
+        "meaning": "visually measured central neck ellipse; preserve live Caterpillar neck connection"
+      },
+      "source": {
+        "filename": "exec-aabd85bb-7689-48c0-a3f8-6c1960597d9e.png",
+        "bytes": 1949368,
+        "sha256": "3bb92a1f93cf0dc8cc040c52533e27d1c9b047eb22c1f4645e8bb961dd197427"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [0, 54, 1226, 1184],
+        "greaterThan16": [69, 168, 1187, 1150],
+        "greaterThan128": [69, 169, 1186, 1149],
+        "greaterThan224": [70, 170, 1185, 1148]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      },
+      "promptIntent": "A true overhead headless shoulder and skirt view, with a visible central neck attachment and no head or long neck.",
+      "reference": "existing vector geometry and provisional generated identity; not owner-approved artwork"
+    },
+    {
+      "id": "alice/from-above",
+      "variant": "blue",
+      "asset": "figures/alice--from-above.blue.generated.webp",
+      "bytes": 276740,
+      "sha256": "ed1f54361a3d48d7ea243121e407e74aa9e5474a1050d75255b2f96060929b23",
+      "width": 1254,
+      "height": 1254,
+      "logicalBox": [120, 120],
+      "consumers": ["caterpillar"],
+      "placement": {
+        "scale": 0.084,
+        "x": 7.2479999999999976,
+        "y": 22.18
+      },
+      "anchor": {
+        "source": [628, 355],
+        "logical": [60, 52],
+        "meaning": "visually measured central neck ellipse; preserve live Caterpillar neck connection"
+      },
+      "source": {
+        "filename": "exec-5e2aeda5-1d0d-48b2-ab51-010a8b3c28d0.png",
+        "bytes": 1815597,
+        "sha256": "5f6762e6dcd9e3a4fe90e1d5fd7bbc3a6ae9dbf6f2186dca15553212df6bf726"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [61, 164, 1192, 1214],
+        "greaterThan16": [66, 166, 1189, 1153],
+        "greaterThan128": [67, 167, 1188, 1152],
+        "greaterThan224": [68, 168, 1188, 1151]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      },
+      "promptIntent": "A true overhead headless shoulder and skirt view, with a visible central neck attachment and no head or long neck.",
+      "reference": "existing vector geometry and corresponding yellow generated pose for the blue edit"
+    }
+  ],
+  "budget": {
+    "shippingBytes": 4410442,
+    "encoding": "WebP Q92 unchanged canvas and exact alpha",
+    "productionBudgetPass": false,
+    "note": "High-resolution checkpoint delivery, not AVIF/srcset or per-page performance acceptance."
+  },
+  "excluded": [
+    {
+      "source": "exec-5260681e-068a-419f-9c24-95b4958cd544.png",
+      "reason": "Superseded front-torso camera; not the overhead consumer."
+    }
+  ]
+}

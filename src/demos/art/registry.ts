@@ -82,10 +82,20 @@ export interface ImageSource {
 }
 
 export type ArtEntry =
-  | { kind: 'vector'; markup: string; box: [number, number]; fragment?: string }
+  | {
+      kind: 'vector';
+      markup: string;
+      box: [number, number];
+      fragment?: string;
+      generated?: Partial<Record<'blue' | 'yellow' | 'any', ImageSource & { footY: number }>>;
+    }
   | { kind: 'image'; sources: Partial<Record<'blue' | 'yellow' | 'any', ImageSource>> };
 
-const vector = (markup: string, box: [number, number], fragment?: string): ArtEntry => ({
+const vector = (
+  markup: string,
+  box: [number, number],
+  fragment?: string,
+): Extract<ArtEntry, { kind: 'vector' }> => ({
   kind: 'vector',
   markup,
   box,
@@ -96,15 +106,169 @@ const vector = (markup: string, box: [number, number], fragment?: string): ArtEn
 const feetAtOrigin = (inner: string, w: number, h: number): string =>
   `<g transform="translate(${w / 2} ${h})">${inner}</g>`;
 
+const GENERATED_DANCERS: Partial<Record<string, ImageSource & { footY: number }>> = {
+  salmon: {
+    src: new URL('../../assets/images/figures/dancer--salmon.any.generated.webp', import.meta.url)
+      .href,
+    width: 1254,
+    height: 1254,
+    footY: 1207,
+  },
+  whiting: {
+    src: new URL('../../assets/images/figures/dancer--whiting.any.generated.webp', import.meta.url)
+      .href,
+    width: 1254,
+    height: 1254,
+    footY: 1194,
+  },
+
+  seal: {
+    src: new URL('../../assets/images/figures/dancer--seal.any.generated.webp', import.meta.url)
+      .href,
+    width: 1254,
+    height: 1254,
+    footY: 1170,
+  },
+  turtle: {
+    src: new URL('../../assets/images/figures/dancer--turtle.any.generated.webp', import.meta.url)
+      .href,
+    width: 1254,
+    height: 1254,
+    footY: 1101,
+  },
+  snail: {
+    src: new URL('../../assets/images/figures/dancer--snail.any.generated.webp', import.meta.url)
+      .href,
+    width: 1254,
+    height: 1254,
+    footY: 981,
+  },
+  porpoise: {
+    src: new URL('../../assets/images/figures/dancer--porpoise.any.generated.webp', import.meta.url)
+      .href,
+    width: 1254,
+    height: 1254,
+    footY: 900,
+  },
+};
+
+const GENERATED_RUNNERS: Partial<Record<string, ImageSource & { footY: number }>> = {
+  magpie: {
+    src: new URL('../../assets/images/figures/runner--magpie.any.generated.webp', import.meta.url)
+      .href,
+    width: 1164,
+    height: 1351,
+    footY: 1252,
+  },
+  dodo: {
+    src: new URL('../../assets/images/figures/runner--dodo.any.generated.webp', import.meta.url)
+      .href,
+    width: 1164,
+    height: 1351,
+    footY: 1342,
+  },
+
+  crab: {
+    src: new URL('../../assets/images/figures/crab.any.generated.webp', import.meta.url).href,
+    width: 384,
+    height: 230,
+    footY: 208.91864057672504,
+  },
+  duck: {
+    src: new URL('../../assets/images/figures/runner--duck.any.generated.webp', import.meta.url)
+      .href,
+    width: 1165,
+    height: 1350,
+    footY: 1252,
+  },
+  eaglet: {
+    src: new URL('../../assets/images/figures/runner--eaglet.any.generated.webp', import.meta.url)
+      .href,
+    width: 1166,
+    height: 1349,
+    footY: 1166,
+  },
+  lory: {
+    src: new URL('../../assets/images/figures/runner--lory.any.generated.webp', import.meta.url)
+      .href,
+    width: 1164,
+    height: 1351,
+    footY: 1211,
+  },
+  mouse: {
+    src: new URL('../../assets/images/figures/runner--mouse.any.generated.webp', import.meta.url)
+      .href,
+    width: 1164,
+    height: 1351,
+    footY: 1117,
+  },
+};
+
 export const ART: Record<string, ArtEntry> = {
   // Alice, in the poses the demos need. Each may become one cut-out per variant.
   'alice/falling': vector(ALICE_SVG, [120, 200]),
   'alice/running-away': vector(ALICE_RUNNING_AWAY_SVG, [120, 220]),
   'alice/silhouette': vector(ALICE_SILHOUETTE_SVG, [120, 220]),
-  'alice/from-behind': vector(ALICE_FROM_BEHIND_SVG, [120, 220]),
+  'alice/from-behind': {
+    ...vector(ALICE_FROM_BEHIND_SVG, [120, 220]),
+    generated: {
+      yellow: {
+        src: new URL(
+          '../../assets/images/figures/alice--from-behind.yellow.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 926,
+        height: 1698,
+        // Visible soles (alpha > 32), not the transparent canvas bottom.
+        footY: 1602,
+      },
+    },
+  },
   'alice/sitting': vector(ALICE_SITTING_SVG, [160, 150]),
-  'alice/foot': vector(FOOT_SVG, [200, 260]),
-  'alice/looking-down': vector(ALICE_LOOKING_DOWN_SVG, [400, 220]),
+  'alice/foot': {
+    ...vector(FOOT_SVG, [200, 260]),
+    generated: {
+      yellow: {
+        src: new URL(
+          '../../assets/images/figures/alice--foot.yellow.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 1100,
+        height: 1430,
+        footY: 1430,
+      },
+      blue: {
+        src: new URL('../../assets/images/figures/alice--foot.blue.generated.webp', import.meta.url)
+          .href,
+        width: 1100,
+        height: 1430,
+        footY: 1430,
+      },
+    },
+  },
+  'alice/looking-down': {
+    ...vector(ALICE_LOOKING_DOWN_SVG, [400, 220]),
+    generated: {
+      yellow: {
+        src: new URL(
+          '../../assets/images/figures/alice--looking-down.yellow.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 1691,
+        height: 930,
+        footY: 930,
+      },
+      blue: {
+        src: new URL(
+          '../../assets/images/figures/alice--looking-down.blue.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 1691,
+        height: 930,
+        footY: 930,
+      },
+    },
+  },
   'alice/from-above': vector(ALICE_FROM_ABOVE_SVG, [120, 120], ALICE_FROM_ABOVE_INNER),
   'alice/hand-left': vector(handSvg('left'), [120, 200]),
   'alice/hand-right': vector(handSvg('right'), [120, 200]),
@@ -114,22 +278,100 @@ export const ART: Record<string, ArtEntry> = {
   'gardener/two': vector(gardenerSvg(2), [120, 220]),
   'gardener/five': vector(gardenerSvg(5), [120, 220]),
   'gardener/seven': vector(gardenerSvg(7), [120, 220]),
-  'card-arch': vector(CARD_ARCH_SVG, [200, 140]),
+  'card-arch': {
+    ...vector(CARD_ARCH_SVG, [200, 140]),
+    generated: {
+      any: {
+        src: new URL('../../assets/images/figures/card-arch.any.generated.webp', import.meta.url)
+          .href,
+        width: 1499,
+        height: 1049,
+        footY: 990,
+      },
+    },
+  },
   hedgehog: vector(HEDGEHOG_SVG, [140, 110]),
   flamingo: vector(FLAMINGO_SVG, [300, 420]),
   'flamingo/tucked': vector(FLAMINGO_TUCKED_SVG, [200, 160]),
   'cheshire-cat/head': vector(CAT_HEAD_SVG, [240, 200]),
-  'rose-tree': vector(ROSE_TREE_SVG, [320, 360]),
+  'rose-tree': {
+    ...vector(ROSE_TREE_SVG, [320, 360]),
+    generated: {
+      any: {
+        src: new URL('../../assets/images/figures/rose-tree.any.generated.webp', import.meta.url)
+          .href,
+        width: 1182,
+        height: 1330,
+        footY: 1315,
+      },
+    },
+  },
   gryphon: vector(GRYPHON_SVG, [240, 220]),
   'mock-turtle': vector(MOCK_TURTLE_SVG, [240, 220]),
-  lobster: vector(LOBSTER_SVG, [160, 120]),
+  lobster: {
+    ...vector(LOBSTER_SVG, [160, 120]),
+    generated: {
+      any: {
+        src: new URL('../../assets/images/figures/lobster.any.generated.webp', import.meta.url)
+          .href,
+        width: 576,
+        height: 432,
+        // Measured source baseline, scaled with the delivery canvas.
+        footY: 373.1270718232044,
+      },
+    },
+  },
   'tortoise-master': vector(TORTOISE_MASTER_SVG, [200, 240]),
-  'conger-eel': vector(CONGER_EEL_SVG, [300, 200]),
-  crab: vector(CRAB_SVG, [200, 120]),
+  'conger-eel': {
+    ...vector(CONGER_EEL_SVG, [300, 200]),
+    generated: {
+      any: {
+        src: new URL('../../assets/images/figures/conger-eel.any.generated.webp', import.meta.url)
+          .href,
+        width: 1536,
+        height: 1024,
+        footY: 888,
+      },
+    },
+  },
+  crab: {
+    ...vector(CRAB_SVG, [200, 120]),
+    generated: {
+      any: {
+        src: new URL('../../assets/images/figures/crab.any.generated.webp', import.meta.url).href,
+        width: 384,
+        height: 230,
+        // Measured source baseline, scaled with the delivery canvas.
+        footY: 208.91864057672504,
+      },
+    },
+  },
   ...Object.fromEntries(
-    DANCERS.map((kind) => [`dancer/${kind}`, vector(dancerSvg(kind), [140, 140])]),
+    DANCERS.map((kind) => {
+      const source = GENERATED_DANCERS[kind];
+      return [
+        `dancer/${kind}`,
+        {
+          ...vector(dancerSvg(kind), [140, 140]),
+          ...(source ? { generated: { any: source } } : {}),
+        },
+      ];
+    }),
   ),
-  'alice/standing': vector('', [80, 110], feetAtOrigin(HOUSE_STANDING, 80, 110)),
+  'alice/standing': {
+    ...vector('', [80, 110], feetAtOrigin(HOUSE_STANDING, 80, 110)),
+    generated: {
+      yellow: {
+        src: new URL(
+          '../../assets/images/figures/alice--standing.yellow.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 1024,
+        height: 1536,
+        footY: 1511,
+      },
+    },
+  },
   'alice/kneeling': vector('', [230, 230], feetAtOrigin(HOUSE_KNEELING, 230, 230)),
   'alice/filling': vector('', [720, 330], feetAtOrigin(HOUSE_FILLING, 720, 330)),
   // The pool draws her and the Mouse itself unless an image is registered here.
@@ -138,7 +380,21 @@ export const ART: Record<string, ArtEntry> = {
 
   'white-rabbit/running': vector(RABBIT_SVG, [120, 100]),
   'white-rabbit/diving': vector(RABBIT_DIVING_SVG, [100, 100]),
-  'white-rabbit/herald': vector(RABBIT_HERALD_SVG, [140, 220]),
+  'white-rabbit/herald': {
+    ...vector(RABBIT_HERALD_SVG, [140, 220]),
+    generated: {
+      any: {
+        src: new URL(
+          '../../assets/images/figures/white-rabbit--herald.any.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 1001,
+        height: 1572,
+        // Visible soles (alpha > 32); keep transparent margins in the master.
+        footY: 1515,
+      },
+    },
+  },
   'white-rabbit/garden': vector('', [60, 80], feetAtOrigin(HOUSE_RABBIT, 60, 80)),
   pat: vector('', [60, 70], feetAtOrigin(HOUSE_PAT, 60, 70)),
   'dinah-cat': vector(DINAH_SVG, [120, 100]),
@@ -146,26 +402,97 @@ export const ART: Record<string, ArtEntry> = {
   bat: vector(BAT_SVG, [100, 50]),
   dormouse: vector(MOUSE_SVG, [140, 110]),
   hatter: vector(HATTER_SVG, [160, 260]),
-  'march-hare': vector(MARCH_HARE_SVG, [160, 260]),
+  'march-hare': {
+    ...vector(MARCH_HARE_SVG, [160, 260]),
+    generated: {
+      any: {
+        src: new URL('../../assets/images/figures/march-hare.any.generated.webp', import.meta.url)
+          .href,
+        width: 984,
+        height: 1599,
+        footY: 1580,
+      },
+    },
+  },
   'cheshire-cat/on-bough': vector(CAT_SVG, [400, 240]),
   'cheshire-cat/on-hearth': vector(CAT_HEARTH_SVG, [240, 160]),
   'fish-footman': vector(footmanSvg('fish'), [120, 220]),
   'frog-footman': vector(footmanSvg('frog'), [120, 220]),
+  // Generated candidate awaits baby/hand composition alignment.
   duchess: vector(DUCHESS_SVG, [240, 260]),
   cook: vector(COOK_SVG, [200, 260]),
   'pig-baby': vector(PIG_BABY_SVG, [200, 200]),
   'pig/trotting': vector(PIG_TROTTING_SVG, [200, 140]),
-  'king-of-hearts': vector(KING_SVG, [160, 240]),
+  'king-of-hearts': {
+    ...vector(KING_SVG, [160, 240]),
+    generated: {
+      any: {
+        src: new URL(
+          '../../assets/images/figures/king-of-hearts.any.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 1024,
+        height: 1536,
+        footY: 1504,
+      },
+    },
+  },
   'queen-of-hearts': vector(QUEEN_SVG, [160, 240]),
-  'knave-of-hearts': vector(KNAVE_SVG, [140, 220]),
-  'card-soldier': vector(SOLDIER_SVG, [120, 220]),
+  'knave-of-hearts': {
+    ...vector(KNAVE_SVG, [140, 220]),
+    generated: {
+      any: {
+        src: new URL(
+          '../../assets/images/figures/knave-of-hearts.any.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 1000,
+        height: 1573,
+        footY: 1505,
+      },
+    },
+  },
+  'card-soldier': {
+    ...vector(SOLDIER_SVG, [120, 220]),
+    generated: {
+      any: {
+        src: new URL('../../assets/images/figures/card-soldier.any.generated.webp', import.meta.url)
+          .href,
+        width: 927,
+        height: 1697,
+        footY: 1648,
+      },
+    },
+  },
   jury: vector(JURY_SVG, [480, 220]),
-  'alices-sister': vector(SISTER_SVG, [300, 200]),
+  'alices-sister': {
+    ...vector(SISTER_SVG, [300, 200]),
+    generated: {
+      any: {
+        src: new URL(
+          '../../assets/images/figures/alices-sister.any.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 1536,
+        height: 1024,
+        footY: 1002,
+      },
+    },
+  },
   bill: vector(BILL_SVG, [120, 100], BILL_FRAGMENT),
   'guinea-pigs': vector(CROWD_SVG, [400, 120]),
   'guinea-pig': vector(GUINEA_PIG_SVG, [120, 104], GUINEA_PIG_FRAGMENT),
   ...Object.fromEntries(
-    RUNNERS.map((kind) => [`runner/${kind}`, vector(runnerSvg(kind), [100, 116])]),
+    RUNNERS.map((kind) => {
+      const source = GENERATED_RUNNERS[kind];
+      return [
+        `runner/${kind}`,
+        {
+          ...vector(runnerSvg(kind), [100, 116]),
+          ...(source ? { generated: { any: source } } : {}),
+        },
+      ];
+    }),
   ),
 };
 

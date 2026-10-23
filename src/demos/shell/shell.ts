@@ -13,6 +13,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import '../../styles/base.css';
 import '../art/art.css';
+import { watchGeneratedRigs } from '../art/generated-rig.ts';
 import { installArtTreatments } from '../art/treatments.ts';
 import './shell.css';
 import type { LocaleRealia } from '../../types/schema.ts';
@@ -279,6 +280,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   // to mount and the page go back to the document it arrived as.
   const lifetime = new AbortController();
   const { signal } = lifetime;
+  const stopGeneratedRigs = watchGeneratedRigs(root);
   const homes = new Map<HTMLElement, HTMLElement>();
 
   // Stage first, captions on top; the beats move in keeping their order.
@@ -1014,6 +1016,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   // finds them, and the error stays in the console.
   const detach = (): void => {
     lifetime.abort();
+    stopGeneratedRigs();
     cancelAnimationFrame(composed);
     cancelAnimationFrame(fitQueued);
     window.clearTimeout(liveTimer);

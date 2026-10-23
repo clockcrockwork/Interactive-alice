@@ -197,6 +197,13 @@
     "demoPullTail": "Pull the tail",
     "demoUndoKnot": "Undo the knot",
     "demoKnotHolds": "The knot only pulls tighter, and the Mouse is offended",
-    "demoBirdLeave": "Send this one off"
+    "demoBirdLeave": "Send this one off",
+    "demoGeneratedMaster": "Show generated master (unapproved preview)",
+    "demoGeneratedUnavailable": "The candidate could not load. The original animation is shown.",
+    "demoGeneratedLimit": "Uncheck: original animation. No moving parts; hand, hair and angle still need review.",
+    "demoCompareArt": "Compare artwork",
+    "demoGeneratedMushroom": "Show generated mushroom",
+    "demoGeneratedMushroomLimit": "Uncheck: original. Caterpillar movement and both nibble buttons stay unchanged.",
+    "demoGeneratedMushroomUnavailable": "The generated mushroom could not load. The original mushroom is shown."
   }
 }

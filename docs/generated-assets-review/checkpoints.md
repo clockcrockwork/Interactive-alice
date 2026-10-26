@@ -323,3 +323,10 @@ Pattern/use, CSS bow projection, late decode, pause/reduced motion and phone
 interaction remain real-browser checkpoints. Access restrictions were not bypassed.
 
 </details>
+
+## 2026-10-26 — blue runner local integration
+
+[Blue rest/carry intake](alice-runner-blue-20261026.md) adds the two selected blue
+assets to the existing runner adapter; 616,608 B added, original PNGs outside Git.
+Focused 72/72 unit tests pass. Browser replay and exact-head Preview remain
+unverified; prior yellow-only observations must not be credited to this pair.

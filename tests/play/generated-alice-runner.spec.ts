@@ -66,7 +66,7 @@ for (const scene of scenes) {
     });
   }
 
-  test(`blue runner keeps its original drawing and requests no yellow poses: ${scene}`, async ({
+  test(`blue runner decodes both poses and requests no yellow poses: ${scene}`, async ({
     page,
   }) => {
     await setup(page, 'blue');
@@ -76,10 +76,13 @@ for (const scene of scenes) {
     });
     await page.goto(`/demos/${scene}/`);
     await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
-    await expect(page.locator(selector)).toHaveCount(0);
+    await expect(page.locator(selector)).toHaveAttribute('data-rig-ready', '');
+    await expect(page.locator(`${selector} [data-rig-fallback]`)).toHaveCSS('display', 'none');
     await expect(page.locator(`${alice} .cr__figure`)).toHaveCount(1);
     await expect(page.locator(`${alice} .cr__arm--hold`)).toHaveCount(1);
-    expect(requests).toEqual([]);
+    expect(requests.some((url) => /~rest\.blue\.generated/.test(url))).toBe(true);
+    expect(requests.some((url) => /~carry\.blue\.generated/.test(url))).toBe(true);
+    expect(requests.some((url) => /\.yellow\.generated/.test(url))).toBe(false);
   });
 }
 

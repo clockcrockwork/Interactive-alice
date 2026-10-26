@@ -41,7 +41,7 @@ describe('runner attachment anchors', () => {
     });
   });
 
-  it('retains exact original fallbacks for pending, failed, blue and absent rigs', () => {
+  it('retains exact original fallbacks for rigs without ready coordinate metadata', () => {
     const screenPocket = { u: 62, v: 0.74 * 116 };
     for (const el of [undefined, runner(false, metadata), runner(true)]) {
       expect(runnerAnchor(el, 'hand', HANDS.aliceHand)).toBe(HANDS.aliceHand);

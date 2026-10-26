@@ -7,15 +7,15 @@ import { generatedAliceRunnerSvg } from './generated-alice-runner.ts';
 import { hydrateGeneratedRig } from './generated-rig.ts';
 import { runnerSvg } from './vectors.ts';
 
-const render = () =>
-  generatedAliceRunnerSvg('runner/alice', 'engraved', 'caucus-race', 'yellow') ?? '';
+const render = (variant: 'yellow' | 'blue' = 'yellow') =>
+  generatedAliceRunnerSvg('runner/alice', 'engraved', 'caucus-race', variant) ?? '';
 const original = runnerSvg('alice')
   .replace(/^<svg[^>]*><g class="cr__figure">/, '')
   .replace(/<\/g><\/svg>$/, '');
 afterEach(() => vi.unstubAllGlobals());
 
 describe('yellow whole-pose runner', () => {
-  it('routes both public renderers through the scoped adapter without changing blue', () => {
+  it('routes both public renderers through the scoped adapter for both colours', () => {
     for (const scene of ['caucus-race', 'pool-of-tears', 'mouse-tale']) {
       expect(figure('runner/alice', '', 'engraved', scene, 'yellow')).toContain(
         'data-generated-rig="runner/alice"',
@@ -23,7 +23,9 @@ describe('yellow whole-pose runner', () => {
       expect(
         svgFigure('runner/alice', 12, 15, 100, 116, '', 'engraved', scene, 'yellow'),
       ).toContain('data-generated-rig="runner/alice"');
-      expect(figure('runner/alice', '', 'engraved', scene, 'blue')).not.toContain('data-generated');
+      expect(figure('runner/alice', '', 'engraved', scene, 'blue')).toContain(
+        'data-generated-rig="runner/alice"',
+      );
     }
   });
   it('keeps one untransformed motion group, both poses and the original drawing', () => {
@@ -52,10 +54,10 @@ describe('yellow whole-pose runner', () => {
     expect(inserted).toContain('class="cr__arm cr__arm--hold"');
   });
 
-  it('is confined to yellow engraved race, pool, and tale consumers', () => {
+  it('is confined to engraved race, pool, and tale consumers', () => {
     for (const scene of ['caucus-race', 'pool-of-tears', 'mouse-tale']) {
       expect(generatedAliceRunnerSvg('runner/alice', 'engraved', scene, 'yellow')).toBeTruthy();
-      expect(generatedAliceRunnerSvg('runner/alice', 'engraved', scene, 'blue')).toBeUndefined();
+      expect(generatedAliceRunnerSvg('runner/alice', 'engraved', scene, 'blue')).toBeTruthy();
       for (const style of ['flat', 'paper'] as const)
         expect(generatedAliceRunnerSvg('runner/alice', style, scene, 'yellow')).toBeUndefined();
     }
@@ -108,7 +110,7 @@ describe('yellow whole-pose runner', () => {
   });
 });
 
-describe('runner atomic decode', () => {
+describe.each(['yellow', 'blue'] as const)('%s runner atomic decode', (variant) => {
   it('exposes anchors only after both poses decode, with no frame-clock dependency', async () => {
     const finish: (() => void)[] = [];
     vi.stubGlobal(
@@ -120,7 +122,7 @@ describe('runner atomic decode', () => {
         }
       },
     );
-    const svg = render();
+    const svg = render(variant);
     const sources = [...svg.matchAll(/data-rig-image="" href="([^"]+)"/g)].map(
       (m) => `${m[1]}?runner-late`,
     );
@@ -164,7 +166,7 @@ describe('runner atomic decode', () => {
           }
         },
       );
-      const sources = [...render().matchAll(/data-rig-image="" href="([^"]+)"/g)].map(
+      const sources = [...render(variant).matchAll(/data-rig-image="" href="([^"]+)"/g)].map(
         (m) => `${m[1]}?runner-fail-${failed}`,
       );
       const attributes = new Map<string, string>();
@@ -178,34 +180,63 @@ describe('runner atomic decode', () => {
     });
 });
 
-describe('runner provenance', () => {
-  it('matches both encoded files, dimensions, alpha records, hashes and budget', () => {
-    const directory = new URL('../../assets/images/', import.meta.url);
-    const record = JSON.parse(
-      readFileSync(new URL('alice-runner-provenance.json', directory), 'utf8'),
-    ) as {
-      assets: {
-        asset: string;
-        bytes: number;
-        sha256: string;
-        width: number;
-        height: number;
-        alphaPreservedExactly: boolean;
-        source: { sha256: string };
-      }[];
-      budget: { shippingBytes: number };
-    };
-    expect(record.assets).toHaveLength(2);
-    let total = 0;
-    for (const asset of record.assets) {
-      const bytes = readFileSync(new URL(asset.asset, directory));
-      expect(bytes.length).toBe(asset.bytes);
-      expect(createHash('sha256').update(bytes).digest('hex')).toBe(asset.sha256);
-      expect(asset.source.sha256).toMatch(/^[a-f0-9]{64}$/);
-      expect(asset.alphaPreservedExactly).toBe(true);
-      expect([asset.width, asset.height]).toEqual([1164, 1351]);
-      total += bytes.length;
+describe.each(['alice-runner-provenance.json', 'alice-runner-blue-provenance.json'])(
+  '%s provenance',
+  (filename) => {
+    it('matches both encoded files, dimensions, alpha records, hashes and budget', () => {
+      const directory = new URL('../../assets/images/', import.meta.url);
+      const record = JSON.parse(readFileSync(new URL(filename, directory), 'utf8')) as {
+        assets: {
+          asset: string;
+          bytes: number;
+          sha256: string;
+          width: number;
+          height: number;
+          alphaPreservedExactly: boolean;
+          source: { sha256: string };
+        }[];
+        budget: { shippingBytes: number };
+      };
+      expect(record.assets).toHaveLength(2);
+      let total = 0;
+      for (const asset of record.assets) {
+        const bytes = readFileSync(new URL(asset.asset, directory));
+        expect(bytes.length).toBe(asset.bytes);
+        expect(createHash('sha256').update(bytes).digest('hex')).toBe(asset.sha256);
+        expect(asset.source.sha256).toMatch(/^[a-f0-9]{64}$/);
+        expect(asset.alphaPreservedExactly).toBe(true);
+        expect([asset.width, asset.height]).toEqual([1164, 1351]);
+        total += bytes.length;
+      }
+      expect(total).toBe(record.budget.shippingBytes);
+    });
+  },
+);
+
+describe('blue runner measured mapping', () => {
+  it('uses blue sources with a common ground line and separate measured palm', () => {
+    const svg = render('blue');
+    const scale = 112 / 1339;
+    const x = (100 - 1164 * scale) / 2;
+    expect(svg.match(/data-variant="blue"/g)).toHaveLength(2);
+    expect(svg).not.toContain('.yellow.generated.webp');
+    expect(svg).toContain(`<g class="cr__figure"><g data-rig-fallback="">${original}</g>`);
+    const images = [
+      ...svg.matchAll(/<image[^>]* x="([^"]+)" y="([^"]+)" width="([^"]+)" height="([^"]+)"/g),
+    ];
+    for (const [index, image] of images.entries()) {
+      const [ix = 0, y = 0, w = 0, h = 0] = image.slice(1).map(Number);
+      expect(ix).toBeCloseTo(x, 9);
+      expect(w / 1164).toBeCloseTo(scale, 9);
+      expect(h / 1351).toBeCloseTo(scale, 9);
+      expect(y + (index === 0 ? 1337 : 1339) * scale).toBeCloseTo(112, 9);
     }
-    expect(total).toBe(record.budget.shippingBytes);
+    const metadata = (key: string) => Number(svg.match(new RegExp(`${key}="([^"]+)"`))?.[1]);
+    expect(metadata('data-runner-hand-u')).toBeCloseTo(x + 909 * scale, 9);
+    expect(metadata('data-runner-hand-v') + 9.36).toBeCloseTo(607 * scale, 9);
+    expect(metadata('data-runner-pocket-u')).toBeCloseTo(x + 730 * scale, 9);
+    expect(metadata('data-runner-pocket-v')).toBeCloseTo(730 * scale, 9);
+    for (const style of ['flat', 'paper'] as const)
+      expect(generatedAliceRunnerSvg('runner/alice', style, 'caucus-race', 'blue')).toBeUndefined();
   });
 });

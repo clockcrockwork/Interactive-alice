@@ -78,8 +78,8 @@ describe('generated whole-prop cut-outs', () => {
     ]) {
       expect(figure(id ?? '', '', 'engraved', scene)).not.toContain('data-generated');
     }
-    expect(figure('runner/alice', '', 'engraved', 'caucus-race', 'blue')).not.toContain(
-      'data-generated',
+    expect(figure('runner/alice', '', 'engraved', 'caucus-race', 'blue')).toContain(
+      'data-generated-rig="runner/alice"',
     );
   });
 });

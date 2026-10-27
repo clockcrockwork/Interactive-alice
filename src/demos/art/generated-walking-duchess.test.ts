@@ -8,7 +8,7 @@ import { DUCHESS_SVG } from './vectors.ts';
 const original = DUCHESS_SVG.replace(/^\s*<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
 
 describe('standing Duchess in the walking chapter', () => {
-  it('routes both public renderers without replacing Alice or the live flamingo', () => {
+  it('routes both public renderers without replacing the live flamingo', () => {
     const markup = [
       figure('duchess', '', 'engraved', 'duchess'),
       svgFigure('duchess', 20, 30, 120, 130, '', 'engraved', 'duchess'),
@@ -19,7 +19,7 @@ describe('standing Duchess in the walking chapter', () => {
     }
     expect(markup[1]).toContain('transform="translate(20 30)"');
     expect(markup[1]).toContain('transform="scale(0.5 0.5)"');
-    for (const id of ['alice/falling', 'flamingo/tucked']) {
+    for (const id of ['flamingo/tucked']) {
       expect(figure(id, '', 'engraved', 'duchess')).not.toContain('data-generated');
     }
   });

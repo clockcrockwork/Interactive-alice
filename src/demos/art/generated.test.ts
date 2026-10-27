@@ -34,13 +34,13 @@ describe('generated court Alice', () => {
     expect(markup).not.toContain('.generated.webp');
   });
 
-  it('leaves alternate styles, the live falling rig and unchecked contact consumer unchanged', () => {
+  it('leaves alternate styles, the live falling rig unchanged', () => {
     for (const style of ['flat', 'paper'] as const) {
       expect(figure('alice/from-behind', '', style, 'trial', 'yellow')).not.toContain(
         'data-generated',
       );
     }
-    for (const scene of ['rabbit-hole', 'duchess']) {
+    for (const scene of ['rabbit-hole']) {
       expect(figure('alice/falling', '', 'engraved', scene, 'yellow')).not.toContain(
         'data-generated',
       );

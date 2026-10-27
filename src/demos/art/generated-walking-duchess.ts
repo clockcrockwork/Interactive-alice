@@ -18,6 +18,6 @@ export function generatedWalkingDuchessSvg(
   const original = DUCHESS_SVG.replace(/^\s*<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
   const paint = `walking-duchess-paint-${++serial}`;
   // The 240 x 260 paint box keeps the scene's whole-art bob and outer lean,
-  // shrug and flinch pivots intact. Alice and the live flamingo stay original.
+  // shrug and flinch pivots intact. Alice is owned by its separate chapter adapter; the live bird stays original.
   return `<svg width="240" height="260" viewBox="0 0 240 260" focusable="false" data-generated-rig="duchess/walking"><g data-rig-fallback="">${original}</g><g data-rig-generated="" visibility="hidden" display="none"><defs><pattern id="${paint}" width="240" height="260" patternUnits="userSpaceOnUse" patternContentUnits="userSpaceOnUse"><image class="art__image" data-variant="any" data-rig-image="" href="${image}" x="${120 - 640 * scale}" y="${260 - 1299 * scale}" width="${1205 * scale}" height="${1305 * scale}" preserveAspectRatio="xMidYMid meet"/></pattern></defs><rect width="240" height="260" fill="url(#${paint})"/></g></svg>`;
 }

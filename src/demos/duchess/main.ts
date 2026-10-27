@@ -156,7 +156,7 @@ function mount(shell: DemoShell): void {
   pair.innerHTML =
     '<div class="dc__walkers">' +
     `<div class="dc__duchess">${figure('duchess')}</div>` +
-    `<div class="dc__alice">${figure('alice/falling')}<div class="dc__flamingo">${figure('flamingo/tucked')}<span class="dc__snap">${SNAP_SVG}</span></div></div>` +
+    `<div class="dc__alice">${figure('alice/falling')}<div class="dc__flamingo-motion"><div class="dc__flamingo">${figure('flamingo/tucked')}<span class="dc__snap">${SNAP_SVG}</span></div></div></div>` +
     '<div class="dc__morals"></div>' +
     '</div>' +
     `<div class="dc__queen"><div class="dc__cloud"></div>${figure('queen-of-hearts')}</div>`;

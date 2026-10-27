@@ -423,6 +423,41 @@
     transform: rotate(calc(var(--bite) * -4deg));
   }
 
+  /* This carrier shares Alice's original 120 x 200 motion box and clock.
+     Keep the clock alive before decode: only suppress its visible transform,
+     never restart the animation when the atomic generated rig becomes ready. */
+  .dc__flamingo-motion {
+    position: absolute;
+    inset: 0;
+    transform-origin: 50% 100%;
+  }
+
+  .dc__alice:where(
+      :not(:has(> .art > svg[data-generated-rig="alice/duchess-hold"][data-rig-ready]))
+    )
+    > .dc__flamingo-motion {
+    /* biome-ignore lint/complexity/noImportantStyles: Suppress the effect, not the shared animation clock, before atomic readiness. */
+    transform: none !important;
+  }
+
+  .dc__alice:has(> .art > svg[data-generated-rig="alice/duchess-hold"][data-rig-ready])
+    .dc__flamingo {
+    inset-inline-start: calc(49.6 / 120 * 100%);
+    inset-inline-end: auto;
+    inset-block-start: calc(15.4 / 200 * 100%);
+    /* Width remains 110%: the bird is not made into a smaller prop. */
+    transform: rotate(calc(15deg + var(--bite) * -4deg));
+  }
+
+  .dc__alice:has(
+      > .art
+        > svg[data-generated-rig="alice/duchess-hold"][data-duchess-variant="blue"][data-rig-ready]
+    )
+    .dc__flamingo {
+    inset-inline-start: calc(50.6 / 120 * 100%);
+    inset-block-start: calc(14.7 / 200 * 100%);
+  }
+
   /* At the bite (`--bite`) the neck shoots out up and left, stretched along its
      own length, to the shoulder her chin is on; the head rides on its end with
      the beak level and the lower half open; `--snap` clacks it shut. The head's
@@ -631,7 +666,8 @@
     animation: dc-step 0.62s ease-in-out infinite alternate;
   }
 
-  .dc__pair[data-walking] .dc__alice > .art {
+  .dc__pair[data-walking] .dc__alice > .art,
+  .dc__pair[data-walking] .dc__flamingo-motion {
     animation: dc-step 0.62s ease-in-out infinite alternate -0.31s;
   }
 
@@ -645,6 +681,7 @@
   .demo[data-paused] .dc__queen[data-shouting] > .art,
   .demo[data-paused] .dc__pair[data-walking] .dc__duchess > .art,
   .demo[data-paused] .dc__pair[data-walking] .dc__alice > .art,
+  .demo[data-paused] .dc__pair[data-walking] .dc__flamingo-motion,
   .demo[data-paused] .dc__pair[data-walking] .dc__queen[data-here] > .art {
     animation-play-state: paused;
   }
@@ -794,6 +831,7 @@
     .dc__queen[data-shouting] > .art,
     .dc__pair[data-walking] .dc__duchess > .art,
     .dc__pair[data-walking] .dc__alice > .art,
+    .dc__pair[data-walking] .dc__flamingo-motion,
     .dc__pair[data-walking] .dc__queen[data-here] > .art {
       animation: none;
     }

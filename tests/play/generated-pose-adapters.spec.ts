@@ -262,7 +262,7 @@ for (const variant of ['yellow', 'blue']) {
   });
 }
 
-test('phone-width Duchess adapters leave contact figures and separate wings intact', async ({
+test('phone-width Duchess adapters keep the live bird and separate wings intact', async ({
   page,
 }) => {
   // A narrow desktop-browser viewport, not mobile-device execution evidence.
@@ -271,10 +271,11 @@ test('phone-width Duchess adapters leave contact figures and separate wings inta
   await page.goto('/demos/duchess/');
   await ready(page.locator('.dc__duchess svg[data-generated-rig="duchess/walking"]'));
   await ready(page.locator('.dc__pig svg[data-generated-rig="pig-baby/flying"]'));
-  for (const parent of ['.dc__alice > .art', '.dc__flamingo > .art']) {
-    await expect(page.locator(parent)).toHaveCount(1);
-    await expect(page.locator(`${parent} [data-generated-rig]`)).toHaveCount(0);
-  }
+  await ready(page.locator('.dc__alice > .art > svg[data-generated-rig="alice/duchess-hold"]'));
+  await expect(page.locator('.dc__flamingo > .art')).toHaveCount(1);
+  await expect(page.locator('.dc__flamingo [data-generated-rig]')).toHaveCount(0);
+  for (const hook of ['neck', 'head', 'jaw', 'pupil'])
+    await expect(page.locator(`.dc__flamingo .dc__tucked-${hook}`)).toHaveCount(1);
   await expect(page.locator('.dc__pig > .dc__wings .dc__wing')).toHaveCount(2);
   await expect(page.locator('.dc__pig [data-generated-rig] .dc__wing')).toHaveCount(0);
 });

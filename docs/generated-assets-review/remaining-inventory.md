@@ -2,7 +2,8 @@
 
 Production snapshot: **2026-10-21 06:43 UTC**; runner coverage reconciled
 against PR #29 head `5ece711f9813cd1eaa3b2a0516a765624ad67873` on
-**2026-10-27 UTC**. The original inventory was checked against `ART`,
+**2026-10-27 UTC**. The guided chapter-only Alice hold revision is recorded in
+[its 2026-10-27 checkpoint](alice-duchess-hold-20261027.md). The original inventory was checked against `ART`,
 `LIVE_PARTS`, `CUT_OUTS`, renderer modules, actual scene selectors, generation
 results and batch records. A generated master, separated layers, runtime use,
 static verification and browser verification are different milestones. This is
@@ -104,7 +105,7 @@ registry sources is historical: the three static IDs below now have candidates.
 | --- | --- | --- | --- | --- | --- |
 | `alice/looking-down`, `alice/foot` (2) | 4: yellow/blue for each | N/A | Four variant-specific images | Unchanged alpha/canvas; crop-edge anchors, not shoes; 404-unit checkpoint | Five consumer occurrences and Drink Me/Pool join pending |
 | `alice/standing` (1) | 1 yellow; blue refused, no output | N/A | Yellow HTML/SVG source; original blue | Placement-sized SVG paint rectangle; static ground checks at 0.55/1/1.6; 404-unit checkpoint | Riverbank jump/House growth-crossfade pending |
-| `alice/falling` (1) | New whole masters in both colours; older overhead comparisons separate | Five new parts available, leg part refused; old three-part study not usable | Whole cards only in Drink Me/Trial; Rabbit Hole rig and Duchess contacts original | 5 scoped contracts; full source inspection; no refused leg reconstruction | Pending |
+| `alice/falling` (1) | New whole masters in both colours; older overhead comparisons separate | Five new parts available, leg part refused; old three-part study not usable | Falling whole cards only in Drink Me/Trial; separate guided hold in Duchess; Rabbit Hole rig original | 5 scoped contracts; full source inspection; no refused leg reconstruction | Pending |
 | `alice/running-away` (1) | Yellow whole/body/arms | Three available parts; original-leg hybrid rejected visually | Original running rig | Rest and both strides show disconnected flat shoes/stockings under engraving; no equivalent refused leg cutout retry | Original retained |
 | `alice/sitting` (1) | Both colour candidates | Four layers per colour, seven unique files | Riverbank head/arm/lids/body with atomic fallback | Per-layer maps, rotated lid reveal, daisy contact and eight-state proof; focused tests | Pending |
 | `alice/kneeling`, `alice/filling` (2) | 4 colour candidates | N/A | Scoped atomic House fragments, fixed growth box | Mapped head/room crop and offline growth proof; focused tests | Pending |

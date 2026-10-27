@@ -32,6 +32,7 @@ import {
   generatedCaterpillarBillSvg,
 } from './generated-caterpillar-bill.ts';
 import { generatedCheshireCatSvg } from './generated-cheshire-cat.ts';
+import { generatedDuchessAliceSvg } from './generated-duchess-alice.ts';
 import { generatedFallingCardSvg } from './generated-falling-card.ts';
 import { generatedFlamingoSvg } from './generated-flamingo.ts';
 import { generatedFlyingPigSvg } from './generated-flying-pig.ts';
@@ -177,6 +178,7 @@ export function figure(
   if (entry.kind === 'vector') {
     const alicePose =
       generatedAlicePoseSvg(id, style, demo, variant) ??
+      generatedDuchessAliceSvg(id, style, demo, variant) ??
       generatedFallingCardSvg(id, style, demo, variant) ??
       generatedAliceSittingSvg(id, style, demo, variant) ??
       generatedAliceRunnerSvg(id, style, demo, variant);
@@ -286,6 +288,7 @@ export function svgFigure(
   if (entry.kind === 'vector') {
     const alicePose =
       generatedAlicePoseSvg(id, style, demo, variant) ??
+      generatedDuchessAliceSvg(id, style, demo, variant) ??
       generatedFallingCardSvg(id, style, demo, variant) ??
       generatedAliceSittingSvg(id, style, demo, variant) ??
       generatedAliceRunnerSvg(id, style, demo, variant);

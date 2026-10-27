@@ -31,9 +31,10 @@ describe('generated runner adapter', () => {
   for (const kind of RUNNERS) {
     it(`keeps ${kind}'s image inside the untransformed motion and overlay group`, () => {
       withGeneratedEntry(`runner/${kind}`, () => {
-        for (const demo of ['caucus-race', 'mouse-tale']) {
-          // Yellow Alice has a scene-specific two-pose adapter. The unchanged
-          // blue route still exercises a generic generated registry entry.
+        // Both Alice colours now have dedicated two-pose scene adapters;
+        // exercise the generic registry path outside their scoped consumers.
+        const demos = kind === 'alice' ? ['registry-fixture'] : ['caucus-race', 'mouse-tale'];
+        for (const demo of demos) {
           const markup = figure(`runner/${kind}`, '', 'engraved', demo, 'blue');
           expect(markup).toContain('data-generated=""');
           expect(markup).toContain('viewBox="0 0 100 116"');

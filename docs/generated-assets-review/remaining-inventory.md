@@ -1,6 +1,8 @@
 # Generated-image production inventory
 
-Production snapshot: **2026-10-21 06:43 UTC**. Checked against `ART`,
+Production snapshot: **2026-10-21 06:43 UTC**; runner coverage reconciled
+against PR #29 head `5ece711f9813cd1eaa3b2a0516a765624ad67873` on
+**2026-10-27 UTC**. The original inventory was checked against `ART`,
 `LIVE_PARTS`, `CUT_OUTS`, renderer modules, actual scene selectors, generation
 results and batch records. A generated master, separated layers, runtime use,
 static verification and browser verification are different milestones. This is
@@ -62,7 +64,7 @@ Duchess flying pig and normal Mushroom introduction; source reuse may extend
 individual consumers without adding a registry ID. Source masters
 and incomplete generation candidates remain outside Git.
 
-Current coverage accounting (not completion): **69 of the 75 IDs have some generated runtime coverage**: 28 registry whole-source IDs, 38 additional scoped SVG IDs, two Canvas IDs and one scene-local Mushroom ID. Two IDs remain wholly original (`alice/running-away`, `flamingo/tucked`); four are deliberate non-targets or unused (`alice/silhouette`, both Dinah ghosts, `guinea-pigs`). This does not mean every colour, scene or articulated consumer is converted. In particular blue runner/rear/standing, Rabbit Hole falling, Kitchen morph and chapter Mock Turtle retain their original drawing where dependencies are unavailable. Walking Duchess and the bounded props are already integrated; their contact/readability and failure/motion behavior still need exact-head browser verification and later visual acceptance.
+Current coverage accounting (not completion): **69 of the 75 IDs have some generated runtime coverage**: 28 registry whole-source IDs, 38 additional scoped SVG IDs, two Canvas IDs and one scene-local Mushroom ID. Two IDs remain wholly original (`alice/running-away`, `flamingo/tucked`); four are deliberate non-targets or unused (`alice/silhouette`, both Dinah ghosts, `guinea-pigs`). This does not mean every colour, scene or articulated consumer is converted. In particular blue rear/standing, Rabbit Hole falling, Kitchen morph and chapter Mock Turtle retain their original drawing where dependencies are unavailable. Walking Duchess and the bounded props are already integrated; their contact/readability and failure/motion behavior still need exact-head browser verification and later visual acceptance.
 
 - **Master candidate** counts usable generated candidates, not approved identity.
   **Layers generated** counts available separated raster inputs. `N/A` means a
@@ -108,7 +110,7 @@ registry sources is historical: the three static IDs below now have candidates.
 | `alice/kneeling`, `alice/filling` (2) | 4 colour candidates | N/A | Scoped atomic House fragments, fixed growth box | Mapped head/room crop and offline growth proof; focused tests | Pending |
 | `alice/hand-left`, `alice/hand-right` (2) | 4 colour candidates | N/A | Caterpillar/Pig/Lobster scoped hands; ready-only prop contact anchors | Phone/desktop offline contact proofs; original failure placement retained | Pending |
 | `alice/from-above` (1) | Corrected top-down candidates, both colours | N/A | Scoped Caterpillar shoulders under live neck | Original neck junction (60,52) mapped, offline proof | Pending |
-| `runner/alice` (1) | Yellow rest and natural right-hand carry | Two whole-pose states integrated provisionally | Caucus Race, Pool and Mouse Tale; blue original | Original HANDS fallback retained; ready-only hand/pocket metadata. Peak-bow contact correction and paused-decode regression coverage integrated; not playback-approved | Pending |
+| `runner/alice` (1) | Yellow and blue rest and natural right-hand carry | Two whole-pose states per colour integrated provisionally | Engraved Caucus Race, Pool and Mouse Tale; flat/paper and failed decode retain original | Original HANDS fallback retained; variant-specific ready-only hand/pocket metadata. Blue deliveries and exact-head scoped verification recorded in [blue runner checkpoint](alice-runner-blue-20261026.md); not playback-approved | Pending |
 | `alice/swimming` (1) | 2 colour candidates | N/A | Actual Canvas drawing with procedural fallback | Head/chest waterline, asynchronous cache and foreground-water contracts | Pending |
 | `alice/silhouette` (1) | Intentionally none | N/A | **Retain vector** | Shared colour-driven shadow/children geometry; not an obligatory generated portrait | No conversion planned |
 

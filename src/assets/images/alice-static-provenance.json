@@ -152,24 +152,24 @@
       "id": "alice/standing",
       "variant": "yellow",
       "asset": "figures/alice--standing.yellow.generated.webp",
-      "bytes": 479058,
-      "sha256": "f7dea64b895b234091efb718e4f4b01f52fba3b4bf685749ae6941bb52519488",
+      "bytes": 377382,
+      "sha256": "5eda8cc36f82b33f6d81dec7e1bf1c4690d912c4538416851ff61332caee734c",
       "width": 1024,
       "height": 1536,
       "logicalBox": [80, 110],
       "footY": 1511,
       "anchorMeaning": "visible sole lower edge at alpha > 128",
       "source": {
-        "filename": "exec-a635e39d-0e38-4534-90e0-f62eb78f403a.png",
-        "bytes": 2769081,
-        "sha256": "5efa05cd10765f9bb2c8559462c9982a7c63afff7f6f7cd41ea7f3f0fa9e7e0e"
+        "filename": "standing-yellow-brunette.png",
+        "bytes": 2540527,
+        "sha256": "a63b7a46259d50027f8696562f6ea443bc0339ed4a2d010eac22f114a720f77e"
       },
       "alphaExtrema": [0, 254],
       "alphaBounds": {
-        "greaterThan0": [0, 13, 1008, 1518],
-        "greaterThan16": [110, 15, 950, 1512],
+        "greaterThan0": [0, 0, 990, 1516],
+        "greaterThan16": [109, 15, 950, 1512],
         "greaterThan128": [110, 16, 949, 1511],
-        "greaterThan224": [111, 16, 948, 1510]
+        "greaterThan224": [111, 16, 949, 1510]
       },
       "alphaPreservedExactly": true,
       "encoding": {
@@ -180,12 +180,23 @@
         "metadataStripped": true,
         "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
       },
-      "reference": "original alice--standing.yellow.webp geometry; provisional overhead yellow identity candidate",
-      "promptIntent": "Full-length front-facing engraved girl with a yellow dress, ivory apron and open hands, centered over the original standing ground anchor."
+      "reference": "Previous yellow standing delivery, hair-colour edit through image_gen; small generative drift, not pixel-identical.",
+      "promptIntent": "Correct golden hair to chestnut brunette, retaining yellow standing pose and costume.",
+      "previousDelivery": {
+        "sha256": "f7dea64b895b234091efb718e4f4b01f52fba3b4bf685749ae6941bb52519488",
+        "source": {
+          "filename": "exec-a635e39d-0e38-4534-90e0-f62eb78f403a.png",
+          "bytes": 2769081,
+          "sha256": "5efa05cd10765f9bb2c8559462c9982a7c63afff7f6f7cd41ea7f3f0fa9e7e0e"
+        },
+        "date": "2026-10-21"
+      },
+      "revisionDate": "2026-10-27",
+      "revisionPrompt": "Use case: precise-object-edit. Edit target: the supplied existing yellow-dress standing storybook girl cutout. Change ONLY her golden/light hair to canonical natural chestnut brunette: base #68472D, soft highlights #8A6543, darker brown engraved shadows. Preserve all original hair curls and fine ink hatching. Keep exactly the yellow dress, ivory apron, hair bow, face, eyes, skin, open hands, legs and shoes, pose, full silhouette, framing, 1024x1536 canvas and bottom shoe position. Retain the restrained antique hand-coloured engraved illustration style. No blue clothing variant, no new pose or anatomy, no extra elements. Preserve genuine alpha transparency, with no opaque background, no glow or ground shadow. Hair colour correction only; everything else unchanged."
     }
   ],
   "budget": {
-    "shippingBytes": 1537678,
+    "shippingBytes": 1436002,
     "scope": "concept demos only, excluded from story-page budgets",
     "encodingLimitations": "Full-resolution q92 WebP review candidates; responsive sizes and AVIF alternatives are not included. No production image-budget pass is claimed.",
     "criticality": "Images are referenced when their demo figure markup is created. This batch adds no lazy-loading path; offscreen placement is not evidence of deferred fetching.",
@@ -194,7 +205,7 @@
   "variantLimitations": [
     "Blue standing output was refused. The operation was not retried and no alternate recolouring route was used. Blue retains its original baked/vector drawing.",
     "Looking-down and foot blue are reference edits of their yellow candidates, not pixel-identical recolours.",
-    "The yellow standing candidate has light/golden hair rather than the canonical brunette target; identity and palette remain unaccepted."
+    "Yellow standing hair was corrected toward canonical chestnut on 2026-10-27; source and candidate were visually compared. Identity remains provisional, not browser/art acceptance."
   ],
   "placementLimitations": [
     "Foot artwork is right of the old centerline and extends farther upward than the prototype; chimney and Caterpillar contact require visual review.",
@@ -211,9 +222,10 @@
   "validation": {
     "sourceInspection": "All five PNG sources inspected before integration.",
     "alphaIntegrity": "All five WebP alpha channels exactly match the PNG masters; source dimensions preserved.",
-    "staticSvg": "Standing pattern placement rendered with resvg at 1x, 0.55x and 1.6x (3x display magnification) using the original PNG because the available resvg decoder did not render WebP. Soles align to the common ground and the full figure remains within the intended paint box. This is not browser evidence.",
+    "staticSvg": "Historical 2026-10-21 original-delivery result: standing pattern placement rendered with resvg at 1x, 0.55x and 1.6x (3x display magnification) using the original PNG because the available resvg decoder did not render WebP. Soles align to the common ground and the full figure remains within the intended paint box. This is not browser evidence.",
     "browser": "Not run. Existing browser-launch restriction was not retried or bypassed. Phone/desktop CSS fill-box, actual WebP browser rendering, motion and scene joins remain unverified.",
-    "localChecks": "13 focused tests and all 404 unit tests, typecheck, lint, data checks and build passed on Node 24.19.0, outside the pinned Node 22 engine range.",
-    "warnings": "Existing staged-text TODO output and Vite chunk-size warning remain. No workflow was dispatched."
+    "localChecks": "Historical 2026-10-21 original-delivery result: 13 focused tests and all 404 unit tests, typecheck, lint, data checks and build passed on Node 24.19.0, outside the pinned Node 22 engine range.",
+    "warnings": "Existing staged-text TODO output and Vite chunk-size warning remain. No workflow was dispatched.",
+    "revision20261027": "Standing source/candidate viewed; original canvas and alpha>128 sole1511 retained. WebP alpha exactly matches revised PNG; generative alpha differs from old source. Browser not run."
   }
 }

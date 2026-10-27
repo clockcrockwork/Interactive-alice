@@ -220,7 +220,7 @@ export const ART: Record<string, ArtEntry> = {
         width: 926,
         height: 1698,
         // Visible soles (alpha > 32), not the transparent canvas bottom.
-        footY: 1602,
+        footY: 1604,
       },
     },
   },

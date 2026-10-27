@@ -223,6 +223,6 @@ describe('static Alice delivery provenance', () => {
       total += bytes.length;
     }
     expect(total).toBe(record.budget.shippingBytes);
-    expect(total).toBe(1537678);
+    expect(total).toBe(1436002);
   });
 });

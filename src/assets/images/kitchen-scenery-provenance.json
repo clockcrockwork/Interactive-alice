@@ -1,0 +1,73 @@
+{
+  "batch": "kitchen-scenery-20261028",
+  "status": "candidate scenery; static approximations only, not browser playback approval",
+  "style": "IA-ENGRAVED-CUTOUT-V1",
+  "conversion": "Pillow/libwebp q88; original pixel dimensions and alpha retained",
+  "assets": [
+    {
+      "id": "kitchen-wall",
+      "asset": "scenery/kitchen-wall.generated.webp",
+      "width": 1774,
+      "height": 887,
+      "bytes": 456392,
+      "sha256": "3c01daeaa7dbd88b134e87b1c0765fda3511bcdb685c9d0e51d53caccb0759d1",
+      "source": {
+        "file": "kitchen-wall.revision-1.source.png",
+        "width": 1774,
+        "height": 887,
+        "bytes": 3976753,
+        "sha256": "95666986e82e94ab703aaa5174a9161919e17e6a99ad1bbb9295c417c0734f81"
+      },
+      "candidateToDeliveryAlphaExact": true,
+      "sourceAlpha": {
+        "zeroFraction": 0.0,
+        "opaqueFraction": 1.0,
+        "mean": 255.0
+      },
+      "generation": {
+        "tool": "built-in image_gen",
+        "originalPrompt": "Use case: illustration-story.\nAsset type: transparent wide kitchen wall texture layer for an illustrated web scene, not a complete room or a framed picture.\nPrimary request: an evenly distributed old kitchen wall surface with irregular masonry and patches of repaired lime plaster, a few small horizontal mortar joints, subtle hairline cracks and engraved wear marks, and a very low, plain bottom skirting course. Straight-on front elevation, orthographic, with no perspective convergence. Requested canvas 2048 by 1024 pixels, approximately 2:1.\nStyle/medium: late-nineteenth-century British illustrated children's-book cut-out, fine pen-and-ink engraving, delicate brown-black contour lines, restrained parallel hatching and cross-hatching, slightly irregular old-print ink. Quiet warm sepia, faint #85715F mortar and #544538 wear lines, sparse warm ivory #F2E8D8 accents, very few dark ink marks. Broad subdued tonal hierarchy and much lower contrast than a foreground character. No modern thick outline, no photoreal texture, no airbrushing, no glossy digital painting, no 3D.\nComposition/framing: distribute the small masonry/plaster details evenly from left to right with no focal object or concentrated corner motif. The lower plain skirting extends horizontally across the entire canvas. It must be useful when tightly center-cropped for portrait screens, and when scaled uniformly to cover with its bottom center aligned.\nTransparency: real alpha. The wall is a delicate open printed overlay: unmarked plaster areas and spaces between fine marks remain genuinely transparent so an existing warm or dark scene color can show through. Do not paint a solid paper-colored wall slab. No simulated checkerboard, no backdrop, no opaque paper rectangle or border.\nAvoid: shelf, hearth, fireplace, utensils, cookware, pots, windows, doors, arches, people, animals, plants, flowers, furniture, chairs, text, labels, logos, poster, frame, unique focal object, cast shadows, cinematic lighting. Only quiet masonry and repaired plaster surface, with a low plain skirting course.",
+        "revisionPrompt": "Use case: style-transfer.\nEdit the attached masonry/plaster wall into a CONTINUOUS OPAQUE architectural wall plane. This is a background rectangle, not a cut-out. Replace every transparent hole and pale isolated patch with connected warm-brown plaster so the entire canvas is filled edge to edge. Keep only the general straight-on masonry/plaster idea and low plain skirting course; do not preserve its torn-paper silhouette or hole pattern.\nStyle: quiet late-nineteenth-century British illustrated children's-book wall engraving, delicate sepia ink, restrained short parallel hatching and a little cross-hatching. FLAT printed illustration, not stone photography or 3D. Use a subdued warm brown surface around #79614B and #8B745B, subtle darker #544538 mortar and wear lines, occasional muted #A18A6E worn-plaster traces. No cream-white areas and no pure black shadows. Low local contrast across the entire image, comfortably less than ink-and-wash figures.\nSubject: very modest old kitchen masonry under repaired lime plaster, small horizontal mortar seams softly visible, tiny hairline cracks, a low unornamented continuous bottom skirting. The plaster and stone form a coherent closed wall. Even distributed texture, no strong patchwork, no focal point, no edge vignette, no gradients that look like burned or wet stains. Texture must work in a narrow central portrait crop.\nStraight-on front elevation, no perspective, rectangular 2:1 canvas requested about 2048×1024. All pixels opaque. No holes, torn edges, transparency or cut-out islands. No shelf, fireplace, hearth, window, door, arch, furnishings, props, figures, plants, poster, text, logos, decorative border, shadows, spotlight, glossy highlights, bevels, airbrush shading or modern rendering. Only the continuous restrained wall texture.\n"
+      }
+    },
+    {
+      "id": "kitchen-floor",
+      "asset": "scenery/kitchen-floor.generated.webp",
+      "width": 2172,
+      "height": 724,
+      "bytes": 936508,
+      "sha256": "27f91abaaa5037bd7473eb14405c50ea2fd0fe3d3b2b7c527a0afc023013533a",
+      "source": {
+        "file": "kitchen-floor.revision-1.source.png",
+        "width": 2172,
+        "height": 724,
+        "bytes": 2958462,
+        "sha256": "daed9ad396fe66027d526daaaae2f6041c7c8f0f938c9b6ecb5100d491118cb7"
+      },
+      "candidateToDeliveryAlphaExact": true,
+      "sourceAlpha": {
+        "zeroFraction": 0.2581989001149741,
+        "opaqueFraction": 3.179593622498296e-6,
+        "mean": 50.169327350609976
+      },
+      "generation": {
+        "tool": "built-in image_gen",
+        "originalPrompt": "Use case: illustration-story.\nAsset type: transparent, wide horizontal kitchen floor texture layer for an illustrated web scene, not a complete picture.\nPrimary request: a broad shallow field of old, irregular worn flagstones, spread all the way across the canvas, with small joints, restrained scuffs, tiny chipped edges and traces of soot expressed with fine pen-and-ink hatching. Floor seen from a gently elevated near-front angle, very shallow depth; no conspicuous vanishing point. Requested canvas 2160 by 720 pixels, approximately 3:1.\nStyle/medium: late-nineteenth-century British illustrated children's-book cut-out, fine pen-and-ink engraving, delicate brown-black contour lines, restrained parallel hatching and cross-hatching, slightly irregular old-print ink. Quiet, warm sepia and faded brown inks, predominantly #544538 and #85715F, a few #2A211A accents and sparse warm ivory #F2E8D8 chips. No modern thick outlines, no photographic texture, no smooth airbrushing, no glossy digital painting, no 3D.\nComposition/framing: a distributed croppable surface, with equally useful texture in left, center and right sections. Low visual contrast so preexisting characters remain dominant. The surface needs to work when only the center 20 percent is visible in a portrait-screen crop. No unique object, ornamental border or important corner.\nTransparency: real alpha channel. Unprinted space between the fine worn-stone marks and much of each stone interior must be transparent, not a large solid ivory slab; the underlying dark brown CSS floor gradient must remain visible through the illustration. A small amount of broken pale stone wash is fine, but keep the overall texture open and airy. No simulated checkerboard. No background color or paper rectangle. Do not add a backdrop.\nAvoid: furniture, chairs, people, animals, hearth, pots, fire, shelves, doors, windows, plants, flowers, text, logos, captions, decorative frames, cast shadows, directional cinematic lighting, strong perspective convergence. Only the worn flagstone floor texture.",
+        "revisionPrompt": "Use case: style-transfer.\nEdit the attached floor texture only, preserving the broad shallow horizontal approximately 3:1 footprint, irregular flagstone layout and actual transparent background. Keep it a croppable distributed background overlay, not a complete room.\nRequired correction: remove the luminous pale beveled rims, every soft dark central blotch and all smooth three-dimensional shading. Redraw the SAME kind of worn floor as FLAT printed pen-and-ink engraving. Stones are defined primarily by a few delicate muted warm-brown mortar strokes, fine short parallel scuff hatches and modest broken contour lines. Use low contrast #85715F and #544538 sepia ink with only tiny muted ivory flecks. Unmarked stone interiors are transparent, not a painted grey or ivory mass. Edge wear must be represented with linear ink hatching, never glow, bevels, blurred gradients or holes shaped like dark stains.\nThe desired style is a late-nineteenth-century British children's-book background engraving: fine pen-and-ink, slightly irregular old-print marks, restrained cross-hatching, no photorealism, no 3D, no digital bevel shading, no smooth airbrush. The background must visually recede behind detailed ink-and-wash cut-out people in a dark warm-brown kitchen.\nKeep useful quiet ink texture uniformly across left, center and right so a narrow center crop works. True alpha where unprinted. No shadows, highlights around whole stones, scenery, furniture, chairs, figures, objects, text, symbols or borders. Preserve transparency. Requested dimensions about 2160×720.\n"
+      },
+      "contentBounds": {
+        "alphaThreshold": 16,
+        "x": 5,
+        "y": 54,
+        "width": 2160,
+        "height": 644,
+        "coordinateSystem": "source pixels; exclusive end",
+        "purpose": "discard near-transparent margin for top-aligned uniform cover"
+      }
+    }
+  ],
+  "routeBytes": {
+    "pig-and-pepper": 1392900
+  },
+  "scope": "Decorative wall and floor planes within moving Pig and Pepper kitchen. Other scenery remains separate."
+}

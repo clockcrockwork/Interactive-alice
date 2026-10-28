@@ -190,8 +190,9 @@
     "riverbank": 3162878,
     "rabbit-hole": 3162878,
     "tea-party": 1301810,
-    "cheshire-cat": 1408742
+    "cheshire-cat": 1408742,
+    "caterpillar": 1035056
   },
-  "scope": "Riverbank, shared Field/Rabbit Hole intro, Tea Party horizon, Cheshire night depth planes. Other chapters remain separate scenery work.",
+  "scope": "Riverbank, shared Field/Rabbit Hole intro, Tea Party horizon, Cheshire night depth planes, Caterpillar scaling meadow. Other chapters remain separate scenery work.",
   "recoveryNote": "Delivery WebPs re-encoded from recovered PNG masters on 2026-10-28. Current delivery differs in bytes from earlier local delivery; previousDelivery retains historical metrics."
 }

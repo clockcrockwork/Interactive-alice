@@ -14,6 +14,7 @@ import gsap from 'gsap';
 import { figure, svgFigure } from '../art/art.ts';
 import { createCaterpillarHoseSync } from '../art/generated-caterpillar-bill.ts';
 import { hydrateGeneratedRig } from '../art/generated-rig.ts';
+import { scenery } from '../art/generated-scenery.ts';
 import {
   attachDemo,
   type Beat,
@@ -114,6 +115,9 @@ function mount(shell: DemoShell): void {
     ).join('');
   sky.innerHTML = '<div class="ct__ground"></div>';
   meadow.innerHTML =
+    `<div class="ct__scenery-ground">${scenery('ground')}</div>` +
+    `<div class="ct__scenery-edge ct__scenery-edge--left">${scenery('edge-right')}</div>` +
+    `<div class="ct__scenery-edge ct__scenery-edge--right">${scenery('edge-right')}</div>` +
     `<div class="ct__grass ct__grass--far">${blades(lite ? 14 : 26, 'ct__blade--far')}</div>` +
     `<div class="ct__mushroom">${figure('mushroom')}<div class="ct__caterpillar">${figure('caterpillar')}</div></div>` +
     // The Caterpillar again, up out of the grass to nod when she lands on three.

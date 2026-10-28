@@ -32,9 +32,11 @@ backgrounds that made the generated characters float.
   middle woodland and near trunks, preserving the cat contact plane. See
   [night/hedge review](scenery-night-20261027.md); playback and dark contrast still
   need browser review, so this is not a whole-chapter completion certificate.
-- **Caterpillar:** meadow/grass and canopy change scale with Alice. Any texture
-  must follow the same base/horizon/size mechanics and must not become a fixed
-  wallpaper while Alice rises above the trees.
+- **Caterpillar:** a bounded extension now places the existing ground strip and
+  low outer ferns inside the scaling/fading meadow. The base/horizon/size and
+  rising canopy mechanics remain unchanged. See the
+  [Caterpillar review](scenery-caterpillar-20261028.md); static geometry is not
+  browser playback verification, and the canopy's illustration remains separate.
 - **Indoor / court / kitchen:** need a separate setting-specific audit; adding
   trees everywhere does not address architecture, furniture contact and empty
   wall/floor planes.

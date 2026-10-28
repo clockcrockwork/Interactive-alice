@@ -123,6 +123,17 @@ describe('night woodland and shared hedge planes', () => {
 });
 
 describe('scenery delivery records', () => {
+  it('accounts for the two reused Caterpillar meadow sources once each', () => {
+    const record = JSON.parse(read('../../assets/images/scenery-provenance.json'));
+    const bytes = ['ground', 'edge-right'].reduce(
+      (sum, id) =>
+        sum +
+        readFileSync(new URL(`../../assets/images/scenery/${id}.generated.webp`, import.meta.url))
+          .length,
+      0,
+    );
+    expect(record.routeBytes.caterpillar).toBe(bytes);
+  });
   it('matches seven shipped images and accounts for only each route’s used sources', () => {
     const record = JSON.parse(read('../../assets/images/scenery-provenance.json'));
     expect(record.assets).toHaveLength(7);
@@ -143,5 +154,43 @@ describe('scenery delivery records', () => {
     expect(record.routeBytes['tea-party']).toBe(tea);
     expect(tea).toBeLessThan(total);
     expect(record.routeBytes['cheshire-cat']).toBe(night);
+  });
+});
+
+describe('Caterpillar meadow scenery ownership', () => {
+  it('puts only low vegetation in the scaling meadow, behind the mushroom and near blades', () => {
+    const main = read('../caterpillar/main.ts');
+    const start = main.indexOf('meadow.innerHTML =');
+    const end = main.indexOf('const mushroom =', start);
+    const meadow = main.slice(start, end);
+    expect(meadow.match(/scenery\('ground'\)/g)).toHaveLength(1);
+    expect(meadow.match(/scenery\('edge-right'\)/g)).toHaveLength(2);
+    expect(meadow.match(/scenery\(/g)).toHaveLength(3);
+    expect(meadow.indexOf('ct__scenery-ground')).toBeLessThan(meadow.indexOf('ct__mushroom'));
+    expect(meadow.indexOf('ct__scenery-edge--right')).toBeLessThan(meadow.indexOf('ct__mushroom'));
+    expect(main.slice(0, start)).not.toContain("scenery('");
+    expect(main.slice(end)).not.toContain("scenery('");
+  });
+  it('anchors the decoration to the meadow base without a competing scale or fade', () => {
+    const css = read('../caterpillar/caterpillar.css').replace(/\/\*[\s\S]*?\*\//g, '');
+    const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)];
+    for (const name of ['.ct__scenery-ground', '.ct__scenery-edge']) {
+      const anchor = rules.find(
+        ([, selector, body]) =>
+          selector
+            ?.split(',')
+            .map((s) => s.trim())
+            .includes(name) && body?.includes('position: absolute'),
+      );
+      expect(anchor, name).toBeDefined();
+      expect(anchor?.[2]).toContain('inset-block-start: calc(var(--base) * 1%)');
+      expect(anchor?.[2]).toContain('pointer-events: none');
+    }
+    const additions = rules.filter(([, selector]) => selector?.includes('.ct__scenery-'));
+    for (const [, , body] of additions) {
+      expect(body).not.toMatch(/position:\s*fixed|animation:|transition:|--s:|--fade:|z-index:/);
+    }
+    expect(css).toContain('transform-origin: 50% calc(var(--base) * 1%)');
+    expect(css).toContain('opacity: var(--fade)');
   });
 });

@@ -120,6 +120,40 @@
     will-change: transform;
   }
 
+  /* Low plants belong to this three-inch world, not the sky's moving horizon.
+     The meadow owns their scale, pitch and fade; no complete tree competes with
+     its giant blades. Ground hatching and outer ferns stay behind the mushroom. */
+  .ct__scenery-ground,
+  .ct__scenery-edge {
+    position: absolute;
+    inset-block-start: calc(var(--base) * 1%);
+    pointer-events: none;
+  }
+
+  .ct__scenery-ground {
+    inset-inline-start: 50%;
+    inline-size: 132vmin;
+    block-size: 44vmin;
+    translate: -50% calc(-100% + 9vmin);
+    opacity: 0.75;
+  }
+
+  .ct__scenery-edge {
+    inline-size: 32vmin;
+    block-size: calc(128vmin / 3);
+    translate: 0 calc(-100% + 2vmin);
+    opacity: 0.85;
+  }
+
+  .ct__scenery-edge--left {
+    inset-inline-start: -3vmin;
+    transform: scaleX(-1);
+  }
+
+  .ct__scenery-edge--right {
+    inset-inline-end: -3vmin;
+  }
+
   .ct__grass {
     position: absolute;
     inset-inline: -20vw;

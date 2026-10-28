@@ -30,6 +30,7 @@ import {
   thingMarkup,
 } from './figures.ts';
 import { captionCeiling, safeGlassY } from './glass-placement.ts';
+import { kitchenScenery } from './kitchen-scenery.ts';
 import { resetThrowMotion } from './throw-motion.ts';
 
 /** The pig comes in stages: the baby, a grunt, a snout, and a pig. */
@@ -132,7 +133,7 @@ function mount(shell: DemoShell): void {
   const kitchen = shell.layer('pp__kitchen');
   kitchen.innerHTML =
     '<div class="pp__room">' +
-    '<div class="pp__wall"></div><div class="pp__shelf"></div><div class="pp__floor"></div>' +
+    `<div class="pp__wall">${kitchenScenery('wall')}</div><div class="pp__shelf"></div><div class="pp__floor">${kitchenScenery('floor')}</div>` +
     `<div class="pp__hearth">${HEARTH_SVG}<div class="pp__cat">${figure('cheshire-cat/on-hearth')}</div></div>` +
     `<div class="pp__cauldron">${cauldronMarkup()}</div>` +
     `<div class="pp__cook">${figure('cook')}</div>` +

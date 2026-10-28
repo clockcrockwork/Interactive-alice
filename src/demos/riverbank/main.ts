@@ -12,6 +12,7 @@
 
 import gsap from 'gsap';
 import { figure, svgFigure } from '../art/art.ts';
+import { scenery } from '../art/generated-scenery.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import { createStride, fieldHtml } from './field.ts';
 import { BOOK_HTML, DAISY_SVG, WATCH_SVG } from './figures.ts';
@@ -44,7 +45,9 @@ function mount(shell: DemoShell): void {
   }).join('');
   bank.innerHTML =
     '<div class="rb__ground"></div>' +
-    '<div class="rb__tree"></div>' +
+    `<div class="rb__tree">${scenery('tree')}</div>` +
+    `<div class="rb__scenery-ground">${scenery('ground')}</div>` +
+    `<div class="rb__scenery-ground rb__scenery-ground--near">${scenery('ground')}</div>` +
     `<div class="rb__sister">${figure('alices-sister')}<button type="button" class="rb__book" aria-label="${shell.ui.demoTurnPage ?? ''}">${BOOK_HTML}</button></div>` +
     `<div class="rb__alice"><div class="rb__sitting">${figure('alice/sitting')}</div><div class="rb__standing"><svg viewBox="0 0 80 110" focusable="false">${svgFigure('alice/standing', 0, 0, 80, 110)}</svg></div>` +
     `<div class="rb__chain">${Array.from({ length: CHAIN_MAX }, (_, i) => `<span class="rb__link" style="--i: ${i}">${DAISY_SVG}</span>`).join('')}</div></div>` +
@@ -57,6 +60,10 @@ function mount(shell: DemoShell): void {
   const runway = shell.layer('rb__runway');
   runway.innerHTML = `<div class="rb__rabbit">${figure('white-rabbit/running')}<button type="button" class="rb__watch" aria-label="${shell.ui.demoLookWatch ?? ''}">${WATCH_SVG}</button></div>`;
   shell.layer('rb__near');
+  const sceneryFront = shell.layer('rb__scenery-front');
+  sceneryFront.innerHTML =
+    `<div class="scenery-edge scenery-edge--left">${scenery('edge-left')}<div class="scenery-edge__mobile">${scenery('edge-right')}</div></div>` +
+    `<div class="scenery-edge scenery-edge--right">${scenery('edge-right')}</div>`;
   const heat = shell.layer('rb__heat');
   const flash = shell.layer('rb__flash');
 

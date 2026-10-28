@@ -1,0 +1,172 @@
+/* Chapter-local scenery, never a fixed wallpaper over unrelated scenes. */
+@layer tokens, base, layout, scene, utilities;
+
+@layer scene {
+  .scenery {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* The old tree remains while loading, on error, and in flat/paper styles. */
+  .rb__tree:has([data-generated-rig="scenery/tree"][data-rig-ready]),
+  .field__tree:has([data-generated-rig="scenery/tree"][data-rig-ready]) {
+    background: none;
+  }
+
+  /* Preserve Tea Party's 300×400 tree box and the moving horizon/clock. */
+  .tp__tree {
+    aspect-ratio: 3 / 4;
+  }
+
+  .tp__tree > .scenery {
+    position: absolute;
+    inset: 0;
+    block-size: 100%;
+  }
+
+  .tp__tree:has([data-generated-rig="scenery/tree"][data-rig-ready]) > .tp__tree-original {
+    display: none;
+  }
+
+  .tp__scenery-ground {
+    position: absolute;
+    inset-inline: -4vw;
+    inset-block-start: 0;
+    block-size: 50%;
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  .rb__scenery-ground,
+  .field__scenery-ground,
+  .scenery-edge {
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .rb__scenery-ground {
+    inset-inline: 0;
+    inset-block-start: 42%;
+    block-size: 26%;
+    opacity: 0.8;
+  }
+
+  .field__scenery-ground {
+    inset-inline: 0;
+    inset-block-start: 47%;
+    block-size: 32%;
+    opacity: 0.75;
+  }
+
+  .rb__scenery-ground--near {
+    inset-inline: 35% 4%;
+    inset-block-start: auto;
+    inset-block-end: 14%;
+    block-size: 20%;
+    opacity: 0.5;
+  }
+
+  /* Crop only at the OUTER viewport boundary, never through the inner contour. */
+  .scenery-edge {
+    inset-block-end: 14%;
+    pointer-events: none;
+  }
+
+  .scenery-edge--left {
+    inset-inline-start: -12vw;
+    inline-size: calc(200vh / 3);
+    block-size: 100%;
+  }
+
+  .scenery-edge--right {
+    inset-inline-end: -3vw;
+    inline-size: 24vmin;
+    block-size: 32vmin;
+  }
+
+  .scenery-edge__mobile {
+    display: none;
+  }
+
+  .rb__scenery-front {
+    pointer-events: none;
+    transform: translateX(calc(var(--cam) * 5vw + var(--pan) * 110vw + var(--lean) * -2vw));
+  }
+
+  /* This lives INSIDE field__land, so the rabbit-hole zoom carries it too. */
+  .field__land > .scenery-edge {
+    inset-block-end: 0;
+  }
+
+  @media (max-width: 700px) {
+    .scenery-edge--left {
+      inset-inline-start: -4vw;
+      inline-size: 24vmin;
+      block-size: 32vmin;
+    }
+
+    .scenery-edge--left > .scenery {
+      display: none;
+    }
+
+    .scenery-edge__mobile {
+      display: block;
+      block-size: 100%;
+      transform: scaleX(-1);
+    }
+
+    .rb__scenery-ground:not(.rb__scenery-ground--near) {
+      inset-block-start: 34%;
+    }
+  }
+
+  /* Hedge decoder is a readiness probe; the matched background tiles at the
+     original horizon height without stretching one leaf across the screen. */
+  .field__hedge > .scenery {
+    opacity: 0;
+  }
+
+  .field__hedge:has([data-generated-rig="scenery/hedge"][data-rig-ready]) {
+    background-image: url("../../assets/images/scenery/field-hedge.generated.webp");
+    background-size: 57vh 19vh;
+    background-repeat: repeat-x;
+    background-position: calc(50vw - 28.5vh) bottom;
+  }
+
+  .cc__trees--mid:has([data-generated-rig="scenery/night-wood"][data-rig-ready]),
+  .cc__wood:has(.cc__scenery-near--left [data-rig-ready]):has(
+      .cc__scenery-near--right [data-rig-ready]
+    )
+    > .cc__trees--near {
+    background: none;
+  }
+
+  /* Same moving depth planes. The dense lower trunk (source x265/724) aligns
+     with the old inner boundary; transparent branch space is not a trunk edge. */
+  /* This engraved plane precedes contact boughs, so sign walks do not sweep
+     newly illustrated twigs over the Cat's face. The original fallback order stays. */
+  .cc__scenery-near-plane {
+    --rate: 11;
+    --trunk: clamp(2.6rem, 13vmin, 9rem);
+  }
+
+  .cc__scenery-near {
+    position: absolute;
+    inset-block: 0;
+    inline-size: calc(100vh / 3);
+    pointer-events: none;
+  }
+
+  .cc__scenery-near--left {
+    inset-inline-start: calc(20vw + var(--trunk) * 0.6 - 12.2vh);
+  }
+
+  .cc__scenery-near--right {
+    inset-inline-start: calc(120vw - var(--trunk) * 0.6 - 100vh / 3 + 12.2vh);
+    transform: scaleX(-1);
+  }
+}

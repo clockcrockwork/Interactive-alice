@@ -2278,6 +2278,76 @@
       "bytes": 284686,
       "sha256": "ad7e1ac0a9401e7c9d8d09d1daf3b3ae1e54d47d1c83c9baf19706fb71411174",
       "provenanceRecord": "pool-glass-table-provenance.json"
+    },
+    {
+      "file": "scenery/tree.generated.webp",
+      "what": "Outdoor engraved scenery: tree.",
+      "generator": "image_gen original PNG",
+      "intent": "Provide scenery depth to the outdoor chapter scenes.",
+      "date": "2026-10-27",
+      "edits": "Re-encoded from original PNG to WebP quality 88 on 2026-10-28; same canvas and exact alpha.",
+      "bytes": 857708,
+      "sha256": "c7dabfcb5a1d150f4ba8f3397553d016c43d01ec4b53fe9f3c173b899572ce23"
+    },
+    {
+      "file": "scenery/edge-left.generated.webp",
+      "what": "Outdoor engraved scenery: edge-left.",
+      "generator": "image_gen original PNG",
+      "intent": "Provide scenery depth to the outdoor chapter scenes.",
+      "date": "2026-10-27",
+      "edits": "Re-encoded from original PNG to WebP quality 88 on 2026-10-28; same canvas and exact alpha.",
+      "bytes": 482268,
+      "sha256": "2fda75c8514dc916dfd33990b9f16a5fac0de68f52e410c5e6e53544f028fea3"
+    },
+    {
+      "file": "scenery/edge-right.generated.webp",
+      "what": "Outdoor engraved scenery: edge-right.",
+      "generator": "image_gen original PNG",
+      "intent": "Provide scenery depth to the outdoor chapter scenes.",
+      "date": "2026-10-27",
+      "edits": "Re-encoded from original PNG to WebP quality 88 on 2026-10-28; same canvas and exact alpha.",
+      "bytes": 590954,
+      "sha256": "bb5f6221d15b1a892b9953c65e71682d775aaeec54a8b5a46ed58610d6b5eb8d"
+    },
+    {
+      "file": "scenery/ground.generated.webp",
+      "what": "Outdoor engraved scenery: ground.",
+      "generator": "image_gen original PNG",
+      "intent": "Provide scenery depth to the outdoor chapter scenes.",
+      "date": "2026-10-27",
+      "edits": "Re-encoded from original PNG to WebP quality 88 on 2026-10-28; same canvas and exact alpha.",
+      "bytes": 444102,
+      "sha256": "eca9b050a776ed1ed6b0a89208f4519183c4f2381f509ddd4fca5c96e4bca815"
+    },
+    {
+      "file": "scenery/night-trunk.generated.webp",
+      "what": "Outdoor engraved scenery: night-trunk.",
+      "generator": "image_gen original PNG",
+      "intent": "Provide scenery depth to the outdoor chapter scenes.",
+      "date": "2026-10-27",
+      "edits": "Re-encoded from original PNG to WebP quality 88 on 2026-10-28; same canvas and exact alpha.",
+      "bytes": 374100,
+      "sha256": "dc13c53601856445636930ff47105dc685130e294cbadaf321ecd86a147692c1"
+    },
+    {
+      "file": "scenery/night-wood.generated.webp",
+      "what": "Outdoor engraved scenery: night-wood.",
+      "generator": "image_gen original PNG",
+      "intent": "Provide scenery depth to the outdoor chapter scenes.",
+      "date": "2026-10-27",
+      "edits": "Re-encoded from original PNG to WebP quality 88 on 2026-10-28; same canvas and exact alpha.",
+      "bytes": 1034642,
+      "sha256": "f92dc513a875558b464f1b2b2df2b333af1d0588d4681637e202490e83dfd24e"
+    },
+    {
+      "file": "scenery/field-hedge.generated.webp",
+      "what": "Outdoor engraved scenery: hedge.",
+      "generator": "image_gen original PNG",
+      "intent": "Provide scenery depth to the outdoor chapter scenes.",
+      "date": "2026-10-27",
+      "edits": "Re-encoded from original PNG to WebP quality 88 on 2026-10-28; same canvas and exact alpha.",
+      "bytes": 787846,
+      "sha256": "bc5c3d37f9bf9a753a520ec387eb4e6a06d8cdb64cebae4567bd508c0a66d0b6"
     }
   ]
 }

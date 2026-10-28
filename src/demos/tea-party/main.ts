@@ -21,6 +21,7 @@
 
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
+import { scenery } from '../art/generated-scenery.ts';
 import { attachDemo, type DemoShell, mix } from '../shell/shell.ts';
 import {
   butterMarkup,
@@ -114,9 +115,10 @@ function mount(shell: DemoShell): void {
   const sky = shell.layer('tp__sky');
   sky.innerHTML =
     '<div class="tp__horizon"><div class="tp__grass"></div>' +
+    `<div class="tp__scenery-ground">${scenery('ground')}</div>` +
     '<div class="tp__sun"><div class="tp__sun-disc"></div><div class="tp__hands">' +
     '<div class="tp__hand tp__hand--hour"></div><div class="tp__hand tp__hand--minute"></div></div></div>' +
-    `<div class="tp__house">${HOUSE_SVG}</div><div class="tp__tree">${TREE_SVG}</div></div>`;
+    `<div class="tp__house">${HOUSE_SVG}</div><div class="tp__tree"><div class="tp__tree-original">${TREE_SVG}</div>${scenery('tree')}</div></div>`;
   const sun = sky.querySelector<HTMLElement>('.tp__sun');
   const house = sky.querySelector<HTMLElement>('.tp__house');
   const time = { hour: AFTERNOON, spin: 0, clock: 0, dusk: 0 };

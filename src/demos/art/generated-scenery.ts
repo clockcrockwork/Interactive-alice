@@ -1,8 +1,10 @@
-/** Outdoor decorations use the shell's existing cached, atomic rig decoder. */
+/** Scene decorations use the shell's existing cached, atomic rig decoder. */
 import { type ArtStyle, artStyle } from './treatments.ts';
 import './generated-scenery.css';
 
 const sources = {
+  'court-wall': new URL('../../assets/images/scenery/court-wall.generated.webp', import.meta.url)
+    .href,
   'court-floor': new URL('../../assets/images/scenery/court-floor.generated.webp', import.meta.url)
     .href,
   'night-trunk': new URL('../../assets/images/scenery/night-trunk.generated.webp', import.meta.url)
@@ -20,6 +22,7 @@ const sources = {
 
 // Ratios are fixed before decode; final delivery dimensions are recorded in provenance.
 const boxes = {
+  'court-wall': [3, 1],
   'court-floor': [3, 1],
   'night-trunk': [1, 3],
   'night-wood': [3, 1],
@@ -36,6 +39,13 @@ export function scenery(
   style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
 ): string {
   if (style !== 'engraved') return '';
+  if (id === 'court-wall') {
+    // Retain the existing wide rear plane. Mirrored bays share one decoded file;
+    // the offset puts an open panel, not a pilaster, behind the central actors.
+    const image = (transform = ''): string =>
+      `<image data-rig-image="" href="${sources[id]}" width="2172" height="724" transform="${transform}"/>`;
+    return `<svg class="scenery" viewBox="-1086 0 21720 724" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false" data-generated-rig="scenery/court-wall"><defs><pattern id="court-wall-bays" patternUnits="userSpaceOnUse" width="4344" height="724">${image()}${image('translate(4344 0) scale(-1 1)')}</pattern></defs><g data-rig-generated="" visibility="hidden" display="none"><rect x="-1086" width="21720" height="724" fill="url(#court-wall-bays)"/></g></svg>`;
+  }
   if (id === 'court-floor') {
     // One Court per demo. Pair each edge with its own mirror: grain cannot step
     // at a join. The viewBox crops uniformly rather than stretching the image.

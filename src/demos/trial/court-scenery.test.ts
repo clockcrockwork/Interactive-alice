@@ -54,3 +54,45 @@ describe('court floor provenance', () => {
     expect(record.candidateToDeliveryAlphaExact).toBe(true);
   });
 });
+
+describe('court wall scenery', () => {
+  it('is decorative, atomic, and absent from flat/paper styles', () => {
+    const markup = scenery('court-wall', 'engraved');
+    expect(markup).toContain('data-generated-rig="scenery/court-wall"');
+    expect(markup).toContain('aria-hidden="true" focusable="false"');
+    expect(markup).toContain('data-rig-generated="" visibility="hidden" display="none"');
+    expect(markup.match(/data-rig-image=""/g)).toHaveLength(2);
+    expect(scenery('court-wall', 'flat')).toBe('');
+    expect(scenery('court-wall', 'paper')).toBe('');
+  });
+  it('centers an open panel and preserves rear-plane geometry and curtain fallback', () => {
+    const markup = scenery('court-wall', 'engraved');
+    expect(markup).toContain('viewBox="-1086 0 21720 724"');
+    expect(markup).toContain('preserveAspectRatio="xMidYMid slice"');
+    expect(markup).toContain('transform="translate(4344 0) scale(-1 1)"');
+    const css = read('./court.css');
+    expect(css).toContain('inline-size: 340vw');
+    expect(css).toContain('translate3d(-50%, 0, -700px)');
+    expect(css).toContain('inset-block: -10% 18%');
+    expect(css).toContain('opacity: 0.38');
+    expect(css).toContain('var(--tr-curtain) 0 6vw');
+    expect(read('./court.ts')).toContain(
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: source integration contract
+      '<div class="tr__backdrop">${scenery(\'court-wall\')}</div>',
+    );
+  });
+});
+
+describe('court wall provenance', () => {
+  it('records exact source/delivery identities and route payload', () => {
+    const record = JSON.parse(read('../../assets/images/court-wall-provenance.json'));
+    for (const item of [record.asset, record.source]) {
+      const bytes = readFileSync(new URL(`../../../${item.file}`, import.meta.url));
+      expect(bytes.length).toBe(item.bytes);
+      expect(createHash('sha256').update(bytes).digest('hex')).toBe(item.sha256);
+      expect([item.width, item.height]).toEqual([2172, 724]);
+    }
+    expect(record.candidateToDeliveryAlphaExact).toBe(true);
+    expect(record.routeBytes).toEqual({ trial: record.asset.bytes, witnesses: record.asset.bytes });
+  });
+});

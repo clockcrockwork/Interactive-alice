@@ -52,7 +52,7 @@ export function buildCourt(court: HTMLElement): void {
   const piece = (className: string, svg: string): string =>
     `<div class="tr__piece ${className}">${svg}</div>`;
   court.innerHTML =
-    `<div class="tr__backdrop"></div><div class="tr__floor">${scenery('court-floor')}</div>` +
+    `<div class="tr__backdrop">${scenery('court-wall')}</div><div class="tr__floor">${scenery('court-floor')}</div>` +
     piece('tr__jury', figure('jury')) +
     piece('tr__soldier tr__soldier--left', figure('card-soldier')) +
     piece('tr__knave', figure('knave-of-hearts')) +

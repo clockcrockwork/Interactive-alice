@@ -112,6 +112,12 @@
       var(--tr-curtain);
   }
 
+  /* Quiet architectural ink stays behind every actor; the curtain is also the
+     complete loading/error and flat/paper fallback. */
+  .tr__backdrop > .scenery {
+    opacity: 0.38;
+  }
+
   .tr__backdrop::after {
     content: "";
     position: absolute;

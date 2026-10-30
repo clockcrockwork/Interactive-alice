@@ -26,6 +26,7 @@ import {
 import './caterpillar.css';
 import './generated-preview.css';
 import { ASK_SVG, mushroomPieceMarkup } from './figures.ts';
+import { generatedCanopyLeaves } from './generated-canopy.ts';
 import { installGeneratedPreview } from './generated-preview.ts';
 import { INCHES, onNotch, reading, THREE } from './measure.ts';
 
@@ -146,7 +147,7 @@ function mount(shell: DemoShell): void {
   }).join('');
   treetops.innerHTML =
     '<svg class="ct__canopy" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
-    `<g class="ct__leaves ct__leaves--0">${leaves}</g>` +
+    `<g class="ct__leaves ct__leaves--0">${generatedCanopyLeaves(leaves)}</g>` +
     '<ellipse class="ct__nest" cx="240" cy="820" rx="70" ry="26"/>' +
     `<g class="ct__shoulders">${svgFigure('alice/from-above', -46, -46, 92, 92)}</g>` +
     '<path class="ct__neck ct__neck--shade" d=""/>' +

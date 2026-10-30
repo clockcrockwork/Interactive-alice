@@ -36,10 +36,13 @@ backgrounds that made the generated characters float.
   low outer ferns inside the scaling/fading meadow. The base/horizon/size and
   rising canopy mechanics remain unchanged. See the
   [Caterpillar review](scenery-caterpillar-20261028.md); static geometry is not
-  browser playback verification, and the canopy's illustration remains separate.
-- **Indoor / court / kitchen:** need a separate setting-specific audit; adding
-  trees everywhere does not address architecture, furniture contact and empty
-  wall/floor planes.
+  browser playback verification. A [bounded overhead-canopy replacement](scenery-canopy-20261030.md)
+  now illustrates only the leaf group; original leaves remain on loading/failure.
+  Nest, shoulders, live neck and movement remain separate; browser acceptance is unverified.
+- **Indoor / court / kitchen:** Kitchen wall/floor and Court floor/wall now have
+  bounded additions (see their dated reviews), not whole-setting acceptance. Other
+  interiors still require setting-specific assessment; adding trees everywhere
+  does not address architecture, furniture contact and empty wall/floor planes.
 
 This is a first scenery batch, not a claim that every chapter or every missing
 illustration is finished. Browser-unverified actor IDs are not automatically

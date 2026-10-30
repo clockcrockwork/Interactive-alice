@@ -3,6 +3,8 @@ import { type ArtStyle, artStyle } from './treatments.ts';
 import './generated-scenery.css';
 
 const sources = {
+  'court-floor': new URL('../../assets/images/scenery/court-floor.generated.webp', import.meta.url)
+    .href,
   'night-trunk': new URL('../../assets/images/scenery/night-trunk.generated.webp', import.meta.url)
     .href,
   'night-wood': new URL('../../assets/images/scenery/night-wood.generated.webp', import.meta.url)
@@ -18,6 +20,7 @@ const sources = {
 
 // Ratios are fixed before decode; final delivery dimensions are recorded in provenance.
 const boxes = {
+  'court-floor': [3, 1],
   'night-trunk': [1, 3],
   'night-wood': [3, 1],
   hedge: [3, 1],

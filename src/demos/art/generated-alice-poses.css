@@ -1,0 +1,22 @@
+@layer tokens, base, layout, scene, utilities;
+
+@layer scene {
+  /* Match each held object's existing half-width plus the hand's half-width.
+     Percentage-only anchors leave a gap on wide stages. The original artwork,
+     all sizes, rotations and the Caterpillar's real buttons are unchanged. */
+  .pp__hand--left:has([data-generated-rig="alice/hand-left"][data-rig-ready]) {
+    inset-inline-start: calc(50% - clamp(4.5rem, 14vmin, 7.5rem) - clamp(2.5rem, 8vmin, 4.5rem));
+  }
+
+  .pp__hand--right:has([data-generated-rig="alice/hand-right"][data-rig-ready]) {
+    inset-inline-end: calc(50% - clamp(4.5rem, 14vmin, 7.5rem) - clamp(2.5rem, 8vmin, 4.5rem));
+  }
+
+  .lq__hand--left:has([data-generated-rig="alice/hand-left"][data-rig-ready]) {
+    inset-inline-start: calc(50% - clamp(3.5rem, 11vmin, 6rem) - clamp(2.5rem, 8vmin, 4.5rem));
+  }
+
+  .lq__hand--right:has([data-generated-rig="alice/hand-right"][data-rig-ready]) {
+    inset-inline-end: calc(50% - clamp(3.5rem, 11vmin, 6rem) - clamp(2.5rem, 8vmin, 4.5rem));
+  }
+}

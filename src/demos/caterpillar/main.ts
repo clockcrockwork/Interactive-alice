@@ -12,6 +12,9 @@
 
 import gsap from 'gsap';
 import { figure, svgFigure } from '../art/art.ts';
+import { createCaterpillarHoseSync } from '../art/generated-caterpillar-bill.ts';
+import { hydrateGeneratedRig } from '../art/generated-rig.ts';
+import { scenery } from '../art/generated-scenery.ts';
 import {
   attachDemo,
   type Beat,
@@ -21,7 +24,10 @@ import {
   seeded,
 } from '../shell/shell.ts';
 import './caterpillar.css';
-import { ASK_SVG, LEFT_BIT_SVG, RIGHT_BIT_SVG } from './figures.ts';
+import './generated-preview.css';
+import { ASK_SVG, mushroomPieceMarkup } from './figures.ts';
+import { generatedCanopyLeaves } from './generated-canopy.ts';
+import { installGeneratedPreview } from './generated-preview.ts';
 import { INCHES, onNotch, reading, THREE } from './measure.ts';
 
 /** Her height in inches: three on the mushroom (THREE, in measure.ts), one with her
@@ -110,6 +116,9 @@ function mount(shell: DemoShell): void {
     ).join('');
   sky.innerHTML = '<div class="ct__ground"></div>';
   meadow.innerHTML =
+    `<div class="ct__scenery-ground">${scenery('ground')}</div>` +
+    `<div class="ct__scenery-edge ct__scenery-edge--left">${scenery('edge-right')}</div>` +
+    `<div class="ct__scenery-edge ct__scenery-edge--right">${scenery('edge-right')}</div>` +
     `<div class="ct__grass ct__grass--far">${blades(lite ? 14 : 26, 'ct__blade--far')}</div>` +
     `<div class="ct__mushroom">${figure('mushroom')}<div class="ct__caterpillar">${figure('caterpillar')}</div></div>` +
     // The Caterpillar again, up out of the grass to nod when she lands on three.
@@ -119,7 +128,16 @@ function mount(shell: DemoShell): void {
   const caterpillar = meadow.querySelector<HTMLElement>('.ct__caterpillar');
   // Its head is a group of its own; the body breathes by a CSS animation.
   const catHead = caterpillar?.querySelector<SVGGElement>('.ct__head') ?? caterpillar;
+  const syncGeneratedHoses = createCaterpillarHoseSync(meadow);
+  for (const rig of meadow.querySelectorAll<SVGSVGElement>(
+    'svg[data-generated-rig="caterpillar"]',
+  )) {
+    void hydrateGeneratedRig(rig).then((ready) => {
+      if (ready && rig.isConnected) syncGeneratedHoses();
+    });
+  }
   const peek = meadow.querySelector<HTMLElement>('.ct__peek');
+  installGeneratedPreview(shell.stage, shell.ui);
 
   // --- Above the trees: a sea of leaves far below and her neck running down into it.
   const treetops = shell.layer('ct__treetops');
@@ -129,7 +147,7 @@ function mount(shell: DemoShell): void {
   }).join('');
   treetops.innerHTML =
     '<svg class="ct__canopy" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
-    `<g class="ct__leaves ct__leaves--0">${leaves}</g>` +
+    `<g class="ct__leaves ct__leaves--0">${generatedCanopyLeaves(leaves)}</g>` +
     '<ellipse class="ct__nest" cx="240" cy="820" rx="70" ry="26"/>' +
     `<g class="ct__shoulders">${svgFigure('alice/from-above', -46, -46, 92, 92)}</g>` +
     '<path class="ct__neck ct__neck--shade" d=""/>' +
@@ -479,7 +497,10 @@ function mount(shell: DemoShell): void {
     }
     shell.sound.play('chime', 0.3);
     peek.removeAttribute('data-nod');
-    requestAnimationFrame(() => peek.setAttribute('data-nod', ''));
+    requestAnimationFrame(() => {
+      peek.setAttribute('data-nod', '');
+      syncGeneratedHoses();
+    });
     window.clearTimeout(nodTimer);
     nodTimer = window.setTimeout(() => peek.removeAttribute('data-nod'), 1800);
   };
@@ -506,10 +527,18 @@ function mount(shell: DemoShell): void {
   // --- On the mushroom: a slow look up at the Caterpillar, the hookah, the smoke.
   tilt(0, 8, 1.2);
   tilt(iWho, 12);
-  master.to(catHead, { y: -6, duration: 0.3, yoyo: true, repeat: 1 }, iWho + 0.1);
+  master.to(
+    catHead,
+    { y: -6, duration: 0.3, yoyo: true, repeat: 1, onUpdate: syncGeneratedHoses },
+    iWho + 0.1,
+  );
   tilt(iExplain, 4);
   // "Explain yourself!": it leans right in at her, its smoke a question.
-  master.to(catHead, { x: 4, duration: 0.08, yoyo: true, repeat: 3 }, iExplain + 0.05);
+  master.to(
+    catHead,
+    { x: 4, duration: 0.08, yoyo: true, repeat: 3, onUpdate: syncGeneratedHoses },
+    iExplain + 0.05,
+  );
   master.to(
     catHead,
     {
@@ -517,6 +546,7 @@ function mount(shell: DemoShell): void {
       x: -6,
       y: 8,
       transformOrigin: '30% 80%',
+      onUpdate: syncGeneratedHoses,
       duration: reducedMotion ? 0.01 : 0.2,
       ease: 'back.out(2)',
     },
@@ -524,11 +554,15 @@ function mount(shell: DemoShell): void {
   );
   master.to(
     catHead,
-    { scale: 1, x: 0, y: 0, duration: reducedMotion ? 0.01 : 0.2 },
+    { scale: 1, x: 0, y: 0, duration: reducedMotion ? 0.01 : 0.2, onUpdate: syncGeneratedHoses },
     iExplain + 0.82,
   );
   tilt(iTemper, 10, 0.5);
-  master.to(catHead, { y: -6, duration: 0.3, yoyo: true, repeat: 1 }, iTemper + 0.1);
+  master.to(
+    catHead,
+    { y: -6, duration: 0.3, yoyo: true, repeat: 1, onUpdate: syncGeneratedHoses },
+    iTemper + 0.1,
+  );
   // It rears itself upright: exactly three inches high.
   master.to(
     caterpillar,
@@ -573,9 +607,9 @@ function mount(shell: DemoShell): void {
   const hands = shell.layer('ct__hands');
   hands.innerHTML =
     `<button type="button" class="ct__bit ct__bit--left" aria-label="${shell.ui.demoNibbleLeft ?? ''}">` +
-    `<span class="ct__bit-hand">${figure('alice/hand-left')}</span><span class="ct__bit-piece">${LEFT_BIT_SVG}</span></button>` +
+    `<span class="ct__bit-hand">${figure('alice/hand-left')}</span><span class="ct__bit-piece">${mushroomPieceMarkup(false)}</span></button>` +
     `<button type="button" class="ct__bit ct__bit--right" aria-label="${shell.ui.demoNibbleRight ?? ''}">` +
-    `<span class="ct__bit-hand">${figure('alice/hand-right')}</span><span class="ct__bit-piece">${RIGHT_BIT_SVG}</span></button>`;
+    `<span class="ct__bit-hand">${figure('alice/hand-right')}</span><span class="ct__bit-piece">${mushroomPieceMarkup(true)}</span></button>`;
   const bitLeft = hands.querySelector<HTMLButtonElement>('.ct__bit--left');
   const bitRight = hands.querySelector<HTMLButtonElement>('.ct__bit--right');
   const bites = { left: 0, right: 0 };
@@ -942,6 +976,8 @@ function mount(shell: DemoShell): void {
   let bendY = 0;
   let neckDrawn = false;
   shell.onFrame((dt) => {
+    // Both the main head and the nodding peek use the scene-owned frame loop.
+    syncGeneratedHoses();
     // The neck is only drawn while it can be seen.
     if (Number(treetops.style.getPropertyValue('--fade') || 0) < 0.01 && neckDrawn) {
       return;

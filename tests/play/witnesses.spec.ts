@@ -191,14 +191,15 @@ test('the witnesses: jurors take no focus out of their moment, and the in-scene 
   }
 });
 
-test('the witnesses: giant Alice is drawn from behind in her own colours, her head out of the frame a mile high', async ({
+test('the witnesses: giant yellow Alice uses the rear-view illustration, her head out of the frame a mile high', async ({
   page,
 }) => {
   test.skip(!witnesses, 'no witnesses demo in this build');
   await page.goto(witnesses?.url ?? '');
   await expect(page.locator('.tr__alice [data-art="alice/from-behind"]')).toHaveCount(1);
-  await expect(page.locator('.tr__alice svg [fill="var(--alice-dress)"]').first()).toBeAttached();
-  await expect(page.locator('.tr__alice svg [fill="var(--alice-hair)"]').first()).toBeAttached();
+  const illustration = page.locator('.tr__alice [data-generated] image');
+  await expect(illustration).toHaveAttribute('data-variant', 'yellow');
+  await expect(illustration).toHaveAttribute('href', /alice--from-behind\.yellow\.generated/);
   await atCue(page, 'mile', 0.95);
   await expect.poll(() => opacityOf(page, '.tr__alice'), { timeout: 8000 }).toBeGreaterThan(0.9);
   const box = await page.locator('.tr__alice').boundingBox();

@@ -1,0 +1,41 @@
+{
+  "batch": "court-floor-20261030",
+  "status": "candidate; not a seamless or full browser playback approval",
+  "style": "IA-ENGRAVED-CUTOUT-V1",
+  "conversion": "ImageMagick libwebp quality88 alpha-quality100; no resize, crop or retouch",
+  "asset": {
+    "file": "src/assets/images/scenery/court-floor.generated.webp",
+    "bytes": 626508,
+    "sha256": "275e3a59346d8ae0f43e048b6538130b37525a9214f841dcce76c5bfafab53a4",
+    "width": 2172,
+    "height": 724
+  },
+  "source": {
+    "file": "docs/generated-assets-review/sources/court-floor-20261030.source.png",
+    "bytes": 1702376,
+    "sha256": "64f317d8db85f5a2f47e11459e132aa3636c9838d8d96b0ca3be2398dd214cd8",
+    "width": 2172,
+    "height": 724
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "transparentBackground": true,
+    "prompt": "Create a transparent decorative material texture for a nineteenth-century illustrated Alice courtroom, not a complete scene. Wide horizontal canvas approximately 2048 by 512 (4:1). An evenly distributed very quiet field of fine sepia pen-and-ink wooden floor grain and sparse short engraved hatching. Flat orthographic surface: no vanishing point, no perspective convergence. Very subtle worn horizontal grain, only a few thin plank joints parallel to the long edge, no strong border. Real alpha transparency throughout the unprinted areas so an existing warm dark brown CSS floor remains visible. Muted #85715F and #544538 inks, tiny faint warm-ivory flecks only, low contrast, no large opaque paper-colored rectangle. Left and right edges must join naturally when horizontally repeated: evenly distributed pattern and luminance, no edge vignette or edge padding. Thin flat printed marks consistent with late nineteenth-century British children's-book engraving, not photoreal, not 3D, no bevels, no glowing rims, no airbrushed shading, no black blotches or central stain. No people, animals, furniture, walls, columns, foliage, emblems, letters, text, cast shadows, lighting effects, foreground object or decorative frame. This is a subtle background overlay under richly engraved cut-out figures, not a focal illustration."
+  },
+  "requestedDimensions": [2048, 512],
+  "actualDimensions": [2172, 724],
+  "routeBytes": {
+    "trial": 626508,
+    "witnesses": 626508
+  },
+  "visualChecks": {
+    "twoTileComposite": "Original repeat had grain-height steps. Alternating mirror inspected on #675344; paired and period-wrap boundary columns each AE=0. Browser antialiasing/moire unverified.",
+    "browser": "unverified: cloud CUA cannot reach 127.0.0.1:5173 (ERR_CONNECTION_REFUSED); Vercel preview requires login"
+  },
+  "candidateToDeliveryAlphaExact": true,
+  "placement": "SVG pattern: original + horizontal mirror, 4344x724 period; viewBox21720x724 xMidYMid slice",
+  "rejectedRevision": {
+    "reason": "Imagegen revision broadened grain and made repetition conspicuous; not shipped",
+    "prompt": "Revise this transparent fine sepia courtroom wood-grain texture, retaining its very low contrast, broad horizontal 3:1 format, fine nineteenth-century engraving and real alpha transparency. Correct a specific tiling flaw: horizontal plank seams currently intersect the left and right edges at different heights, causing visible steps on repetition. REMOVE all long continuous plank-joint lines and any strokes that meet the canvas edges. Replace with sparse short broken wood-grain strokes, gently irregular and horizontal, dispersed throughout. Make every ink mark softly terminate to full alpha transparency before the left and right boundary, over about the outermost 2 percent of width, so no visible line can jump at a tile join. Do not add opaque fills or a rectangular faded border. Retain small quiet irregular patches of fine linear wood grain in the interior, with frequent gaps; no broad straight lines crossing the entire canvas, no long rule lines, no special center motif. Subtle color #85715F and #544538 only. This is a transparent sparse grain overlay under an existing CSS floor, not a solid wooden board. No shading, photorealism, perspective, cast shadow, bevel, glowing rim, border, text, people or props. Preserve transparency and subdued appearance. Requested 2172 by 724 pixels."
+  }
+}

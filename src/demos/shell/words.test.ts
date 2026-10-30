@@ -380,7 +380,11 @@ describe('setting words apart by the methods a language declares', () => {
           ].join('\n'),
           join(root, 'scripts', 'check-experience.py'),
         ],
-        { encoding: 'utf8', input: JSON.stringify(samples) },
+        {
+          encoding: 'utf8',
+          input: JSON.stringify(samples),
+          env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
+        },
       ),
     ) as [boolean, string[]][];
     expect(reference).toEqual(

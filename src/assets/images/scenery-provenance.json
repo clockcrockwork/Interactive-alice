@@ -1,0 +1,198 @@
+{
+  "batch": "outdoor-scenery-20261027",
+  "status": "candidate scenery; static composition evidence, not browser playback approval",
+  "style": "IA-ENGRAVED-CUTOUT-V1",
+  "conversion": "Pillow/libwebp q88, original canvas dimensions, alpha verified identical",
+  "assets": [
+    {
+      "id": "tree",
+      "asset": "scenery/tree.generated.webp",
+      "width": 1024,
+      "height": 1536,
+      "bytes": 857708,
+      "sha256": "c7dabfcb5a1d150f4ba8f3397553d016c43d01ec4b53fe9f3c173b899572ce23",
+      "source": {
+        "file": "mature-tree.png",
+        "sha256": "5a094d284d1e9455965901bb79238fe8840008a40000f6d76ad6e7962caa4bf2",
+        "bytes": 3645839
+      },
+      "candidateToDeliveryAlphaExact": true,
+      "generation": {
+        "key": "mature-tree",
+        "prompt": "Use case: illustration-story. Asset type: one transparent raster cutout for a Victorian Alice in Wonderland interactive storybook; reusable scenery layer. A complete mature English willow-oak tree with an elegantly irregular spreading leafy crown, strong readable trunk branching upward, exposed roots and a small integrated base of grass. Full tree entirely inside portrait 2:3 canvas with breathing room, no clipping. It will be small in a storybook riverbank so strong silhouette with delicate internal bark hatching. No surrounding landscape. Style: exquisite 1865 antique wood engraving, organic hand-drawn contours and crosshatching, charcoal-black ink and warm ivory interior highlights, muted neutral values, match detailed engraved storybook characters rather than flat vector clipart. Opaque ivory highlights inside leaves and wood are allowed, but ALL surrounding background and openings between branches/plants must be genuine alpha transparency. Clean readable outer contour, fine but not fuzzy details, no sepia paper rectangle, no shadow cast on background, no background colour, no checkerboard drawing, no text, no people, no animals, no frame, no watermark. One unified single asset, not a sheet of options.",
+        "tool": "built-in image_gen",
+        "transparent_background": true,
+        "generated_at": "2026-10-27T06:55:38Z–2026-10-27T06:58:27Z",
+        "file": "mature-tree.png"
+      },
+      "previousDelivery": {
+        "bytes": 860714,
+        "sha256": "e668400b01a9e622d1887584c2412782eca2d966eaa6f90ded2ddf9e3d4ec7e4"
+      }
+    },
+    {
+      "id": "edge-left",
+      "asset": "scenery/edge-left.generated.webp",
+      "width": 1024,
+      "height": 1536,
+      "bytes": 482268,
+      "sha256": "2fda75c8514dc916dfd33990b9f16a5fac0de68f52e410c5e6e53544f028fea3",
+      "source": {
+        "file": "left-edge-bough.png",
+        "sha256": "1ffc8adff27ec4504248d04af9247b9a3f768a03ae99da56ece5d68bff6ebd75",
+        "bytes": 2536848
+      },
+      "candidateToDeliveryAlphaExact": true,
+      "generation": {
+        "key": "left-edge-bough",
+        "prompt": "Use case: illustration-story. Asset type: one transparent raster cutout for a Victorian Alice in Wonderland interactive storybook; reusable scenery layer. A left-edge foreground framing object: one organic tree trunk hugging the extreme LEFT edge, rooted at lower left, with arching oak leaf branches in the top left curving toward the upper right but tapering out before center-right. Portrait 2:3 canvas. Heavy visual mass in outer LEFT 15-25 percent and lower left. Most of CENTER and RIGHT remain transparent open space. This is an asymmetric stage-edge decoration, not a centered whole tree or symmetrical arch. A few roots at base. Style: exquisite 1865 antique wood engraving, organic hand-drawn contours and crosshatching, charcoal-black ink and warm ivory interior highlights, muted neutral values, match detailed engraved storybook characters rather than flat vector clipart. Opaque ivory highlights inside leaves and wood are allowed, but ALL surrounding background and openings between branches/plants must be genuine alpha transparency. Clean readable outer contour, fine but not fuzzy details, no sepia paper rectangle, no shadow cast on background, no background colour, no checkerboard drawing, no text, no people, no animals, no frame, no watermark. One unified single asset, not a sheet of options.",
+        "tool": "built-in image_gen",
+        "transparent_background": true,
+        "generated_at": "2026-10-27T06:55:38Z–2026-10-27T06:58:27Z",
+        "file": "left-edge-bough.png"
+      },
+      "previousDelivery": {
+        "bytes": 485502,
+        "sha256": "7a06a6142684b6208aa1e26cde602b0a938e9f5a60f7108fc6b1ddcb740b8b4c"
+      }
+    },
+    {
+      "id": "edge-right",
+      "asset": "scenery/edge-right.generated.webp",
+      "width": 1086,
+      "height": 1448,
+      "bytes": 590954,
+      "sha256": "bb5f6221d15b1a892b9953c65e71682d775aaeec54a8b5a46ed58610d6b5eb8d",
+      "source": {
+        "file": "right-edge-shrubs.png",
+        "sha256": "2f2b6f9d32398e707b29901746bf284410faa5dc2143a32f7266740a32a233f1",
+        "bytes": 2539769
+      },
+      "candidateToDeliveryAlphaExact": true,
+      "generation": {
+        "key": "right-edge-shrubs",
+        "prompt": "Use case: illustration-story. Asset type: one transparent raster cutout for a Victorian Alice in Wonderland interactive storybook; reusable scenery layer. A distinct right-edge foreground decoration of woodland ferns, tall grass, broad leaves, low bramble shrub and small daisies. Portrait 3:4 canvas. Plants grow from bottom RIGHT, visually heavy in RIGHT and BOTTOM quarter, tapering away to the left. Upper half and left side remain mostly transparent. No tall tree or tree trunk. Organic botanical vignette with interesting leaf shapes, not a symmetrical flower bouquet. Style: exquisite 1865 antique wood engraving, organic hand-drawn contours and crosshatching, charcoal-black ink and warm ivory interior highlights, muted neutral values, match detailed engraved storybook characters rather than flat vector clipart. Opaque ivory highlights inside leaves and wood are allowed, but ALL surrounding background and openings between branches/plants must be genuine alpha transparency. Clean readable outer contour, fine but not fuzzy details, no sepia paper rectangle, no shadow cast on background, no background colour, no checkerboard drawing, no text, no people, no animals, no frame, no watermark. One unified single asset, not a sheet of options.",
+        "tool": "built-in image_gen",
+        "transparent_background": true,
+        "generated_at": "2026-10-27T06:55:38Z–2026-10-27T06:58:27Z",
+        "file": "right-edge-shrubs.png"
+      },
+      "previousDelivery": {
+        "bytes": 589744,
+        "sha256": "a02aed722b2ec66b4edc724048aef1e15b8b8af1c4d54cf82f2e24798eecbd58"
+      }
+    },
+    {
+      "id": "ground",
+      "asset": "scenery/ground.generated.webp",
+      "width": 2172,
+      "height": 724,
+      "bytes": 444102,
+      "sha256": "eca9b050a776ed1ed6b0a89208f4519183c4f2381f509ddd4fca5c96e4bca815",
+      "source": {
+        "file": "ground-herb-strip.png",
+        "sha256": "0f78ee4816a2d6fdd1947582d802d100f8bc831a42193516b710bf24124139b6",
+        "bytes": 1576847
+      },
+      "candidateToDeliveryAlphaExact": true,
+      "generation": {
+        "key": "ground-herb-strip",
+        "prompt": "Use case: illustration-story. Asset type: one transparent raster cutout for a Victorian Alice in Wonderland interactive storybook; reusable scenery layer. A wide 3:1 horizontal low ground/herb engraved scatter strip: low irregular grasses, little daisies, fine exposed roots, sparse horizontal earthy hatching. All visual marks confined to low shallow uneven band, with irregular feathered/tapered edges at ends and no rectangular baseline. Plenty of transparent gaps among tufts. This sits behind small storybook characters' feet to ground them, not a big mound, horizon, bushwall, full landscape or entire solid foreground. Style: exquisite 1865 antique wood engraving, organic hand-drawn contours and crosshatching, charcoal-black ink and warm ivory interior highlights, muted neutral values, match detailed engraved storybook characters rather than flat vector clipart. Opaque ivory highlights inside leaves and wood are allowed, but ALL surrounding background and openings between branches/plants must be genuine alpha transparency. Clean readable outer contour, fine but not fuzzy details, no sepia paper rectangle, no shadow cast on background, no background colour, no checkerboard drawing, no text, no people, no animals, no frame, no watermark. One unified single asset, not a sheet of options.",
+        "tool": "built-in image_gen",
+        "transparent_background": true,
+        "generated_at": "2026-10-27T06:55:38Z–2026-10-27T06:58:27Z",
+        "file": "ground-herb-strip.png"
+      },
+      "previousDelivery": {
+        "bytes": 441790,
+        "sha256": "84da6dee94694ccafc864e39699c61d288d4fa164460fbe13b5dbd6b0da34d0a"
+      }
+    },
+    {
+      "id": "night-trunk",
+      "asset": "scenery/night-trunk.generated.webp",
+      "width": 724,
+      "height": 2172,
+      "bytes": 374100,
+      "sha256": "dc13c53601856445636930ff47105dc685130e294cbadaf321ecd86a147692c1",
+      "source": {
+        "file": "night-edge-trunk.png",
+        "sha256": "5b4a9bac687a1d4933b0da5f65df019f4c5053a4d9bc9da015750c0d60f10994",
+        "bytes": 1643540
+      },
+      "candidateToDeliveryAlphaExact": true,
+      "generation": {
+        "key": "night-edge-trunk",
+        "prompt": "Use case: illustration-story. Asset type: a single transparent nighttime scenery cutout for an antique Alice in Wonderland interactive storybook. A single narrow gnarled woodland tree trunk, tall portrait 1:3 composition. Trunk at LEFT with a few slender crooked branches tapering rightward, sparse dark oak leaves. Roots low and close to trunk. Designed as one extreme edge of a night forest stage; leave large open transparent gaps, not a central forest landscape. This cutout will be mirrored on the opposite edge. Fullheightorganicbark, no rectangular silhouette. Style: finely engraved nineteenth-century woodcut with natural expressive bark crosshatching, cohesive with detailed hand-tinted Tenniel-era storybook characters. NIGHT VALUE DESIGN: near-black charcoal and very dark umber forms; subdued warm-gray/brown ink highlights, no bright ivory or white anywhere, no luminous outlines. It will be over dark brown #241c17 and should read subtly, leaving a sepia cat the main bright focal point. Actual transparent alpha background and all openings; do NOT paint the background brown. No paper rectangle, no whitepaperfill, no mist, sky, moon, stars, animals, people, faces, text, watermark, frame, lanterns or lights. Singleasset not contact sheet. Detailed but readable when small.",
+        "tool": "built-in image_gen",
+        "transparent_background": true,
+        "generation_started": "2026-10-27T07:09:00Z",
+        "generation_finished": "2026-10-27T07:10:37Z"
+      },
+      "previousDelivery": {
+        "bytes": 360280,
+        "sha256": "d20d925bd5dd421a4f5e50bedcdce066209dda79e65bc0fa1e4930bffff957c2"
+      }
+    },
+    {
+      "id": "night-wood",
+      "asset": "scenery/night-wood.generated.webp",
+      "width": 2172,
+      "height": 724,
+      "bytes": 1034642,
+      "sha256": "f92dc513a875558b464f1b2b2df2b333af1d0588d4681637e202490e83dfd24e",
+      "source": {
+        "file": "night-mid-woodland.png",
+        "sha256": "f2c7ead4d92a15623b5da2b3d23daf2f8d4ecc619ff7f00da5f5a42e80caece3",
+        "bytes": 3315398
+      },
+      "candidateToDeliveryAlphaExact": true,
+      "generation": {
+        "key": "night-mid-woodland",
+        "prompt": "Use case: illustration-story. Asset type: a single transparent nighttime scenery cutout for an antique Alice in Wonderland interactive storybook. A wide landscape 3:1 distant woodland cluster: irregular staggered thin trunks and twisting slender branchweb, occasional sparse dark oak leaves. Several trees of different thickness/height with genuine open transparent gaps. Trees reach upward from an irregular shallow bottomline, no solid soilband. Intended as subtle mid-distance forest detail behind a large Cheshire Cat and its branch, not foreground bush or scenic full painting. Style: finely engraved nineteenth-century woodcut with natural expressive bark crosshatching, cohesive with detailed hand-tinted Tenniel-era storybook characters. NIGHT VALUE DESIGN: near-black charcoal and very dark umber forms; subdued warm-gray/brown ink highlights, no bright ivory or white anywhere, no luminous outlines. It will be over dark brown #241c17 and should read subtly, leaving a sepia cat the main bright focal point. Actual transparent alpha background and all openings; do NOT paint the background brown. No paper rectangle, no whitepaperfill, no mist, sky, moon, stars, animals, people, faces, text, watermark, frame, lanterns or lights. Singleasset not contact sheet. Detailed but readable when small.",
+        "tool": "built-in image_gen",
+        "transparent_background": true,
+        "generation_started": "2026-10-27T07:09:00Z",
+        "generation_finished": "2026-10-27T07:10:37Z"
+      },
+      "previousDelivery": {
+        "bytes": 1013640,
+        "sha256": "f816adeaa4be2888dc5f8ad3590b939aede1a3968642d4815355e20e045e78d6"
+      }
+    },
+    {
+      "id": "hedge",
+      "asset": "scenery/field-hedge.generated.webp",
+      "width": 2172,
+      "height": 724,
+      "bytes": 787846,
+      "sha256": "bc5c3d37f9bf9a753a520ec387eb4e6a06d8cdb64cebae4567bd508c0a66d0b6",
+      "source": {
+        "file": "field-hedge.png",
+        "sha256": "9044969ffe50c7c596e7804e8f7d010c4de9ada4dda18efc5280b595f078874e",
+        "bytes": 4035140
+      },
+      "candidateToDeliveryAlphaExact": true,
+      "generation": {
+        "key": "field-hedge",
+        "prompt": "Use case: illustration-story. Asset type: one wide 3:1 horizontal HEDGE scenery layer for a Victorian Alice storybook. A continuous dense English leafy hedge from left edge to right edge, many organic oak/bramble/hawthorn leaves and tangled fine twigs, irregular gently rising and falling natural foliage crest, NOT round topiary balls or repeated circles. The lower portion is a dense continuous mass of finely engraved leaves extending all the way to the bottom canvas edge. Foliage touches left and right canvas edges at matching approximate crest heights and similar density so copies may repeat horizontally without a conspicuous seam. Thin strip of genuinely TRANSPARENT alpha above the irregular leafy crest and tiny openings between topmost leaves; foliage body stays dense. No ground, no earth, no roots below, no rabbit hole, no flowers, no characters, no animals, no objects or lettering. Style: antique 1865 wood engraving with exquisite charcoal-dark ink crosshatching and restrained warm ivory highlights inside leaves, match a classical illustrated book tree rather than saturated green modern clipart. No sepia paper rectangle, no sky, no background color, no checkerboard drawing, no shadows, no frame, no watermark. SINGLE continuous hedge panel, not multiple separate bushes and not contact sheet. Wide landscape 3:1 format.",
+        "tool": "built-in image_gen",
+        "transparent_background": true,
+        "generation_finished": "2026-10-27T07:15:58Z"
+      },
+      "previousDelivery": {
+        "bytes": 745752,
+        "sha256": "840388bc4fbd08435a9941ebe3718d76c1c7c3a53012caee2b045228117efdba"
+      }
+    }
+  ],
+  "routeBytes": {
+    "riverbank": 3162878,
+    "rabbit-hole": 3162878,
+    "tea-party": 1301810,
+    "cheshire-cat": 1408742,
+    "caterpillar": 1035056
+  },
+  "scope": "Riverbank, shared Field/Rabbit Hole intro, Tea Party horizon, Cheshire night depth planes, Caterpillar scaling meadow. Other chapters remain separate scenery work.",
+  "recoveryNote": "Delivery WebPs re-encoded from recovered PNG masters on 2026-10-28. Current delivery differs in bytes from earlier local delivery; previousDelivery retains historical metrics."
+}

@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>落下原画・腕分離の比較候補</title>
+<style>
+body{font:16px/1.6 system-ui,sans-serif;background:#f4f0e7;color:#28231d;margin:1.5rem}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}.canvas{position:relative;aspect-ratio:1206/1305;background:#ddd;overflow:hidden}.canvas img{position:absolute;width:100%;height:auto;top:0;left:0}.trial .left{transform:translate(-3%,1%) scale(.65);transform-origin:0 0}.trial .right{transform:translate(37%,-1%) scale(.7);transform-origin:0 0}h2{font-size:1.1rem}p{max-width:80ch}a{color:#174d80}
+</style>
+<h1>落下原画・腕分離の比較候補</h1>
+<p>未採用・静止比較です。分離生成は元の座標・大きさ・輪郭を厳密には保っていません。右の配置は CSS による仮置きであり、画像の修正や可動リグの完成ではありません。袖の接合、腕の太さ、指、顔と髪の変化を確認してください。瓶のアンカーや動きには接続していません。</p>
+<main>
+<section><h2>元の黄色候補</h2><div class="canvas"><img src="../../../src/assets/images/generated-preview/alice--falling-overhead.yellow.candidate-v1.webp" alt="元の黄色い服の落下原画" width="1206" height="1304"></div></section>
+<section><h2>生成3枚を元座標で重ねた状態</h2><div class="canvas"><img src="base.webp" alt="腕を除いた体" width="1206" height="1305"><img src="left-arm.webp" alt="画像左の腕・座標ずれあり" width="1206" height="1305"><img src="right-arm.webp" alt="画像右の腕・座標ずれあり" width="1206" height="1305"></div></section>
+<section><h2>縮尺と位置だけの仮配置（未検証）</h2><div class="canvas trial"><img src="base.webp" alt="腕を除いた体" width="1206" height="1305"><img class="left" src="left-arm.webp" alt="左腕の縮尺65%仮配置" width="1206" height="1305"><img class="right" src="right-arm.webp" alt="右腕の縮尺70%仮配置" width="1206" height="1305"></div></section>
+</main>
+<p>リポジトリのルートでローカル静的サーバーを起動して開く資料です。アプリの既定画面・共有素材・本番には使いません。<a href="../checkpoints.md">統合チェックポイント</a></p>
+</html>

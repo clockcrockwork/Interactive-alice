@@ -11,14 +11,18 @@
  */
 
 import { figure } from '../art/art.ts';
+import { scenery } from '../art/generated-scenery.ts';
 import './field.css';
 
 export function fieldHtml(): string {
   return (
     '<div class="field__land">' +
     '<div class="field__ground"></div>' +
-    '<div class="field__tree"></div>' +
-    '<div class="field__hedge"></div>' +
+    `<div class="field__tree">${scenery('tree')}</div>` +
+    `<div class="field__hedge">${scenery('hedge')}</div>` +
+    `<div class="field__scenery-ground">${scenery('ground')}</div>` +
+    `<div class="scenery-edge scenery-edge--left">${scenery('edge-left')}<div class="scenery-edge__mobile">${scenery('edge-right')}</div></div>` +
+    `<div class="scenery-edge scenery-edge--right">${scenery('edge-right')}</div>` +
     '<div class="field__hole"></div>' +
     `<div class="field__burrow"><div class="field__rabbit">${figure('white-rabbit/diving')}</div></div>` +
     '</div>' +

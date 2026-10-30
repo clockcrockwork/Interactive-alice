@@ -1,5 +1,7 @@
 /** Paper-theatre cutouts for the trial. Decorative SVG, drawn once. */
 
+import { type ArtStyle, artStyle } from '../art/treatments.ts';
+
 /** What the reader kept along the way, come to rest on the bank at the end. */
 const KEEPSAKES: Record<string, string> = {
   daisy: `<svg viewBox="0 0 60 60" focusable="false"><g fill="var(--paper-base)"><ellipse cx="30" cy="12" rx="6" ry="11"/><ellipse cx="30" cy="48" rx="6" ry="11"/><ellipse cx="12" cy="30" rx="11" ry="6"/><ellipse cx="48" cy="30" rx="11" ry="6"/><ellipse cx="17" cy="17" rx="8" ry="8"/><ellipse cx="43" cy="17" rx="8" ry="8"/><ellipse cx="17" cy="43" rx="8" ry="8"/><ellipse cx="43" cy="43" rx="8" ry="8"/></g><circle cx="30" cy="30" r="8" fill="var(--world-glow)"/><circle cx="30" cy="30" r="8" fill="none" stroke="var(--ink-faded)" stroke-width="1"/></svg>`,
@@ -26,6 +28,16 @@ export const TARTS_SVG = `
     )
     .join('')}
 </svg>`;
+
+/** Match the measured tabletop width and foot line without distorting the eight tarts. */
+export function tartsMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return TARTS_SVG;
+  const src = new URL('../../assets/images/figures/tarts-table.any.generated.webp', import.meta.url)
+    .href;
+  return `<svg viewBox="0 0 260 140" focusable="false" data-generated-tarts-table=""><image href="${src}" x="4.362416" y="31.275168" width="251.14094" height="112.885906" preserveAspectRatio="xMidYMid meet"/></svg>`;
+}
 
 /** The dream's own things, for the sister's dream: teacups and the pig-baby. */
 export const TEACUPS_SVG = `
@@ -67,3 +79,13 @@ export const WITNESS_BOX_SVG = `
   <rect x="34" y="50" width="132" height="8" rx="3" fill="var(--sepia-mid)"/>
   <path d="M40 120 h120" stroke="oklch(from var(--ink-primary) l c h / 0.2)" stroke-width="3"/>
 </svg>`;
+
+/** The step sits on the original baseline; rail gaps stay transparent over witnesses. */
+export function witnessBoxMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return WITNESS_BOX_SVG;
+  const src = new URL('../../assets/images/figures/witness-box.any.generated.webp', import.meta.url)
+    .href;
+  return `<svg viewBox="0 0 200 180" focusable="false" data-generated-witness-box=""><image href="${src}" x="0" y="4.508321" width="200" height="180.030257" preserveAspectRatio="xMidYMid meet"/></svg>`;
+}

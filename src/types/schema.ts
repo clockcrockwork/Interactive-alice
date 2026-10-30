@@ -1361,5 +1361,12 @@ export interface LocaleUIStrings {
      * Demo index: the name of the language switch, read by assistive technology; each choice is named in its own language.
      */
     demoLanguages: string;
+    demoGeneratedMaster: string;
+    demoGeneratedUnavailable: string;
+    demoGeneratedLimit: string;
+    demoCompareArt: string;
+    demoGeneratedMushroom: string;
+    demoGeneratedMushroomLimit: string;
+    demoGeneratedMushroomUnavailable: string;
   };
 }

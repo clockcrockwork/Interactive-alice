@@ -1,0 +1,130 @@
+{
+  "batch": "alice-runner-2026-10-21",
+  "date": "2026-10-21",
+  "status": "provisional candidates; static contact proof, focused tests, and independent review passed; browser and owner art review pending",
+  "generator": "image_gen",
+  "model": "not exposed by generation tool",
+  "styleId": "IA-ENGRAVED-CUTOUT-V1",
+  "fullPrompt": "not available to integration worker; intent recorded rather than reconstructed as an exact prompt",
+  "fullPromptHash": null,
+  "promptIntent": "Yellow standing Alice rest and natural image-right open-palm carry pose, without a baked object; same identity, full-body silhouette and transparent canvas.",
+  "reference": "Provisional generated yellow standing master exec-2da5b795-1408-4c9a-b120-ea6091f300f6.png. Blue runner remains on its original route.",
+  "anchors": {
+    "hand": {
+      "palmSource": [907, 603],
+      "palmLogical": [77.3890142964635, 50.81715575620767],
+      "propCenter": [77.3890142964635, 41.45715575620767],
+      "thimbleLowerRimOffset": 9.36,
+      "peakBow": {
+        "palmLogicalY": 63.568358867511364,
+        "propCenterY": 54.208358867511365
+      },
+      "reducedMotionBow": {
+        "palmLogicalY": 59.55000099395157,
+        "propCenterY": 50.19000099395157
+      }
+    },
+    "pocket": {
+      "source": [730, 730],
+      "logical": [62.472535741158765, 61.51993980436418],
+      "meaning": "Upper image-right apron contact; generated-only departure anchor, not a claim of a visibly drawn pocket."
+    },
+    "readiness": "Only both-pose decode success enables metadata; exact original HANDS and legacy screen-space pocket fallback remain otherwise.",
+    "motionTracking": "Generated-ready only: map palm/support through current cr__figure CTM, cancel the root viewport CTM, and subtract the unchanged prop rim offset. Pocket maps through the same pose with zero offset. Invalid/unavailable/singular CTM returns finite static metadata; original and blue use exact original fallbacks."
+  },
+  "budget": {
+    "shippingBytes": 676280,
+    "files": 2,
+    "perVariantFiles": 2,
+    "productionBudgetPass": false,
+    "note": "Concept-demo checkpoint files only; no AVIF/srcset or scene performance acceptance claimed."
+  },
+  "excluded": [
+    {
+      "source": "exec-2f7efd45-52c5-4889-9b37-c7d40c53a860.png",
+      "reason": "Wrong image-left chest-height hand; rejected and not shipped."
+    }
+  ],
+  "assets": [
+    {
+      "id": "runner/alice",
+      "part": "rest",
+      "variant": "yellow",
+      "asset": "figures/runner--alice~rest.yellow.generated.webp",
+      "bytes": 354112,
+      "sha256": "707eb7488ed26681d86d2997fa45a9bdcb86af2439a3c9591e4b97c6c2c1afa6",
+      "width": 1164,
+      "height": 1351,
+      "logicalBox": [100, 116],
+      "consumers": ["caucus-race", "pool-of-tears", "mouse-tale"],
+      "placement": {
+        "x": 0.9525959367945873,
+        "y": 0,
+        "scale": 0.08427389014296463
+      },
+      "source": {
+        "filename": "exec-2da5b795-1408-4c9a-b120-ea6091f300f6.png",
+        "bytes": 1720408,
+        "sha256": "8eb6658d9e116159c4316958ed45cddffe90c80d7ad72a73a0ae8a88fd779deb"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [0, 10, 1128, 1347],
+        "greaterThan16": [234, 12, 971, 1330],
+        "greaterThan32": [234, 12, 971, 1330],
+        "greaterThan128": [235, 13, 970, 1330],
+        "greaterThan224": [236, 14, 970, 1329]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "alphaQuality": 100,
+        "effort": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      }
+    },
+    {
+      "id": "runner/alice",
+      "part": "carry",
+      "variant": "yellow",
+      "asset": "figures/runner--alice~carry.yellow.generated.webp",
+      "bytes": 322168,
+      "sha256": "1480a3cb8cfd28b165970b5602b696174b7f20f748a1f85b881fa5701b131ad2",
+      "width": 1164,
+      "height": 1351,
+      "logicalBox": [100, 116],
+      "consumers": ["caucus-race", "pool-of-tears", "mouse-tale"],
+      "placement": {
+        "x": 0.9525959367945873,
+        "y": 0,
+        "scale": 0.08427389014296463
+      },
+      "source": {
+        "filename": "exec-7e5362c2-7c9f-40c1-b8cc-169f4f192a32.png",
+        "bytes": 1624344,
+        "sha256": "9755f1910dde5ff05d620a4ba27d5425d6580084ae8adf6c260c0b82e478378a"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [0, 10, 1083, 1335],
+        "greaterThan16": [233, 12, 973, 1333],
+        "greaterThan32": [233, 12, 972, 1333],
+        "greaterThan128": [234, 12, 972, 1332],
+        "greaterThan224": [235, 13, 971, 1331]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "alphaQuality": 100,
+        "effort": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      }
+    }
+  ]
+}

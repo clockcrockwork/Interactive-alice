@@ -133,9 +133,9 @@ describe('the concept-demo pages', () => {
       ['flat', 'false'],
       ['paper', 'false'],
     ]);
-    // The engraved preview carries its baked image, relative to the page, never a file URL.
+    // The engraved preview carries its generated herald image, relative to the page, never a file URL.
     expect(index).toMatch(
-      /<img class="art__image art__image--baked"[^>]*src="\.\.\/\.\.\/assets\/images\/figures\//,
+      /<image class="art__image"[^>]*href="\.\.\/\.\.\/assets\/images\/figures\/white-rabbit--herald\.any\.generated\.webp"/,
     );
     expect(index).not.toContain('file:');
   });
@@ -298,8 +298,10 @@ describe('the concept-demo pages in every other locale', () => {
       expect(html).toContain(`<span class="demos__name">${ja ? titleOf(ja, demo) : ''}</span>`);
     }
     expect(html).not.toContain(project.ui.demosTitle);
-    // The engraved preview's baked image, one level deeper than the base index.
-    expect(html).toMatch(/src="\.\.\/\.\.\/\.\.\/assets\/images\/figures\//);
+    // The engraved preview's generated image, one level deeper than the base index.
+    expect(html).toMatch(
+      /href="\.\.\/\.\.\/\.\.\/assets\/images\/figures\/white-rabbit--herald\.any\.generated\.webp"/,
+    );
   });
 
   it('leaves out a demo a locale cannot show yet, lists its card as pending, and skips it in the walk', () => {

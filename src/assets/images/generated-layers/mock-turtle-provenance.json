@@ -1,0 +1,32 @@
+{
+  "status": "provisional whole adapters in lobster-quadrille and Trial dream; mock-turtle chapter flapper layering not integrated",
+  "sourceFile": "exec-3123e97a-aa0d-4caa-a440-0880155dff1b.png",
+  "sourceSha256": "b86db396335416a4cb06d6016ffa995f07fc4831322d2f348f7744b893961ba5",
+  "file": "src/assets/images/generated-layers/mock-turtle~whole.any.generated.webp",
+  "sha256": "30c174a579e7a15a429e9bc31c902828b4099ff931b4015c7c27b6dea491ef1c",
+  "bytes": 669038,
+  "width": 1309,
+  "height": 1202,
+  "alphaBoundsGt32": [27, 32, 1286, 1133],
+  "encoding": "WebP q92 method6, unchanged canvas and exact alpha",
+  "generation": "image_gen tearless calf-headed turtle master; original layout reference and established engraved style; full prompt unavailable",
+  "geometry": {
+    "logicalBox": [240, 220],
+    "sourceFootY": 1132,
+    "sourceEyeCenters": [[566, 266], [802, 300]],
+    "tearsLogicalStart": [[102, 66], [148, 73]],
+    "notes": "Separate SVG tear paths retain their sob animation; mapped parent groups apply only on ready."
+  },
+  "chapterRig": {
+    "status": "not integrated; original preserved",
+    "baseCandidate": "exec-b7811c40-a71b-4848-9a8c-81c7f8d87888.png",
+    "leftCandidate": "exec-1ac2cb05-27f8-4b2a-bb97-51b96c6e3bff.png",
+    "rightCandidate": "no output: image_gen output-stage refusal; no retry or alternate editing route"
+  },
+  "consumers": {
+    "demos": ["lobster-quadrille", "trial"],
+    "trial": "Uses the coherent whole body with exactly two pre-existing SVG tears. Trial has no sob controller: tears keep static opacity 1, and ready-only parent maps move them to the source eyes. Whole-wrapper drift, 0.75 opacity, sepia, blur and dream/real crossfade remain unchanged. No chapter flappers are enabled.",
+    "palette": "Fixed generated calf/shell engraving replaces default sepia vector or baked colours. Source pixels do not track lq-turtle or lq-turtle-shell CSS tokens; original vector retains palette-aware pending/error and flat/paper states.",
+    "browser": "Regression registered but not executed in this environment."
+  }
+}

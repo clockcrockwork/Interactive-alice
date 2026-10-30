@@ -2,6 +2,7 @@
     cauldron, the crockery the cook throws, and Alice's own two hands. */
 
 import { figure } from '../art/art.ts';
+import { type ArtStyle, artStyle } from '../art/treatments.ts';
 
 /** Her two hands at the bottom of the frame, and the bundle between them. */
 export const hands = (bundle: string): string =>
@@ -53,6 +54,10 @@ export const HEARTH_SVG = `
   <path d="M100 300 h200" stroke="var(--pp-stone-deep)" stroke-width="10"/>
 </svg>`;
 
+const CAULDRON_STEAM = `  <g class="pp__steam">
+    <path d="M86 54 q-10 -18 0 -34 M120 50 q-12 -20 0 -40 M154 54 q-10 -18 0 -34" stroke="var(--pp-steam)" stroke-width="6" fill="none" stroke-linecap="round"/>
+  </g>`;
+
 export const CAULDRON_SVG = `
 <svg viewBox="0 0 240 200" focusable="false">
   <path d="M120 30 L60 8 M120 30 L180 8" stroke="var(--pp-iron)" stroke-width="6" stroke-linecap="round"/>
@@ -60,10 +65,20 @@ export const CAULDRON_SVG = `
   <ellipse cx="120" cy="70" rx="80" ry="18" fill="var(--pp-iron-rim)"/>
   <ellipse cx="120" cy="68" rx="66" ry="11" fill="var(--pp-soup)"/>
   <path d="M30 76 q-14 4 -8 18 M210 76 q14 4 8 18" stroke="var(--pp-iron)" stroke-width="8" fill="none" stroke-linecap="round"/>
-  <g class="pp__steam">
-    <path d="M86 54 q-10 -18 0 -34 M120 50 q-12 -20 0 -40 M154 54 q-10 -18 0 -34" stroke="var(--pp-steam)" stroke-width="6" fill="none" stroke-linecap="round"/>
-  </g>
+${CAULDRON_STEAM}
 </svg>`;
+
+/** The engraved iron and soup sit beneath the original independently animated steam. */
+export function cauldronMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return CAULDRON_SVG;
+  const src = new URL(
+    '../../assets/images/figures/cauldron-body.any.generated.webp',
+    import.meta.url,
+  ).href;
+  return `<svg viewBox="0 0 240 200" focusable="false" data-generated-cauldron-body=""><image href="${src}" x="0" y="0" width="240" height="200" preserveAspectRatio="xMidYMid meet"/>${CAULDRON_STEAM}</svg>`;
+}
 
 /** A line of writing as a scribble: no letters, only the hand's wave. */
 const scribble = (y: number, x0: number, x1: number, wave = 3.2): string => {
@@ -117,3 +132,49 @@ export const THINGS: Record<string, string> = {
   'frying-pan':
     '<svg viewBox="0 0 140 80" focusable="false"><ellipse cx="50" cy="44" rx="44" ry="30" fill="var(--pp-iron)"/><ellipse cx="50" cy="40" rx="34" ry="20" fill="var(--pp-iron-rim)"/><path d="M92 40 h44" stroke="var(--pp-iron)" stroke-width="9" stroke-linecap="round"/></svg>',
 };
+
+/** Whole cutouts inside the original canvases; the wrapper owns spin and hit area. */
+export function thingMarkup(
+  kind: string,
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  const fallback = THINGS[kind] ?? '';
+  if (style !== 'engraved') return fallback;
+  let src: string;
+  let box: string;
+  let placement: string;
+  switch (kind) {
+    case 'plate':
+      src = new URL('../../assets/images/figures/plate.any.generated.webp', import.meta.url).href;
+      box = '100 100';
+      placement = 'x="0.65" y="0.65" width="98.7" height="98.7"';
+      break;
+    case 'dish':
+      src = new URL('../../assets/images/figures/dish.any.generated.webp', import.meta.url).href;
+      box = '120 70';
+      placement = 'x="0" y="4.8" width="120" height="70"';
+      break;
+    case 'saucepan':
+      src = new URL('../../assets/images/figures/saucepan.any.generated.webp', import.meta.url)
+        .href;
+      box = '120 80';
+      placement = 'x="0" y="0" width="120" height="80"';
+      break;
+    case 'fire-iron':
+      src = new URL('../../assets/images/figures/fire-iron.any.generated.webp', import.meta.url)
+        .href;
+      box = '140 40';
+      // Reframe the 3:1 source in 7:2 without stretching; only clear margins overflow.
+      placement = 'x="0" y="-3.333333" width="140" height="46.666666"';
+      break;
+    case 'frying-pan':
+      src = new URL('../../assets/images/figures/frying-pan.any.generated.webp', import.meta.url)
+        .href;
+      box = '140 80';
+      placement = 'x="0.079538" y="8.041052" width="138.338679" height="79.050674"';
+      break;
+    default:
+      return fallback;
+  }
+  return `<svg viewBox="0 0 ${box}" focusable="false" data-generated-${kind}=""><image href="${src}" ${placement} preserveAspectRatio="xMidYMid meet"/></svg>`;
+}

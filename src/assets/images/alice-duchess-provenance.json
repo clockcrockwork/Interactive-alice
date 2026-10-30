@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-27",
+  "generator": "image_gen",
+  "model": "not exposed",
+  "styleId": "IA-ENGRAVED-CUTOUT-V1",
+  "status": "provisional chapter-scoped integration; browser/art acceptance unverified",
+  "assets": [
+    {
+      "asset": "figures/alice--duchess-hold.yellow.generated.webp",
+      "width": 971,
+      "height": 1619,
+      "sole32": 1597,
+      "sha256": "d87f495b9dd796103836d3f0ae27dc284c6b363790a50d5e74f3a4785c406523",
+      "bytes": 376122,
+      "sourceSha256": "26e1a60076af602bf1fba95f33e5ca916e29144eae15fec5f0810a4847b63590",
+      "sourceBytes": 1900345,
+      "alphaPreservedExactly": true,
+      "variant": "yellow",
+      "prompt": "Use case: illustration-story. Inputs: Image 1 is character identity/costume/engraved-style reference ONLY. Image 2 is an independent pose diagram ONLY, NOT final artwork. Generate the same complete girl with the arm positions and left-biased head placement in Image 2. The RED arm is the arm on the RIGHT SIDE OF THE IMAGE: upper arm down, elbow BELOW wrist, forearm curling UP into a shallow U-shaped cradle, empty cupped palm. The BLUE arm on the LEFT SIDE OF THE IMAGE hangs freely DOWN. Her hands must NOT touch each other, cross the torso, or hold her opposite wrist. Preserve a clear gap between the two hands. No arm may be stretched; use natural anatomy and the diagram's qualitative gesture, not its line thickness. Head and neck lean LEFT as in guide, occupying the upper LEFT quarter of canvas rather than center; keep the entire face and neck left of the imaginary x=40 out of 120 canvas width as much as naturally possible. Her gaze is gently right. All hair falls behind and left; leave upper right space clear. Preserve reference girl's exact identity and natural proportions, chestnut brunette curls, slate bow, mustard-yellow Victorian calf-length dress, ivory pinafore, stockings, dark strap shoes, detailed engraved brown-black ink lines and restrained hand-coloured washes. Walking with both full shoes visible. One coherent complete character only, true transparent alpha, portrait 3:5 canvas. No bird, object, prop, text, labels, diagram lines, arm-marking colours, ground, backdrop or shadow. Diagram is instructions only and must not appear in finished asset. Compose with generous clear transparent space at upper right as shown by the pose guide.",
+      "sourceFile": "yellow-guide-hold.png",
+      "logicalBox": [120, 200],
+      "sourceAlphaBoundsAbove32": [8, 11, 800, 1597],
+      "landmarks": {
+        "supportPalm": [730, 770],
+        "supportElbow": [562, 714],
+        "faceCenter": [335, 275],
+        "neck": [355, 397],
+        "soleY": 1596,
+        "uncertaintyPixels": 20
+      },
+      "wholeBirdPlacement": {
+        "x": 49.6,
+        "y": 15.4,
+        "width": 132,
+        "baseRotationDegrees": 15,
+        "internalMotion": "unchanged original SVG neck/head/jaw/pupil"
+      },
+      "sourceRole": "new guided whole pose"
+    },
+    {
+      "asset": "figures/alice--duchess-hold.blue.generated.webp",
+      "width": 971,
+      "height": 1620,
+      "sole32": 1609,
+      "sha256": "2b5ef3ec0c5a0f6be6ff2cdb78fdf6d2b5184cdb1f218fa92fd61d25336c8549",
+      "bytes": 325166,
+      "sourceSha256": "c7a4df9dd2df4b42e280ad7df3c95df31ebb9bd4ec19b5bfde48001d9f8a687f",
+      "sourceBytes": 1802462,
+      "alphaPreservedExactly": true,
+      "variant": "blue",
+      "prompt": "Use case: precise-object-edit. This exact full-body transparent walking/carrying girl is the EDIT TARGET. Produce her BLUE COLOUR VARIANT ONLY. Lock the exact canvas, framing, all alpha silhouette edges, pose, every body landmark, face identity/expression, eye direction, arm and support palm position, hand anatomy, legs, shoes, hair curls, bow geometry, engraving and linework. Do not redraw or reposition anything. Only recolour mustard-yellow dress fabric to subdued cornflower blue #5A76B8 with highlights #7F96CC and shadows #2F4272/#435C98, and chestnut brunette hair to golden blonde #D9B45A with highlights #ECD08A and darker engraved strands #B8933F. Keep skin, ivory apron and stockings, slate bow, brown shoes and brown-black ink unchanged. Retain transparent background exactly. No new objects, birds, text, scene or shadow. This is a colourway edit of the provided whole pose, not a new pose. Both feet, empty right-side cupped support hand and lowered left-side arm must stay in their EXACT source locations.",
+      "sourceFile": "blue-guide-hold.png",
+      "logicalBox": [120, 200],
+      "sourceAlphaBoundsAbove32": [6, 11, 809, 1609],
+      "landmarks": {
+        "supportPalm": [738, 776],
+        "soleY": 1608,
+        "uncertaintyPixels": 20
+      },
+      "wholeBirdPlacement": {
+        "x": 50.6,
+        "y": 14.7,
+        "width": 132,
+        "baseRotationDegrees": 15,
+        "internalMotion": "unchanged original SVG neck/head/jaw/pupil"
+      },
+      "sourceRole": "palette-only reference edit, with measured generative drift"
+    }
+  ],
+  "encoding": {
+    "format": "WebP",
+    "quality": 92,
+    "method": 6,
+    "dimensionsUnchangedFromEachCandidate": true,
+    "alphaPreservedExactlyFromEachCandidate": true,
+    "manualRasterEdits": "none; no crop, resize or reconstruction",
+    "rawMastersInGit": false
+  },
+  "budget": {
+    "shippingBytes": 701288,
+    "scope": "concept demo only; not story-page budget approval",
+    "responsiveAvif": "not provided"
+  },
+  "limitations": [
+    "Palette edit is not pixel-identical: blue canvas is one pixel taller, sole and hand were remeasured.",
+    "Earlier unsupported poses were not installed. No refused blue standing/rear, leg or flamingo neck operation was retried.",
+    "Original SVG bird stays full size and retains its internal motion; only its whole wrapper moves/tilts after this specific rig is ready.",
+    "Offline six-state composition and sampled bite sweep are not browser playback or continuous collision proof.",
+    "Existing Duchess chin-to-shoulder contact remains unproven.",
+    "Readiness intentionally switches pose and bird placement; bob clocks share phase, not a promise of zero visual change."
+  ]
+}

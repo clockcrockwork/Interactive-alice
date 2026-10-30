@@ -1,9 +1,12 @@
+import { generatedSceneProp } from '../art/generated-scene-prop.ts';
 /**
  * Bill the Lizard's garden, where he comes down: the corner of the Rabbit's house
  * with its ladder and the chimney he left, a clump of the hedge he may go into,
  * and the brandy. Bill, the guinea-pigs and the Rabbit come from the art registry;
  * the rooftop he starts on is the house's own (`RIM_SVG` in rabbit-house).
  */
+
+import { type ArtStyle, artStyle } from '../art/treatments.ts';
 
 /** The corner of the house, at the left of the garden: its feet on the ground line. */
 export const GARDEN_HOUSE_SVG = `
@@ -40,6 +43,18 @@ export const BOTTLE_SVG = `
   <rect x="8" y="50" width="24" height="16" rx="2" fill="var(--paper-warm)"/>
 </svg>`;
 
+/** Only the drawing changes; the enclosing bottle still owns its mouthward tip. */
+export function bottleMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return BOTTLE_SVG;
+  const src = new URL(
+    '../../assets/images/figures/brandy-bottle.any.generated.webp',
+    import.meta.url,
+  ).href;
+  return `<svg viewBox="0 0 40 90" focusable="false" data-generated-brandy-bottle=""><image href="${src}" x="0" y="0" width="40" height="90" preserveAspectRatio="xMidYMid meet"/></svg>`;
+}
+
 /** Leaves knocked out of the hedge: each one carries its own flight. */
 export const LEAVES = Array.from({ length: 10 }, (_, i) => {
   const dx = (i - 4.5) * 14 + ((i * 31) % 9);
@@ -48,3 +63,14 @@ export const LEAVES = Array.from({ length: 10 }, (_, i) => {
   const spin = ((i * 67) % 240) - 120;
   return `<span class="bl__leaf" style="--dx: ${dx}; --dy: ${dy}; --land: ${land}; --spin: ${spin}"></span>`;
 }).join('');
+
+/** Keep the original wrapper, placement and motion. */
+export function clumpMarkup(style?: ArtStyle): string {
+  return generatedSceneProp(
+    'hedge-clump',
+    CLUMP_SVG,
+    [200, 140],
+    [0, 4.442961974649762, 200.0, 139.9599733155437],
+    style,
+  );
+}

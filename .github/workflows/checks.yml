@@ -4,6 +4,12 @@ on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: Exact 40-character repository commit SHA to verify.
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -11,9 +17,16 @@ permissions:
 jobs:
   repository:
     name: repository checkers
+    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: checks-repository-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       # Node, because the checkers are launched through build/python.mjs, which finds
       # the interpreter by name rather than assuming one. No npm install is needed:
       # the checkers and the launcher have no dependencies.
@@ -30,14 +43,20 @@ jobs:
           git diff --exit-code -- tests/fixtures/plans.json
 
   frontend:
-    name: lint, typecheck, build, test
+    name: Frontend checks (no browser)
+    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: checks-frontend-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: npm
       - run: npm ci
       - name: types still match the schemas
         run: |
@@ -48,5 +67,69 @@ jobs:
       - run: npm test
       - name: build, and record the size report
         run: npm run build
+
+  # This proves the checkout named below, not the SHA to which GitHub attaches
+  # this workflow_dispatch check. It is manual evidence, never a PR required check.
+  browser:
+    name: Browser verification (manual evidence only)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    concurrency:
+      group: checks-browser-${{ inputs.target_sha }}
+      cancel-in-progress: false
+    steps:
+      - name: Validate trusted workflow and repository target
+        id: target
+        shell: bash
+        env:
+          TARGET_SHA: ${{ inputs.target_sha }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [ "$GITHUB_EVENT_NAME" = workflow_dispatch ] || { echo 'MANUAL_EVENT_REQUIRED' >&2; exit 1; }
+          [ "$GITHUB_REF" = refs/heads/main ] || { echo 'TRUSTED_MAIN_WORKFLOW_REQUIRED' >&2; exit 1; }
+          [[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo 'TARGET_SHA_INVALID' >&2; exit 1; }
+          resolved_sha="$(gh api --method GET "repos/$GITHUB_REPOSITORY/commits/$TARGET_SHA" --jq '.sha')"
+          [ "$resolved_sha" = "$TARGET_SHA" ] || { echo 'REPOSITORY_COMMIT_MISMATCH' >&2; exit 1; }
+          echo "target_sha=$TARGET_SHA" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
+      - name: Verify exact checkout before executing target code
+        id: source
+        shell: bash
+        env:
+          TARGET_SHA: ${{ inputs.target_sha }}
+        run: |
+          set -euo pipefail
+          source_sha="$(git rev-parse HEAD)"
+          [ "$source_sha" = "$TARGET_SHA" ] || { echo 'CHECKOUT_SHA_MISMATCH' >&2; exit 1; }
+          echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: npm ci
+      # Build this exact checkout. Never consume an automatic job's different tree.
+      - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
+      - name: Record exact-target evidence
+        if: always()
+        shell: bash
+        env:
+          VALIDATED_TARGET_SHA: ${{ steps.target.outputs.target_sha }}
+          TESTED_SOURCE_SHA: ${{ steps.source.outputs.source_sha }}
+          WORKFLOW_SHA: ${{ github.sha }}
+          VERIFY_RESULT: ${{ job.status }}
+        run: |
+          {
+            printf '## Manual browser evidence\n\n'
+            printf 'Validated repository target: %s\n\n' "${VALIDATED_TARGET_SHA:-not validated}"
+            printf 'Verified checkout: %s\n\n' "${TESTED_SOURCE_SHA:-not checked out}"
+            printf 'Trusted workflow commit: %s\n\n' "$WORKFLOW_SHA"
+            printf 'Job result: %s\n\n' "$VERIFY_RESULT"
+            printf 'This is exact-source manual evidence, not a PR required check.\n'
+            printf 'An automatic skipped browser job is not an E2E pass. Reassess after the PR head changes.\n'
+          } >> "$GITHUB_STEP_SUMMARY"

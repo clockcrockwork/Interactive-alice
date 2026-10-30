@@ -16,7 +16,8 @@ import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { createStride, fieldHtml } from '../riverbank/field.ts';
 import { attachDemo, type Beat, type DemoShell, mix } from '../shell/shell.ts';
-import { heldSvg, JAR_SVG, MAP_SVG } from './figures.ts';
+import { heldSvg, jarMarkup, mapSheetMarkup } from './figures.ts';
+import { installGeneratedPreview } from './generated-preview.ts';
 import './rabbit-hole.css';
 import { TUNNEL_DOORS, trapdoorHtml } from './trapdoor.ts';
 import { createWell, type Well } from './well.ts';
@@ -83,9 +84,10 @@ function mount(shell: DemoShell): void {
   props.innerHTML =
     `<div class="rh__cupboard"></div>` +
     `<div class="rh__alice">${figure('alice/falling')}<div class="rh__hand"></div></div>` +
-    `<div class="rh__jar-track"><div class="rh__jar" data-jar>${JAR_SVG}</div></div>` +
+    `<div class="rh__jar-track"><div class="rh__jar" data-jar>${jarMarkup()}</div></div>` +
     `<div class="rh__dinah">${figure('dinah-cat')}</div>` +
     `<div class="rh__rabbit">${figure('white-rabbit/running')}</div>`;
+  installGeneratedPreview(shell.root, shell.ui);
   const bats = shell.layer('rh__bats');
   bats.innerHTML = [0.22, 0.4, 0.58]
     .map((y) => `<div class="rh__bat" style="--bat-y: ${y * 100}%">${figure('bat')}</div>`)
@@ -101,7 +103,7 @@ function mount(shell: DemoShell): void {
     `<div class="rh__chaser rh__chaser--cat">${figure('dinah-cat/pouncing')}</div>` +
     `<div class="rh__chaser rh__chaser--bat">${figure('bat')}</div>`;
   const mapLayer = shell.layer('rh__map');
-  mapLayer.innerHTML = `<div class="rh__map-sheet">${MAP_SVG}</div>`;
+  mapLayer.innerHTML = `<div class="rh__map-sheet">${mapSheetMarkup()}</div>`;
   const flash = shell.layer('rh__flash');
   const dark = shell.layer('rh__dark');
   // Under reduced motion a cut is a blink of paper, on crossing it either way.

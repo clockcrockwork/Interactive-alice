@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-21",
+  "generator": "OpenAI image_gen, model not exposed",
+  "intent": "Coherent whole falling pose with original vector layout and provisional Alice identity reference; blue is a reference colour edit of yellow",
+  "promptHash": null,
+  "editing": "WebP q92 method6 exact true; unchanged dimensions and exact alpha, no crop/resize/recolour",
+  "scope": "Drink Me and Trial whole-figure cards only. Rabbit Hole independent rig and Duchess contact consumer remain original. Refused separated leg edit not retried or reconstructed.",
+  "browser": "not executed",
+  "assets": [
+    {
+      "variant": "yellow",
+      "asset": "figures/alice--falling-card.yellow.generated.webp",
+      "source": "exec-ff81c2c1-dfd9-47be-a1c0-15c51ad300fa.png",
+      "sourceSha256": "24cb1e08129f960673aade3e7266a0f7adb28fc00469e32908cde8550edea409",
+      "sha256": "84f26fde96099629959f13a455f143ac5ad5bf684fe0356c75443f3203378946",
+      "bytes": 544666,
+      "dimensions": [971, 1619],
+      "alphaBoundsAbove32": [27, 23, 952, 1597],
+      "footY": 1596
+    },
+    {
+      "variant": "blue",
+      "asset": "figures/alice--falling-card.blue.generated.webp",
+      "source": "exec-22d9ae5c-4ec4-439f-8308-7ec1bd045953.png",
+      "sourceSha256": "bfb23a30608951d251c105fef652f9c69af33cb5380f2a67456eae42ced4b1bb",
+      "sha256": "07c3a90d2257847df2f792799c365f911e10faac07d4c99d94c04602049446b2",
+      "bytes": 450596,
+      "dimensions": [971, 1619],
+      "alphaBoundsAbove32": [27, 23, 955, 1598],
+      "footY": 1597
+    }
+  ]
+}

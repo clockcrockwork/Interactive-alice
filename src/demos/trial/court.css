@@ -112,6 +112,12 @@
       var(--tr-curtain);
   }
 
+  /* Quiet architectural ink stays behind every actor; the curtain is also the
+     complete loading/error and flat/paper fallback. */
+  .tr__backdrop > .scenery {
+    opacity: 0.38;
+  }
+
   .tr__backdrop::after {
     content: "";
     position: absolute;
@@ -136,6 +142,12 @@
         transparent 2px 9vw
       ),
       linear-gradient(to bottom, var(--tr-floor), var(--tr-floor-deep));
+  }
+
+  /* Atomic SVG paint preserves the CSS floor on decode failure; matched-edge
+     mirrored tiles avoid the source's non-periodic grain jumps. */
+  .tr__floor > .scenery {
+    opacity: 0.65;
   }
 
   .tr__throne {

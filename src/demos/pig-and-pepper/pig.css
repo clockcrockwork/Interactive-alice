@@ -353,6 +353,7 @@
 
   .pp__room {
     --look-x: 0;
+    --pp-floor-height: 38%;
     position: absolute;
     inset: -12%;
     /* Composited: every sneeze and every look moves a texture of the kitchen. */
@@ -376,6 +377,41 @@
         var(--pp-kitchen) 70%,
         var(--pp-kitchen-deep)
       );
+  }
+
+  .pp__wall-art,
+  .pp__floor-art {
+    position: absolute;
+    overflow: hidden;
+    inline-size: 100%;
+    block-size: 100%;
+    pointer-events: none;
+  }
+
+  .pp__wall-art {
+    inset-block: 0 var(--pp-floor-height);
+    inset-inline: 0;
+    block-size: calc(100% - var(--pp-floor-height));
+    opacity: 0.7;
+  }
+
+  .pp__floor-art {
+    inset: 0;
+    opacity: 0.45;
+  }
+
+  .pp__wall:has(> .pp__wall-art[data-rig-ready]) {
+    background: linear-gradient(
+      to bottom,
+      var(--pp-kitchen-deep),
+      var(--pp-kitchen) 40%,
+      var(--pp-kitchen) 70%,
+      var(--pp-kitchen-deep)
+    );
+  }
+
+  .pp__floor:has(> .pp__floor-art[data-rig-ready]) {
+    background: linear-gradient(to bottom, var(--pp-floor), var(--pp-floor-deep));
   }
 
   .pp__shelf {
@@ -405,7 +441,7 @@
     position: absolute;
     inset-inline: 0;
     inset-block-end: 0;
-    block-size: 38%;
+    block-size: var(--pp-floor-height);
     background:
       repeating-linear-gradient(to right, transparent 0 8vmin, var(--pp-line) 8vmin 8.6vmin),
       linear-gradient(to bottom, var(--pp-floor), var(--pp-floor-deep));
@@ -1112,6 +1148,11 @@
   }
 
   @media (max-width: 700px) {
+    /* Keep the wall/floor join behind the higher mobile character anchors. */
+    .pp__room {
+      --pp-floor-height: 52%;
+    }
+
     /* A tall narrow frame: the captions take the lower third, so the kitchen's
        people stand higher and the sentences are set smaller. */
     .demo--pig-and-pepper .demo-beat {

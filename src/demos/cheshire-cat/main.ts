@@ -17,6 +17,7 @@
 
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
+import { scenery } from '../art/generated-scenery.ts';
 import { attachDemo, type DemoShell, mix, REDUCED_SETTLE, seeded } from '../shell/shell.ts';
 import './cheshire.css';
 import {
@@ -76,7 +77,8 @@ function mount(shell: DemoShell): void {
         `<div class="cc__star" style="--i: ${i}; --sx: ${(random() * 100).toFixed(1)}%; --sy: ${(3 + random() * 40).toFixed(1)}%"></div>`,
     ).join('')}</div>` +
     '<div class="cc__trees cc__trees--far"></div>' +
-    '<div class="cc__trees cc__trees--mid"></div>' +
+    `<div class="cc__trees cc__trees--mid">${scenery('night-wood')}</div>` +
+    `<div class="cc__trees cc__scenery-near-plane"><div class="cc__scenery-near cc__scenery-near--left">${scenery('night-trunk')}</div><div class="cc__scenery-near cc__scenery-near--right">${scenery('night-trunk')}</div></div>` +
     `<div class="cc__tree-grins">${Array.from(
       { length: 7 },
       (_, i) =>

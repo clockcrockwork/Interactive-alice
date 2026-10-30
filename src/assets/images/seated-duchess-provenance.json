@@ -1,0 +1,75 @@
+{
+  "batch": "duchess-seated-contact-2026-10-21",
+  "date": "2026-10-21",
+  "status": "provisional kitchen and Croquet arrival compositions; not final art or browser acceptance",
+  "generator": "image_gen",
+  "model": "not exposed by generation tool",
+  "styleId": "IA-ENGRAVED-CUTOUT-V1",
+  "acceptedScenes": ["pig-and-pepper", "croquet"],
+  "pendingScenes": [],
+  "asset": {
+    "file": "figures/duchess--seated.any.generated.webp",
+    "width": 1205,
+    "height": 1306,
+    "bytes": 434224,
+    "sha256": "2aa32eb3fc50179fcae61e17789cd84d1158bd38a6a19723e8c676ae45521ac6",
+    "source": {
+      "filename": "exec-7de59ed6-baf0-4856-b878-89db5aa250d3.png",
+      "bytes": 2293757,
+      "sha256": "53687ce2a6a4316182077fae72e26aa901ecab85571d17d147abdf4f15fb432d"
+    },
+    "alphaExtrema": [0, 255],
+    "alphaBoundsGreaterThan16": [1, 6, 1205, 1289],
+    "alphaPreservedExactly": true,
+    "encoding": {
+      "format": "WebP",
+      "quality": 92,
+      "alphaQuality": 100,
+      "effort": 6,
+      "canvasUnchanged": true,
+      "metadataStripped": true,
+      "rasterEdits": "none; format encoding only, no crop, resize, recolour or alpha cleanup"
+    },
+    "promptIntent": "Keep the seated engraved Duchess and three chair supports; redraw both connected forearms and inward-facing hands farther outward and lower for the existing separately animated baby.",
+    "composition": {
+      "logicalBox": [240, 260],
+      "uniformScale": 0.14937759336099585,
+      "x": 30,
+      "y": 64.91286307053943,
+      "width": 180,
+      "height": 195.08713692946057,
+      "babyBoxUnchanged": [79.2, 126.4, 81.6, 81.6],
+      "approximateSourceAnchors": {
+        "leftPalm": [380, 885],
+        "rightPalm": [827, 885],
+        "leftInnerFingers": [456, 902],
+        "rightInnerFingers": [756, 902],
+        "chin": [611, 423]
+      },
+      "landmarkUncertaintySourcePixels": 15
+    },
+    "manualEditing": "None. Source pixels were only format-encoded; positioning is SVG composition.",
+    "arrivalComposition": {
+      "logicalBox": [240, 260],
+      "uniformScale": 0.1990811638591118,
+      "x": 0.05359877488514542,
+      "y": 0,
+      "width": 239.8928024502297,
+      "height": 260,
+      "sourceCanvasUnchanged": true,
+      "alphaBoundsGreaterThan16Ground": 256.6156202143951,
+      "motion": "Unchanged outer translateX((1 - --in) * 40vw); no baby, hand or shoulder contact in this consumer.",
+      "proof": "docs/generated-assets-review/duchess-croquet-arrival-20261021.png"
+    }
+  },
+  "validation": {
+    "offlineSupport": "Neutral stages 0 and 3 visually coherent: fingertips at lower-leg sides and body seated over lap. Two connected arms and three chair supports. Independent review agreed to provisional kitchen-only scope.",
+    "animation": "Existing rock/bob/sneeze extrema inspected in offline composition. Intermittent hand-to-leg separation remains; no continuous-grip or browser acceptance claimed.",
+    "excludedWalking": "The seated master remains excluded from the walking chapter. A separate existing standing source now has a provisional walking-only adapter recorded in walking-duchess-provenance.json; literal chin contact is still unverified and original Alice/flamingo are retained.",
+    "browser": "not run for this candidate; prior local Chromium launch failed on socket creation restriction",
+    "budget": "Croquet reuses the existing 434,224-byte WebP, so no new runtime image bytes; no responsive-size, AVIF or performance-budget pass claimed",
+    "arrival": "Original seated arrival, kitchen width-180 and full-height 260 fit inspected side by side, including 89.28 px and 142.848 px wrapper-width samples. Full-height fit preserves legibility and the source canvas without anatomical clipping. Visible alpha ends about 3.38 logical pixels above the box baseline; no source cropping or artificial foot extension. Static only, not a browser or full-scene occlusion pass."
+  },
+  "excludedScenes": ["duchess"],
+  "walkingRecord": "walking-duchess-provenance.json"
+}

@@ -16,6 +16,15 @@ describe('court floor scenery', () => {
     expect(scenery('court-floor', 'flat')).toBe('');
     expect(scenery('court-floor', 'paper')).toBe('');
   });
+  it('pairs matching edges without stretching the generated texture', () => {
+    const markup = scenery('court-floor', 'engraved');
+    expect(markup).toContain('viewBox="0 0 21720 724"');
+    expect(markup).toContain('preserveAspectRatio="xMidYMid slice"');
+    expect(markup).toContain('patternUnits="userSpaceOnUse" width="4344" height="724"');
+    expect(markup).toContain('transform="translate(4344 0) scale(-1 1)"');
+    expect(markup.match(/data-rig-image=""/g)).toHaveLength(2);
+    expect(markup).toContain('fill="url(#court-floor-grain)"');
+  });
   it('keeps the floor inside the existing moving court', () => {
     expect(read('./court.ts')).toContain(
       // biome-ignore lint/suspicious/noTemplateCurlyInString: assert the source template integration
@@ -25,11 +34,9 @@ describe('court floor scenery', () => {
     expect(css).toContain('inline-size: 360vw');
     expect(css).toContain('block-size: 24%');
     expect(css).toContain('translate3d(-50%, 0, -60px)');
-    expect(css).toContain(
-      '.tr__floor:has([data-generated-rig="scenery/court-floor"][data-rig-ready])::after',
-    );
-    expect(css).toContain('background-size: auto 100%');
-    expect(css).toContain('background-repeat: repeat-x');
+
+    expect(css).toContain('.tr__floor > .scenery');
+    expect(css).toContain('opacity: 0.65');
     expect(css).toContain('linear-gradient(to bottom, var(--tr-floor), var(--tr-floor-deep))');
   });
 });

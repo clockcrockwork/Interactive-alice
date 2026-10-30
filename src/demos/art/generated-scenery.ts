@@ -36,6 +36,13 @@ export function scenery(
   style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
 ): string {
   if (style !== 'engraved') return '';
+  if (id === 'court-floor') {
+    // One Court per demo. Pair each edge with its own mirror: grain cannot step
+    // at a join. The viewBox crops uniformly rather than stretching the image.
+    const image = (transform = ''): string =>
+      `<image data-rig-image="" href="${sources[id]}" width="2172" height="724" transform="${transform}"/>`;
+    return `<svg class="scenery" viewBox="0 0 21720 724" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false" data-generated-rig="scenery/court-floor"><defs><pattern id="court-floor-grain" patternUnits="userSpaceOnUse" width="4344" height="724">${image()}${image('translate(4344 0) scale(-1 1)')}</pattern></defs><g data-rig-generated="" visibility="hidden" display="none"><rect width="21720" height="724" fill="url(#court-floor-grain)"/></g></svg>`;
+  }
   const [width, height] = boxes[id];
   const align = id === 'edge-left' ? 'xMinYMax' : id === 'edge-right' ? 'xMaxYMax' : 'xMidYMax';
   const fit = id === 'night-wood' ? 'slice' : 'meet';

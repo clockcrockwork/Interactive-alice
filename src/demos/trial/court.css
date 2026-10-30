@@ -138,22 +138,9 @@
       linear-gradient(to bottom, var(--tr-floor), var(--tr-floor-deep));
   }
 
-  /* Readiness probe reuses the cached decoder, like the field hedge. */
+  /* Atomic SVG paint preserves the CSS floor on decode failure; matched-edge
+     mirrored tiles avoid the source's non-periodic grain jumps. */
   .tr__floor > .scenery {
-    opacity: 0;
-  }
-
-  /* Only successful engraved decoding adds the overlay. Keep the CSS floor
-     underneath on loading/error and preserve the texture's original ratio. */
-  .tr__floor:has([data-generated-rig="scenery/court-floor"][data-rig-ready])::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image: url("../../assets/images/scenery/court-floor.generated.webp");
-    background-size: auto 100%;
-    background-repeat: repeat-x;
-    background-position: center bottom;
     opacity: 0.65;
   }
 

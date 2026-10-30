@@ -62,3 +62,34 @@ composite. No code defect blocking a Draft update was identified. Its lint and
 provenance-status notes were corrected; final scoped Biome and the 707-test suite
 were rerun. Reviewer independently confirmed 27 related tests and source/delivery
 hashes. Its join-discontinuity and browser-acceptance reservations remain open.
+
+## Quality correction — 2026-10-30 12:08 JST
+
+The preceding join concern was a visible defect in a two-image static repeat,
+not merely an untested-browser possibility. It was not left for human acceptance.
+
+Compared one imagegen revision with an unchanged-source mirrored placement. The
+revision removed long seams but produced broader, conspicuously repeating marks,
+so it was rejected and is not shipped. The original image remains byte-identical.
+
+The current implementation supersedes the CSS background/readiness-probe placement
+above: an inline SVG pattern pairs the source with its horizontal mirror. Both
+join types now meet identical source edges. The existing cached decoder finds both
+image references, decodes the URL once and reveals the hidden generated rectangle
+atomically. Flat/paper and all original CSS floor/fallback/camera geometry remain.
+The 21720×724 SVG viewBox uses `xMidYMid slice` to crop uniformly, never stretch.
+This is a ten-tile field, repeated by the SVG pattern, not ten network downloads.
+
+Verification:
+- Original+mirror static composite visually inspected: no grain-height step.
+- Boundary-column comparison: AE=0 at the internal mirror join and period wrap.
+  This establishes source-edge continuity, not browser rasterizer behavior.
+- Test-first red→green; 28 affected tests, typecheck, scoped Biome and build pass.
+- Full 707-test result above belongs to the initial batch; this follow-up reruns
+  the affected suites only, as scoped. No new image payload.
+- Independent reviewer confirmed the static improvement and decoder/fallback,
+  and ran 33 related tests across three files; no blocking defect found.
+- Real browser antialiasing, moiré, mirror symmetry, viewport/camera/subtitle/playback
+  QA remain unverified for the previously stated access reason. On very wide
+  viewports `slice` crops vertically without stretching. No full browser approval,
+  merge/deploy/manual CI dispatch.

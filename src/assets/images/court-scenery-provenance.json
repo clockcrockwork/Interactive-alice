@@ -29,8 +29,13 @@
     "witnesses": 626508
   },
   "visualChecks": {
-    "twoTileComposite": "inspected on #675344; subtle grain discontinuity at join, not seamless-certified",
+    "twoTileComposite": "Original repeat had grain-height steps. Alternating mirror inspected on #675344; paired and period-wrap boundary columns each AE=0. Browser antialiasing/moire unverified.",
     "browser": "unverified: cloud CUA cannot reach 127.0.0.1:5173 (ERR_CONNECTION_REFUSED); Vercel preview requires login"
   },
-  "candidateToDeliveryAlphaExact": true
+  "candidateToDeliveryAlphaExact": true,
+  "placement": "SVG pattern: original + horizontal mirror, 4344x724 period; viewBox21720x724 xMidYMid slice",
+  "rejectedRevision": {
+    "reason": "Imagegen revision broadened grain and made repetition conspicuous; not shipped",
+    "prompt": "Revise this transparent fine sepia courtroom wood-grain texture, retaining its very low contrast, broad horizontal 3:1 format, fine nineteenth-century engraving and real alpha transparency. Correct a specific tiling flaw: horizontal plank seams currently intersect the left and right edges at different heights, causing visible steps on repetition. REMOVE all long continuous plank-joint lines and any strokes that meet the canvas edges. Replace with sparse short broken wood-grain strokes, gently irregular and horizontal, dispersed throughout. Make every ink mark softly terminate to full alpha transparency before the left and right boundary, over about the outermost 2 percent of width, so no visible line can jump at a tile join. Do not add opaque fills or a rectangular faded border. Retain small quiet irregular patches of fine linear wood grain in the interior, with frequent gaps; no broad straight lines crossing the entire canvas, no long rule lines, no special center motif. Subtle color #85715F and #544538 only. This is a transparent sparse grain overlay under an existing CSS floor, not a solid wooden board. No shading, photorealism, perspective, cast shadow, bevel, glowing rim, border, text, people or props. Preserve transparency and subdued appearance. Requested 2172 by 724 pixels."
+  }
 }

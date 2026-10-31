@@ -54,6 +54,60 @@ test('the caterpillar: a tap blows a small ring, a held press a strong one', asy
   await expect.poll(strength, { timeout: 5000 }).toBeGreaterThan(0.1);
 });
 
+test('the caterpillar: opening scroll cue stays distinct from the hold hint', async ({ page }) => {
+  const demo = demos.find((candidate) => candidate.demo === 'caterpillar');
+  test.skip(!demo, 'no caterpillar demo in this build');
+
+  for (const viewport of [
+    { width: 1280, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    for (const reducedMotion of [false, true]) {
+      await page.setViewportSize(viewport);
+      await page.emulateMedia({ reducedMotion: reducedMotion ? 'reduce' : 'no-preference' });
+      await page.goto(demo?.url ?? '');
+
+      const hint = page.locator('.demo__hint');
+      const holdHint = page.locator('.demo__status[data-shown]');
+      const puff = page.locator('.ct__prop--puff');
+      await expect(hint).toBeVisible();
+      await expect(holdHint).toBeVisible();
+      await expect(puff).toBeVisible();
+
+      const layout = await page.evaluate(() => {
+        const rect = (selector: string) => {
+          const element = document.querySelector(selector);
+          if (!element) {
+            return undefined;
+          }
+          const { top, bottom, left, right } = element.getBoundingClientRect();
+          return { top, bottom, left, right };
+        };
+        return {
+          hint: rect('.demo__hint'),
+          holdHint: rect('.demo__status[data-shown]'),
+          puff: rect('.ct__prop--puff'),
+          note: rect('.demo__note'),
+          viewportWidth: document.documentElement.clientWidth,
+          documentWidth: document.documentElement.scrollWidth,
+        };
+      });
+      const separated = (a: typeof layout.hint, b: typeof layout.hint) =>
+        !a ||
+        !b ||
+        a.right <= b.left ||
+        b.right <= a.left ||
+        a.bottom <= b.top ||
+        b.bottom <= a.top;
+
+      expect(separated(layout.hint, layout.holdHint)).toBe(true);
+      expect(separated(layout.hint, layout.puff)).toBe(true);
+      expect(separated(layout.hint, layout.note)).toBe(true);
+      expect(layout.documentWidth).toBe(layout.viewportWidth);
+    }
+  }
+});
+
 const caterpillarState = (page: Parameters<typeof atCue>[0]) =>
   page.evaluate(() => {
     const state = window.__aliceCaterpillar?.();

@@ -77,6 +77,18 @@ describe('publishability', () => {
     expect(entry?.html).toContain('href="./rabbit-hole/"');
   });
 
+  it('puts one localized scroll prompt at the start of a readable part', () => {
+    for (const locale of locales) {
+      const page = pages.find((item) => item.path === `${locale}/rabbit-hole/index.html`);
+      const hint = project.ui.get(locale)?.scrollHint;
+
+      expect(hint).toBeTruthy();
+      expect(page?.html).toContain(`<p class="scene__scroll-cue" data-scroll-cue>${hint}`);
+      expect(page?.html.match(/data-scroll-cue/g)).toHaveLength(1);
+      expect(page?.html.match(/data-first-shot="true"/g)).toHaveLength(2);
+    }
+  });
+
   it('refuses to build when the base locale is missing text', () => {
     expect(() => generatePagesFrom(withoutText('en-simple', 1))).toThrow(
       /base locale en-simple has no text for chapter\(s\) 1/,

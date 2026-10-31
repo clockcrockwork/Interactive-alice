@@ -14,7 +14,7 @@
     },
     "strings": {
       "type": "object",
-      "required": ["partPending", "localePartial", "localeNone"],
+      "required": ["partPending", "localePartial", "localeNone", "scrollHint"],
       "additionalProperties": false,
       "properties": {
         "partPending": {
@@ -31,6 +31,11 @@
           "type": "string",
           "minLength": 1,
           "description": "Shown beside a language on the home page when none of its parts can be read yet."
+        },
+        "scrollHint": {
+          "type": "string",
+          "minLength": 1,
+          "description": "A quiet prompt shown at the beginning of a staged story scene to reveal that scrolling reads it."
         }
       }
     }

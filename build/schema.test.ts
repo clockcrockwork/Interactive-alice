@@ -10,7 +10,7 @@ const schema = JSON.parse(
 /** What a locale's UI copy looks like when it is right. */
 const valid = () => ({
   locale: 'xx',
-  strings: { partPending: 'a', localePartial: 'b', localeNone: 'c' },
+  strings: { partPending: 'a', localePartial: 'b', localeNone: 'c', scrollHint: 'd' },
 });
 
 /**

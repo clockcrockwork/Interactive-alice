@@ -105,6 +105,7 @@ function renderScene(
   plan: ScenePlan,
   lines: Map<string, string>,
   meta: Map<string, SegmentMeta>,
+  scrollHint: string | undefined,
 ): string {
   const scene = project.scenes.get(sceneId);
   if (!scene) {
@@ -146,9 +147,10 @@ function renderScene(
     // Written only where a shot declares one, so a scene of hard cuts produces the
     // markup it always did and the attribute means what it says wherever it appears.
     const overlap = overlaps[index] ? ` data-overlap="${span(overlaps[index] ?? 0)}"` : '';
+    const firstShot = index === 0 ? ' data-first-shot="true"' : '';
     return (
       `      <section class="shot" data-shot="${shot.id}"` +
-      ` data-start="${span(shotSpan.start)}" data-end="${span(shotSpan.end)}"${overlap}>\n` +
+      ` data-start="${span(shotSpan.start)}" data-end="${span(shotSpan.end)}"${firstShot}${overlap}>\n` +
       staging +
       `${beats.join('\n')}\n      </section>`
     );
@@ -160,6 +162,11 @@ function renderScene(
     `    <div class="scene" data-scene="${sceneId}">`,
     '      <div class="scene__track" data-scene-track>',
     '        <div class="scene__stage" data-scene-stage>',
+    ...(scrollHint
+      ? [
+          `          <p class="scene__scroll-cue" data-scroll-cue>${escapeHtml(scrollHint)} <span aria-hidden="true">↓</span></p>`,
+        ]
+      : []),
     shots.join('\n'),
     '        </div>',
     '      </div>',
@@ -174,17 +181,28 @@ function renderPart(project: Project, partId: string, locale: string, scenes: st
   }
   const lines = sentences(project, locale);
   const meta = segmentMeta(project);
+  const strings = project.ui.get(locale);
+  if (!strings) {
+    throw new Error(`no UI strings for ${locale}`);
+  }
 
   const heading = partHeading(project, locale, scenes);
 
   const body = scenes
-    .map((sceneId) => {
+    .map((sceneId, index) => {
       const scene = project.scenes.get(sceneId);
       if (!scene) {
         throw new Error(`unknown scene ${sceneId}`);
       }
       const plan = planScene(scene, locale, Object.fromEntries(lines));
-      return renderScene(project, sceneId, plan, lines, meta);
+      return renderScene(
+        project,
+        sceneId,
+        plan,
+        lines,
+        meta,
+        index === 0 ? strings.scrollHint : undefined,
+      );
     })
     .join('\n');
 

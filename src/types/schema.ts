@@ -373,5 +373,9 @@ export interface LocaleUIStrings {
      * Shown beside a language on the home page when none of its parts can be read yet.
      */
     localeNone: string;
+    /**
+     * A quiet prompt shown at the beginning of a staged story scene to reveal that scrolling reads it.
+     */
+    scrollHint: string;
   };
 }

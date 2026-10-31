@@ -39,6 +39,28 @@
     overflow: clip;
   }
 
+  /* The scroll-first scene has no visible controls. This quiet paper label makes
+     the first action legible, then leaves once the opening Shot gives way. */
+  .story[data-mode="scene"] .scene__scroll-cue {
+    position: fixed;
+    z-index: 5;
+    inset-block-end: var(--space-2);
+    inset-inline-end: var(--space-2);
+    margin: 0;
+    border: 1px solid var(--ink-soft);
+    padding: 0.4em 0.65em;
+    background: var(--ground);
+    color: var(--ink);
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .story[data-mode="scene"]
+    .scene__stage:not(:has(.shot[data-first-shot="true"][data-state="active"]))
+    .scene__scroll-cue {
+    visibility: hidden;
+  }
+
   .story[data-mode="scene"] .shot {
     position: absolute;
     inset: 0;

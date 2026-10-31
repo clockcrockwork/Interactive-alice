@@ -246,6 +246,34 @@ test.describe('with reduced motion', () => {
   test.use({ reducedMotion: 'reduce' });
 
   for (const entry of parts) {
+    test(`${entry.url} shows a quiet scroll prompt until the reader progresses`, async ({
+      page,
+    }) => {
+      await page.goto(entry.url);
+
+      const cue = page.locator('[data-scroll-cue]');
+      await expect(cue).toBeVisible();
+      await expect(cue).toHaveText(/\S/);
+      await expect(cue).toBeInViewport();
+      expect(
+        await cue.evaluate((element) => {
+          const rect = element.getBoundingClientRect();
+          return document.elementFromPoint(rect.left + 2, rect.top + 2) === element;
+        }),
+      ).toBe(true);
+
+      // The opening shot is still in view after one page step. A second real key
+      // press advances the story; returning to the beginning brings the cue back.
+      await page.keyboard.press('PageDown');
+      await page.keyboard.press('PageDown');
+      expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+      await expect(cue).toBeHidden();
+
+      await page.mouse.wheel(0, -20_000);
+      await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+      await expect(cue).toBeVisible();
+    });
+
     for (const sceneId of entry.scenes ?? []) {
       test(`${entry.url} ${sceneId}: drops the drift and lowers the tier`, async ({ page }) => {
         await page.goto(`${entry.url}?probe=1`);

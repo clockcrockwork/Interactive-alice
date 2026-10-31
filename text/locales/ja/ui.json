@@ -4,6 +4,7 @@
   "strings": {
     "partPending": "この ことばでは まだ よめません",
     "localePartial": "いちぶ よめます",
-    "localeNone": "まだ よめません"
+    "localeNone": "まだ よめません",
+    "scrollHint": "スクロールして よんでみる"
   }
 }

@@ -8,8 +8,9 @@ import { ART } from './registry.ts';
 const poses = [
   ['alice/kneeling', 230, 230, ['rabbit-house']],
   ['alice/filling', 720, 330, ['rabbit-house']],
-  ['alice/hand-left', 120, 200, ['caterpillar', 'pig-and-pepper', 'lobster-quadrille']],
-  ['alice/hand-right', 120, 200, ['caterpillar', 'pig-and-pepper', 'lobster-quadrille']],
+  ['alice/hands-cradling', 1536, 1024, ['pig-and-pepper']],
+  ['alice/hand-left', 120, 200, ['caterpillar', 'lobster-quadrille']],
+  ['alice/hand-right', 120, 200, ['caterpillar', 'lobster-quadrille']],
   ['alice/from-above', 120, 120, ['caterpillar']],
 ] as const;
 
@@ -117,7 +118,7 @@ describe('scene-isolated static Alice poses', () => {
 });
 
 describe('Alice pose delivery provenance', () => {
-  it('matches all ten encoded files, dimensions, hashes and placement records', () => {
+  it('matches all twelve encoded files, dimensions, hashes and placement records', () => {
     const directory = new URL('../../assets/images/', import.meta.url);
     const record = JSON.parse(
       readFileSync(new URL('alice-poses-provenance.json', directory), 'utf8'),
@@ -137,7 +138,7 @@ describe('Alice pose delivery provenance', () => {
         consumers: string[];
       }[];
     };
-    expect(record.assets).toHaveLength(10);
+    expect(record.assets).toHaveLength(12);
     let total = 0;
     for (const asset of record.assets) {
       const bytes = readFileSync(new URL(asset.asset, directory));
@@ -158,24 +159,18 @@ describe('Alice pose delivery provenance', () => {
   });
 });
 
-describe('generated hand contact layout', () => {
-  it('anchors only generated hands to the unchanged prop widths, not viewport percentages', () => {
+describe('hand contact layout', () => {
+  it('keeps the kitchen cradle close and reserves separate tea-party prop widths', () => {
     const css = readFileSync(new URL('./generated-alice-poses.css', import.meta.url), 'utf8');
-    expect(css).toContain(
-      '.pp__hand--left:has([data-generated-rig="alice/hand-left"][data-rig-ready])',
-    );
-    expect(css).toContain(
-      '.pp__hand--right:has([data-generated-rig="alice/hand-right"][data-rig-ready])',
-    );
     expect(css).toContain(
       '.lq__hand--left:has([data-generated-rig="alice/hand-left"][data-rig-ready])',
     );
     expect(css).toContain(
       '.lq__hand--right:has([data-generated-rig="alice/hand-right"][data-rig-ready])',
     );
-    expect(css.match(/clamp\(4\.5rem, 14vmin, 7\.5rem\)/g)).toHaveLength(2);
+    expect(css).not.toContain('clamp(4.5rem, 14vmin, 7.5rem)');
     expect(css.match(/clamp\(3\.5rem, 11vmin, 6rem\)/g)).toHaveLength(2);
-    expect(css.match(/clamp\(2\.5rem, 8vmin, 4\.5rem\)/g)).toHaveLength(4);
+    expect(css.match(/clamp\(2\.5rem, 8vmin, 4\.5rem\)/g)).toHaveLength(2);
     expect(css).not.toMatch(/ct__bit|rotate:|transform:|inline-size:|block-size:|pointer-events:/);
     const pigCss = readFileSync(new URL('../pig-and-pepper/pig.css', import.meta.url), 'utf8');
     const lobsterCss = readFileSync(
@@ -183,8 +178,11 @@ describe('generated hand contact layout', () => {
       'utf8',
     );
     expect(pigCss).toContain('inline-size: clamp(9rem, 28vmin, 15rem)');
+    expect(pigCss).toContain('inline-size: clamp(18rem, 78vmin, 46rem)');
+    expect(pigCss).toContain('aspect-ratio: 3 / 2;');
+    expect(pigCss).toContain('.pp__held::before');
+    expect(pigCss).not.toContain('.pp__hand--left');
     expect(lobsterCss).toContain('inline-size: clamp(7rem, 22vmin, 12rem)');
-    for (const original of [pigCss, lobsterCss])
-      expect(original).toContain('inline-size: clamp(5rem, 16vmin, 9rem)');
+    expect(lobsterCss).toContain('inline-size: clamp(5rem, 16vmin, 9rem)');
   });
 });

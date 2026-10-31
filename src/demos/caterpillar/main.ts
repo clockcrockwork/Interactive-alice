@@ -147,11 +147,13 @@ function mount(shell: DemoShell): void {
   }).join('');
   treetops.innerHTML =
     '<svg class="ct__canopy" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
+    '<defs><pattern id="ct-neck-etch" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(18)"><path d="M-5 5 L5 -5 M0 20 L20 0 M15 25 L25 15" fill="none" stroke="var(--ink-primary)" stroke-width="1"/><path d="M-5 15 L5 25 M5 5 L15 15 M15 -5 L25 5" fill="none" stroke="var(--ink-primary)" stroke-width=".45"/></pattern></defs>' +
     `<g class="ct__leaves ct__leaves--0">${generatedCanopyLeaves(leaves)}</g>` +
     '<ellipse class="ct__nest" cx="240" cy="820" rx="70" ry="26"/>' +
     `<g class="ct__shoulders">${svgFigure('alice/from-above', -46, -46, 92, 92)}</g>` +
     '<path class="ct__neck ct__neck--shade" d=""/>' +
     '<path class="ct__neck" d=""/>' +
+    '<path class="ct__neck ct__neck--etch" d=""/>' +
     '</svg>';
   const canopy = treetops.querySelector<SVGSVGElement>('.ct__canopy');
   const neckPaths = [...treetops.querySelectorAll<SVGPathElement>('.ct__neck')];
@@ -994,6 +996,7 @@ function mount(shell: DemoShell): void {
     const controlY = 900 - bendY * 60;
     neckPaths[0]?.setAttribute('d', neckPath(baseX, baseY, controlX, controlY, 116));
     neckPaths[1]?.setAttribute('d', neckPath(baseX, baseY, controlX, controlY, 100));
+    neckPaths[2]?.setAttribute('d', neckPath(baseX, baseY, controlX, controlY, 94));
     shoulders?.setAttribute(
       'transform',
       `translate(${baseX.toFixed(1)} ${(baseY + 6).toFixed(1)}) rotate(${(bendX * 12).toFixed(1)})`,

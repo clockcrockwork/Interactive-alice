@@ -317,7 +317,9 @@ function mount(shell: DemoShell): void {
       'transform',
       `translate(0 ${((1 - leg.up) * 170 - kickFx.k * 34).toFixed(1)})`,
     );
-    shoe?.setAttribute('transform', `rotate(${(-kickFx.k * 38).toFixed(1)} 662 74)`);
+    // The shoe emerges with its toe up, following the flue's vertical angle;
+    // the kick adds a small outward flick around that chimney-aligned rest pose.
+    shoe?.setAttribute('transform', `rotate(${(-90 - kickFx.k * 24).toFixed(1)} 662 74)`);
   };
   applyLeg();
   master.fromTo(

@@ -91,14 +91,26 @@ describe('generated household footmen', () => {
           ),
           'utf8',
         ),
-      ) as { assets: { id: string; part: string; width: number; height: number }[] };
+      ) as {
+        assets: { id: string; part: string; width: number; height: number }[];
+        geometry: {
+          [key: string]: {
+            stageWidth: number;
+            layers: Record<string, [number, number, number]>;
+          };
+        };
+      };
+      const geometry = provenance.geometry[id];
+      if (!geometry) throw new Error('missing footman geometry');
+      const stageScale = 120 / geometry.stageWidth;
       for (const [, part, width, height] of images) {
-        const source = provenance.assets.find((asset) => asset.id === id && asset.part === part);
+        const layer = part ?? '';
+        const source = provenance.assets.find((asset) => asset.id === id && asset.part === layer);
+        const factor = geometry.layers[layer]?.[2];
         expect(source).toBeDefined();
-        expect(Number(width) / (source?.width ?? 1)).toBeCloseTo(
-          Number(height) / (source?.height ?? 1),
-          10,
-        );
+        expect(factor).toBeDefined();
+        expect(Number(width) / (source?.width ?? 1)).toBeCloseTo(stageScale * (factor ?? 1), 10);
+        expect(Number(height) / (source?.height ?? 1)).toBeCloseTo(stageScale * (factor ?? 1), 10);
       }
       expect(markup.match(/preserveAspectRatio="xMidYMid meet"/g)).toHaveLength(4);
       expect(markup).not.toMatch(/clipPath|mask=|preserveAspectRatio="none"/);
@@ -115,6 +127,7 @@ describe('generated household footmen', () => {
           'utf8',
         ),
       ) as {
+        assets: { id: string; part: string; width: number; height: number }[];
         geometry: Record<
           string,
           {
@@ -140,8 +153,10 @@ describe('generated household footmen', () => {
         if (!map) throw new Error('missing layer map');
         expect(Number(x)).toBeCloseTo(map[0] * scale, 10);
         expect(Number(y)).toBeCloseTo(top + map[1] * scale, 10);
-        expect(Number(width)).toBeCloseTo(926 * map[2] * scale, 10);
-        expect(Number(height)).toBeCloseTo(1699 * map[2] * scale, 10);
+        const source = provenance.assets.find((asset) => asset.id === id && asset.part === part);
+        expect(source).toBeDefined();
+        expect(Number(width)).toBeCloseTo((source?.width ?? 0) * map[2] * scale, 10);
+        expect(Number(height)).toBeCloseTo((source?.height ?? 0) * map[2] * scale, 10);
       }
     });
   }

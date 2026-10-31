@@ -696,29 +696,50 @@
     opacity: 0;
   }
 
-  .pp__hand {
+  .pp__hands-pair {
     position: absolute;
-    inset-block-end: -6%;
-    inline-size: clamp(5rem, 16vmin, 9rem);
+    z-index: 0;
+    inset-inline-start: 50%;
+    inset-block-end: -10%;
+    inline-size: clamp(18rem, 78vmin, 46rem);
+    aspect-ratio: 3 / 2;
+    translate: -50% 0;
+    pointer-events: none;
   }
 
-  .pp__hand--left {
-    inset-inline-start: 26%;
-    rotate: 16deg;
-  }
-
-  .pp__hand--right {
-    inset-inline-end: 26%;
-    rotate: -16deg;
+  .demo--pig-and-pepper .pp__hands-pair > svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: visible;
   }
 
   .pp__held {
     position: absolute;
+    z-index: 1;
     inset-inline-start: 50%;
     inset-block-end: 3%;
     inline-size: clamp(9rem, 28vmin, 15rem);
     translate: -50% 0;
     filter: drop-shadow(0 10px 14px var(--pp-shade));
+  }
+
+  .pp__held::before {
+    position: absolute;
+    z-index: 0;
+    inset-inline-start: 50%;
+    inset-block-end: 9%;
+    inline-size: 68%;
+    block-size: 13%;
+    border-radius: 50%;
+    background: radial-gradient(
+      ellipse,
+      color-mix(in srgb, var(--pp-shade) 38%, transparent),
+      transparent 72%
+    );
+    content: "";
+    translate: -50% 0;
+    pointer-events: none;
   }
 
   .pp__baby {
@@ -730,6 +751,18 @@
     background: none;
     cursor: pointer;
     pointer-events: auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .pp__diaper {
+    opacity: calc(1 - var(--stage, 0) / 3);
+    transition: opacity var(--demo-calm) var(--demo-ease);
+  }
+
+  .pp__baby-etch {
+    opacity: calc(1 - var(--stage, 0) / 3);
+    transition: opacity var(--demo-calm) var(--demo-ease);
   }
 
   .pp__baby[data-grunt] > .art {
@@ -1218,6 +1251,8 @@
     .pp__curls,
     .pp__pig-skin,
     .pp__limb-pig,
+    .pp__diaper,
+    .pp__baby-etch,
     .pp__bonnet,
     .pp__pig-ears,
     .pp__tail,

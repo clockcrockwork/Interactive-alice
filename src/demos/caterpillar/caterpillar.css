@@ -354,6 +354,13 @@
     opacity: 0.6;
   }
 
+  .ct__neck--etch {
+    fill: url(#ct-neck-etch);
+    opacity: 0.15;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
   .ct__flash {
     background: var(--ct-flash);
     opacity: 0;

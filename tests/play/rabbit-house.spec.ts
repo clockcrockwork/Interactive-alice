@@ -161,11 +161,23 @@ test.describe('Growing in the House', () => {
     await expect(page.locator('.hs__rim')).toHaveCSS('opacity', '0');
     await scrollTo(page, 1);
     await expect(page.locator('.hs__rim')).toHaveCSS('opacity', '1', { timeout: 8000 });
-    const last = await page.locator('.hs__rim svg').evaluate((svg) => svg.outerHTML);
+    const lastSvg = page.locator('.hs__rim > .hs__rim-svg');
+    await expect(lastSvg.locator('svg[data-generated-rig="pat"]')).toHaveAttribute(
+      'data-rig-ready',
+      '',
+    );
+    const last = await lastSvg.evaluate((svg) => svg.outerHTML);
     await page.goto(bill?.url ?? '');
     await expect(page.locator('.bl__rooftop')).toHaveCSS('opacity', '1');
-    const first = await page.locator('.bl__rooftop svg').evaluate((svg) => svg.outerHTML);
-    expect(first).toBe(last);
+    const firstSvg = page.locator('.bl__rooftop > .hs__rim-svg');
+    await expect(firstSvg.locator('svg[data-generated-rig="pat"]')).toHaveAttribute(
+      'data-rig-ready',
+      '',
+    );
+    const first = await firstSvg.evaluate((svg) => svg.outerHTML);
+    const normalizePaintIds = (svg: string): string =>
+      svg.replace(/garden-paint-\d+/g, 'garden-paint-id').replace(/ data-rig-ready=""/g, '');
+    expect(normalizePaintIds(first)).toBe(normalizePaintIds(last));
   });
 });
 

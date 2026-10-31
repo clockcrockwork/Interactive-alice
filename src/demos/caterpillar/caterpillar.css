@@ -38,6 +38,22 @@
     --demo-end-lift: 0rem;
   }
 
+  /* Keep the scroll cue separate from the brief hold hint at the foot of the
+     opening frame. The open sky between the bar and the smoke control gives it
+     a quiet, readable place without covering the Caterpillar or her props. */
+  .demo--caterpillar .demo__hint {
+    inset-block-start: calc(var(--demo-bar-height) + var(--space-2));
+    inset-block-end: auto;
+    inset-inline: 50% auto;
+    inline-size: max-content;
+    max-inline-size: calc(100% - 2 * var(--space-2));
+    padding: 0.2em 0.7em;
+    border-radius: 999px;
+    background: var(--demo-slip);
+    color: var(--demo-slip-ink);
+    translate: -50% 0;
+  }
+
   .demo--caterpillar .demo-beat {
     inset-block-end: 10vh;
   }

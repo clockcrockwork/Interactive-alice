@@ -177,7 +177,7 @@ describe('hand contact layout', () => {
       new URL('../lobster-quadrille/quadrille.css', import.meta.url),
       'utf8',
     );
-    expect(pigCss).toContain('inline-size: clamp(9rem, 28vmin, 15rem)');
+    expect(pigCss).toContain('inline-size: clamp(14rem, 33vmin, 19rem)');
     expect(pigCss).toContain('inline-size: clamp(18rem, 78vmin, 46rem)');
     expect(pigCss).toContain('aspect-ratio: 3 / 2;');
     expect(pigCss).toContain('.pp__held::before');

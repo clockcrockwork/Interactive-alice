@@ -2348,6 +2348,45 @@
       "edits": "Re-encoded from original PNG to WebP quality 88 on 2026-10-28; same canvas and exact alpha.",
       "bytes": 787846,
       "sha256": "bc5c3d37f9bf9a753a520ec387eb4e6a06d8cdb64cebae4567bd508c0a66d0b6"
+    },
+    {
+      "file": "figures/pig-baby--caught.any.generated.webp",
+      "what": "The caught-stage baby plate for Pig and Pepper; companion plates show the turning and piglet stages.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Replace the simple caught-stage vector with a fully clothed engraved storybook infant and keep the morph in one visual style.",
+      "date": "2026-10-31",
+      "edits": "WebP quality 92 and alpha quality 100 conversion only; unchanged canvas and alpha, no resize or crop.",
+      "width": 1187,
+      "height": 1326,
+      "bytes": 536302,
+      "sha256": "96852c3c1433e7f9862d609fdd3581d9a64d50a115504846d5f029c5790ec3bc",
+      "provenanceRecord": "pig-baby-caught-provenance.json"
+    },
+    {
+      "file": "figures/pig-baby--turning.any.generated.webp",
+      "what": "Pig and Pepper first-person morph artwork: turning stage.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Keep the caught infant-to-pig transformation in one consistent fully clothed, engraved storybook style.",
+      "date": "2026-10-31",
+      "edits": "WebP quality 92 and alpha quality 100 conversion only; unchanged source canvas and alpha, no resize or crop.",
+      "width": 1187,
+      "height": 1326,
+      "bytes": 440790,
+      "sha256": "cd5929f3030a3f949b8fb7b7ff266aa6951c8048bc3beaddc9904a46e25a68ca",
+      "provenanceRecord": "pig-baby-turning-provenance.json"
+    },
+    {
+      "file": "figures/pig-baby--pig.any.generated.webp",
+      "what": "Pig and Pepper first-person morph artwork: piglet stage.",
+      "generator": "OpenAI built-in image_gen; model not exposed",
+      "intent": "Keep the caught infant-to-pig transformation in one consistent fully clothed, engraved storybook style.",
+      "date": "2026-10-31",
+      "edits": "WebP quality 92 and alpha quality 100 conversion only; unchanged source canvas and alpha, no resize or crop.",
+      "width": 1187,
+      "height": 1326,
+      "bytes": 490078,
+      "sha256": "536b39c116b5eafa4ce7070dbf6ca228537c0d28993099a69b9ac958bbef2c86",
+      "provenanceRecord": "pig-baby-pig-provenance.json"
     }
   ]
 }

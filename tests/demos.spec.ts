@@ -1191,16 +1191,36 @@ test('pig and pepper: the baby turns into a pig by beats, and a poke brings the 
   await atCue(page, 'catch', 0.5);
   await expect.poll(stage, { timeout: 8000 }).toBe('0');
   await expect(page.locator('.demo')).toHaveAttribute('data-holding', '');
+  const caughtBaby = page.locator('[data-caught-baby="caught"]');
+  await expect(caughtBaby).toBeVisible();
+  await expect
+    .poll(() => caughtBaby.evaluate((image: HTMLImageElement) => image.naturalWidth))
+    .toBeGreaterThan(1000);
   await atCue(page, 'grunt', 0.5);
   await expect.poll(stage, { timeout: 8000 }).toBe('1');
+  await expect(caughtBaby).toBeVisible();
   await expect.poll(() => customProperty(page, '.pp__baby', '--stage')).toBe(1);
   // A poke is one stage early; the next beat's own stage takes over from there.
   await page.locator('.pp__baby').click();
   await expect.poll(stage, { timeout: 5000 }).toBe('2');
+  const turningBaby = page.locator('[data-caught-baby="turning"]');
+  await expect
+    .poll(() => turningBaby.evaluate((image: HTMLImageElement) => getComputedStyle(image).opacity))
+    .toBe('1');
+  await expect
+    .poll(() => page.locator('.pp__baby > .art').evaluate((art) => getComputedStyle(art).opacity))
+    .toBe('0');
   await atCue(page, 'snout', 0.5);
   await expect.poll(stage, { timeout: 8000 }).toBe('2');
   await atCue(page, 'pig', 0.5);
   await expect.poll(stage, { timeout: 8000 }).toBe('3');
+  await expect
+    .poll(() =>
+      page
+        .locator('[data-caught-baby="piglet"]')
+        .evaluate((image: HTMLImageElement) => getComputedStyle(image).opacity),
+    )
+    .toBe('1');
   // And back: the stages are a function of the scroll.
   await atCue(page, 'knot', 0.3);
   await expect.poll(stage, { timeout: 8000 }).toBe('0');

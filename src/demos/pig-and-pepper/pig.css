@@ -546,7 +546,7 @@
   .pp__duchess > .art,
   .pp__cook > .art,
   .pp__baby-in-arms > .art,
-  .pp__baby > .art {
+  .demo--pig-and-pepper .pp__baby > .art {
     transform-origin: 50% 100%;
   }
 
@@ -698,9 +698,9 @@
 
   .pp__hands-pair {
     position: absolute;
-    z-index: 0;
+    z-index: 2;
     inset-inline-start: 50%;
-    inset-block-end: -10%;
+    inset-block-end: -20%;
     inline-size: clamp(18rem, 78vmin, 46rem);
     aspect-ratio: 3 / 2;
     translate: -50% 0;
@@ -718,8 +718,8 @@
     position: absolute;
     z-index: 1;
     inset-inline-start: 50%;
-    inset-block-end: 3%;
-    inline-size: clamp(9rem, 28vmin, 15rem);
+    inset-block-end: 5%;
+    inline-size: clamp(14rem, 33vmin, 19rem);
     translate: -50% 0;
     filter: drop-shadow(0 10px 14px var(--pp-shade));
   }
@@ -744,8 +744,13 @@
 
   .pp__baby {
     --stage: 0;
+    --caught-baby-opacity: clamp(0, calc(2 - var(--stage, 0)), 1);
+    --turning-baby-opacity: clamp(0, calc(var(--stage, 0) - 1), 1);
+    --piglet-opacity: clamp(0, calc(var(--stage, 0) - 2), 1);
+    --pig-morph-opacity: 0;
     display: block;
     inline-size: 100%;
+    aspect-ratio: 1;
     padding: 0;
     border: 0;
     background: none;
@@ -753,6 +758,53 @@
     pointer-events: auto;
     position: relative;
     z-index: 1;
+  }
+
+  .pp__baby[data-stage="3"] {
+    --turning-baby-opacity: 0;
+  }
+
+  .pp__baby-illustration {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transform-origin: 50% 70%;
+    transition: opacity var(--demo-calm) var(--demo-ease);
+    pointer-events: none;
+  }
+
+  .pp__baby-illustration--caught {
+    opacity: var(--caught-baby-opacity);
+  }
+
+  .pp__baby-illustration--turning {
+    opacity: var(--turning-baby-opacity);
+  }
+
+  .pp__baby-illustration--piglet {
+    opacity: var(--piglet-opacity);
+  }
+
+  .pp__baby[data-stage] > .art {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    opacity: var(--pig-morph-opacity);
+    transition: opacity var(--demo-calm) var(--demo-ease);
+  }
+
+  :root:is([data-art="flat"], [data-art="paper"]) .demo--pig-and-pepper .pp__baby {
+    --caught-baby-opacity: 0;
+    --turning-baby-opacity: 0;
+    --piglet-opacity: 0;
+    --pig-morph-opacity: 1;
   }
 
   .pp__diaper {
@@ -767,6 +819,14 @@
 
   .pp__baby[data-grunt] > .art {
     animation: pp-grunt 0.4s ease-out;
+  }
+
+  .pp__baby[data-grunt] .pp__baby-illustration {
+    animation: pp-grunt 0.4s ease-out;
+  }
+
+  .pp__baby[data-wriggle] .pp__baby-illustration {
+    animation: pp-baby-plate-wriggle 0.55s ease-in-out infinite alternate;
   }
 
   /* The stages of the pig, off one number: the snout grows, the eyes shrink,
@@ -832,6 +892,11 @@
 
   .pp__baby[data-knotted] .pp__head {
     transform: rotate(-16deg);
+  }
+
+  .pp__baby[data-knotted] .pp__baby-illustration {
+    scale: 0.75;
+    rotate: -8deg;
   }
 
   /* The pig, set down at her feet, trots off along the ground into the wood on
@@ -1121,6 +1186,15 @@
     }
   }
 
+  @keyframes pp-baby-plate-wriggle {
+    from {
+      transform: rotate(-1.5deg) translateY(0);
+    }
+    to {
+      transform: rotate(1.5deg) translateY(-1%);
+    }
+  }
+
   @keyframes pp-grunt {
     0% {
       transform: scale(1);
@@ -1229,6 +1303,18 @@
       --trot-y: -3vh;
       inset-block-end: 33%;
     }
+
+    /* In the tall first-person frame, bring the palms under the bundle so the
+       baby rests in them instead of hovering between two raised hands. */
+    .pp__hands-pair {
+      inset-block-end: -2%;
+      inline-size: min(88vmin, 94vw);
+    }
+
+    .pp__held {
+      inset-block-end: 7%;
+      inline-size: clamp(11rem, 57vmin, 15rem);
+    }
   }
 
   /* On a wide frame the sentences take the width of its lower part, about a line
@@ -1259,7 +1345,8 @@
     .pp__snout,
     .pp__eyes,
     .pp__limbs,
-    .pp__head {
+    .pp__head,
+    .pp__baby-illustration {
       transition: none;
     }
 
@@ -1278,6 +1365,8 @@
     .pp__cauldron[data-shaken] svg,
     .pp__baby[data-grunt] > .art,
     .pp__baby[data-wriggle] .pp__limbs,
+    .pp__baby[data-grunt] .pp__baby-illustration,
+    .pp__baby[data-wriggle] .pp__baby-illustration,
     .pp__pig-run[data-trotting] [data-part],
     .pp__pig-run[data-trotting] .art,
     .pp__cat[data-wink] [data-cat="eyes"] ellipse:last-child,

@@ -635,8 +635,8 @@
       "width": 926,
       "height": 1698,
       "footAnchor": {
-        "y": 1604,
-        "basis": "Lower edge of revised alpha>32 bounding box (126,105)-(806,1604), source pixels"
+        "y": 1602,
+        "basis": "Opaque shoe-sole core bottom (alpha>254 at y=1602); the soft alpha>32 fringe continues to y=1604, only 0.26 logical units below the shared floor anchor"
       },
       "prompt": "Use case: precise-object-edit. The supplied existing rear-view yellow-dress storybook girl is the edit target. Change ONLY her light/golden hair to natural chestnut brunette: base #68472D and highlights #8A6543, darker engraved brown shadows. Preserve exact long curls, ink hatching, yellow dress, ivory back bow and apron tails, grey hair bow, arms, hands, stockings, shoes, pose, rear-view proportions, framing and existing 926x1698 canvas. Both shoes and their lower edge must stay fixed, same complete silhouette and empty margins. Preserve original antique hand-coloured engraved illustration style. No blue clothing, no new pose, no extra object, no shadow. Maintain genuine transparent background; red/black colours outside the figure belong to transparent pixels and must not become a visible background. Hair colour only, everything else unchanged.",
       "styleSpecification": "docs/generated-art-style.md at main 3eefd290e96059d3af1acba8d0379326bfd12ffb",

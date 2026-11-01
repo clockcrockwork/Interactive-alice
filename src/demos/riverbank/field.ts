@@ -17,6 +17,7 @@ import './field.css';
 export function fieldHtml(): string {
   return (
     '<div class="field__land">' +
+    `<div class="field__highlands">${scenery('wildflower-highlands')}</div>` +
     '<div class="field__ground"></div>' +
     `<div class="field__tree">${scenery('tree')}</div>` +
     `<div class="field__hedge">${scenery('hedge')}</div>` +

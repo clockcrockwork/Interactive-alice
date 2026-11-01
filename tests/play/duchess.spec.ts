@@ -7,6 +7,37 @@ import { expect, type Page, test } from '@playwright/test';
 import { atCue, collectErrors, customProperty, demos } from '../demo-helpers.ts';
 
 const demo = demos.find((d) => d.demo === 'duchess');
+
+test('the Duchess game uses the illustrated card soldiers before they march away', async ({
+  page,
+}, testInfo) => {
+  test.skip(!demo, 'no Duchess demo in this build');
+  await page.addInitScript(() => localStorage.setItem('alice-demos:art', 'engraved'));
+  await page.goto(demo?.url ?? '');
+  await expect(page.locator('.demo')).toHaveAttribute('data-attached', '', { timeout: 30_000 });
+  await atCue(page, 'game', 0.1);
+  const soldiers = page.locator('.dc__player:not([data-far])');
+  const count = await soldiers.count();
+  expect(count).toBeGreaterThan(0);
+  await expect(soldiers.locator('[data-art="card-soldier"]')).toHaveCount(count);
+  for (const soldier of await soldiers.locator('[data-art="card-soldier"]').all()) {
+    await expect(soldier).toHaveAttribute('data-generated', '');
+    const image = soldier.locator('image');
+    await expect(image).toHaveCount(1);
+    await expect(image).toHaveAttribute('href', /card-soldier\.any\.generated/);
+    expect(
+      await image.evaluate(async (element) => {
+        const decoder = new Image();
+        decoder.src = element.getAttribute('href') ?? '';
+        await decoder.decode();
+        return decoder.naturalWidth > 0;
+      }),
+    ).toBe(true);
+  }
+  await page.screenshot({
+    path: `/workspace/alice-audit-evidence-20261101/scene-review/duchess-card-soldiers-${testInfo.project.name}.png`,
+  });
+});
 const MORALS = '.dc__morals';
 const RIBBON = '.dc__ribbon[data-shown]';
 const evidenceRoot = '/workspace/alice-audit-evidence-20261101/backgrounds';

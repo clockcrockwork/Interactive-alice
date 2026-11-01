@@ -13,7 +13,7 @@ import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import { lonelyLetter } from '../shell/words.ts';
-import { BUCKET_INNER, isMThing, M_PICTURES, type MThing, TEAPOT_SVG } from './figures.ts';
+import { BUCKET_INNER, isMThing, M_PICTURES, type MThing, teapotMarkup } from './figures.ts';
 import './dormouse.css';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -651,7 +651,7 @@ function mount(shell: DemoShell): void {
 
   // --- Into the teapot: the whole cup spins down into the spout.
   const potLayer = shell.layer('dm__teapot-layer');
-  potLayer.innerHTML = `<div class="dm__teapot">${TEAPOT_SVG}</div>`;
+  potLayer.innerHTML = `<div class="dm__teapot">${teapotMarkup()}</div>`;
   const teapot = potLayer.querySelector<HTMLElement>('.dm__teapot');
   master.to(teapot, { opacity: 1, duration: 0.3 }, iTeapot);
   master.to(teapot, { '--lid': 1, duration: 0.3 }, iTeapot + 0.3);

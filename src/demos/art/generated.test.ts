@@ -18,7 +18,7 @@ describe('generated court Alice', () => {
     const [, x, y, width, height] = image.map(Number);
     expect((width ?? 0) / (height ?? 1)).toBeCloseTo(926 / 1698, 8);
     expect((x ?? 0) + (width ?? 0) / 2).toBeCloseTo(60, 8);
-    expect((y ?? 0) + (height ?? 0) * (1604 / 1698)).toBeCloseTo(220, 8);
+    expect((y ?? 0) + (height ?? 0) * (1602 / 1698)).toBeCloseTo(220, 8);
   });
 
   it('uses the same illustration and foot anchor on both sides of the court join', () => {
@@ -59,7 +59,7 @@ describe('revised yellow court delivery', () => {
     const bytes = readFileSync(new URL(asset.file, directory));
     expect(bytes.byteLength).toBe(asset.bytes);
     expect(createHash('sha256').update(bytes).digest('hex')).toBe(asset.sha256);
-    expect(asset.footAnchor.y).toBe(1604);
+    expect(asset.footAnchor.y).toBe(1602);
     expect([asset.width, asset.height]).toEqual([926, 1698]);
   });
 });

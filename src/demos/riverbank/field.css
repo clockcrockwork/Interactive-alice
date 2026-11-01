@@ -39,6 +39,22 @@
     background: linear-gradient(to bottom, var(--field-grass), var(--field-grass-deep) 90%);
   }
 
+  /* A distant sky-to-ridge strip is shared by both ends of this field, so the
+     Rabbit Hole opens on the same mountain line the Riverbank runs toward. */
+  .field__highlands {
+    position: absolute;
+    inset: 0 0 48%;
+    pointer-events: none;
+    overflow: hidden;
+    opacity: 0.76;
+  }
+
+  .field__highlands .scenery {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
   .field__tree {
     position: absolute;
     inset-inline-start: 12%;

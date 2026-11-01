@@ -238,17 +238,32 @@ test.describe('the rabbit hole: above ground, the jar, the curtsey and the chase
 
   test('a bat chases a ghost of Dinah round the well, then Dinah chases the bat; Call Dinah makes her pounce', async ({
     page,
-  }) => {
+  }, testInfo) => {
+    await page.addInitScript(() => localStorage.setItem('alice-demos:art', 'engraved'));
     await page.goto(demo?.url ?? '');
     await expect(page.locator('.demo')).toHaveAttribute('data-attached', '', { timeout: 30_000 });
     await atCue(page, 'cats', 0.25);
     await expect
       .poll(() => opacityOf(page, '.rh__chase'), { timeout: 20_000 })
       .toBeGreaterThan(0.9);
+    const dinah = page.locator('.rh__chaser--cat svg[data-generated-rig="dinah-cat/pouncing"]');
+    await expect(dinah).toHaveAttribute('data-rig-ready', '');
+    await expect(dinah.locator('image[data-rig-image]')).toHaveAttribute(
+      'href',
+      /dinah-cat--pouncing\.any\.generated/,
+    );
     const first = await transformOf(page, '.rh__chaser--cat');
     await atCue(page, 'cats', 0.7);
     const second = await transformOf(page, '.rh__chaser--cat');
     expect(second).not.toBe(first);
+    const visible = await page.locator('.rh__chaser--cat').evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      return box.width > 0 && box.height > 0 && box.right > 0 && box.left < innerWidth;
+    });
+    expect(visible).toBe(true);
+    await page.screenshot({
+      path: `/workspace/alice-audit-evidence-20261101/scene-review/rabbit-hole-dinah-chase-${testInfo.project.name}.png`,
+    });
     const call = page.locator('.rh__prop-call');
     await expect(call).toHaveAttribute('data-shown', '');
     const pounces = () => page.evaluate(() => window.__aliceDinahPounces?.() ?? 0);

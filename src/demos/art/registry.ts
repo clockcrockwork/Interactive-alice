@@ -220,8 +220,9 @@ export const ART: Record<string, ArtEntry> = {
         ).href,
         width: 926,
         height: 1698,
-        // Visible soles (alpha > 32), not the transparent canvas bottom.
-        footY: 1604,
+        // The opaque shoe sole ends at 1602; the two-pixel alpha fringe stays
+        // below it so the rendered figure sits on the same floor as its vector.
+        footY: 1602,
       },
     },
   },

@@ -2521,6 +2521,38 @@
       "sourceHeight": 971,
       "styleSpecification": "IA-ENGRAVED-CUTOUT-V1",
       "placement": "Shared generated table-spread image at z -930 between the existing bread-and-butter and tart props."
+    },
+    {
+      "file": "interiors/rabbit-house-wallpaper.any.generated.webp",
+      "what": "Repeating rose-damask wall covering in the White Rabbit cottage interior.",
+      "generator": "OpenAI built-in image_gen; exact model identifier not exposed",
+      "intent": "Replace bare interior wall planes with a restrained engraved-room texture while preserving the camera, window, table, and bottle layers.",
+      "date": "2026-11-01",
+      "edits": "Converted 1254x1254 RGB PNG to WebP quality84/method6; no crop or paint changes.",
+      "bytes": 393832,
+      "sha256": "6982564cffb27fd9f78649bfcf0ca62550bd0e9b56a5abf6fd8e2f6d0e0da75d",
+      "width": 1254,
+      "height": 1254,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "styleSpecification": "IA-ENGRAVED-CUTOUT-V1",
+      "placement": "Low-opacity multiply texture over three interior wall planes; room colors and CSS seam pattern remain as fallback."
+    },
+    {
+      "file": "scenery/duchess-house.generated.webp",
+      "what": "Transparent cutout of an English manor with gables, chimneys, a climbing rose and low garden wall.",
+      "generator": "OpenAI built-in image_gen; exact model identifier not exposed",
+      "intent": "Give the Duchess walk an illustrated home on its distant landscape plane, sharing parallax with reusable trees and hedge.",
+      "date": "2026-11-01",
+      "edits": "Converted RGBA PNG to WebP quality90/method6; no crop or paint changes. CSS applies grayscale to keep all surroundings monochrome.",
+      "bytes": 581168,
+      "sha256": "3cc7462b7973c3048fe7c5486a3010f26c88004e21a47309925948ec824507ed",
+      "width": 1536,
+      "height": 1024,
+      "sourceWidth": 1536,
+      "sourceHeight": 1024,
+      "styleSpecification": "IA-ENGRAVED-CUTOUT-V1",
+      "placement": "Duchess far landscape, behind the walking trees and horizon hedge."
     }
   ]
 }

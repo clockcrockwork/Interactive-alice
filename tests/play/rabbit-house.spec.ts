@@ -11,6 +11,7 @@ import { atCue, demos, scrollTo } from '../demo-helpers.ts';
 
 const house = demos.find((candidate) => candidate.demo === 'rabbit-house');
 const bill = demos.find((candidate) => candidate.demo === 'bill-the-lizard');
+const evidenceRoot = '/workspace/alice-audit-evidence-20261101/backgrounds';
 
 const houseState = (page: Page) =>
   page.evaluate(() => {
@@ -36,6 +37,24 @@ const box = (page: Page, selector: string) =>
     const r = document.querySelector(sel)?.getBoundingClientRect();
     return r ? { left: r.left, right: r.right, top: r.top, bottom: r.bottom } : undefined;
   }, selector);
+
+test('the Rabbit’s room has an engraved rose wallpaper layer', async ({ page }) => {
+  test.skip(!house, 'no rabbit-house demo in this build');
+  await page.goto(house?.url ?? '');
+  await atCue(page, 'room', 0.5);
+  const walls = page.locator('.hs__face--back');
+  await expect(walls).toBeVisible();
+  const wallStyle = await walls.evaluate((wall) => {
+    const texture = getComputedStyle(wall, '::before');
+    return { image: texture.backgroundImage, opacity: texture.opacity };
+  });
+  expect(wallStyle.image).toContain('rabbit-house-wallpaper.any.generated');
+  expect(wallStyle.opacity).toBe('0.2');
+  const screen = (page.viewportSize()?.width ?? 0) < 700 ? 'phone' : 'desktop';
+  await page.screenshot({
+    path: `${evidenceRoot}/rabbit-house-room-wallpaper-${screen}-after.png`,
+  });
+});
 
 test.describe('Growing in the House', () => {
   test.skip(!house, 'no rabbit-house demo in this build');

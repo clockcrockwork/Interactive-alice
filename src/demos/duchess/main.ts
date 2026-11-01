@@ -17,6 +17,7 @@
  */
 
 import gsap from 'gsap';
+import DUCHESS_HOUSE from '../../assets/images/scenery/duchess-house.generated.webp';
 import { figure } from '../art/art.ts';
 import { scenery } from '../art/generated-scenery.ts';
 import { SHORE_HTML } from '../mock-turtle/figures.ts';
@@ -111,6 +112,7 @@ function mount(shell: DemoShell): void {
   const far = shell.layer('dc__far');
   far.innerHTML =
     '<div class="dc__band dc__band--far">' +
+    `<div class="dc__background-house"><img src="${DUCHESS_HOUSE}" alt="" aria-hidden="true" /></div>` +
     [15, 66, 122, 178]
       .map(
         (x, index) =>

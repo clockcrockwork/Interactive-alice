@@ -78,6 +78,23 @@
     transform: translateZ(-600px);
   }
 
+  /* A generated rose-damask engraving gives the room the printed wallpaper
+     that the flat colour planes lacked. Keep the underlying room palette and
+     vertical seam fallback visible if the decorative tile fails to load. */
+  .hs__face--back::before,
+  .hs__face--left::before,
+  .hs__face--right::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.2;
+    mix-blend-mode: multiply;
+    background-image: url("../../assets/images/interiors/rabbit-house-wallpaper.any.generated.webp");
+    background-repeat: repeat;
+    background-size: 380px 380px;
+  }
+
   .hs__face--left {
     transform-origin: 0 50%;
     transform: rotateY(90deg);

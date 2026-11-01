@@ -9,6 +9,28 @@ import { atCue, collectErrors, customProperty, demos } from '../demo-helpers.ts'
 const demo = demos.find((d) => d.demo === 'duchess');
 const MORALS = '.dc__morals';
 const RIBBON = '.dc__ribbon[data-shown]';
+const evidenceRoot = '/workspace/alice-audit-evidence-20261101/backgrounds';
+
+test('the Duchess’s walk includes her engraved manor behind the tree line', async ({ page }) => {
+  test.skip(!demo, 'no duchess demo page in this build');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'sense', 0.5);
+  const house = page.locator('.dc__background-house img');
+  await expect(house).toBeVisible();
+  const image = await house.evaluate((node) => {
+    const img = node as HTMLImageElement;
+    return {
+      width: img.naturalWidth,
+      height: img.naturalHeight,
+      filter: getComputedStyle(img).filter,
+    };
+  });
+  expect(image.width).toBe(1536);
+  expect(image.height).toBe(1024);
+  expect(image.filter).toBe('grayscale(1)');
+  const screen = (page.viewportSize()?.width ?? 0) < 700 ? 'phone' : 'desktop';
+  await page.screenshot({ path: `${evidenceRoot}/duchess-manor-${screen}-after.png` });
+});
 
 test.describe('duchess: the morals', () => {
   test.skip(!demo, 'no duchess demo page in the build');

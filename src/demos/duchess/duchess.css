@@ -113,6 +113,26 @@
     --rate: 0.3;
   }
 
+  /* The Duchess's manor sits deep in the landscape behind the moving trees.
+     It shares their parallax and the engraved monochrome treatment. */
+  .dc__background-house {
+    position: absolute;
+    inset-inline-start: 48vw;
+    inset-block-start: calc((var(--dc-horizon) - 31) * 1%);
+    inline-size: clamp(11rem, 31vw, 29rem);
+    aspect-ratio: 3 / 2;
+    translate: -50% 0;
+    opacity: 0.78;
+  }
+
+  .dc__background-house img {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: contain;
+    filter: grayscale(1);
+  }
+
   .dc__band--mid {
     --rate: 0.6;
   }

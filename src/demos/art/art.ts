@@ -32,6 +32,7 @@ import {
   generatedCaterpillarBillSvg,
 } from './generated-caterpillar-bill.ts';
 import { generatedCheshireCatSvg } from './generated-cheshire-cat.ts';
+import { generatedDinahSvg } from './generated-dinah.ts';
 import { generatedDuchessAliceSvg } from './generated-duchess-alice.ts';
 import { generatedFallingCardSvg } from './generated-falling-card.ts';
 import { generatedFlamingoSvg } from './generated-flamingo.ts';
@@ -198,6 +199,10 @@ export function figure(
       generatedBatDivingSvg(id, style, demo);
     if (articulated) {
       return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${articulated}</span>`;
+    }
+    const dinah = generatedDinahSvg(id, style, demo);
+    if (dinah) {
+      return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated="" data-generated-layers="${id}">${dinah}</span>`;
     }
     const cat = generatedCheshireCatSvg(id, style, demo);
     if (cat) {

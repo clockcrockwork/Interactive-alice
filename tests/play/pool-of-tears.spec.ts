@@ -23,6 +23,33 @@ test('Dinah is the generated engraved cat in her memory beat', async ({ page }) 
   expect(decoded).toEqual([480, 400]);
 });
 
+test('Dinah keeps her drawn silhouette when the cutout fails to load', async ({ page }) => {
+  test.skip(!demo, 'the pool-of-tears demo is not built');
+  await page.route(/dinah-cat\.any\.generated-.*\.webp/, (route) => route.abort());
+  await page.goto(demo?.url ?? '');
+  await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
+  await atCue(page, 'cats', 0.55);
+  const state = await page
+    .locator('.pt__dinah svg[data-generated-rig="dinah-cat"]')
+    .evaluate((svg) => {
+      const fallback = svg.querySelector('[data-rig-fallback]');
+      const generated = svg.querySelector('[data-rig-generated]');
+      return {
+        ready: svg.hasAttribute('data-rig-ready'),
+        fallbackDisplay: getComputedStyle(fallback as Element).display,
+        fallbackWidth: (fallback as SVGGElement).getBBox().width,
+        imageDisplay: getComputedStyle(generated as Element).display,
+      };
+    });
+  expect(state).toMatchObject({
+    ready: false,
+    fallbackDisplay: 'inline',
+    imageDisplay: 'none',
+  });
+  expect(state.fallbackWidth).toBeGreaterThan(100);
+  expect(state.fallbackWidth).toBeLessThan(101);
+});
+
 /** Presses a lean button without moving the mouse over it, which would lean the water itself. */
 const press = async (page: Parameters<typeof atCue>[0], side: 'left' | 'right') => {
   const button = page.locator(`.pt__prop--${side}`);

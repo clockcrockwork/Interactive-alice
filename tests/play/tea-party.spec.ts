@@ -252,6 +252,42 @@ test('the tea-party: at tea-time the sentences stand beside the table, clear of 
   expect(overlaps).toBe(0);
 });
 
+test('the tea-party: phone captions let the tableware show through at every story cue', async ({
+  page,
+}) => {
+  test.skip(!demo, 'no tea-party demo in this build');
+  test.skip((page.viewportSize()?.width ?? 0) > 700, 'phone layout only');
+  await page.goto(demo?.url ?? '');
+  await expect(page.locator('.demo')).toHaveAttribute('data-attached', '', { timeout: 30_000 });
+
+  const cues = await page
+    .locator('.demo__stage .demo-beat[data-cue]')
+    .evaluateAll((beats) => [
+      ...new Set(
+        beats.map((beat) => beat.dataset.cue).filter((cue): cue is string => Boolean(cue)),
+      ),
+    ]);
+  expect(cues).toHaveLength(20);
+
+  for (const cue of cues) {
+    await atCue(page, cue, 0.5);
+    const fills = await page.locator(`.demo-beat[data-cue="${cue}"] .line`).evaluateAll((lines) =>
+      lines
+        .filter((line) => getComputedStyle(line).visibility === 'visible')
+        .map((line) => ({
+          background: getComputedStyle(line).backgroundColor,
+          textShadow: getComputedStyle(line).textShadow,
+        })),
+    );
+    expect(fills.length, `${cue}: active dialogue cards`).toBeGreaterThan(0);
+    for (const fill of fills) {
+      const alpha = Number(fill.background.match(/\/(\s*[\d.]+)\s*\)$/)?.[1]);
+      expect(alpha, `${cue}: paper opacity ${fill.background}`).toBeLessThanOrEqual(0.35);
+      expect(fill.textShadow, `${cue}: text halo`).not.toBe('none');
+    }
+  }
+});
+
 test('the tea-party: leaning the pointer to the edge never shows the edge of the world', async ({
   page,
 }) => {

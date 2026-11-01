@@ -356,7 +356,7 @@
 
   .ct__neck--etch {
     fill: url(#ct-neck-etch);
-    opacity: 0.24;
+    opacity: 0.34;
     mix-blend-mode: multiply;
     pointer-events: none;
   }

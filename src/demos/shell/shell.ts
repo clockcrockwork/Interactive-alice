@@ -1071,9 +1071,11 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     } catch (error) {
       console.error(error);
       detach();
+      document.documentElement.removeAttribute('data-demo-booting');
       return undefined;
     }
   }
+  document.documentElement.removeAttribute('data-demo-booting');
   return shell;
 }
 

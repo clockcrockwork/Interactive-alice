@@ -147,7 +147,7 @@ function mount(shell: DemoShell): void {
   }).join('');
   treetops.innerHTML =
     '<svg class="ct__canopy" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
-    '<defs><pattern id="ct-neck-etch" width="20" height="20" patternUnits="userSpaceOnUse" patternTransform="rotate(18)"><path d="M-5 5 L5 -5 M0 20 L20 0 M15 25 L25 15" fill="none" stroke="var(--ink-primary)" stroke-width="1"/><path d="M-5 15 L5 25 M5 5 L15 15 M15 -5 L25 5" fill="none" stroke="var(--ink-primary)" stroke-width=".45"/></pattern></defs>' +
+    '<defs><pattern id="ct-neck-etch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(18)"><path d="M-2 2 L2 -2 M0 9 L9 0 M7 11 L11 7" fill="none" stroke="var(--ink-primary)" stroke-width=".75"/><path d="M-2 7 L2 11 M0 0 L9 9 M7 -2 L11 2" fill="none" stroke="var(--ink-primary)" stroke-width=".38"/></pattern></defs>' +
     `<g class="ct__leaves ct__leaves--0">${generatedCanopyLeaves(leaves)}</g>` +
     '<ellipse class="ct__nest" cx="240" cy="820" rx="70" ry="26"/>' +
     '<path class="ct__neck" d=""/>' +

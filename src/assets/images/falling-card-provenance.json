@@ -1,22 +1,29 @@
 {
-  "date": "2026-10-21",
+  "date": "2026-11-01",
   "generator": "OpenAI image_gen, model not exposed",
   "intent": "Coherent whole falling pose with original vector layout and provisional Alice identity reference; blue is a reference colour edit of yellow",
   "promptHash": null,
-  "editing": "WebP q92 method6 exact true; unchanged dimensions and exact alpha, no crop/resize/recolour",
+  "editing": "Yellow hair color only was corrected to chestnut brown; canvas dimensions and source alpha matte retained. WebP q92 method6.",
   "scope": "Drink Me and Trial whole-figure cards only. Rabbit Hole independent rig and Duchess contact consumer remain original. Refused separated leg edit not retried or reconstructed.",
-  "browser": "not executed",
+  "browser": "targeted Drink Me and Trial browser behavior pending",
   "assets": [
     {
       "variant": "yellow",
       "asset": "figures/alice--falling-card.yellow.generated.webp",
-      "source": "exec-ff81c2c1-dfd9-47be-a1c0-15c51ad300fa.png",
-      "sourceSha256": "24cb1e08129f960673aade3e7266a0f7adb28fc00469e32908cde8550edea409",
-      "sha256": "84f26fde96099629959f13a455f143ac5ad5bf684fe0356c75443f3203378946",
-      "bytes": 544666,
+      "source": {
+        "filename": "exec-8d3ad129-33d5-454f-af62-76fdbf41f1b2.png",
+        "sha256": "5d367f3bd6805a2953ce06e8e7fb48b2a1372dae991a9a845bb9cdf1b1f5281e",
+        "bytes": 2225360
+      },
+      "sourceSha256": "5d367f3bd6805a2953ce06e8e7fb48b2a1372dae991a9a845bb9cdf1b1f5281e",
+      "sha256": "80e00f4eab24d3ce142009333b670c8fcf32e1a7c1ab704c8d7ef4d79b23d266",
+      "bytes": 488110,
       "dimensions": [971, 1619],
-      "alphaBoundsAbove32": [27, 23, 952, 1597],
-      "footY": 1596
+      "alphaBoundsAbove32": [26, 22, 953, 1597],
+      "footY": 1596,
+      "width": 971,
+      "height": 1619,
+      "rasterEdits": "Hair recolored from golden blonde to chestnut brown; pose, framing, dress, and canvas dimensions preserved. Transparency retained; edge alpha may vary. WebP q92 method6."
     },
     {
       "variant": "blue",

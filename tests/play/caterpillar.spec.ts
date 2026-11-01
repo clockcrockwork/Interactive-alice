@@ -119,6 +119,25 @@ test('the caterpillar: above the trees her shoulders are clear of the captions, 
   const shoulders = await rect(page, '.ct__shoulders');
   const captions = await rect(page, '.demo-beat[data-cue="neck"]');
   expect(shoulders && captions).toBeTruthy();
+  const seam = await page.locator('.ct__canopy').evaluate((svg) => {
+    const children = [...svg.children];
+    const names = children.map((child) => child.getAttribute('class') ?? child.tagName);
+    const path = svg.querySelector<SVGPathElement>(
+      '.ct__neck:not(.ct__neck--shade):not(.ct__neck--etch)',
+    );
+    const d = path?.getAttribute('d') ?? '';
+    const start = d.match(/^M(-?\d+(?:\.\d+)?) (-?\d+(?:\.\d+)?)/);
+    const end = d.match(/L(-?\d+(?:\.\d+)?) (-?\d+(?:\.\d+)?) Z$/);
+    return {
+      shoulderAfterNeck: names.indexOf('ct__shoulders') > names.indexOf('ct__neck ct__neck--etch'),
+      rootWidth:
+        start && end
+          ? Math.hypot(Number(start[1]) - Number(end[1]), Number(start[2]) - Number(end[2]))
+          : 0,
+    };
+  });
+  expect(seam.shoulderAfterNeck).toBe(true);
+  expect(seam.rootWidth).toBeLessThan(18);
   if (shoulders && captions) {
     expect(shoulders.top).toBeGreaterThan(captions.bottom);
   }

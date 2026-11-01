@@ -304,6 +304,7 @@ function mount(shell: DemoShell): void {
   letterButton.addEventListener('click', openLetter);
   const letterShown = (): void => {
     const inside = master.time() >= iInvitation && master.time() < iLaugh;
+    outside.toggleAttribute('data-letter-up', inside);
     if (inside) {
       letterButton.show();
     } else {

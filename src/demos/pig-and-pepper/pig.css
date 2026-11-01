@@ -1296,7 +1296,20 @@
     }
 
     .pp__letter {
-      inset-block-end: calc(34% + 6vmin);
+      inset-inline-start: 41%;
+      inset-block-end: calc(34% + 9vmin);
+      inline-size: clamp(4.5rem, 16vmin, 5.5rem);
+      z-index: 1;
+    }
+
+    /* Let the reader see the Frog's face and reading posture over the letter. */
+    .pp__footman--fish,
+    .pp__footman--frog {
+      z-index: 2;
+    }
+
+    .pp__outside[data-letter-up] .pp__footman {
+      pointer-events: none;
     }
 
     .pp__plate-flying {

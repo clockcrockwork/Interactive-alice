@@ -29,6 +29,28 @@ test.describe("the Mouse's tale", () => {
     const first = await cat.boundingBox();
     const screen = (page.viewportSize()?.width ?? 0) < 700 ? 'phone' : 'desktop';
     await page.screenshot({ path: `${evidenceRoot}/dinah-pouncing-${screen}-after.png` });
+    const overlapsText = await page.evaluate(() => {
+      const cat = document.querySelector('.mt__dinah .art')?.getBoundingClientRect();
+      if (!cat) return true;
+      return [
+        ...document.querySelectorAll<HTMLElement>(
+          '.demo__captions .demo-beat[data-cue="dinah"] .line',
+        ),
+      ].some((line) => {
+        const style = getComputedStyle(line);
+        const box = line.getBoundingClientRect();
+        return (
+          Number(style.opacity) > 0.1 &&
+          box.width > 0 &&
+          box.height > 0 &&
+          cat.left < box.right &&
+          box.left < cat.right &&
+          cat.top < box.bottom &&
+          box.top < cat.bottom
+        );
+      });
+    });
+    expect(overlapsText, `Dinah overlaps a story caption on ${screen}`).toBe(false);
     await atCue(page, 'dinah', 0.8);
     const later = await cat.boundingBox();
     expect(first).not.toBeNull();

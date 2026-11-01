@@ -18,6 +18,7 @@
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { hydrateGeneratedRig } from '../art/generated-rig.ts';
+import { scenery } from '../art/generated-scenery.ts';
 import {
   dressRunner,
   HANDS,
@@ -141,7 +142,11 @@ function mount(shell: DemoShell): void {
   const quick = (duration: number): number => (reducedMotion ? 0.01 : duration);
 
   // --- The bank and the ring, the race's own.
-  shell.layer('cr__sky');
+  const sky = shell.layer('cr__sky');
+  // The Mouse's bank shares the race's engraved trees and hedge. Keep these
+  // distant behind the ring so the wide sky has a landscape without covering
+  // the actors or their captions.
+  sky.innerHTML = `<div class="mt__bank-tree mt__bank-tree--left">${scenery('tree')}</div><div class="mt__bank-tree mt__bank-tree--right">${scenery('tree')}</div><div class="mt__bank-hedge">${scenery('hedge')}</div>`;
   const world = shell.layer('cr__world');
   const ring = document.createElement('div');
   ring.className = 'cr__ring';
@@ -195,7 +200,10 @@ function mount(shell: DemoShell): void {
 
   // The race's last frame: the party crowded round Alice, the camera close on
   // her, the thimble in her hand.
-  const gather = { amount: 1, centre: aliceAngle, spread: 120 };
+  // A tall phone frame stacks the near side of the ring in projection. Give
+  // Alice's huddle a little more angular room so the Dodo stands at her side
+  // rather than directly over her head.
+  const gather = { amount: 1, centre: aliceAngle, spread: lite ? 200 : 120 };
   // The Mouse's walk off: it goes round the ring and out of the frame.
   const away = { v: 0 };
   // The Canary: 0 unseen, 1 come out to call its chicks.
@@ -234,6 +242,7 @@ function mount(shell: DemoShell): void {
       }
       member.el.style.setProperty('--a', angle.toFixed(2));
       member.el.style.setProperty('--r', radius.toFixed(3));
+      member.el.style.setProperty('--y', lite && member.kind === 'dodo' ? '-74' : '0');
       member.el.style.setProperty('--leave', Math.min(1, leave).toFixed(3));
       member.el.toggleAttribute('data-gone', leave > 0.99);
       if (member === alice) {
@@ -1006,6 +1015,13 @@ function mount(shell: DemoShell): void {
   // on a narrow screen, where the race's last frame left it; it fills the frame
   // by the end.
   const house = DISTANT_HOUSE(lite);
+  // On a tall phone the house is a horizon landmark, not a prop beside the
+  // birds: keep it smaller and lower in the distant bank.
+  if (lite) {
+    house.hx = 42;
+    house.hy = -16;
+    house.hz = 0.05;
+  }
   const applyHouse = (): void => {
     arrival.style.setProperty('--hx', house.hx.toFixed(2));
     arrival.style.setProperty('--hy', house.hy.toFixed(2));

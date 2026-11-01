@@ -1,7 +1,13 @@
 /** The key, the bottle and the cake. Their labels are filled in from the text
  * (label.ts reads them from the sentences that set them apart). */
 
+import { type ArtStyle, artStyle } from '../art/treatments.ts';
 import { emWidth, type LocaleProfile, units } from '../shell/words.ts';
+
+const ANTIQUE_KEY = new URL(
+  '../../assets/images/figures/antique-key.any.generated.webp',
+  import.meta.url,
+).href;
 
 /** What a label's layout needs to know about its language: the page's profile. */
 export type LabelLayout = Pick<LocaleProfile, 'wordUnit' | 'tag' | 'glyphWidth'>;
@@ -67,7 +73,8 @@ export const labelText = (
  * stretched to fit whatever their length in whatever language. */
 export const labelFaceSvg = (label: string, layout: LabelLayout = SPACED): string => `
 <svg viewBox="0 0 48 26" focusable="false">
-  <rect x="1" y="1" width="46" height="24" rx="3" fill="var(--dk-label)" stroke="var(--sepia-dark)"/>
+  <path class="dk__label-paper" d="M2 2 Q24 5 46 2 C43 9 43 17 46 24 Q24 21 2 24 C5 17 5 9 2 2 Z" fill="var(--dk-label)" stroke="var(--sepia-dark)" stroke-width="1.2" stroke-linejoin="round"/>
+  <path d="M3 3 C6 9 6 17 3 23 Q7 24 10 23 C12 17 12 9 10 3 Q6 4 3 3Z M45 3 C42 9 42 17 45 23 Q41 24 38 23 C36 17 36 9 38 3 Q42 4 45 3Z" fill="var(--sepia-dark)" opacity="0.13"/>
   ${labelText(label, 24, 17.5, 11, 38, layout)}
 </svg>`;
 
@@ -77,6 +84,15 @@ export const KEY_SVG = `
   <path d="M20 12 H56 M48 12 v8 M40 12 v6" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
 </svg>`;
 
+/** Keep the key on its original 60×24 movement pivot and fall back to its drawing. */
+export function keyMarkup(
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  if (style !== 'engraved') return KEY_SVG;
+  const fallback = KEY_SVG.replace(/^\s*<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
+  return `<svg viewBox="0 0 60 24" focusable="false" data-generated-rig="drink-me/key"><g data-rig-fallback="">${fallback}</g><g data-rig-generated="" visibility="hidden" display="none"><image data-rig-image="" href="${ANTIQUE_KEY}" width="60" height="24" preserveAspectRatio="xMidYMid meet"/></g></svg>`;
+}
+
 export const bottleSvg = (label: string, layout: LabelLayout = SPACED): string => `
 <svg viewBox="0 0 60 140" focusable="false">
   <rect x="22" y="2" width="16" height="14" rx="3" fill="var(--sepia-dark)"/>
@@ -84,7 +100,8 @@ export const bottleSvg = (label: string, layout: LabelLayout = SPACED): string =
   <g class="dk__liquid">
     <path d="M9 70 h42 v58 q0 8 -8 8 h-26 q-8 0 -8 -8 z" fill="var(--dk-drink)"/>
   </g>
-  <rect x="6" y="52" width="48" height="26" rx="3" fill="var(--dk-label)" stroke="var(--sepia-dark)"/>
+  <path class="dk__label-paper" d="M6 53 Q30 57 54 53 C50 60 50 70 54 77 Q30 73 6 77 C10 70 10 60 6 53 Z" fill="var(--dk-label)" stroke="var(--sepia-dark)" stroke-width="1.4" stroke-linejoin="round"/>
+  <path d="M7 54 C11 60 11 70 7 76 Q11 77 15 76 C18 70 18 60 15 54 Q11 55 7 54Z M53 54 C49 60 49 70 53 76 Q49 77 45 76 C42 70 42 60 45 54 Q49 55 53 54Z" fill="var(--sepia-dark)" opacity="0.13"/>
   <path d="M30 40 v12" stroke="var(--sepia-dark)" stroke-width="1.5"/>
   ${labelText(label, 30, 70, 11, 40, layout)}
 </svg>`;

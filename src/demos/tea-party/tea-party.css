@@ -335,6 +335,24 @@
     --stand: 0.6;
   }
 
+  .tp__chair-seat {
+    --stand: 1;
+    --sink: 0;
+  }
+
+  .tp__chair-seat svg {
+    transform: scaleX(var(--chair-side, 1));
+  }
+
+  .tp__table-spread {
+    --stand: 0.45;
+    --sink: 0;
+  }
+
+  .tp__table-spread--bread {
+    opacity: 0.94;
+  }
+
   .tp__lid {
     transform-box: fill-box;
     transform-origin: 20% 100%;

@@ -7,6 +7,38 @@
 
 import { type ArtStyle, artStyle } from '../art/treatments.ts';
 
+const TEA_CHAIR = new URL(
+  '../../assets/images/figures/tea-chair.any.generated.webp',
+  import.meta.url,
+).href;
+const TARTS_TABLE = new URL(
+  '../../assets/images/figures/tarts-table.any.generated.webp',
+  import.meta.url,
+).href;
+const BREAD_AND_BUTTER = new URL(
+  '../../assets/images/figures/bread-and-butter.any.generated.webp',
+  import.meta.url,
+).href;
+const MARCH_HARE_HOUSE = new URL(
+  '../../assets/images/figures/march-hare-house.any.generated.webp',
+  import.meta.url,
+).href;
+const TEA_CAKES = new URL(
+  '../../assets/images/figures/tea-cakes.any.generated.webp',
+  import.meta.url,
+).href;
+
+/** A chair keeps a drawn fallback while its engraved cutout is loading. */
+export function chairMarkup(): string {
+  return `<svg viewBox="0 0 1024 1536" focusable="false" aria-hidden="true" data-generated-rig="tea-party/chair"><g data-rig-fallback=""><path d="M230 650 L180 1300 M790 650 L860 1320 M330 900 L280 1450 M740 900 L700 1440" fill="none" stroke="var(--tp-wood)" stroke-width="70" stroke-linecap="round"/><path d="M230 630 Q220 140 510 120 Q820 120 800 650 Z" fill="var(--tp-chair-light)" stroke="var(--tp-wood)" stroke-width="48"/><path d="M255 640 L775 640 L840 900 Q525 1010 190 900 Z" fill="var(--tp-chair)" stroke="var(--tp-wood)" stroke-width="44"/></g><g data-rig-generated="" visibility="hidden" display="none"><image data-rig-image="" href="${TEA_CHAIR}" width="1024" height="1536" preserveAspectRatio="xMidYMid meet"/></g></svg>`;
+}
+
+/** The shared table centre alternates engraved tarts and bread-and-butter. */
+export function tableSpreadMarkup(kind: 'tarts' | 'bread' | 'cakes'): string {
+  const href = kind === 'tarts' ? TARTS_TABLE : kind === 'cakes' ? TEA_CAKES : BREAD_AND_BUTTER;
+  return `<svg viewBox="0 0 260 140" focusable="false" aria-hidden="true" data-generated-rig="tea-party/${kind}"><g data-rig-fallback=""><ellipse cx="130" cy="116" rx="116" ry="18" fill="var(--tp-china-shade)"/><ellipse cx="130" cy="108" rx="105" ry="28" fill="var(--tp-china)"/><path d="M62 100 Q72 45 130 48 Q188 45 198 100 Z" fill="var(--tp-butter)" stroke="var(--tp-ink-cut)" stroke-width="4"/><path d="M80 83 Q130 53 180 83 M95 97 Q130 77 165 97" fill="none" stroke="var(--tp-ink-cut)" stroke-width="3"/></g><g data-rig-generated="" visibility="hidden" display="none"><image data-rig-image="" href="${href}" width="260" height="140" preserveAspectRatio="xMidYMid meet"/></g></svg>`;
+}
+
 const SETTING_CLEAN = `    <ellipse cx="104" cy="92" rx="44" ry="14" fill="var(--tp-china-shade)"/>
     <ellipse cx="104" cy="88" rx="40" ry="12" fill="var(--tp-china)"/>
     <ellipse cx="104" cy="88" rx="26" ry="7" fill="none" stroke="var(--tp-china-rim)" stroke-width="2"/>
@@ -249,6 +281,14 @@ export const HOUSE_SVG = `
     </g>
   </g>
 </svg>`;
+
+/** The thatched house replaces the flat exterior; its clock remains live. */
+export function houseMarkup(): string {
+  const fallback = HOUSE_SVG.replace(/^\s*<svg[^>]*>/, '')
+    .replace(/<g class="tp__house-clock">[\s\S]*?<\/g>\s*<\/g>/, '')
+    .replace(/<\/svg>\s*$/, '');
+  return `<svg viewBox="0 0 400 300" focusable="false" data-generated-rig="tea-party/march-hare-house"><g data-rig-fallback="">${fallback}</g><g data-rig-generated="" visibility="hidden" display="none"><image data-rig-image="" href="${MARCH_HARE_HOUSE}" width="400" height="300" preserveAspectRatio="xMidYMid meet"/></g><g class="tp__house-clock"><circle cx="200" cy="120" r="26" fill="var(--tp-china)" stroke="var(--tp-brass-deep)" stroke-width="4"/><g class="tp__house-hands"><path d="M200 120 v-18 M200 120 h12" stroke="var(--ink-primary)" stroke-width="3" stroke-linecap="round"/></g></g></svg>`;
+}
 
 /** The tree the table is set under: a trunk and a round crown. */
 export const TREE_SVG = `

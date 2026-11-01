@@ -54,6 +54,31 @@ describe('outdoor engraved scenery', () => {
     expect(css).toContain('> .tp__tree-original');
     expect(read('../tea-party/tea-party.css')).toContain('tan(var(--pitch) * 1deg)');
   });
+  it('reuses the engraved tree, hedge and ground across the Duchess walk', () => {
+    const main = read('../duchess/main.ts');
+    expect(main).toContain("scenery('tree')");
+    expect(main).toContain("scenery('hedge')");
+    expect(main).toContain("scenery('ground')");
+    const css = read('../duchess/duchess.css');
+    expect(css).toContain('.dc__hedge:has([data-generated-rig="scenery/hedge"][data-rig-ready])');
+    expect(css).toContain(
+      '.dc__turf-art:has([data-generated-rig="scenery/ground"][data-rig-ready])',
+    );
+    expect(css).toContain('background-size: 57vh 19vh');
+  });
+  it('puts the same reusable engraved plants and grass around the Rabbit house', () => {
+    const main = read('../rabbit-house/main.ts');
+    for (const asset of ['tree', 'hedge', 'ground']) {
+      expect(main).toContain(`scenery('${asset}')`);
+    }
+    const css = read('../rabbit-house/house.css');
+    expect(css).toContain(
+      '.hs__garden-hedge:has([data-generated-rig="scenery/hedge"][data-rig-ready])',
+    );
+    expect(css).toContain(
+      '.hs__garden-grass:has([data-generated-rig="scenery/ground"][data-rig-ready])',
+    );
+  });
   it('gives all inset-positioned decorations absolute layout, with separate near-ground geometry', () => {
     const css = read('./generated-scenery.css');
     const rules = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)];
@@ -140,6 +165,8 @@ describe('scenery delivery records', () => {
     let total = 0;
     let tea = 0;
     let night = 0;
+    let duchess = 0;
+    let rabbitHouse = 0;
     for (const asset of record.assets) {
       const bytes = readFileSync(new URL(`../../assets/images/${asset.asset}`, import.meta.url));
       expect(bytes.length).toBe(asset.bytes);
@@ -148,12 +175,18 @@ describe('scenery delivery records', () => {
       if (!asset.id.startsWith('night-')) total += bytes.length;
       else night += bytes.length;
       if (asset.id === 'tree' || asset.id === 'ground') tea += bytes.length;
+      if (asset.id === 'tree' || asset.id === 'ground' || asset.id === 'hedge') {
+        duchess += bytes.length;
+        rabbitHouse += bytes.length;
+      }
     }
     expect(record.routeBytes.riverbank).toBe(total);
     expect(record.routeBytes['rabbit-hole']).toBe(total);
     expect(record.routeBytes['tea-party']).toBe(tea);
     expect(tea).toBeLessThan(total);
     expect(record.routeBytes['cheshire-cat']).toBe(night);
+    expect(record.routeBytes.duchess).toBe(duchess);
+    expect(record.routeBytes['rabbit-house']).toBe(rabbitHouse);
   });
 });
 

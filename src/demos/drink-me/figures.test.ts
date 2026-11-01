@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { labelText } from './figures.ts';
+import { bottleSvg, KEY_SVG, keyMarkup, labelFaceSvg, labelText } from './figures.ts';
 
 describe("the words on the bottle's label", () => {
   it('fits a short label on one line', () => {
@@ -28,6 +28,31 @@ describe("the words on the bottle's label", () => {
 
   it('leaves a wide label without a space on one line', () => {
     expect(labelText('ＡＡＡＡＡＡ', 24, 17.5, 11, 38)).not.toContain('<tspan');
+  });
+});
+
+describe('the room key', () => {
+  it('uses the engraved cutout on the original movement box and keeps its vector fallback', () => {
+    const markup = keyMarkup('engraved');
+    expect(markup).toContain('data-generated-rig="drink-me/key"');
+    expect(markup).toContain('antique-key.any.generated.webp');
+    expect(markup).toContain('data-rig-fallback=""');
+    expect(markup).toContain('data-rig-image=""');
+    expect(markup).toContain('viewBox="0 0 60 24"');
+    expect(keyMarkup('flat')).toBe(KEY_SVG);
+  });
+});
+
+describe('the paper follows the rounded bottle', () => {
+  it('bows the label edges around the bottle while keeping the text legible in the centre', () => {
+    const face = labelFaceSvg('DRINK ME');
+    const bottle = bottleSvg('DRINK ME');
+    expect(face).toContain('class="dk__label-paper" d="M2 2 Q24 5 46 2');
+    expect(face).toContain('>DRINK ME</text>');
+    expect(face).not.toContain('<rect x="1" y="1" width="46" height="24"');
+    expect(bottle).toContain('class="dk__label-paper" d="M6 53 Q30 57 54 53');
+    expect(bottle).toContain('>DRINK ME</text>');
+    expect(bottle).not.toContain('<rect x="6" y="52" width="48" height="26"');
   });
 });
 

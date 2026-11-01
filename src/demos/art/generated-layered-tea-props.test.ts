@@ -27,6 +27,31 @@ describe('generated layered tea props', () => {
     ['cup-front', 'cupFrontMarkup', tea.CUP_FRONT_SVG, '300 220', 1],
   ] as const;
 
+  it('uses a load-safe engraved chair cutout and shared generated party food', () => {
+    const chair = tea.chairMarkup();
+    expect(chair).toContain('data-generated-rig="tea-party/chair"');
+    expect(chair).toContain('data-rig-fallback=""');
+    expect(chair).toContain('tea-chair.any.generated.webp');
+    expect(chair).toContain('data-rig-image=""');
+    for (const [kind, asset] of [
+      ['bread', 'bread-and-butter.any.generated.webp'],
+      ['cakes', 'tea-cakes.any.generated.webp'],
+      ['tarts', 'tarts-table.any.generated.webp'],
+    ] as const) {
+      const spread = tea.tableSpreadMarkup(kind);
+      expect(spread).toContain(`tea-party/${kind}`);
+      expect(spread).toContain('data-rig-fallback=""');
+      expect(spread).toContain(asset);
+      expect(spread).toContain('data-rig-image=""');
+    }
+    const house = tea.houseMarkup();
+    expect(house).toContain('march-hare-house.any.generated.webp');
+    expect(house).toContain('data-rig-fallback=""');
+    expect(house).toContain('data-rig-image=""');
+    expect(house.match(/class="tp__house-clock"/g)).toHaveLength(1);
+    expect(house).toContain('class="tp__house-hands"');
+  });
+
   for (const [id, name, fallback, box, count] of props) {
     it(`selects ${id} only in engraved and retains its original canvas`, () => {
       const render = renderer(name);

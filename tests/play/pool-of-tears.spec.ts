@@ -4,6 +4,25 @@ import { atCue, customProperty, demos } from '../demo-helpers.ts';
 const demo = demos.find((d) => d.demo === 'pool-of-tears');
 const LEAN = '.pt__sea';
 
+test('Dinah is the generated engraved cat in her memory beat', async ({ page }) => {
+  test.skip(!demo, 'the pool-of-tears demo is not built');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'cats', 0.55);
+  await expect(page.locator('.pt__dinah')).toBeVisible();
+  await expect(page.locator('.pt__dinah image')).toHaveAttribute(
+    'href',
+    /dinah-cat\.any\.generated-/,
+  );
+  const decoded = await page.locator('.pt__dinah image').evaluate(async (node) => {
+    const href = (node as SVGImageElement).href.baseVal;
+    const image = new Image();
+    image.src = href;
+    await image.decode();
+    return [image.naturalWidth, image.naturalHeight];
+  });
+  expect(decoded).toEqual([480, 400]);
+});
+
 /** Presses a lean button without moving the mouse over it, which would lean the water itself. */
 const press = async (page: Parameters<typeof atCue>[0], side: 'left' | 'right') => {
   const button = page.locator(`.pt__prop--${side}`);

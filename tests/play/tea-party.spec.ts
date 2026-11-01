@@ -39,6 +39,40 @@ const lineOf = (page: Page, cue: string, speaker: string, last = false) =>
 
 const status = (page: Page) => page.locator('.demo__status');
 
+test('the tea-party: its chairs and shared engraved food fit the table on desktop and phone', async ({
+  page,
+}) => {
+  test.skip(!demo, 'no tea-party demo in this build');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'tea-time', 0.5);
+  await expect(page.locator('.tp__chair-seat')).toHaveCount(6);
+  await expect(page.locator('.tp__table-spread')).toHaveCount(3);
+  await expect(page.locator('.tp__chair-seat svg[data-generated-rig]')).toHaveCount(6);
+  await expect(page.locator('.tp__table-spread svg[data-generated-rig]')).toHaveCount(3);
+  await expect(page.locator('.tp__chair-seat svg[data-generated-rig][data-rig-ready]')).toHaveCount(
+    6,
+    {
+      timeout: 8000,
+    },
+  );
+  await expect(
+    page.locator('.tp__table-spread svg[data-generated-rig][data-rig-ready]'),
+  ).toHaveCount(3, {
+    timeout: 8000,
+  });
+  await expect(
+    page.locator('.tp__house svg[data-generated-rig="tea-party/march-hare-house"][data-rig-ready]'),
+  ).toHaveCount(1, { timeout: 8000 });
+  const overlap = await page.evaluate(() => {
+    const table = document.querySelector('.tp__cloth')?.getBoundingClientRect();
+    const party = [...document.querySelectorAll('.tp__party')].map((node) =>
+      node.getBoundingClientRect(),
+    );
+    return Boolean(table && party.some((box) => box.bottom < table.top && box.height > 0));
+  });
+  expect(overlap).toBe(false);
+});
+
 test('the tea-party: the places sat at stay used, and a used one tapped makes the Hatter frown', async ({
   page,
 }) => {

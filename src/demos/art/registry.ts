@@ -399,7 +399,18 @@ export const ART: Record<string, ArtEntry> = {
   },
   'white-rabbit/garden': vector('', [60, 80], feetAtOrigin(HOUSE_RABBIT, 60, 80)),
   pat: vector('', [60, 70], feetAtOrigin(HOUSE_PAT, 60, 70)),
-  'dinah-cat': vector(DINAH_SVG, [120, 100]),
+  'dinah-cat': {
+    ...vector(DINAH_SVG, [120, 100]),
+    generated: {
+      any: {
+        src: new URL('../../assets/images/figures/dinah-cat.any.generated.webp', import.meta.url)
+          .href,
+        width: 480,
+        height: 400,
+        footY: 394,
+      },
+    },
+  },
   'dinah-cat/pouncing': vector(DINAH_POUNCING_SVG, [160, 80]),
   bat: vector(BAT_SVG, [100, 50]),
   dormouse: vector(MOUSE_SVG, [140, 110]),

@@ -28,6 +28,11 @@ import {
 } from './figures.ts';
 import './croquet.css';
 
+const ROSE_STATE_SPRITE = new URL(
+  '../../assets/images/figures/rose-state-sprite.any.generated.webp',
+  import.meta.url,
+).href;
+
 interface Piece {
   el: HTMLElement;
   x: number;
@@ -122,8 +127,15 @@ function mount(shell: DemoShell): void {
     item.el.style.setProperty('--z', item.z.toFixed(1));
   }
 
-  // The rose-tree and its roses: every rose a button that paints red.
+  // The rose-tree and its roses: every button changes from the white engraving
+  // to its separate red plate when the gardener paints it.
   const roseTree = piece('cq__rose-tree', figure('rose-tree'), -520, -80, 22);
+  const roseArtwork = new Image();
+  roseArtwork.onload = () => {
+    roseTree.el.style.setProperty('--cq-rose-art', `url("${ROSE_STATE_SPRITE}")`);
+    roseTree.el.setAttribute('data-rose-art-ready', '');
+  };
+  roseArtwork.src = ROSE_STATE_SPRITE;
   const roseSpots = [
     [24, 30],
     [46, 20],
@@ -141,7 +153,7 @@ function mount(shell: DemoShell): void {
     `<div class="cq__roses">${roseSpots
       .map(
         ([x, y]) =>
-          `<button type="button" class="cq__rose" aria-label="${shell.ui.demoPaintRose ?? ''}" aria-pressed="false" style="--rx: ${x}%; --ry: ${y}%"></button>`,
+          `<button type="button" class="cq__rose" aria-label="${shell.ui.demoPaintRose ?? ''}" aria-pressed="false" style="--rx: ${x}%; --ry: ${y}%"><span class="cq__rose-art cq__rose-art--white" aria-hidden="true"></span><span class="cq__rose-art cq__rose-art--red" aria-hidden="true"></span><span class="cq__rose-drip" aria-hidden="true"></span></button>`,
       )
       .join('')}</div>`,
   );

@@ -12,6 +12,7 @@
  */
 
 import gsap from 'gsap';
+import { scenery } from '../art/generated-scenery.ts';
 import { attachDemo, type DemoShell, REDUCED_SETTLE, seeded } from '../shell/shell.ts';
 import { BOTTLE_IN_HAND_SVG, HOUSE_SVG, RIM_SVG, WIDE_FRAME } from './figures.ts';
 import { HOUSE_FRONT_SVG } from './front.ts';
@@ -32,7 +33,12 @@ function mount(shell: DemoShell): void {
   const iChimney = cue('chimney');
 
   const iRoom = cue('room');
-  shell.layer('hs__garden');
+  const garden = shell.layer('hs__garden');
+  garden.innerHTML =
+    `<div class="hs__garden-tree hs__garden-tree--left">${scenery('tree')}</div>` +
+    `<div class="hs__garden-tree hs__garden-tree--right">${scenery('tree')}</div>` +
+    `<div class="hs__garden-hedge">${scenery('hedge')}</div>` +
+    `<div class="hs__garden-grass">${scenery('ground')}</div>`;
   const stage = shell.layer('hs__stage');
   stage.innerHTML = HOUSE_SVG;
   const frame = stage.querySelector<SVGGElement>('.hs__frame');

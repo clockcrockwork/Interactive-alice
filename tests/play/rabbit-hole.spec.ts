@@ -3,6 +3,22 @@ import { atCue, demos, scrollTo } from '../demo-helpers.ts';
 
 const demo = demos.find((d) => d.demo === 'rabbit-hole');
 
+test('the engraved door room uses the illustrated trapdoor on desktop and phone', async ({
+  page,
+}) => {
+  test.skip(!demo, 'no rabbit-hole page in the manifest');
+  await page.goto(demo?.url ?? '');
+  await expect(page.locator('.demo')).toHaveAttribute('data-attached', '', { timeout: 30_000 });
+  const doors = page.locator('.trapdoor__leaf-art');
+  await expect(doors).toHaveCount(6);
+  const decoded = await doors.first().evaluate(async (node) => {
+    const image = node as HTMLImageElement;
+    await image.decode();
+    return [image.naturalWidth, image.naturalHeight];
+  });
+  expect(decoded).toEqual([512, 640]);
+});
+
 test.describe('the rabbit hole: looking at a map', () => {
   test.skip(!demo, 'no rabbit-hole page in the manifest');
 

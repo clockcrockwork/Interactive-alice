@@ -202,6 +202,9 @@
   /* The tail: one SVG in stage pixels, the chunks of the verses laid along its
      curve, each a little smaller than the last. */
   .mt__tail {
+    /* This SVG is appended after the world, but the world has an explicit
+       stacking level. Keep the reading path above it so drags reach its grip. */
+    z-index: 2;
     pointer-events: none;
     overflow: visible;
     transition: opacity var(--demo-quick) var(--demo-ease);
@@ -246,6 +249,9 @@
     stroke-linejoin: round;
     opacity: 0;
     user-select: none;
+    /* The invisible lyric labels overlap the broad drag path underneath. Keep
+       pointer input on that path so a drag beginning on a word reads it. */
+    pointer-events: none;
   }
 
   /* The line under the reading-glass, swollen by its transform, in full ink. */

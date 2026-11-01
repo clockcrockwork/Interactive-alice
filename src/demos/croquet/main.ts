@@ -252,13 +252,14 @@ function mount(shell: DemoShell): void {
   const procession: Piece[] = [];
   const clubSoldier =
     `${figure('card-soldier')}<svg class="cq__club-mark" viewBox="0 0 120 220" aria-hidden="true" focusable="false">` +
-    '<path d="M60 71 C51 62 40 69 44 79 C47 87 56 91 60 97 C64 91 73 87 76 79 C80 69 69 62 60 71 Z" fill="var(--paper-warm)" stroke="var(--sepia-deep)" stroke-width="2"/>' +
-    '<path d="M60 74 C54 68 47 72 50 78 C52 82 57 85 60 89 C63 85 68 82 70 78 C73 72 66 68 60 74 Z" fill="var(--ink-primary)"/></svg>';
+    '<rect x="36" y="56" width="48" height="50" rx="4" fill="var(--paper-base)"/>' +
+    '<g transform="translate(33 44) scale(.45)"><circle cx="60" cy="69" r="8" fill="var(--ink-primary)"/><circle cx="49" cy="81" r="8" fill="var(--ink-primary)"/><circle cx="71" cy="81" r="8" fill="var(--ink-primary)"/>' +
+    '<path d="M60 77 L60 96 M53 98 H67" fill="none" stroke="var(--ink-primary)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></g></svg>';
   const marchers: [string, string, number][] = [
     ...Array.from({ length: lite ? 4 : 6 }, (): [string, string, number] => [
       'cq__soldier',
       clubSoldier,
-      8,
+      lite ? 6 : 8,
     ]),
     ...Array.from({ length: lite ? 3 : 5 }, (): [string, string, number] => [
       'cq__courtier',
@@ -279,11 +280,14 @@ function mount(shell: DemoShell): void {
     ['cq__king', figure('king-of-hearts'), 10],
     ['cq__queen', figure('queen-of-hearts'), 10],
   ];
+  const soldiers = marchers.filter(([className]) => className === 'cq__soldier').length;
+  const marchStart = (index: number): number =>
+    index < soldiers ? (lite ? -280 : 100) + index * (lite ? 95 : 130) : 1400 + index * 130;
   marchers.forEach(([className, markup, w], index) => {
     const item = piece(
       `cq__marcher ${className}`,
       markup,
-      1400 + index * 130,
+      marchStart(index),
       40 + (index % 2) * 60,
       w,
     );
@@ -297,7 +301,7 @@ function mount(shell: DemoShell): void {
   const applyMarch = (): void => {
     procession.forEach((item, index) => {
       const target = 60 - (procession.length - 1 - index) * 130;
-      item.x = mix(1400 + index * 130, target, stepMarch.t);
+      item.x = mix(marchStart(index), target, stepMarch.t);
       place(item);
     });
     ground.toggleAttribute('data-marching', stepMarch.t > 0 && stepMarch.t < 1);

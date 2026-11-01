@@ -244,7 +244,31 @@ test.describe('croquet: the new play', () => {
     await expect(page.locator('.cq__soldier > .cq__club-mark')).toHaveCount(
       await page.locator('.cq__soldier').count(),
     );
+    await expect(page.locator('.cq__soldier')).not.toHaveCount(0);
+    await expect(page.locator('.cq__soldier > .cq__club-mark > rect')).toHaveCount(
+      await page.locator('.cq__soldier').count(),
+    );
     await expect(page.locator('.cq__knave .cq__cushion svg')).toBeVisible();
+  });
+
+  test('club soldiers are visible while the story names their entry', async ({
+    page,
+  }, testInfo) => {
+    await page.goto(demo?.url ?? '');
+    await atCue(page, 'footsteps', 0.35);
+    const stage = await page.locator('.demo__stage').boundingBox();
+    const visibleSoldiers = await page.locator('.cq__soldier').evaluateAll(
+      (nodes) =>
+        nodes.filter((node) => {
+          const r = node.getBoundingClientRect();
+          return r.right > 0 && r.left < innerWidth && r.bottom > 0 && r.top < innerHeight;
+        }).length,
+    );
+    expect(stage).not.toBeNull();
+    expect(visibleSoldiers).toBeGreaterThan(0);
+    await page.screenshot({
+      path: `/workspace/alice-audit-evidence-20261101/scene-review/croquet-soldiers-entry-${testInfo.project.name}.png`,
+    });
   });
 
   test('the executioner swings at the air under the head, which bobs out of reach', async ({

@@ -1,6 +1,39 @@
 import { expect, test } from '@playwright/test';
 import { atCue, customProperty, demos, scrollTo } from '../demo-helpers.ts';
 
+const evidenceRoot = '/workspace/alice-audit-evidence-20261101/neck-variants';
+
+test.describe('Caterpillar neck on a phone', () => {
+  test.use({ viewport: { width: 390, height: 780 }, hasTouch: true, isMobile: true });
+
+  test('the strongest rightward bend stays narrow and clear of the screen edge', async ({
+    page,
+  }) => {
+    const demo = demos.find((candidate) => candidate.demo === 'caterpillar');
+    test.skip(!demo, 'no caterpillar demo in this build');
+    await page.goto(demo?.url ?? '');
+    await atCue(page, 'bend', 0.45);
+    const stage = await page.locator('.demo__stage').boundingBox();
+    expect(stage).not.toBeNull();
+    if (!stage) return;
+    await page.mouse.move(stage.x + stage.width - 2, stage.y + stage.height * 0.52);
+    const neck = page.locator('.ct__neck:not(.ct__neck--shade):not(.ct__neck--etch)');
+    await expect
+      .poll(async () => await neck.evaluate((path) => path.getBoundingClientRect().width), {
+        timeout: 5000,
+      })
+      .toBeLessThan(390 * 0.5);
+    const bounds = await neck.evaluate((path) => {
+      const rect = path.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, width: rect.width };
+    });
+    expect(bounds.left).toBeGreaterThanOrEqual(0);
+    expect(bounds.right).toBeLessThan(378);
+    const file = `${evidenceRoot}/neck-phone-yellow-maximum-review.png`;
+    await page.screenshot({ path: file });
+  });
+});
+
 test('the caterpillar: a tap blows a small ring, a held press a strong one', async ({ page }) => {
   const demo = demos.find((candidate) => candidate.demo === 'caterpillar');
   test.skip(!demo, 'no caterpillar demo in this build');

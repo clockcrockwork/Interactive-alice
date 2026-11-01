@@ -999,16 +999,21 @@ function mount(shell: DemoShell): void {
     const targetY = shell.pointer.active && !reducedMotion ? shell.pointer.y : 0;
     bendX = mix(bendX, targetX, k);
     bendY = mix(bendY, targetY, k);
-    const baseX = 500 + bendX * 260;
+    // The square canopy is center-cropped on a phone. Keep the shoulders and
+    // neck inside that narrower visible window instead of letting a full-width
+    // pointer bend pin the near end against the screen edge.
+    const neckBendX = bendX * (lite ? 0.35 : 1);
+    const nearWidth = lite ? 48 : 100;
+    const baseX = 500 + neckBendX * 260;
     const baseY = 620 + bendY * 90;
-    const controlX = 500 + bendX * 420;
+    const controlX = 500 + neckBendX * 420;
     const controlY = 900 - bendY * 60;
-    neckBase?.setAttribute('d', neckPath(baseX, baseY, controlX, controlY, 100));
-    neckShade?.setAttribute('d', neckPath(baseX, baseY, controlX, controlY, 116));
-    neckEtch?.setAttribute('d', neckPath(baseX, baseY, controlX, controlY, 94));
+    neckBase?.setAttribute('d', neckPath(baseX, baseY, controlX, controlY, nearWidth));
+    neckShade?.setAttribute('d', neckPath(baseX, baseY, controlX, controlY, nearWidth * 1.16));
+    neckEtch?.setAttribute('d', neckPath(baseX, baseY, controlX, controlY, nearWidth * 0.94));
     shoulders?.setAttribute(
       'transform',
-      `translate(${baseX.toFixed(1)} ${(baseY + 6).toFixed(1)}) rotate(${(bendX * 12).toFixed(1)})`,
+      `translate(${baseX.toFixed(1)} ${(baseY + 6).toFixed(1)}) rotate(${(neckBendX * 12).toFixed(1)})`,
     );
     leafGroup?.setAttribute(
       'transform',

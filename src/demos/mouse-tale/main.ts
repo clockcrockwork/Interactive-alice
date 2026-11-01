@@ -899,18 +899,18 @@ function mount(shell: DemoShell): void {
 
   // I wish I had our Dinah here: a ghost of her over the sky.
   const dinahLayer = shell.layer('mt__dinah');
-  dinahLayer.innerHTML = figure('dinah-cat');
+  dinahLayer.innerHTML = figure('dinah-cat/pouncing');
   const dinah = dinahLayer.querySelector<HTMLElement>('.art');
   const glow = { v: 0 };
-  master.to(dinah, { opacity: 0.8, duration: quick(0.4) }, at(iDinah, 0.1));
+  master.to(dinah, { opacity: 0.94, duration: quick(0.4) }, at(iDinah, 0.1));
   master.to(glow, { v: 0.8, duration: quick(0.4) }, at(iDinah, 0.1));
   master.to(dinah, { opacity: 0, duration: quick(0.3) }, at(iSensation, 0));
   master.to(glow, { v: 0, duration: quick(0.3) }, at(iSensation, 0));
   if (!reducedMotion) {
     master.fromTo(
       dinah,
-      { x: 30, y: 10 },
-      { x: -30, y: -6, duration: 1, ease: 'none', immediateRender: false },
+      { x: -30, y: 10 },
+      { x: 30, y: -6, duration: 1, ease: 'none', immediateRender: false },
       iDinah,
     );
   }

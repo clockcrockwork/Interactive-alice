@@ -13,6 +13,32 @@ const house = demos.find((candidate) => candidate.demo === 'rabbit-house');
 const bill = demos.find((candidate) => candidate.demo === 'bill-the-lizard');
 const evidenceRoot = '/workspace/alice-audit-evidence-20261101/backgrounds';
 
+test('Rabbit House opens on its generated engraved facade', async ({ page }) => {
+  test.skip(!house, 'no rabbit-house demo in this build');
+  await page.goto(house?.url ?? '');
+  await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
+  const rig = page.locator('.hs__arrival svg[data-generated-rig="rabbit-house/front"]');
+  await expect(rig).toHaveAttribute('data-rig-ready', '', { timeout: 10_000 });
+  const image = rig.locator('image[data-rig-image]');
+  await expect(image).toHaveAttribute('href', /rabbit-house-front\.generated-/);
+  const fallback = await rig
+    .locator('[data-rig-fallback]')
+    .evaluate((node) => getComputedStyle(node).display);
+  expect(fallback).toBe('none');
+  const screen = (page.viewportSize()?.width ?? 0) < 700 ? 'phone' : 'desktop';
+  await page.screenshot({ path: `${evidenceRoot}/rabbit-house-front-${screen}-after.png` });
+});
+
+test('the Rabbit House keeps its original facade drawing if the image fails', async ({ page }) => {
+  test.skip(!house, 'no rabbit-house demo in this build');
+  await page.route(/rabbit-house-front\.generated-.*\.webp/, (route) => route.abort());
+  await page.goto(house?.url ?? '');
+  const rig = page.locator('.hs__arrival svg[data-generated-rig="rabbit-house/front"]');
+  await expect(rig).toHaveAttribute('data-rig-failed', '', { timeout: 10_000 });
+  await expect(rig.locator('[data-rig-fallback]')).toBeVisible();
+  await expect(rig.locator('[data-rig-generated]')).toBeHidden();
+});
+
 const houseState = (page: Page) =>
   page.evaluate(() => {
     const state = window.__aliceHouse?.();

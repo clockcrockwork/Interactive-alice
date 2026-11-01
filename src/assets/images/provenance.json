@@ -2553,6 +2553,40 @@
       "sourceHeight": 1024,
       "styleSpecification": "IA-ENGRAVED-CUTOUT-V1",
       "placement": "Duchess far landscape, behind the walking trees and horizon hedge."
+    },
+    {
+      "file": "scenery/rabbit-house-front.generated.webp",
+      "what": "Transparent front-facing thatched cottage cutout for the White Rabbit's home.",
+      "generator": "OpenAI built-in image_gen; exact model identifier not exposed",
+      "intent": "Replace the simplified facade with an engraved illustrated house while preserving the authored vector drawing as a load-failure fallback.",
+      "date": "2026-11-01",
+      "edits": "Converted RGBA PNG to WebP quality91/method6; no crop or paint changes.",
+      "bytes": 647850,
+      "sha256": "e6ea9cb102a8e8a230a37827af90b652a44eb11ceed76abe16efb972585d125e",
+      "sourceSha256": "829c309d7b1e573ad664499f8b5a41f2af32770716f4f3aac9ed1b3847b220e9",
+      "width": 1499,
+      "height": 1049,
+      "sourceWidth": 1499,
+      "sourceHeight": 1049,
+      "styleSpecification": "IA-ENGRAVED-CUTOUT-V1",
+      "placement": "Shared 1000x700 SVG facade used by Rabbit House, Mouse Tale and Caucus Race; original drawing remains as decode fallback."
+    },
+    {
+      "file": "figures/dinah-cat--pouncing.any.generated.webp",
+      "what": "Dinah, a tabby cat stretched into a horizontal pounce facing right.",
+      "generator": "OpenAI built-in image_gen; exact model identifier not exposed",
+      "intent": "Illustrate Dinah's action in the Mouse Tale ghost passage and Rabbit Hole chase, retaining the authored pose and route-specific movement as fallback.",
+      "date": "2026-11-01",
+      "edits": "Converted RGBA PNG to WebP quality88/method4; no crop or paint changes.",
+      "bytes": 432740,
+      "sha256": "0992e634b10b0d00c3d3c78b3507d82f18d18c948fd5008a8bbe2ce77a289018",
+      "sourceSha256": "c7c5aad66875a89be1261878419e6d33a2cb4d36f72188c1a5f961a21b991d2d",
+      "width": 1774,
+      "height": 887,
+      "sourceWidth": 1774,
+      "sourceHeight": 887,
+      "styleSpecification": "IA-ENGRAVED-CUTOUT-V1",
+      "placement": "160x80 action pose in the shared Dinah rig; route-specific animated ghost and chase layers preserve original motion."
     }
   ]
 }

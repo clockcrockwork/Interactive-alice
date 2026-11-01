@@ -411,7 +411,20 @@ export const ART: Record<string, ArtEntry> = {
       },
     },
   },
-  'dinah-cat/pouncing': vector(DINAH_POUNCING_SVG, [160, 80]),
+  'dinah-cat/pouncing': {
+    ...vector(DINAH_POUNCING_SVG, [160, 80]),
+    generated: {
+      any: {
+        src: new URL(
+          '../../assets/images/figures/dinah-cat--pouncing.any.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 1774,
+        height: 887,
+        footY: 887,
+      },
+    },
+  },
   bat: vector(BAT_SVG, [100, 50]),
   dormouse: vector(MOUSE_SVG, [140, 110]),
   hatter: vector(HATTER_SVG, [160, 260]),

@@ -14,6 +14,19 @@ const evidenceRoot = '/workspace/alice-audit-evidence-20261101/backgrounds';
 test.describe("the Mouse's tale", () => {
   test.skip(!demo, 'no mouse-tale page in this build');
 
+  test('the shared meadow engraving stays behind the bank and story', async ({ page }) => {
+    await page.goto(demo?.url ?? '');
+    await atCue(page, 'dinah', 0.5);
+    const panorama = page.locator(
+      '.mt__highlands svg[data-generated-rig="scenery/wildflower-highlands"]',
+    );
+    await expect(panorama).toHaveAttribute('data-rig-ready', '', { timeout: 10_000 });
+    const screen = (page.viewportSize()?.width ?? 0) < 700 ? 'phone' : 'desktop';
+    await page.screenshot({
+      path: `${evidenceRoot}/mouse-tale-highlands-${screen}-after.png`,
+    });
+  });
+
   test('Dinah appears as an engraved leap and travels in the direction she faces', async ({
     page,
   }) => {

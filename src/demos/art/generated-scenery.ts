@@ -18,6 +18,10 @@ const sources = {
   'edge-right': new URL('../../assets/images/scenery/edge-right.generated.webp', import.meta.url)
     .href,
   ground: new URL('../../assets/images/scenery/ground.generated.webp', import.meta.url).href,
+  'wildflower-highlands': new URL(
+    '../../assets/images/scenery/wildflower-highlands.generated.webp',
+    import.meta.url,
+  ).href,
 } as const;
 
 // Ratios are fixed before decode; final delivery dimensions are recorded in provenance.
@@ -31,6 +35,7 @@ const boxes = {
   'edge-left': [2, 3],
   'edge-right': [3, 4],
   ground: [3, 1],
+  'wildflower-highlands': [3, 1],
 } as const;
 
 /** Flat/paper pages fetch no new images; pending/failed images paint nothing. */
@@ -55,6 +60,6 @@ export function scenery(
   }
   const [width, height] = boxes[id];
   const align = id === 'edge-left' ? 'xMinYMax' : id === 'edge-right' ? 'xMaxYMax' : 'xMidYMax';
-  const fit = id === 'night-wood' ? 'slice' : 'meet';
-  return `<svg class="scenery" viewBox="0 0 ${width} ${height}" preserveAspectRatio="${align} ${fit}" aria-hidden="true" focusable="false" data-generated-rig="scenery/${id}"><g data-rig-generated="" visibility="hidden" display="none"><image data-rig-image="" href="${sources[id]}" width="${width}" height="${height}" preserveAspectRatio="${align} meet"/></g></svg>`;
+  const fit = id === 'night-wood' || id === 'wildflower-highlands' ? 'slice' : 'meet';
+  return `<svg class="scenery" viewBox="0 0 ${width} ${height}" preserveAspectRatio="${align} ${fit}" aria-hidden="true" focusable="false" data-generated-rig="scenery/${id}"><g data-rig-generated="" visibility="hidden" display="none"><image data-rig-image="" href="${sources[id]}" width="${width}" height="${height}" preserveAspectRatio="${align} ${fit}"/></g></svg>`;
 }

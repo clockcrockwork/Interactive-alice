@@ -238,6 +238,12 @@ test.describe('croquet: the new play', () => {
     for (const sel of ['.cq__soldier', '.cq__courtier', '.cq__child']) {
       expect(await page.locator(sel).count(), sel).toBeGreaterThan(2);
     }
+    await expect(page.locator('.cq__soldier [data-art="card-soldier"]')).toHaveCount(
+      await page.locator('.cq__soldier').count(),
+    );
+    await expect(page.locator('.cq__soldier > .cq__club-mark')).toHaveCount(
+      await page.locator('.cq__soldier').count(),
+    );
     await expect(page.locator('.cq__knave .cq__cushion svg')).toBeVisible();
   });
 

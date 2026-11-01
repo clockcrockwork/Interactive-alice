@@ -146,7 +146,7 @@ function mount(shell: DemoShell): void {
   // The Mouse's bank shares the race's engraved trees and hedge. Keep these
   // distant behind the ring so the wide sky has a landscape without covering
   // the actors or their captions.
-  sky.innerHTML = `<div class="mt__bank-tree mt__bank-tree--left">${scenery('tree')}</div><div class="mt__bank-tree mt__bank-tree--right">${scenery('tree')}</div><div class="mt__bank-hedge">${scenery('hedge')}</div>`;
+  sky.innerHTML = `<div class="mt__highlands">${scenery('wildflower-highlands')}</div><div class="mt__bank-tree mt__bank-tree--left">${scenery('tree')}</div><div class="mt__bank-tree mt__bank-tree--right">${scenery('tree')}</div><div class="mt__bank-hedge">${scenery('hedge')}</div>`;
   const world = shell.layer('cr__world');
   const ring = document.createElement('div');
   ring.className = 'cr__ring';

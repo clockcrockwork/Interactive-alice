@@ -333,6 +333,21 @@
     animation-delay: calc(var(--i, 0) * -70ms);
   }
 
+  /* The generated playing-card body replaces the marching club soldier's
+     painted figure; keep the club suit marker live above its printed diamond. */
+  .cq__soldier {
+    position: relative;
+  }
+
+  .cq__soldier > .cq__club-mark {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
   .cq__fury {
     background: var(--wonder-red);
     opacity: 0;

@@ -89,6 +89,21 @@
     z-index: 1;
   }
 
+  .mt__highlands {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 11%;
+    block-size: 46%;
+    opacity: 0.32;
+    pointer-events: none;
+  }
+
+  .mt__highlands .scenery {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
   /* Shared engraved bank scenery fills the open horizon without competing
      with the birds, story text, or the later Rabbit-house arrival. */
   .mt__bank-tree {

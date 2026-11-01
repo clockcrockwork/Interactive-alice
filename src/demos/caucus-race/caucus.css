@@ -51,6 +51,21 @@
     );
   }
 
+  .cr__highlands {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 12%;
+    block-size: 48%;
+    opacity: 0.42;
+    pointer-events: none;
+  }
+
+  .cr__highlands .scenery {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
   .cr__world {
     perspective: 1100px;
     perspective-origin: 50% 40%;

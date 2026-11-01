@@ -20,7 +20,6 @@ import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import { exclaims } from '../shell/words.ts';
 import {
   CARD_BACK_SVG,
-  CLUB_SOLDIER_SVG,
   COURTIER_SVG,
   cushionMarkup,
   EXECUTIONER_SVG,
@@ -251,10 +250,14 @@ function mount(shell: DemoShell): void {
   // ornamented all over with diamonds, the royal children with hearts, the
   // guests, the Knave with the King's crown on its cushion, the King and Queen.
   const procession: Piece[] = [];
+  const clubSoldier =
+    `${figure('card-soldier')}<svg class="cq__club-mark" viewBox="0 0 120 220" aria-hidden="true" focusable="false">` +
+    '<path d="M60 71 C51 62 40 69 44 79 C47 87 56 91 60 97 C64 91 73 87 76 79 C80 69 69 62 60 71 Z" fill="var(--paper-warm)" stroke="var(--sepia-deep)" stroke-width="2"/>' +
+    '<path d="M60 74 C54 68 47 72 50 78 C52 82 57 85 60 89 C63 85 68 82 70 78 C73 72 66 68 60 74 Z" fill="var(--ink-primary)"/></svg>';
   const marchers: [string, string, number][] = [
     ...Array.from({ length: lite ? 4 : 6 }, (): [string, string, number] => [
       'cq__soldier',
-      `<span class="art">${CLUB_SOLDIER_SVG}</span>`,
+      clubSoldier,
       8,
     ]),
     ...Array.from({ length: lite ? 3 : 5 }, (): [string, string, number] => [

@@ -184,6 +184,29 @@
         "bytes": 745752,
         "sha256": "840388bc4fbd08435a9941ebe3718d76c1c7c3a53012caee2b045228117efdba"
       }
+    },
+    {
+      "id": "wildflower-highlands",
+      "asset": "scenery/wildflower-highlands.generated.webp",
+      "width": 2056,
+      "height": 765,
+      "bytes": 434394,
+      "sha256": "2732dff947edc7f36ebaeb34a6709326337ad27d9467963f2473ad8cb6e90af0",
+      "source": {
+        "file": "/workspace/generated_images/exec-b7af0cb9-6d64-4c53-8aec-d4ddbb0ca116.png",
+        "sha256": "29a287ce80bf75759f3bcda5b50721b9b20c5ca44d061e576b5e064b8b005207",
+        "bytes": 3567252
+      },
+      "candidateToDeliveryAlphaExact": null,
+      "generation": {
+        "key": "wildflower-highlands",
+        "prompt": "Wide horizontal storybook panorama: monochrome engraved meadow with winding path, scattered small wildflowers, distant layered hills and mountains, tall trees/woodland at both edges, soft etched clouds; open low-detail center horizon; no people, houses, or text.",
+        "tool": "built-in image_gen",
+        "transparent_background": false,
+        "generated_at": "2026-11-01T10:31Z",
+        "file": "/workspace/generated_images/exec-b7af0cb9-6d64-4c53-8aec-d4ddbb0ca116.png"
+      },
+      "delivery": "ImageMagick WebP q86, metadata stripped; full-color raster is warm monochrome ink/paper."
     }
   ],
   "routeBytes": {
@@ -193,8 +216,10 @@
     "cheshire-cat": 1408742,
     "caterpillar": 1035056,
     "duchess": 2089656,
-    "rabbit-house": 2089656
+    "rabbit-house": 2089656,
+    "caucus-race": 434394,
+    "mouse-tale": 434394
   },
-  "scope": "Riverbank, shared Field/Rabbit Hole intro, Tea Party horizon, Cheshire night depth planes, Caterpillar scaling meadow, Rabbit House garden, and Duchess outdoor walk. Other chapters remain scene-specific scenery work.",
+  "scope": "Shared outdoor scenery: riverbank, Rabbit Hole, Tea Party horizon, Cheshire night depth, Caterpillar meadow, Rabbit House garden, Duchess walk, plus wildflower-highlands panorama reused in Mouse Tale and Caucus Race. Other chapters remain scene-specific scenery work.",
   "recoveryNote": "Delivery WebPs re-encoded from recovered PNG masters on 2026-10-28. Current delivery differs in bytes from earlier local delivery; previousDelivery retains historical metrics."
 }

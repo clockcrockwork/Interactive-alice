@@ -26,6 +26,21 @@ const landsOn = (page: Page, kind: string) =>
 test.describe('the Caucus-race', () => {
   test.skip(!demo, 'no caucus-race page in this build');
 
+  test('the shared meadow, mountains and cloud engraving decodes behind the course', async ({
+    page,
+  }) => {
+    await page.goto(demo?.url ?? '');
+    await atCue(page, 'bank', 0.5);
+    const panorama = page.locator(
+      '.cr__highlands svg[data-generated-rig="scenery/wildflower-highlands"]',
+    );
+    await expect(panorama).toHaveAttribute('data-rig-ready', '', { timeout: 10_000 });
+    const screen = (page.viewportSize()?.width ?? 0) < 700 ? 'phone' : 'desktop';
+    await page.screenshot({
+      path: `/workspace/alice-audit-evidence-20261101/backgrounds/caucus-highlands-${screen}-after.png`,
+    });
+  });
+
   test('a real tap reaches a runner: no layer over the ring takes it', async ({ page }) => {
     await page.goto(demo?.url ?? '');
     await atCue(page, 'proposal', 0.5);

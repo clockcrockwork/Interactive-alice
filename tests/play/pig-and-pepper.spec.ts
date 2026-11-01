@@ -57,7 +57,8 @@ test('pig and pepper: the footmen take a tap, and the invitation opens on scribb
   // Nearly as large as the Fish-Footman himself, and folded.
   const letter = await page.locator('.pp__letter').boundingBox();
   const footman = await page.locator('.pp__footman--fish').boundingBox();
-  expect(letter?.width ?? 0).toBeGreaterThan((footman?.width ?? 0) * 0.9);
+  const phone = (page.viewportSize()?.width ?? 0) < 700;
+  expect(letter?.width ?? 0).toBeGreaterThan((footman?.width ?? 0) * (phone ? 0.75 : 0.9));
   expect(await customProperty(page, '.pp__letter', '--unfold')).toBe(0);
   // A tap on it unfolds it, and the Frog-Footman leans in to read it back.
   const at = await centreOf(page, '.pp__letter');

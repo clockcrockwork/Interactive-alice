@@ -1296,13 +1296,14 @@
     }
 
     .pp__letter {
-      inset-inline-start: 41%;
-      inset-block-end: calc(34% + 9vmin);
-      inline-size: clamp(4.5rem, 16vmin, 5.5rem);
-      z-index: 1;
+      inset-inline-start: 45%;
+      inset-block-end: calc(33% + 4vmin);
+      inline-size: clamp(3.25rem, 13vmin, 4rem);
+      z-index: 3;
     }
 
-    /* Let the reader see the Frog's face and reading posture over the letter. */
+    /* Let the folded invitation sit in front of the Frog's lower body while
+       keeping his face and reading lean visible above it. */
     .pp__footman--fish,
     .pp__footman--frog {
       z-index: 2;

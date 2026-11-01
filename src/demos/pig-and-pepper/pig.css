@@ -295,6 +295,13 @@
     inset-inline-start: 30%;
   }
 
+  /* The Fish walks from the wood to rap at the door on his right. Its source
+     plate faces left, so turn the full figure toward the house, not just its
+     eyes. */
+  .pp__footman--fish > .art {
+    transform: scaleX(-1);
+  }
+
   .pp__footman--frog {
     inset-inline-start: 48%;
   }

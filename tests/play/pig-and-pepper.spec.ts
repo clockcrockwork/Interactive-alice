@@ -9,6 +9,7 @@ import { expect, type Page, test } from '@playwright/test';
 import { atCue, customProperty, demos, tapAt } from '../demo-helpers.ts';
 
 const demo = demos.find((candidate) => candidate.demo === 'pig-and-pepper');
+const evidenceRoot = '/workspace/alice-audit-evidence-20261101/footmen';
 
 const label = (page: Page, key: string) =>
   page.evaluate(
@@ -37,6 +38,12 @@ test('pig and pepper: the footmen take a tap, and the invitation opens on scribb
   await page.goto(demo?.url ?? '');
   // The trees of the clearing are drawn over it but never take a tap.
   await atCue(page, 'footman', 0.9);
+  const screen = (page.viewportSize()?.width ?? 0) < 700 ? 'phone' : 'desktop';
+  const facing = await page
+    .locator('.pp__footman--fish > .art')
+    .evaluate((node) => new DOMMatrix(getComputedStyle(node).transform).a);
+  expect(facing).toBeCloseTo(-1, 4);
+  await page.screenshot({ path: `${evidenceRoot}/footmen-facing-${screen}.png` });
   const fish = await centreOf(page, '.pp__footman--fish');
   await page.mouse.click(fish.x, fish.y);
   await expect(page.locator('.pp__footman--fish')).toHaveAttribute('data-bow', '');
@@ -59,6 +66,7 @@ test('pig and pepper: the footmen take a tap, and the invitation opens on scribb
     .poll(() => customProperty(page, '.pp__letter', '--unfold'), { timeout: 5000 })
     .toBeGreaterThan(0.95);
   await expect(page.locator('.pp__footman--frog')).toHaveAttribute('data-reading', '');
+  await page.screenshot({ path: `${evidenceRoot}/frog-reading-fish-${screen}.png` });
   // Writing as scribbles: no lettering anywhere on it.
   await expect(page.locator('.pp__letter text')).toHaveCount(0);
   // It folds itself up again.

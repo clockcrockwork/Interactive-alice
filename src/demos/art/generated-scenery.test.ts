@@ -14,7 +14,6 @@ describe('outdoor engraved scenery', () => {
     'hedge',
     'night-trunk',
     'night-wood',
-    'wildflower-highlands',
   ] as const) {
     it(`${asset} is decorative and only becomes visible after the existing rig decoder`, () => {
       const markup = scenery(asset, 'engraved');
@@ -32,6 +31,16 @@ describe('outdoor engraved scenery', () => {
       expect(scenery(asset, 'paper')).toBe('');
     });
   }
+  it('serves a responsive engraved panorama and a phone-specific composition', () => {
+    const markup = scenery('wildflower-highlands', 'engraved');
+    expect(markup).toContain('<picture class="scenery scenery--wildflower-highlands"');
+    expect(markup).toContain('media="(max-width: 700px)"');
+    expect(markup).toContain('wildflower-highlands-phone.generated');
+    expect(markup).toContain('wildflower-highlands.generated');
+    expect(markup).toContain('alt="" decoding="async"');
+    expect(scenery('wildflower-highlands', 'flat')).toBe('');
+    expect(scenery('wildflower-highlands', 'paper')).toBe('');
+  });
   it('keeps both chapter joins on the shared field and decorates the existing moving land', () => {
     const field = read('../riverbank/field.ts');
     expect(field).toContain("scenery('tree')");
@@ -74,7 +83,7 @@ describe('outdoor engraved scenery', () => {
       'wildflower-highlands.generated.webp',
     );
     expect(scenery('wildflower-highlands', 'engraved')).toContain(
-      'preserveAspectRatio="xMidYMax slice"',
+      'wildflower-highlands-phone.generated',
     );
   });
   it('puts the same reusable engraved plants and grass around the Rabbit house', () => {
@@ -172,7 +181,7 @@ describe('scenery delivery records', () => {
   });
   it('matches shipped images and accounts for only each route’s used sources', () => {
     const record = JSON.parse(read('../../assets/images/scenery-provenance.json'));
-    expect(record.assets).toHaveLength(8);
+    expect(record.assets).toHaveLength(9);
     let total = 0;
     let tea = 0;
     let night = 0;
@@ -186,7 +195,7 @@ describe('scenery delivery records', () => {
         expect(asset.candidateToDeliveryAlphaExact).toBe(true);
       }
       if (asset.id.startsWith('night-')) night += bytes.length;
-      else if (asset.id !== 'wildflower-highlands') total += bytes.length;
+      else if (!asset.id.startsWith('wildflower-highlands')) total += bytes.length;
       if (asset.id === 'tree' || asset.id === 'ground') tea += bytes.length;
       if (asset.id === 'tree' || asset.id === 'ground' || asset.id === 'hedge') {
         duchess += bytes.length;
@@ -205,6 +214,14 @@ describe('scenery delivery records', () => {
     ).length;
     expect(record.routeBytes['caucus-race']).toBe(highlandsBytes);
     expect(record.routeBytes['mouse-tale']).toBe(highlandsBytes);
+    const phoneHighlandsBytes = readFileSync(
+      new URL(
+        '../../assets/images/scenery/wildflower-highlands-phone.generated.webp',
+        import.meta.url,
+      ),
+    ).length;
+    expect(record.mobileRouteBytes['caucus-race']).toBe(phoneHighlandsBytes);
+    expect(record.mobileRouteBytes['mouse-tale']).toBe(phoneHighlandsBytes);
   });
 });
 

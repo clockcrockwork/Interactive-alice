@@ -59,13 +59,18 @@ test.describe('the Caucus-race', () => {
   }) => {
     await page.goto(demo?.url ?? '');
     await atCue(page, 'bank', 0.5);
-    const panorama = page.locator(
-      '.cr__highlands svg[data-generated-rig="scenery/wildflower-highlands"]',
-    );
-    await expect(panorama).toHaveAttribute('data-rig-ready', '', { timeout: 10_000 });
+    const panorama = page.locator('.cr__highlands picture.scenery--wildflower-highlands img');
+    await expect(panorama).toBeVisible();
+    await expect
+      .poll(() => panorama.evaluate((image: HTMLImageElement) => image.naturalWidth))
+      .toBeGreaterThan(0);
     const screen = (page.viewportSize()?.width ?? 0) < 700 ? 'phone' : 'desktop';
+    const currentSource = await panorama.evaluate((image: HTMLImageElement) => image.currentSrc);
+    expect(currentSource).toContain(
+      screen === 'phone' ? 'wildflower-highlands-phone' : 'wildflower-highlands.generated',
+    );
     await page.screenshot({
-      path: `/workspace/alice-audit-evidence-20261101/backgrounds/caucus-highlands-${screen}-after.png`,
+      path: `/workspace/alice-audit-evidence-20261102/caucus-race/${screen}-after.png`,
     });
   });
 

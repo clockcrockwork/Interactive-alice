@@ -11,6 +11,14 @@
     user-select: none;
   }
 
+  .scenery--wildflower-highlands > img {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
   /* The old tree remains while loading, on error, and in flat/paper styles. */
   .rb__tree:has([data-generated-rig="scenery/tree"][data-rig-ready]),
   .field__tree:has([data-generated-rig="scenery/tree"][data-rig-ready]) {

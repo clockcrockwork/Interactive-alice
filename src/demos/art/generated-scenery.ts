@@ -24,6 +24,11 @@ const sources = {
   ).href,
 } as const;
 
+const wildflowerHighlandsPhone = new URL(
+  '../../assets/images/scenery/wildflower-highlands-phone.generated.webp',
+  import.meta.url,
+).href;
+
 // Ratios are fixed before decode; final delivery dimensions are recorded in provenance.
 const boxes = {
   'court-wall': [3, 1],
@@ -44,6 +49,9 @@ export function scenery(
   style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
 ): string {
   if (style !== 'engraved') return '';
+  if (id === 'wildflower-highlands') {
+    return `<picture class="scenery scenery--wildflower-highlands" aria-hidden="true"><source media="(max-width: 700px)" srcset="${wildflowerHighlandsPhone}"><img src="${sources[id]}" alt="" decoding="async"></picture>`;
+  }
   if (id === 'court-wall') {
     // Retain the existing wide rear plane. Mirrored bays share one decoded file;
     // the offset puts an open panel, not a pilaster, behind the central actors.
@@ -60,6 +68,6 @@ export function scenery(
   }
   const [width, height] = boxes[id];
   const align = id === 'edge-left' ? 'xMinYMax' : id === 'edge-right' ? 'xMaxYMax' : 'xMidYMax';
-  const fit = id === 'night-wood' || id === 'wildflower-highlands' ? 'slice' : 'meet';
+  const fit = id === 'night-wood' ? 'slice' : 'meet';
   return `<svg class="scenery" viewBox="0 0 ${width} ${height}" preserveAspectRatio="${align} ${fit}" aria-hidden="true" focusable="false" data-generated-rig="scenery/${id}"><g data-rig-generated="" visibility="hidden" display="none"><image data-rig-image="" href="${sources[id]}" width="${width}" height="${height}" preserveAspectRatio="${align} ${fit}"/></g></svg>`;
 }

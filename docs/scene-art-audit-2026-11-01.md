@@ -83,3 +83,7 @@ The previous SVG stacked the full-width skin ribbon after the shoulder illustrat
 - Library `libfile_9f41ad7dac2c8191b5c0e422d1c51ca6` read metadata confirms a 172×97 PNG, but approved `library_file_transfer.py materialize` failed twice with `download failed` after fresh preparation. This did not create a local PNG. No other retrieval path was attempted.
 - Existing neck comparison images were recovered by read-only Library lookup; their IDs are recorded in the earlier evidence section above, but they predate the latest root/maximum-bend adjustment and are not evidence of this head.
 - Items marked **Open** or **Existing, not re-audited** need scene-by-scene screenshots and PC/phone interaction checks before they can be accepted.
+
+## Local image-work follow-up — 2026-11-03
+
+After the route matrix, two focused scenery batches added responsive underwater engraving to Pool of Tears and shared engraved clouds/gulls to the Mock Turtle and Lobster Quadrille shores. Their PC/phone captures and relevant build/E2E checks are recorded in `docs/pool-of-tears-underwater-art-2026-11-03.md` and `docs/shared-coastal-sky-art-2026-11-03.md`. At branch head `81e5342f8a0114d670693bcd29e1e748bb1d5449`, the audit has no additional clear asset omission to fill; #7 remains the sole unresolved illustration issue. Its previous image generations were safety-denied, and no retry or substitute image was made. Avoid adding unrelated scenery solely to increase the asset count.

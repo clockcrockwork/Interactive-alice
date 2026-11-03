@@ -726,6 +726,15 @@
   }
 
   @media (max-width: 700px) {
+    /* Keep the whole ring of dancers inside the tall phone frame. The wider
+       desktop radius clips the two edge partners on the opening round. */
+    .demo--lobster-quadrille {
+      --lq-radius: clamp(140px, 29vmin, 220px);
+      --lq-span: min(34vw, calc(var(--lq-radius) * 1.4));
+      --lq-dancer: clamp(3.5rem, 13vmin, 6rem);
+      --lq-host: clamp(5rem, 18vmin, 8rem);
+    }
+
     /* A tall narrow frame: the song's verses and the run are long, so they are
        set smaller, and the creatures of the song swim lower in the sea, under them. */
     .demo--lobster-quadrille

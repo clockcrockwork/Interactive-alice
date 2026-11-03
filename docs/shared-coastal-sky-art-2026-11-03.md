@@ -29,3 +29,13 @@ The cloud banks frame rather than fill the paper sky; birds read as a distant fl
 - The full Vitest suite was not repeated for this scenery-only batch; the previous underwater batch had 734/734 unit tests, while this batch's two affected chapter suites were run in full.
 
 Runtime is Node 24.19.0; `.nvmrc` requests 22.23.4. No Library transfer, public push, PR, merge, or deploy was performed.
+
+## Independent composition review follow-up (2026-11-03)
+
+A separate reviewer opened the existing Mock Turtle, Lobster Quadrille, shingle, and underwater PC/phone screenshots and checked them against the recent scenery diff. The engraving remains legible and clear of dialogue; the underwater phone center intentionally stays open for its long captions. The reviewer identified two composition issues outside the artwork itself: the Mock Turtle desktop `fun` caption covered the Gryphon's feet, and the Lobster Quadrille phone `round` frame cropped dancers at both horizontal edges.
+
+- The Gryphon now steps left during the long `fun` caption and returns at the next cue. An E2E assertion checks the active caption lines against the figure on desktop and phone.
+- The phone-only dance radius, line span, dancer size, and host size are reduced enough to keep the full cast in view. A phone E2E check requires every shown figure's bounds to stay inside the viewport.
+- Fresh images: `/workspace/alice-audit-evidence-20261103/composition-review/mock-turtle-fun-{desktop,phone}-after.png` and `lobster-round-phone-after.png`.
+- Before the final small phone-radius adjustment, the focused Mock Turtle + Lobster Quadrille + coastal sky + shingle Chromium PC/phone batch passed 63 with one expected desktop-only skip. After the final adjustment, the complete Lobster Quadrille phone suite passed 15/15. The final production build, typecheck, and Biome passed; the existing 566.56 kB chunk warning remains. No full unit suite was repeated because this batch changed layout CSS/timeline and browser assertions only.
+- Node 24.19.0 was used; the repository requests Node 22.23.4. No upload, public push, PR, merge, or deploy was performed.

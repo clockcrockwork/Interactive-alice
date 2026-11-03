@@ -222,6 +222,10 @@ function mount(shell: DemoShell): void {
   master.to(gryphon, { '--sleep': 0, duration: quick(0.3), ease: 'power2.out' }, iAlone + 0.2);
   master.to(gryphon, { '--rub': 1, duration: quick(0.08), yoyo: true, repeat: 5 }, iAlone + 0.5);
   master.to(gryphon, { '--chuckle': 1, duration: quick(0.06), yoyo: true, repeat: 7 }, iFun + 0.1);
+  // The long laugh caption sits low on desktop; give the Gryphon room to step
+  // left until the line is gone, then return him to his place by the shore.
+  master.to(figures, { '--aside': 0.75, duration: quick(0.25), ease: 'power2.out' }, iFun + 0.35);
+  master.to(figures, { '--aside': 0, duration: quick(0.25), ease: 'power2.inOut' }, iDistance);
   master.call(
     () => (master.time() >= iFun + 0.1 ? shell.sound.play('chime', 0.4) : undefined),
     [],

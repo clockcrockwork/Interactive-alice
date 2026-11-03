@@ -127,6 +127,33 @@ test.describe('lobster quadrille: play', () => {
     expect(await customProperty(page, '.lq__ring', '--partners')).toBeLessThan(0.05);
   });
 
+  test('the full cast remains inside the phone frame at the opening round', async ({ page }) => {
+    test.skip((page.viewportSize()?.width ?? 0) >= 700, 'phone composition check');
+    await atCue(page, 'round', 0.6);
+    const viewportWidth = page.viewportSize()?.width ?? 0;
+    const bounds = await page
+      .locator('.lq__ring .lq__dancer .art, .lq__ring .lq__partner .art')
+      .evaluateAll((figures) =>
+        figures
+          .filter((figure) => {
+            const dancer = figure.parentElement;
+            return dancer !== null && Number(getComputedStyle(dancer).opacity) > 0.9;
+          })
+          .map((figure) => {
+            const { x, width } = figure.getBoundingClientRect();
+            return { x, width };
+          }),
+      );
+    expect(bounds.length).toBeGreaterThan(4);
+    for (const figure of bounds) {
+      expect(figure.x, JSON.stringify(figure)).toBeGreaterThanOrEqual(0);
+      expect(figure.x + figure.width, JSON.stringify(figure)).toBeLessThanOrEqual(viewportWidth);
+    }
+    await page.screenshot({
+      path: '/workspace/alice-audit-evidence-20261103/composition-review/lobster-round-phone-after.png',
+    });
+  });
+
   test('scrolling back reconstructs: the dancers, their lobsters and the one in her hands', async ({
     page,
   }) => {

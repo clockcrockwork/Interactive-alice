@@ -63,6 +63,32 @@ test.describe('mock turtle: play', () => {
     await page.goto(demo?.url ?? '');
   });
 
+  test('the fun caption keeps clear of the Gryphon on desktop and phone', async ({ page }) => {
+    await atCue(page, 'fun', 0.55);
+    const captionLines = await page
+      .locator('.demo__stage .demo-beat[data-cue="fun"] .line')
+      .evaluateAll((lines) =>
+        lines
+          .filter((line) => Number(getComputedStyle(line).opacity) > 0.5)
+          .map((line) => {
+            const { x, y, width, height } = line.getBoundingClientRect();
+            return { x, y, width, height };
+          }),
+      );
+    const gryphon = await page.locator('.mt__gryphon .art').boundingBox();
+    expect(captionLines.length).toBeGreaterThan(0);
+    if (!gryphon) {
+      throw new Error('The Gryphon image is missing at the fun cue');
+    }
+    for (const line of captionLines) {
+      expect(overlaps(line, gryphon), JSON.stringify({ line, gryphon })).toBe(false);
+    }
+    const viewport = (page.viewportSize()?.width ?? 0) < 700 ? 'phone' : 'desktop';
+    await page.screenshot({
+      path: `/workspace/alice-audit-evidence-20261103/composition-review/mock-turtle-fun-${viewport}-after.png`,
+    });
+  });
+
   test('the underwater school has a quiet engraved backdrop with a phone crop', async ({
     page,
   }) => {

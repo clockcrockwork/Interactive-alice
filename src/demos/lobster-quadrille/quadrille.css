@@ -130,6 +130,25 @@
       auto;
   }
 
+  .lq__shingle-engraving {
+    inset-block: 60% 0;
+    z-index: 0;
+    opacity: 0.42;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  .lq__shingle-engraving img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    object-position: center bottom;
+    filter: grayscale(1);
+  }
+
   /* The run: a plane of shingle lying on the shore and streaming toward the
      camera under the runners, there while they run and gone as they arrive.
      One tile of the pattern is one loop of the stream. */
@@ -139,6 +158,7 @@
 
   .lq__stream {
     inset-block: 60% 0;
+    z-index: 1;
     perspective: 40vh;
     perspective-origin: 50% 0;
     overflow: hidden;

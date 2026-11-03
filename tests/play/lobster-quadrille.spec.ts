@@ -291,6 +291,58 @@ test.describe('lobster quadrille: phone', () => {
   });
 });
 
+test.describe('lobster quadrille: shore engraving', () => {
+  test.skip(!demo, 'no lobster-quadrille demo page in the build');
+
+  test('the shingle illustration selects a viewport fit and stays decorative', async ({
+    page,
+  }, testInfo) => {
+    await page.goto(demo?.url ?? '');
+    await atCue(page, 'round', 0.6);
+    const image = page.locator('.lq__shingle-engraving img');
+    await expect(image).toBeVisible();
+    await expect
+      .poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth))
+      .toBeGreaterThan(0);
+    const actual = await image.evaluate((img: HTMLImageElement) => ({
+      source: img.currentSrc,
+      alt: img.alt,
+      filter: getComputedStyle(img).filter,
+      pointerEvents: getComputedStyle(img.parentElement ?? img).pointerEvents,
+    }));
+    const expectedSource =
+      (page.viewportSize()?.width ?? 1280) <= 700
+        ? 'lobster-shingle-phone'
+        : 'lobster-shingle-wide';
+    expect(actual.source).toContain(expectedSource);
+    expect(actual.alt).toBe('');
+    expect(actual.filter).toContain('grayscale(1)');
+    expect(actual.pointerEvents).toBe('none');
+    const visibleDancers = await page
+      .locator('.lq__dancer[data-kind]')
+      .evaluateAll(
+        (items) => items.filter((item) => Number(getComputedStyle(item).opacity) > 0.95).length,
+      );
+    expect(visibleDancers).toBeGreaterThanOrEqual(8);
+    await page.screenshot({ path: testInfo.outputPath('lobster-shingle-after.png') });
+  });
+
+  test('the CSS shingle remains when its illustration cannot load', async ({ page }) => {
+    await page.route(/lobster-shingle-.*\.webp/, (route) => route.abort());
+    await page.goto(demo?.url ?? '');
+    await atCue(page, 'round', 0.6);
+    const image = page.locator('.lq__shingle-engraving img');
+    await expect.poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(0);
+    const fallback = await page
+      .locator('.lq__shingle')
+      .evaluate((el) => getComputedStyle(el).backgroundImage);
+    expect(fallback).toContain('radial-gradient');
+    expect(fallback).toContain('linear-gradient');
+    const dancerCount = await page.locator('.lq__dancer[data-kind]').count();
+    expect(dancerCount).toBeGreaterThanOrEqual(8);
+  });
+});
+
 /** Each caption line of the active beat against each figure drawn, as boxes. */
 const captionFigureOverlaps = (page: Page) =>
   page.evaluate(() => {

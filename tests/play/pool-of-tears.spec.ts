@@ -195,6 +195,59 @@ test.describe('reduced motion: drowned in her own tears', () => {
   });
 });
 
+test.describe('underwater engraving', () => {
+  test.use({ reducedMotion: 'reduce' });
+
+  test('the responsive illustration loads below the words and controls', async ({
+    page,
+  }, testInfo) => {
+    test.skip(!demo, 'the pool-of-tears demo is not built');
+    await page.goto(demo?.url ?? '');
+    await atCue(page, 'swim', 0.6);
+    await expect
+      .poll(() => page.locator('.pt__under').evaluate((el) => Number(getComputedStyle(el).opacity)))
+      .toBeGreaterThan(0.9);
+    const image = page.locator('.pt__under-engraving img');
+    await expect(image).toBeVisible();
+    await expect
+      .poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth))
+      .toBeGreaterThan(0);
+    const view = await image.evaluate((img: HTMLImageElement) => ({
+      source: img.currentSrc,
+      filter: getComputedStyle(img).filter,
+      pointerEvents: getComputedStyle(img.parentElement ?? img).pointerEvents,
+      blendMode: getComputedStyle(img.parentElement ?? img).mixBlendMode,
+    }));
+    const expectedSource =
+      (page.viewportSize()?.width ?? 1280) <= 700
+        ? 'pool-underwater-phone'
+        : 'pool-underwater-wide';
+    expect(view.source).toContain(expectedSource);
+    expect(view.filter).toContain('grayscale(1)');
+    expect(view.pointerEvents).toBe('none');
+    expect(view.blendMode).toBe('normal');
+    await expect(page.locator('.demo__stage .demo-beat[data-cue="swim"]')).toBeVisible();
+    await page.screenshot({ path: testInfo.outputPath('pool-underwater-after.png') });
+  });
+
+  test('the original blue gradient remains when the artwork fails to load', async ({ page }) => {
+    test.skip(!demo, 'the pool-of-tears demo is not built');
+    await page.route(/pool-underwater-.*\.webp/, (route) => route.abort());
+    await page.goto(demo?.url ?? '');
+    await atCue(page, 'swim', 0.6);
+    await expect
+      .poll(() => page.locator('.pt__under').evaluate((el) => Number(getComputedStyle(el).opacity)))
+      .toBeGreaterThan(0.9);
+    const image = page.locator('.pt__under-engraving img');
+    await expect.poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(0);
+    const fallback = await page
+      .locator('.pt__under')
+      .evaluate((el) => getComputedStyle(el).backgroundImage);
+    expect(fallback).toContain('linear-gradient');
+    await expect(page.locator('.demo__stage .demo-beat[data-cue="swim"]')).toBeVisible();
+  });
+});
+
 test.describe('a phone', () => {
   test.use({ viewport: { width: 390, height: 780 }, hasTouch: true, isMobile: true });
 

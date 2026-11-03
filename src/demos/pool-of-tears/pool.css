@@ -78,25 +78,48 @@
 
   /* Under the water for a moment: the water's own blue, and the sentences ripple. */
   .pt__under {
-    background: linear-gradient(
-      to bottom,
-      oklch(from var(--pt-water) l c h / 0.7),
-      oklch(from var(--pt-water-deep) l c h / 0.85)
-    );
+    z-index: 3;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0 6vh,
+        oklch(from var(--pt-foam) l c h / 0.12) 6vh 6.4vh
+      ),
+      linear-gradient(
+        to bottom,
+        oklch(from var(--pt-water) l c h / 0.7),
+        oklch(from var(--pt-water-deep) l c h / 0.85)
+      );
+    background-position:
+      0 0,
+      0 0;
+    background-repeat: repeat, no-repeat;
+    background-size:
+      100% 6.4vh,
+      100% 100%;
     opacity: 0;
+    pointer-events: none;
+    animation: pt-caustic 2.2s linear infinite;
+  }
+
+  .pt__under-engraving {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    opacity: 1;
+    mix-blend-mode: normal;
     pointer-events: none;
   }
 
-  .pt__under::after {
-    content: "";
+  .pt__under-engraving img {
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent 0 6vh,
-      oklch(from var(--pt-foam) l c h / 0.12) 6vh 6.4vh
-    );
-    animation: pt-caustic 2.2s linear infinite;
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: grayscale(1);
   }
 
   .demo--pool-of-tears .demo-beat {
@@ -286,7 +309,7 @@
   }
 
   .demo[data-paused] .pt__fan[data-waving],
-  .demo[data-paused] .pt__under::after {
+  .demo[data-paused] .pt__under {
     animation-play-state: paused;
   }
 
@@ -295,6 +318,10 @@
   @media (max-width: 600px) {
     .demo--pool-of-tears {
       --demo-end-lift: 5.5rem;
+    }
+
+    .pt__under-engraving {
+      opacity: 0.8;
     }
 
     /* Grown up from the foot, a long stack is kept below the swimmers by the
@@ -315,10 +342,14 @@
 
   @keyframes pt-caustic {
     from {
-      transform: translateY(0);
+      background-position:
+        0 0,
+        0 0;
     }
     to {
-      transform: translateY(6.4vh);
+      background-position:
+        0 6.4vh,
+        0 0;
     }
   }
 
@@ -360,14 +391,16 @@
       rotate: 0deg;
     }
 
-    .pt__fan[data-waving],
-    .pt__under::after {
+    .pt__fan[data-waving] {
       animation: none;
       transform: rotate(8deg);
     }
 
-    .pt__under::after {
-      transform: none;
+    .pt__under {
+      animation: none;
+      background-position:
+        0 0,
+        0 0;
     }
 
     /* Each wave cuts the fan to its other side; the splash is a still crown. */

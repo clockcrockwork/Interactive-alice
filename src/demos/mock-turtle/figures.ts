@@ -2,6 +2,7 @@
 
 import { figure } from '../art/art.ts';
 import { DANCERS } from '../art/vectors.ts';
+import { COASTAL_SKY_ART } from '../lobster-quadrille/coastal-sky.ts';
 
 const schoolWide = new URL(
   '../../assets/images/scenery/mock-turtle-school-wide.generated.webp',
@@ -18,6 +19,7 @@ const schoolPhone = new URL(
     walk along the shore. */
 export const SHORE_HTML = `
 <div class="mt__sky"><div class="mt__sun"></div></div>
+${COASTAL_SKY_ART}
 <div class="mt__swell">
   <div class="mt__sea mt__sea--far"></div>
   <div class="mt__sea mt__sea--mid"></div>

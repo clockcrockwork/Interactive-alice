@@ -1,0 +1,51 @@
+{
+  "batch": "shared-coastal-sky-20261103",
+  "style": "Victorian monochrome steel engraving, warm paper highlights, fine cross-hatching",
+  "use": "Shared decorative far-sky layers in Mock Turtle and Lobster Quadrille. The existing live sky gradients, moving sun, sea, shingle and performers remain responsible for scene motion and color.",
+  "display": {
+    "filter": "grayscale(1)",
+    "blend": "multiply",
+    "pointer_events": "none",
+    "caption_clearance": "The transparent open center and sky-only clip leave story text and characters clear."
+  },
+  "assets": [
+    {
+      "asset": "scenery/coastal-clouds.generated.webp",
+      "dimensions": "2172x724",
+      "bytes": 296126,
+      "sha256": "84c26d648c849ab8f25bec187ce2bda165146d155b855ae1c7b51b40119a3105",
+      "source": {
+        "file": "/workspace/generated_images/exec-21b9ef13-f3d8-4196-9a16-6b11abf57d10.png",
+        "sha256": "149cbb33c71baf5c77bd3d2576b4534d951f823899c82e0e6421013b7035ce9e",
+        "bytes": 1142056
+      },
+      "generation": {
+        "tool": "built-in image_gen",
+        "generated_at": "2026-11-03",
+        "transparent_background": true,
+        "reference": "Cloud engraving draft exec-4f599f65-e2ce-445e-938b-b453c8c6bed1.png; re-inked to reduce edge artifacts after background removal.",
+        "prompt_summary": "Wide layered cloud banks at the far left and right with open center and a thin distant cloud line; no sky, birds, land or text."
+      },
+      "delivery": "Converted RGBA PNG to WebP q90, method 6."
+    },
+    {
+      "asset": "scenery/coastal-gulls.generated.webp",
+      "dimensions": "2172x724",
+      "bytes": 82752,
+      "sha256": "7b8994375e0fecb4c485388e38bf2d6bb3dbcfaf3e625aba5eaa3aa286953a5d",
+      "source": {
+        "file": "/workspace/generated_images/exec-593e354c-b0bb-44a3-95a7-03db97d39527.png",
+        "sha256": "0ba7a09456053f01e816fa09f446f425bcc913b89c3095b0397c38dbd6977f7d",
+        "bytes": 320386
+      },
+      "generation": {
+        "tool": "built-in image_gen",
+        "generated_at": "2026-11-03",
+        "transparent_background": true,
+        "reference": "Gull engraving draft exec-e21985ef-9b31-4ac0-b826-c1602e9ecef2.png; checkerboard removed by edit.",
+        "prompt_summary": "Five varied anatomically believable seabirds in flight, shallow horizontal arc, small delicate feather engraving; no other scenery or text."
+      },
+      "delivery": "Converted RGBA PNG to WebP q90, method 6."
+    }
+  ]
+}

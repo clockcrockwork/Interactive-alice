@@ -84,6 +84,11 @@
     inset-inline: -20%;
   }
 
+  .lq__shore > .coast__clouds,
+  .lq__shore > .coast__gulls {
+    inset-inline: 0;
+  }
+
   .lq__sky {
     inset-block: 0 46%;
     background: linear-gradient(to bottom, var(--lq-sky), var(--lq-sky-low));

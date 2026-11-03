@@ -4,6 +4,91 @@
 
 @layer tokens, base, layout, scene, utilities;
 
+@layer scene {
+  /* Shared etched clouds and gulls belong to the far plane of both shore scenes.
+     Their transparent centers leave the paper sky and dialogue open. */
+  .coast__clouds,
+  .coast__gulls {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    clip-path: inset(0 0 46% 0);
+  }
+
+  .coast__clouds {
+    z-index: 0;
+    opacity: 0.4;
+    mix-blend-mode: multiply;
+  }
+
+  .coast__clouds img {
+    position: absolute;
+    inset-block-start: -5%;
+    inset-inline-start: -10%;
+    display: block;
+    inline-size: 120%;
+    block-size: auto;
+    filter: grayscale(1);
+  }
+
+  .coast__gulls {
+    z-index: 1;
+    opacity: 0.48;
+    mix-blend-mode: multiply;
+  }
+
+  .coast__gulls img {
+    position: absolute;
+    inset-block-start: 13%;
+    inset-inline-start: 57%;
+    display: block;
+    inline-size: clamp(11rem, 31vw, 26rem);
+    block-size: auto;
+    translate: -50% 0;
+    filter: grayscale(1);
+  }
+
+  .mt__shore .coast__clouds {
+    opacity: 0.4;
+  }
+
+  .mt__shore .coast__gulls {
+    opacity: 0.48;
+  }
+
+  .lq__shore .coast__clouds {
+    opacity: 0.36;
+  }
+
+  .lq__shore .coast__gulls {
+    opacity: 0.44;
+  }
+
+  .lq__shore .coast__gulls img {
+    inset-block-start: 5%;
+    inline-size: clamp(11rem, 26vw, 20rem);
+  }
+
+  @media (max-width: 600px) {
+    .coast__clouds img {
+      inline-size: 140%;
+      inset-inline-start: -20%;
+    }
+
+    .coast__gulls img {
+      inset-block-start: 19%;
+      inset-inline-start: 62%;
+      inline-size: clamp(10rem, 46vw, 15rem);
+    }
+
+    .lq__shore .coast__gulls img {
+      inset-block-start: 5%;
+      inline-size: clamp(10rem, 44vw, 12rem);
+    }
+  }
+}
+
 @layer tokens {
   :root {
     /* The sky is paper, lighter at the horizon; the sun is the book's glow. */

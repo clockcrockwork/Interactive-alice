@@ -28,7 +28,13 @@ import {
   seeded,
 } from '../shell/shell.ts';
 import { exclaims, type LocaleProfile, pageProfile, units } from '../shell/words.ts';
-import { COURT_DOORS, HANDS_WITH_LOBSTER, jellyMarkup, tureenMarkup } from './figures.ts';
+import {
+  COASTAL_SKY_ART,
+  COURT_DOORS,
+  HANDS_WITH_LOBSTER,
+  jellyMarkup,
+  tureenMarkup,
+} from './figures.ts';
 import './quadrille.css';
 import './shore.css';
 
@@ -173,6 +179,7 @@ function mount(shell: DemoShell): void {
   const shore = shell.layer('lq__shore');
   shore.innerHTML =
     '<div class="lq__sky"></div>' +
+    COASTAL_SKY_ART +
     '<div class="lq__sea lq__sea--far"></div>' +
     '<div class="lq__sea lq__sea--mid"></div>' +
     '<div class="lq__sea lq__sea--near"></div>' +

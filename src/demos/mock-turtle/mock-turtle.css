@@ -588,6 +588,23 @@
     background: linear-gradient(to bottom, var(--lq-under), var(--lq-under-deep));
   }
 
+  .mt__engraving {
+    position: absolute;
+    inset: 0;
+    display: block;
+    opacity: 0.18;
+    mix-blend-mode: screen;
+    pointer-events: none;
+  }
+
+  .mt__engraving img {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
   /* The water's surface, bright along the top of the rising sea. */
   .mt__surface {
     position: absolute;

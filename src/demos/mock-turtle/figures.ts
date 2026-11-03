@@ -3,6 +3,15 @@
 import { figure } from '../art/art.ts';
 import { DANCERS } from '../art/vectors.ts';
 
+const schoolWide = new URL(
+  '../../assets/images/scenery/mock-turtle-school-wide.generated.webp',
+  import.meta.url,
+).href;
+const schoolPhone = new URL(
+  '../../assets/images/scenery/mock-turtle-school-phone.generated.webp',
+  import.meta.url,
+).href;
+
 /** The shore: sky and sun, three swells of sea in a wrapper that heaves, the
     ledge of rock the Mock Turtle sits on (with the shadow it casts), the grass
     above the shore, and shingle. Each band carries its own parallax rate for the
@@ -48,7 +57,7 @@ export function schoolMarkup(lite: boolean): string {
   const mid = pupils.slice(4, lite ? 6 : 7);
   const near = pupils.slice(7, lite ? 8 : 9);
   return `
-<div class="mt__deep"></div>
+<div class="mt__deep"><picture class="mt__engraving" aria-hidden="true"><source media="(max-width: 700px)" srcset="${schoolPhone}"><img src="${schoolWide}" alt="" decoding="async" loading="lazy"></picture></div>
 <div class="mt__surface"></div>
 <div class="mt__caustic mt__caustic--a"></div>
 <div class="mt__caustic mt__caustic--b"></div>

@@ -335,6 +335,24 @@
     --stand: 0.6;
   }
 
+  .tp__chair-seat {
+    --stand: 1;
+    --sink: 0;
+  }
+
+  .tp__chair-seat svg {
+    transform: scaleX(var(--chair-side, 1));
+  }
+
+  .tp__table-spread {
+    --stand: 0.45;
+    --sink: 0;
+  }
+
+  .tp__table-spread--bread {
+    opacity: 0.94;
+  }
+
   .tp__lid {
     transform-box: fill-box;
     transform-origin: 20% 100%;
@@ -976,6 +994,12 @@
       --tp-origin: 48%;
     }
 
+    /* Use the phone's lower margin so dialogue cards cover less of the spread,
+       while leaving room for the scroll-on cue at the foot of the first beat. */
+    .demo--tea-party .demo-beat {
+      inset-block-end: 7vh;
+    }
+
     .tp__cutout {
       inset-block-start: 20%;
     }
@@ -995,6 +1019,77 @@
     .demo--tea-party .demo-beat[data-cue="twinkle"] {
       font-size: 0.92rem;
       gap: 0.25em;
+    }
+
+    /* On a narrow frame the near end of the table sits behind the captions.
+       The two long passages need a little more paper and a broader ink halo so
+       fine tableware lines do not cut through the words; food still shows. */
+    .demo--tea-party .line {
+      background-color: color-mix(
+        in oklch,
+        var(--paper-base) var(--tp-caption-opacity, 34%),
+        transparent
+      );
+      box-shadow: 0 3px 12px oklch(from var(--ink-primary) l c h / 0.12);
+      text-shadow:
+        0 0 0.35em var(--paper-base),
+        0 1px 2px var(--paper-base);
+    }
+
+    .demo--tea-party .demo-beat:is([data-cue="twinkle"], [data-cue="tea-time"]) .line {
+      --tp-caption-opacity: 48%;
+      text-shadow:
+        0 0 0.55em var(--paper-base),
+        0 1px 3px var(--paper-base),
+        0 0 1px var(--paper-base);
+    }
+
+    .demo--tea-party .line[data-kind="narration"] {
+      background-color: color-mix(
+        in oklch,
+        var(--demo-slip) var(--tp-caption-opacity, 34%),
+        transparent
+      );
+    }
+
+    .demo--tea-party .line[data-speaker="alice"] {
+      background-color: color-mix(
+        in oklch,
+        var(--tp-bubble-alice) var(--tp-caption-opacity, 34%),
+        transparent
+      );
+    }
+
+    .demo--tea-party .line[data-speaker="hatter"] {
+      background-color: color-mix(
+        in oklch,
+        var(--tp-bubble-hatter) var(--tp-caption-opacity, 34%),
+        transparent
+      );
+    }
+
+    .demo--tea-party .line[data-speaker="march-hare"] {
+      background-color: color-mix(
+        in oklch,
+        var(--tp-bubble-hare) var(--tp-caption-opacity, 34%),
+        transparent
+      );
+    }
+
+    .demo--tea-party .line[data-speaker="dormouse"] {
+      background-color: color-mix(
+        in oklch,
+        var(--tp-bubble-dormouse) var(--tp-caption-opacity, 34%),
+        transparent
+      );
+    }
+
+    .demo--tea-party .line[data-speaker="queen-of-hearts"] {
+      background-color: color-mix(
+        in oklch,
+        var(--tp-bubble-queen) var(--tp-caption-opacity, 34%),
+        transparent
+      );
     }
 
     .tp__butter-pat {

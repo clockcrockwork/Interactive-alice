@@ -199,7 +199,8 @@
     inset: 0 0 20% 0;
   }
 
-  /* Every rose is a button: white until painted, then red with a drip. */
+  /* Each rose is a button with two independently illustrated sprite crops.
+     The old radial flower remains visible if its optional plate fails to load. */
   .cq__rose {
     --drip: 0;
     position: absolute;
@@ -214,30 +215,61 @@
     box-shadow: inset 0 -0.3em 0.4em oklch(from var(--ink-primary) l c h / 0.15);
     cursor: pointer;
     pointer-events: auto;
-    transition:
-      background-color var(--demo-quick) var(--demo-ease),
-      transform var(--demo-quick) var(--demo-ease);
+    transition: transform var(--demo-quick) var(--demo-ease);
   }
 
-  .cq__rose::after {
-    content: "";
+  .cq__rose-art {
     position: absolute;
-    inset-inline-start: 45%;
+    inset: 0;
+    background-image: var(--cq-rose-art);
+    background-repeat: no-repeat;
+    background-size: 200% 100%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--demo-quick) var(--demo-ease);
+  }
+
+  .cq__rose-art--white {
+    background-position: left center;
+  }
+
+  .cq__rose-art--red {
+    background-position: right center;
+  }
+
+  .cq__rose-tree[data-rose-art-ready] .cq__rose {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .cq__rose-tree[data-rose-art-ready] .cq__rose[aria-pressed="false"] .cq__rose-art--white,
+  .cq__rose-tree[data-rose-art-ready] .cq__rose[aria-pressed="true"] .cq__rose-art--red {
+    opacity: 1;
+  }
+
+  .cq__rose-drip {
+    position: absolute;
+    inset-inline-start: 47%;
     inset-block-start: 70%;
-    inline-size: 12%;
-    block-size: calc(var(--drip) * 90%);
+    inline-size: 8%;
+    block-size: calc(var(--drip) * 24%);
     border-radius: 0 0 50% 50%;
     background: var(--cq-red);
     opacity: 0;
+    pointer-events: none;
     transition: opacity var(--demo-calm) var(--demo-ease);
   }
 
   .cq__rose[aria-pressed="true"] {
     background: radial-gradient(circle at 40% 35%, var(--wonder-red-light), var(--cq-red) 70%);
-    transform: scale(1.12);
+    transform: scale(1.08);
   }
 
-  .cq__rose[aria-pressed="true"]::after {
+  .cq__rose-tree[data-rose-art-ready] .cq__rose[aria-pressed="true"] .cq__rose-art--white {
+    opacity: 0;
+  }
+
+  .cq__rose[aria-pressed="true"] .cq__rose-drip {
     opacity: 1;
   }
 
@@ -299,6 +331,21 @@
   .cq__ground[data-marching] .cq__child .art {
     animation: cq-skip 0.4s ease-in-out infinite alternate;
     animation-delay: calc(var(--i, 0) * -70ms);
+  }
+
+  /* The generated playing-card body replaces the marching club soldier's
+     painted figure; keep the club suit marker live above its printed diamond. */
+  .cq__soldier {
+    position: relative;
+  }
+
+  .cq__soldier > .cq__club-mark {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: visible;
+    pointer-events: none;
   }
 
   .cq__fury {
@@ -724,7 +771,8 @@
     }
 
     .cq__rose,
-    .cq__rose::after,
+    .cq__rose-art,
+    .cq__rose-drip,
     .cq__flamingo-head {
       transition: none;
     }

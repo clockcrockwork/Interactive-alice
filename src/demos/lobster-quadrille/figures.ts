@@ -3,6 +3,8 @@
 import { figure } from '../art/art.ts';
 import { type ArtStyle, artStyle } from '../art/treatments.ts';
 
+export { COASTAL_SKY_ART } from './coastal-sky.ts';
+
 export const HANDS_WITH_LOBSTER = `
 <div class="lq__hand lq__hand--left">${figure('alice/hand-left')}</div>
 <div class="lq__lobster-held">${figure('lobster')}</div>

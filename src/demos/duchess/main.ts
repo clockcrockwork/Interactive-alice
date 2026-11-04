@@ -17,7 +17,9 @@
  */
 
 import gsap from 'gsap';
+import DUCHESS_HOUSE from '../../assets/images/scenery/duchess-house.generated.webp';
 import { figure } from '../art/art.ts';
+import { scenery } from '../art/generated-scenery.ts';
 import { SHORE_HTML } from '../mock-turtle/figures.ts';
 import { attachDemo, type DemoShell, mix } from '../shell/shell.ts';
 import { exclaims } from '../shell/words.ts';
@@ -108,7 +110,16 @@ function mount(shell: DemoShell): void {
   // --- The ground in bands, each sliding at its own rate as the two walk.
   shell.layer('dc__sky');
   const far = shell.layer('dc__far');
-  far.innerHTML = '<div class="dc__band dc__band--far"><div class="dc__hedge"></div></div>';
+  far.innerHTML =
+    '<div class="dc__band dc__band--far">' +
+    `<div class="dc__background-house"><img src="${DUCHESS_HOUSE}" alt="" aria-hidden="true" /></div>` +
+    [15, 66, 122, 178]
+      .map(
+        (x, index) =>
+          `<div class="dc__background-tree dc__background-tree--${index + 1}" style="--tree-x: ${x}vw">${scenery('tree')}</div>`,
+      )
+      .join('') +
+    `<div class="dc__hedge">${scenery('hedge')}</div></div>`;
   const mid = shell.layer('dc__mid');
   const pieceMarkup = (className: string, art: string, x: number, extra = ''): string =>
     `<div class="dc__piece ${className}" style="--x: ${x}"${extra}>${figure(art)}</div>`;
@@ -122,7 +133,7 @@ function mount(shell: DemoShell): void {
     `<div class="dc__mine" style="--x: ${MINE_X}">${MINE_SVG}</div>`,
   ].join('')}</div>`;
   const near = shell.layer('dc__near');
-  near.innerHTML = '<div class="dc__band dc__band--near"><div class="dc__turf"></div></div>';
+  near.innerHTML = `<div class="dc__band dc__band--near"><div class="dc__turf"><div class="dc__turf-art">${scenery('ground')}</div></div></div>`;
 
   // --- The shore the walk comes to: the Mock Turtle's own opening, drawn by its
   // own markup and stylesheet, so the last frame here is its first frame there.

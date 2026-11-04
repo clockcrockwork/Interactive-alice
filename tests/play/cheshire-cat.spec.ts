@@ -130,19 +130,6 @@ test('the cheshire cat, reduced motion: head first is two cuts and the grin stay
   await context.close();
 });
 
-/** The near trunks' spans in px, from the layer's own computed backgrounds. */
-const nearTrunks = (page: Parameters<typeof scrollTo>[0]) =>
-  page.evaluate(() => {
-    const near = document.querySelector('.cc__trees--near') as HTMLElement;
-    const style = getComputedStyle(near);
-    const left = near.getBoundingClientRect().left;
-    const width = Number.parseFloat(style.backgroundSize);
-    return style.backgroundPosition
-      .split(',')
-      .map((position) => left + Number.parseFloat(position))
-      .map((x) => ({ from: x, to: x + width }));
-  });
-
 test.describe('on a phone', () => {
   test.use({ viewport: { width: 390, height: 780 } });
 
@@ -156,9 +143,24 @@ test.describe('on a phone', () => {
     if (!cat) {
       throw new Error('no Cat');
     }
-    for (const trunk of await nearTrunks(page)) {
-      expect(trunk.to <= cat.x + 4 || trunk.from >= cat.x + cat.width - 4).toBe(true);
-    }
+    const trunks = page.locator('.cc__scenery-near [data-generated-rig="scenery/night-trunk"]');
+    await expect(trunks).toHaveCount(2);
+    await expect(trunks.nth(0)).toHaveAttribute('data-rig-ready', '');
+    await expect(trunks.nth(1)).toHaveAttribute('data-rig-ready', '');
+    const layering = await page.evaluate(() => {
+      const fallback = document.querySelector('.cc__trees--near') as HTMLElement;
+      const nearPlane = document.querySelector('.cc__scenery-near-plane') as HTMLElement;
+      const boughs = document.querySelector('.cc__bough-layer') as HTMLElement;
+      return {
+        fallbackImage: getComputedStyle(fallback).backgroundImage,
+        trunksBehindCat:
+          (nearPlane.compareDocumentPosition(boughs) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0,
+      };
+    });
+    // Once the engraved edge trunks are ready, the old foreground fallback is
+    // removed. The generated edge trunks sit behind the Cat's bough layer.
+    expect(layering.fallbackImage).toBe('none');
+    expect(layering.trunksBehindCat).toBe(true);
   });
 });
 

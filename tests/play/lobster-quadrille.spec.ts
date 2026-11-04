@@ -127,6 +127,33 @@ test.describe('lobster quadrille: play', () => {
     expect(await customProperty(page, '.lq__ring', '--partners')).toBeLessThan(0.05);
   });
 
+  test('the full cast remains inside the phone frame at the opening round', async ({ page }) => {
+    test.skip((page.viewportSize()?.width ?? 0) >= 700, 'phone composition check');
+    await atCue(page, 'round', 0.6);
+    const viewportWidth = page.viewportSize()?.width ?? 0;
+    const bounds = await page
+      .locator('.lq__ring .lq__dancer .art, .lq__ring .lq__partner .art')
+      .evaluateAll((figures) =>
+        figures
+          .filter((figure) => {
+            const dancer = figure.parentElement;
+            return dancer !== null && Number(getComputedStyle(dancer).opacity) > 0.9;
+          })
+          .map((figure) => {
+            const { x, width } = figure.getBoundingClientRect();
+            return { x, width };
+          }),
+      );
+    expect(bounds.length).toBeGreaterThan(4);
+    for (const figure of bounds) {
+      expect(figure.x, JSON.stringify(figure)).toBeGreaterThanOrEqual(0);
+      expect(figure.x + figure.width, JSON.stringify(figure)).toBeLessThanOrEqual(viewportWidth);
+    }
+    await page.screenshot({
+      path: '/workspace/alice-audit-evidence-20261103/composition-review/lobster-round-phone-after.png',
+    });
+  });
+
   test('scrolling back reconstructs: the dancers, their lobsters and the one in her hands', async ({
     page,
   }) => {
@@ -288,6 +315,58 @@ test.describe('lobster quadrille: phone', () => {
     // The bar's buttons stay inside the frame.
     const box = await page.locator('.demo__sound').boundingBox();
     expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(391);
+  });
+});
+
+test.describe('lobster quadrille: shore engraving', () => {
+  test.skip(!demo, 'no lobster-quadrille demo page in the build');
+
+  test('the shingle illustration selects a viewport fit and stays decorative', async ({
+    page,
+  }, testInfo) => {
+    await page.goto(demo?.url ?? '');
+    await atCue(page, 'round', 0.6);
+    const image = page.locator('.lq__shingle-engraving img');
+    await expect(image).toBeVisible();
+    await expect
+      .poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth))
+      .toBeGreaterThan(0);
+    const actual = await image.evaluate((img: HTMLImageElement) => ({
+      source: img.currentSrc,
+      alt: img.alt,
+      filter: getComputedStyle(img).filter,
+      pointerEvents: getComputedStyle(img.parentElement ?? img).pointerEvents,
+    }));
+    const expectedSource =
+      (page.viewportSize()?.width ?? 1280) <= 700
+        ? 'lobster-shingle-phone'
+        : 'lobster-shingle-wide';
+    expect(actual.source).toContain(expectedSource);
+    expect(actual.alt).toBe('');
+    expect(actual.filter).toContain('grayscale(1)');
+    expect(actual.pointerEvents).toBe('none');
+    const visibleDancers = await page
+      .locator('.lq__dancer[data-kind]')
+      .evaluateAll(
+        (items) => items.filter((item) => Number(getComputedStyle(item).opacity) > 0.95).length,
+      );
+    expect(visibleDancers).toBeGreaterThanOrEqual(8);
+    await page.screenshot({ path: testInfo.outputPath('lobster-shingle-after.png') });
+  });
+
+  test('the CSS shingle remains when its illustration cannot load', async ({ page }) => {
+    await page.route(/lobster-shingle-.*\.webp/, (route) => route.abort());
+    await page.goto(demo?.url ?? '');
+    await atCue(page, 'round', 0.6);
+    const image = page.locator('.lq__shingle-engraving img');
+    await expect.poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(0);
+    const fallback = await page
+      .locator('.lq__shingle')
+      .evaluate((el) => getComputedStyle(el).backgroundImage);
+    expect(fallback).toContain('radial-gradient');
+    expect(fallback).toContain('linear-gradient');
+    const dancerCount = await page.locator('.lq__dancer[data-kind]').count();
+    expect(dancerCount).toBeGreaterThanOrEqual(8);
   });
 });
 

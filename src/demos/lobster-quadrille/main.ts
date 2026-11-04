@@ -28,9 +28,24 @@ import {
   seeded,
 } from '../shell/shell.ts';
 import { exclaims, type LocaleProfile, pageProfile, units } from '../shell/words.ts';
-import { COURT_DOORS, HANDS_WITH_LOBSTER, jellyMarkup, tureenMarkup } from './figures.ts';
+import {
+  COASTAL_SKY_ART,
+  COURT_DOORS,
+  HANDS_WITH_LOBSTER,
+  jellyMarkup,
+  tureenMarkup,
+} from './figures.ts';
 import './quadrille.css';
 import './shore.css';
+
+const shingleWide = new URL(
+  '../../assets/images/scenery/lobster-shingle-wide.generated.webp',
+  import.meta.url,
+).href;
+const shinglePhone = new URL(
+  '../../assets/images/scenery/lobster-shingle-phone.generated.webp',
+  import.meta.url,
+).href;
 
 /** The beats whose Mock Turtle lines are sung, not said. */
 const SUNG = new Set(['verse-one', 'verse-two', 'verse-three', 'soup', 'faint']);
@@ -164,10 +179,15 @@ function mount(shell: DemoShell): void {
   const shore = shell.layer('lq__shore');
   shore.innerHTML =
     '<div class="lq__sky"></div>' +
+    COASTAL_SKY_ART +
     '<div class="lq__sea lq__sea--far"></div>' +
     '<div class="lq__sea lq__sea--mid"></div>' +
     '<div class="lq__sea lq__sea--near"></div>' +
     '<div class="lq__shingle"></div>' +
+    '<picture class="lq__shingle-engraving" aria-hidden="true">' +
+    `<source media="(max-width: 700px)" srcset="${shinglePhone}">` +
+    `<img src="${shingleWide}" alt="" decoding="async" loading="lazy">` +
+    '</picture>' +
     '<div class="lq__stream"><div class="lq__stream-plane"></div></div>';
   const seas = [...shore.querySelectorAll<HTMLElement>('.lq__sea')];
   seas.forEach((sea, index) => {

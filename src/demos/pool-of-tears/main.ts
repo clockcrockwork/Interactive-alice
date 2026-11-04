@@ -21,6 +21,15 @@ import { fanMarkup, TEAR_DROP_SVG } from './figures.ts';
 import './pool.css';
 import { createSea, type Swimmer } from './sea.ts';
 
+const underwaterWide = new URL(
+  '../../assets/images/scenery/pool-underwater-wide.generated.webp',
+  import.meta.url,
+).href;
+const underwaterPhone = new URL(
+  '../../assets/images/scenery/pool-underwater-phone.generated.webp',
+  import.meta.url,
+).href;
+
 /** How much one tear shed by hand raises the pool, and how many it may add. */
 const NOTCH = 0.024;
 const MAX_NOTCHES = 5;
@@ -63,6 +72,11 @@ function mount(shell: DemoShell): void {
   // The roof, folded in at the top of the frame where her head met it.
   const roof = shell.layer('pt__roof');
   const under = shell.layer('pt__under');
+  under.innerHTML =
+    '<picture class="pt__under-engraving" aria-hidden="true">' +
+    `<source media="(max-width: 700px)" srcset="${underwaterPhone}">` +
+    `<img src="${underwaterWide}" alt="" decoding="async" loading="eager">` +
+    '</picture>';
   const props = shell.layer('pt__props');
   props.innerHTML =
     `<div class="pt__rabbit">${figure('white-rabbit/running')}</div>` +

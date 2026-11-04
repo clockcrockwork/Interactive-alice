@@ -63,6 +63,71 @@ test.describe('mock turtle: play', () => {
     await page.goto(demo?.url ?? '');
   });
 
+  test('the fun caption keeps clear of the Gryphon on desktop and phone', async ({ page }) => {
+    await atCue(page, 'fun', 0.55);
+    const captionLines = await page
+      .locator('.demo__stage .demo-beat[data-cue="fun"] .line')
+      .evaluateAll((lines) =>
+        lines
+          .filter((line) => Number(getComputedStyle(line).opacity) > 0.5)
+          .map((line) => {
+            const { x, y, width, height } = line.getBoundingClientRect();
+            return { x, y, width, height };
+          }),
+      );
+    const gryphon = await page.locator('.mt__gryphon .art').boundingBox();
+    expect(captionLines.length).toBeGreaterThan(0);
+    if (!gryphon) {
+      throw new Error('The Gryphon image is missing at the fun cue');
+    }
+    for (const line of captionLines) {
+      expect(overlaps(line, gryphon), JSON.stringify({ line, gryphon })).toBe(false);
+    }
+    const viewport = (page.viewportSize()?.width ?? 0) < 700 ? 'phone' : 'desktop';
+    await page.screenshot({
+      path: `/workspace/alice-audit-evidence-20261103/composition-review/mock-turtle-fun-${viewport}-after.png`,
+    });
+  });
+
+  test('the underwater school has a quiet engraved backdrop with a phone crop', async ({
+    page,
+  }) => {
+    await atCue(page, 'tortoise', 0.5);
+    const image = page.locator('.mt__deep .mt__engraving img');
+    await expect(image).toBeVisible();
+    await expect
+      .poll(() => image.evaluate((node: HTMLImageElement) => node.naturalWidth))
+      .toBeGreaterThan(0);
+    const phone = (page.viewportSize()?.width ?? 0) < 700;
+    const currentSource = await image.evaluate((node: HTMLImageElement) => node.currentSrc);
+    expect(currentSource).toContain(phone ? 'mock-turtle-school-phone' : 'mock-turtle-school-wide');
+    const style = await page.locator('.mt__engraving').evaluate((node) => ({
+      opacity: getComputedStyle(node).opacity,
+      pointerEvents: getComputedStyle(node).pointerEvents,
+    }));
+    expect(Number(style.opacity)).toBeGreaterThan(0.1);
+    expect(Number(style.opacity)).toBeLessThan(0.3);
+    expect(style.pointerEvents).toBe('none');
+    const viewport = phone ? 'phone' : 'desktop';
+    await page.screenshot({
+      path: `/workspace/alice-audit-evidence-20261103/mock-turtle/school-${viewport}-after.png`,
+    });
+  });
+
+  test('the moving water gradient remains if the optional engraving cannot load', async ({
+    page,
+  }) => {
+    await page.route(/mock-turtle-school-[^/]+\.webp/, (route) => route.abort());
+    await page.reload();
+    await atCue(page, 'tortoise', 0.5);
+    const image = page.locator('.mt__deep .mt__engraving img');
+    await expect.poll(() => image.evaluate((node: HTMLImageElement) => node.naturalWidth)).toBe(0);
+    const fallback = await page
+      .locator('.mt__deep')
+      .evaluate((node) => getComputedStyle(node).backgroundImage);
+    expect(fallback).toContain('linear-gradient');
+  });
+
   test('the Mock Turtle is pointer play: no focus, not announced, the button is the way', async ({
     page,
   }) => {

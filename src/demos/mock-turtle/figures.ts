@@ -2,6 +2,16 @@
 
 import { figure } from '../art/art.ts';
 import { DANCERS } from '../art/vectors.ts';
+import { COASTAL_SKY_ART } from '../lobster-quadrille/coastal-sky.ts';
+
+const schoolWide = new URL(
+  '../../assets/images/scenery/mock-turtle-school-wide.generated.webp',
+  import.meta.url,
+).href;
+const schoolPhone = new URL(
+  '../../assets/images/scenery/mock-turtle-school-phone.generated.webp',
+  import.meta.url,
+).href;
 
 /** The shore: sky and sun, three swells of sea in a wrapper that heaves, the
     ledge of rock the Mock Turtle sits on (with the shadow it casts), the grass
@@ -9,6 +19,7 @@ import { DANCERS } from '../art/vectors.ts';
     walk along the shore. */
 export const SHORE_HTML = `
 <div class="mt__sky"><div class="mt__sun"></div></div>
+${COASTAL_SKY_ART}
 <div class="mt__swell">
   <div class="mt__sea mt__sea--far"></div>
   <div class="mt__sea mt__sea--mid"></div>
@@ -48,7 +59,7 @@ export function schoolMarkup(lite: boolean): string {
   const mid = pupils.slice(4, lite ? 6 : 7);
   const near = pupils.slice(7, lite ? 8 : 9);
   return `
-<div class="mt__deep"></div>
+<div class="mt__deep"><picture class="mt__engraving" aria-hidden="true"><source media="(max-width: 700px)" srcset="${schoolPhone}"><img src="${schoolWide}" alt="" decoding="async" loading="lazy"></picture></div>
 <div class="mt__surface"></div>
 <div class="mt__caustic mt__caustic--a"></div>
 <div class="mt__caustic mt__caustic--b"></div>

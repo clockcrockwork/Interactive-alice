@@ -477,6 +477,10 @@
 
   /* Before the shell attaches, the track is a readable document. Once the beats have
      moved into the stage the track is only scroll distance. */
+  :where(:root[data-demo-booting]) .demo__track {
+    visibility: hidden;
+  }
+
   .demo__track {
     padding-block: calc(var(--demo-bar-height) + var(--space-3)) var(--space-3);
     padding-inline: var(--space-2);

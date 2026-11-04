@@ -61,6 +61,7 @@ import {
   MOUSE_SVG,
   MUSHROOM_SVG,
   PIG_BABY_SVG,
+  PIG_HAND_PAIR_SVG,
   PIG_TROTTING_SVG,
   PIGEON_SVG,
   QUEEN_SVG,
@@ -219,8 +220,9 @@ export const ART: Record<string, ArtEntry> = {
         ).href,
         width: 926,
         height: 1698,
-        // Visible soles (alpha > 32), not the transparent canvas bottom.
-        footY: 1604,
+        // The opaque shoe sole ends at 1602; the two-pixel alpha fringe stays
+        // below it so the rendered figure sits on the same floor as its vector.
+        footY: 1602,
       },
     },
   },
@@ -272,6 +274,7 @@ export const ART: Record<string, ArtEntry> = {
   'alice/from-above': vector(ALICE_FROM_ABOVE_SVG, [120, 120], ALICE_FROM_ABOVE_INNER),
   'alice/hand-left': vector(handSvg('left'), [120, 200]),
   'alice/hand-right': vector(handSvg('right'), [120, 200]),
+  'alice/hands-cradling': vector(PIG_HAND_PAIR_SVG, [1536, 1024]),
   caterpillar: vector(CATERPILLAR_SVG, [240, 200]),
   mushroom: vector(MUSHROOM_SVG, [400, 320]),
   pigeon: vector(PIGEON_SVG, [260, 200]),
@@ -397,8 +400,32 @@ export const ART: Record<string, ArtEntry> = {
   },
   'white-rabbit/garden': vector('', [60, 80], feetAtOrigin(HOUSE_RABBIT, 60, 80)),
   pat: vector('', [60, 70], feetAtOrigin(HOUSE_PAT, 60, 70)),
-  'dinah-cat': vector(DINAH_SVG, [120, 100]),
-  'dinah-cat/pouncing': vector(DINAH_POUNCING_SVG, [160, 80]),
+  'dinah-cat': {
+    ...vector(DINAH_SVG, [120, 100]),
+    generated: {
+      any: {
+        src: new URL('../../assets/images/figures/dinah-cat.any.generated.webp', import.meta.url)
+          .href,
+        width: 480,
+        height: 400,
+        footY: 394,
+      },
+    },
+  },
+  'dinah-cat/pouncing': {
+    ...vector(DINAH_POUNCING_SVG, [160, 80]),
+    generated: {
+      any: {
+        src: new URL(
+          '../../assets/images/figures/dinah-cat--pouncing.any.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 1774,
+        height: 887,
+        footY: 887,
+      },
+    },
+  },
   bat: vector(BAT_SVG, [100, 50]),
   dormouse: vector(MOUSE_SVG, [140, 110]),
   hatter: vector(HATTER_SVG, [160, 260]),

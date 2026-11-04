@@ -194,37 +194,38 @@
       "id": "frog-footman",
       "part": "body",
       "asset": "frog-footman~body.any.generated.webp",
-      "bytes": 436560,
-      "sha256": "594e8c5e03be6a816e8e572270212125d5921f6f2d47ede690be5ac37332ae91",
-      "width": 926,
-      "height": 1699,
+      "bytes": 346756,
+      "sha256": "6f4c8d4a89691ec1ade1e9870be0e1e8eba656f0195127bf63261a34ef281857",
+      "width": 971,
+      "height": 1619,
       "source": {
-        "filename": "exec-feffd35d-aa5c-4cbc-b494-99880fcfeaad.png",
-        "sha256": "862d5aa78d53ea0fa5a2ef95e654d174b2c207601e8e5672c45cb272c4c9aa56"
+        "filename": "private-page-6ae6210c9bdc8191b6f1a9bed7361984-recovered-master.png",
+        "sha256": "6033b537cc55da9d572ae745595d9ce31b12d570b0d240f6fa22e687687788f5"
       },
       "master": {
-        "filename": "exec-94453421-f81c-4db9-b698-b691ec1b1b2e.png",
-        "sha256": "4e285b71c0727ecc4140cec0792910b26921a98073afab6c45d7aa5e598e1b44"
+        "filename": "private-page-6ae6210c9bdc8191b6f1a9bed7361984-recovered-master.png",
+        "sha256": "6033b537cc55da9d572ae745595d9ce31b12d570b0d240f6fa22e687687788f5"
       },
       "alphaExtrema": [0, 255],
       "alphaBounds": {
-        "0": [0, 104, 912, 1699],
-        "16": [53, 107, 876, 1493],
-        "32": [53, 107, 876, 1492],
-        "128": [53, 108, 875, 1492],
-        "224": [54, 108, 875, 1491]
+        "0": [79, 19, 953, 1593],
+        "16": [81, 99, 910, 1452],
+        "32": [81, 99, 910, 1452],
+        "128": [82, 99, 909, 1451],
+        "224": [82, 100, 909, 1451]
       },
       "alphaPreservedExactly": true,
-      "promptIntent": "Preserve the footman upper body and coat tails while removing the whole wig and all breeches, legs and shoes for a waist-bowing rig.",
-      "fullPrompt": "Use case: background-extraction. Input image 1 is the edit target: this project's own frog-headed footman master illustration. Make an upper-body animation layer for his bow, on an actually transparent background. Keep exactly the same portrait canvas, scale, position, original engraving details and colours. Keep ONLY his frog head and face, neckcloth, waistcoat, entire brown coat including all long coat tails, both arms and hands. Remove the whole powdered white wig to transparency, revealing the natural frog head beneath it. Remove ALL pale breeches, thighs, knees, stockings and shoes to transparency: the region below the waistcoat between the coat tails must be completely empty transparent, not filled with cloth. This layer will rotate from the waist over a separate fixed pair of breeches and legs. Do not shorten the coat tails, move or enlarge the figure, add extra body parts, add text, add a background or repaint the style. It must contain no trousers or legs whatsoever.",
+      "promptIntent": "Replace the frontal Frog Footman upper-body plate with the recovered three-quarter-left-facing master so he visibly turns toward the Fish Footman. Preserve the transparent full portrait canvas and existing coat/neckcloth treatment.",
+      "fullPrompt": "Original generation prompt unavailable; raw source recovered from the private review evidence page.",
       "encoding": {
         "format": "WebP",
         "quality": 92,
         "method": 6,
         "canvasUnchanged": true,
         "metadataStripped": true,
-        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
-      }
+        "rasterEdits": "none; source canvas and RGBA pixels passed directly to WebP encoding; alpha channel preserved exactly"
+      },
+      "recoveredFromPrivatePage": true
     },
     {
       "id": "frog-footman",
@@ -343,7 +344,7 @@
   },
   "encodingException": "WebP only for this provisional transparent-layer checkpoint. No AVIF pair or responsive resampling has been introduced; source canvas and alpha are intentionally unchanged.",
   "budget": {
-    "shippingBytes": 1901996,
+    "shippingBytes": 1812192,
     "shippingAssetCount": 8,
     "scope": "Pig and Pepper engraved concept-demo figures only. Images load/decode as a complete eight-layer pair; the shared asset URLs do not make them load in unrelated scenes.",
     "storyBudgetImpactBytes": 0,

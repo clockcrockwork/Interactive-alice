@@ -20,13 +20,17 @@ import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import { exclaims } from '../shell/words.ts';
 import {
   CARD_BACK_SVG,
-  CLUB_SOLDIER_SVG,
   COURTIER_SVG,
   cushionMarkup,
   EXECUTIONER_SVG,
   ROYAL_CHILD_SVG,
 } from './figures.ts';
 import './croquet.css';
+
+const ROSE_STATE_SPRITE = new URL(
+  '../../assets/images/figures/rose-state-sprite.any.generated.webp',
+  import.meta.url,
+).href;
 
 interface Piece {
   el: HTMLElement;
@@ -122,8 +126,15 @@ function mount(shell: DemoShell): void {
     item.el.style.setProperty('--z', item.z.toFixed(1));
   }
 
-  // The rose-tree and its roses: every rose a button that paints red.
+  // The rose-tree and its roses: every button changes from the white engraving
+  // to its separate red plate when the gardener paints it.
   const roseTree = piece('cq__rose-tree', figure('rose-tree'), -520, -80, 22);
+  const roseArtwork = new Image();
+  roseArtwork.onload = () => {
+    roseTree.el.style.setProperty('--cq-rose-art', `url("${ROSE_STATE_SPRITE}")`);
+    roseTree.el.setAttribute('data-rose-art-ready', '');
+  };
+  roseArtwork.src = ROSE_STATE_SPRITE;
   const roseSpots = [
     [24, 30],
     [46, 20],
@@ -141,7 +152,7 @@ function mount(shell: DemoShell): void {
     `<div class="cq__roses">${roseSpots
       .map(
         ([x, y]) =>
-          `<button type="button" class="cq__rose" aria-label="${shell.ui.demoPaintRose ?? ''}" aria-pressed="false" style="--rx: ${x}%; --ry: ${y}%"></button>`,
+          `<button type="button" class="cq__rose" aria-label="${shell.ui.demoPaintRose ?? ''}" aria-pressed="false" style="--rx: ${x}%; --ry: ${y}%"><span class="cq__rose-art cq__rose-art--white" aria-hidden="true"></span><span class="cq__rose-art cq__rose-art--red" aria-hidden="true"></span><span class="cq__rose-drip" aria-hidden="true"></span></button>`,
       )
       .join('')}</div>`,
   );
@@ -239,11 +250,16 @@ function mount(shell: DemoShell): void {
   // ornamented all over with diamonds, the royal children with hearts, the
   // guests, the Knave with the King's crown on its cushion, the King and Queen.
   const procession: Piece[] = [];
+  const clubSoldier =
+    `${figure('card-soldier')}<svg class="cq__club-mark" viewBox="0 0 120 220" aria-hidden="true" focusable="false">` +
+    '<rect x="36" y="56" width="48" height="50" rx="4" fill="var(--paper-base)"/>' +
+    '<g transform="translate(33 44) scale(.45)"><circle cx="60" cy="69" r="8" fill="var(--ink-primary)"/><circle cx="49" cy="81" r="8" fill="var(--ink-primary)"/><circle cx="71" cy="81" r="8" fill="var(--ink-primary)"/>' +
+    '<path d="M60 77 L60 96 M53 98 H67" fill="none" stroke="var(--ink-primary)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></g></svg>';
   const marchers: [string, string, number][] = [
     ...Array.from({ length: lite ? 4 : 6 }, (): [string, string, number] => [
       'cq__soldier',
-      `<span class="art">${CLUB_SOLDIER_SVG}</span>`,
-      8,
+      clubSoldier,
+      lite ? 6 : 8,
     ]),
     ...Array.from({ length: lite ? 3 : 5 }, (): [string, string, number] => [
       'cq__courtier',
@@ -264,11 +280,14 @@ function mount(shell: DemoShell): void {
     ['cq__king', figure('king-of-hearts'), 10],
     ['cq__queen', figure('queen-of-hearts'), 10],
   ];
+  const soldiers = marchers.filter(([className]) => className === 'cq__soldier').length;
+  const marchStart = (index: number): number =>
+    index < soldiers ? (lite ? -280 : 100) + index * (lite ? 95 : 130) : 1400 + index * 130;
   marchers.forEach(([className, markup, w], index) => {
     const item = piece(
       `cq__marcher ${className}`,
       markup,
-      1400 + index * 130,
+      marchStart(index),
       40 + (index % 2) * 60,
       w,
     );
@@ -282,7 +301,7 @@ function mount(shell: DemoShell): void {
   const applyMarch = (): void => {
     procession.forEach((item, index) => {
       const target = 60 - (procession.length - 1 - index) * 130;
-      item.x = mix(1400 + index * 130, target, stepMarch.t);
+      item.x = mix(marchStart(index), target, stepMarch.t);
       place(item);
     });
     ground.toggleAttribute('data-marching', stepMarch.t > 0 && stepMarch.t < 1);

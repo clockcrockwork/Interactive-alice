@@ -1,13 +1,13 @@
 {
   "batch": "alice-runner-2026-10-21",
-  "date": "2026-10-21",
-  "status": "provisional candidates; static contact proof, focused tests, and independent review passed; browser and owner art review pending",
+  "date": "2026-11-01",
+  "status": "integrated; yellow runner hair corrected, hand/prop geometry rechecked in browser",
   "generator": "image_gen",
   "model": "not exposed by generation tool",
   "styleId": "IA-ENGRAVED-CUTOUT-V1",
   "fullPrompt": "not available to integration worker; intent recorded rather than reconstructed as an exact prompt",
   "fullPromptHash": null,
-  "promptIntent": "Yellow standing Alice rest and natural image-right open-palm carry pose, without a baked object; same identity, full-body silhouette and transparent canvas.",
+  "promptIntent": "Yellow standing Alice rest and natural image-right open-palm carry pose, without a baked object; hair medium chestnut brown; transparent canvas.",
   "reference": "Provisional generated yellow standing master exec-2da5b795-1408-4c9a-b120-ea6091f300f6.png. Blue runner remains on its original route.",
   "anchors": {
     "hand": {
@@ -33,11 +33,11 @@
     "motionTracking": "Generated-ready only: map palm/support through current cr__figure CTM, cancel the root viewport CTM, and subtract the unchanged prop rim offset. Pocket maps through the same pose with zero offset. Invalid/unavailable/singular CTM returns finite static metadata; original and blue use exact original fallbacks."
   },
   "budget": {
-    "shippingBytes": 676280,
+    "shippingBytes": 596410,
     "files": 2,
     "perVariantFiles": 2,
     "productionBudgetPass": false,
-    "note": "Concept-demo checkpoint files only; no AVIF/srcset or scene performance acceptance claimed."
+    "note": "Hair recolor files remain concept-demo checkpoint art; no AVIF/srcset or scene performance acceptance claimed."
   },
   "excluded": [
     {
@@ -51,8 +51,8 @@
       "part": "rest",
       "variant": "yellow",
       "asset": "figures/runner--alice~rest.yellow.generated.webp",
-      "bytes": 354112,
-      "sha256": "707eb7488ed26681d86d2997fa45a9bdcb86af2439a3c9591e4b97c6c2c1afa6",
+      "bytes": 308174,
+      "sha256": "b27a239de66d986c11ed7aea4398f5e900c3e7b2db7508e7189db1f689e8685d",
       "width": 1164,
       "height": 1351,
       "logicalBox": [100, 116],
@@ -63,17 +63,17 @@
         "scale": 0.08427389014296463
       },
       "source": {
-        "filename": "exec-2da5b795-1408-4c9a-b120-ea6091f300f6.png",
-        "bytes": 1720408,
-        "sha256": "8eb6658d9e116159c4316958ed45cddffe90c80d7ad72a73a0ae8a88fd779deb"
+        "filename": "exec-37d911c8-6444-4568-a87c-8a93a073d128.png",
+        "bytes": 1567079,
+        "sha256": "d860b5545ad54fcd28982d481bdf31ed53ade8079183478346f0be614d1268b8"
       },
       "alphaExtrema": [0, 255],
       "alphaBounds": {
-        "greaterThan0": [0, 10, 1128, 1347],
-        "greaterThan16": [234, 12, 971, 1330],
-        "greaterThan32": [234, 12, 971, 1330],
-        "greaterThan128": [235, 13, 970, 1330],
-        "greaterThan224": [236, 14, 970, 1329]
+        "greaterThan0": [40, 10, 1131, 1337],
+        "greaterThan16": [232, 12, 971, 1335],
+        "greaterThan32": [232, 12, 970, 1335],
+        "greaterThan128": [233, 12, 970, 1335],
+        "greaterThan224": [233, 13, 969, 1334]
       },
       "alphaPreservedExactly": true,
       "encoding": {
@@ -83,7 +83,7 @@
         "effort": 6,
         "canvasUnchanged": true,
         "metadataStripped": true,
-        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+        "rasterEdits": "Hair recolored from blonde to chestnut brown; original alpha matte reapplied exactly; pose, clothing and canvas dimensions retained."
       }
     },
     {
@@ -91,8 +91,8 @@
       "part": "carry",
       "variant": "yellow",
       "asset": "figures/runner--alice~carry.yellow.generated.webp",
-      "bytes": 322168,
-      "sha256": "1480a3cb8cfd28b165970b5602b696174b7f20f748a1f85b881fa5701b131ad2",
+      "bytes": 288236,
+      "sha256": "35097538188511a6c8ed45188babfcb21ecace00b9e3c21bfb2038ebbe1af78c",
       "width": 1164,
       "height": 1351,
       "logicalBox": [100, 116],
@@ -103,17 +103,17 @@
         "scale": 0.08427389014296463
       },
       "source": {
-        "filename": "exec-7e5362c2-7c9f-40c1-b8cc-169f4f192a32.png",
-        "bytes": 1624344,
-        "sha256": "9755f1910dde5ff05d620a4ba27d5425d6580084ae8adf6c260c0b82e478378a"
+        "filename": "exec-b019edcb-96df-44ce-a19b-b95cfe091019.png",
+        "bytes": 1520986,
+        "sha256": "f2a7b533fda6ab1eb99619e44ed0a06e75945e17d94d13eeb595fb5148251af5"
       },
       "alphaExtrema": [0, 255],
       "alphaBounds": {
-        "greaterThan0": [0, 10, 1083, 1335],
-        "greaterThan16": [233, 12, 973, 1333],
-        "greaterThan32": [233, 12, 972, 1333],
-        "greaterThan128": [234, 12, 972, 1332],
-        "greaterThan224": [235, 13, 971, 1331]
+        "greaterThan0": [130, 9, 1109, 1338],
+        "greaterThan16": [231, 11, 973, 1336],
+        "greaterThan32": [232, 11, 973, 1336],
+        "greaterThan128": [232, 12, 972, 1335],
+        "greaterThan224": [233, 13, 971, 1335]
       },
       "alphaPreservedExactly": true,
       "encoding": {
@@ -123,7 +123,7 @@
         "effort": 6,
         "canvasUnchanged": true,
         "metadataStripped": true,
-        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+        "rasterEdits": "Hair recolored from blonde to chestnut brown; original alpha matte reapplied exactly; pose, clothing and canvas dimensions retained."
       }
     }
   ]

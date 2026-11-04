@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-31",
+  "id": "pig-baby-turning",
+  "scope": "Pig and Pepper first-person catch morph only; Duchess flying plate remains unchanged.",
+  "generator": "OpenAI image_gen; model not exposed",
+  "source": "pig-baby-turning-source.png",
+  "sourceSha256": "01c9b678870b52055fbdfbc08ed85021b887fe352802fe61c5074920ac68208d",
+  "sourceDimensions": [1187, 1326],
+  "sourceAlphaBounds": [0, 0, 1186, 1313],
+  "asset": "figures/pig-baby--turning.any.generated.webp",
+  "assetSha256": "cd5929f3030a3f949b8fb7b7ff266aa6951c8048bc3beaddc9904a46e25a68ca",
+  "bytes": 440790,
+  "dimensions": [1187, 1326],
+  "logicalBox": [200, 200],
+  "promptSummary": "Same fully clothed infant just beginning to turn, with a small pig snout and pig ears emerging beside the bonnet.",
+  "edits": "WebP q92 and alpha q100 conversion only. No resize, crop, recolouring or cleanup.",
+  "verification": "Composition and alpha inspected; checked in desktop/phone Pig and Pepper first-person morph screenshots."
+}

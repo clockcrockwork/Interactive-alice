@@ -147,14 +147,23 @@ function mount(shell: DemoShell): void {
   }).join('');
   treetops.innerHTML =
     '<svg class="ct__canopy" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
+    '<defs><pattern id="ct-neck-etch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(18)"><path d="M-2 2 L2 -2 M0 9 L9 0 M7 11 L11 7" fill="none" stroke="var(--ink-primary)" stroke-width=".75"/><path d="M-2 7 L2 11 M0 0 L9 9 M7 -2 L11 2" fill="none" stroke="var(--ink-primary)" stroke-width=".38"/></pattern></defs>' +
     `<g class="ct__leaves ct__leaves--0">${generatedCanopyLeaves(leaves)}</g>` +
     '<ellipse class="ct__nest" cx="240" cy="820" rx="70" ry="26"/>' +
-    `<g class="ct__shoulders">${svgFigure('alice/from-above', -46, -46, 92, 92)}</g>` +
-    '<path class="ct__neck ct__neck--shade" d=""/>' +
     '<path class="ct__neck" d=""/>' +
+    '<path class="ct__neck ct__neck--shade" d=""/>' +
+    '<path class="ct__neck ct__neck--etch" d=""/>' +
+    // The shoulder picture is the uppermost layer: its oval opening masks the
+    // tapered neck at the seam, instead of letting a broad ribbon cover the
+    // blouse, collar and engraved edge around it.
+    `<g class="ct__shoulders">${svgFigure('alice/from-above', -46, -46, 92, 92)}</g>` +
     '</svg>';
   const canopy = treetops.querySelector<SVGSVGElement>('.ct__canopy');
-  const neckPaths = [...treetops.querySelectorAll<SVGPathElement>('.ct__neck')];
+  const neckBase = treetops.querySelector<SVGPathElement>(
+    '.ct__neck:not(.ct__neck--shade):not(.ct__neck--etch)',
+  );
+  const neckShade = treetops.querySelector<SVGPathElement>('.ct__neck--shade');
+  const neckEtch = treetops.querySelector<SVGPathElement>('.ct__neck--etch');
   // The neck is a tapered ribbon along a curve: wide where it leaves the bottom
   // of the frame (nearest the eye) and narrow at the shoulders far below.
   const neckPath = (bx: number, by: number, cx: number, cy: number, wide: number): string => {
@@ -169,7 +178,9 @@ function mount(shell: DemoShell): void {
       const dx = 2 * u * (cx - bx) + 2 * t * (500 - cx);
       const dy = 2 * u * (cy - by) + 2 * t * (1140 - cy);
       const length = Math.hypot(dx, dy) || 1;
-      const w = mix(22, wide, t * t);
+      // The far end enters the small oval between her shoulders; let it widen
+      // only as perspective brings the neck toward the reader.
+      const w = mix(7, wide, t * t);
       const nx = (-dy / length) * w;
       const ny = (dx / length) * w;
       left.push(`${(x + nx).toFixed(1)} ${(y + ny).toFixed(1)}`);
@@ -988,15 +999,21 @@ function mount(shell: DemoShell): void {
     const targetY = shell.pointer.active && !reducedMotion ? shell.pointer.y : 0;
     bendX = mix(bendX, targetX, k);
     bendY = mix(bendY, targetY, k);
-    const baseX = 500 + bendX * 260;
+    // The square canopy is center-cropped on a phone. Keep the shoulders and
+    // neck inside that narrower visible window instead of letting a full-width
+    // pointer bend pin the near end against the screen edge.
+    const neckBendX = bendX * (lite ? 0.35 : 1);
+    const nearWidth = lite ? 48 : 100;
+    const baseX = 500 + neckBendX * 260;
     const baseY = 620 + bendY * 90;
-    const controlX = 500 + bendX * 420;
+    const controlX = 500 + neckBendX * 420;
     const controlY = 900 - bendY * 60;
-    neckPaths[0]?.setAttribute('d', neckPath(baseX, baseY, controlX, controlY, 116));
-    neckPaths[1]?.setAttribute('d', neckPath(baseX, baseY, controlX, controlY, 100));
+    neckBase?.setAttribute('d', neckPath(baseX, baseY, controlX, controlY, nearWidth));
+    neckShade?.setAttribute('d', neckPath(baseX, baseY, controlX, controlY, nearWidth * 1.16));
+    neckEtch?.setAttribute('d', neckPath(baseX, baseY, controlX, controlY, nearWidth * 0.94));
     shoulders?.setAttribute(
       'transform',
-      `translate(${baseX.toFixed(1)} ${(baseY + 6).toFixed(1)}) rotate(${(bendX * 12).toFixed(1)})`,
+      `translate(${baseX.toFixed(1)} ${(baseY + 6).toFixed(1)}) rotate(${(neckBendX * 12).toFixed(1)})`,
     );
     leafGroup?.setAttribute(
       'transform',

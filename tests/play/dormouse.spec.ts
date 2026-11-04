@@ -107,6 +107,48 @@ test('the dormouse, reduced motion: nothing covers the cup while the tale is tol
   await context.close();
 });
 
+test('the dormouse: the shared engraved teapot loads and its lid opens during the dive', async ({
+  page,
+}, testInfo) => {
+  test.skip(!demo, 'no dormouse demo in this build');
+  await page.addInitScript(() => localStorage.setItem('alice-demos:art', 'engraved'));
+  await page.goto(demo?.url ?? '');
+  await expect(page.locator('.demo')).toHaveAttribute('data-attached', '', { timeout: 30_000 });
+  await atCue(page, 'teapot', 0.58);
+  const rig = page.locator('.dm__teapot svg[data-generated-rig="dormouse/teapot"]');
+  await expect(rig).toHaveAttribute('data-rig-ready', '');
+  const images = rig.locator('g[data-rig-generated] image');
+  await expect(images).toHaveCount(2);
+  for (const image of await images.all()) {
+    await expect
+      .poll(() => image.evaluate((element) => (element as SVGImageElement).href.baseVal))
+      .toContain('teapot-');
+  }
+  const lit = await rig
+    .locator('g[data-rig-generated] .dm__lid')
+    .evaluate((element) => getComputedStyle(element).transform);
+  expect(lit).not.toBe('none');
+  await page.screenshot({
+    path: `/workspace/alice-audit-evidence-20261101/scene-review/dormouse-generated-teapot-${testInfo.project.name}.png`,
+  });
+});
+
+test('the dormouse: a failed shared teapot image leaves the moving vector pot in place', async ({
+  page,
+}) => {
+  test.skip(!demo, 'no dormouse demo in this build');
+  await page.addInitScript(() => localStorage.setItem('alice-demos:art', 'engraved'));
+  await page.route(/teapot-(?:body|lid)\.any\.generated.*\.webp/, (route) => route.abort());
+  await page.goto(demo?.url ?? '');
+  await expect(page.locator('.demo')).toHaveAttribute('data-attached', '', { timeout: 30_000 });
+  await atCue(page, 'teapot', 0.58);
+  const rig = page.locator('.dm__teapot svg[data-generated-rig="dormouse/teapot"]');
+  await expect(rig).toHaveAttribute('data-rig-failed', '');
+  await expect(rig.locator('[data-rig-fallback]')).toBeVisible();
+  await expect(rig.locator('[data-rig-generated]')).toBeHidden();
+  await expect(rig.locator('[data-rig-fallback] .dm__lid')).toBeAttached();
+});
+
 test("the dormouse: the reader's hands reach the cup and the Dormouse", async ({ page }) => {
   test.skip(!demo, 'no dormouse demo in this build');
   await page.goto(demo?.url ?? '');

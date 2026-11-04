@@ -7,8 +7,61 @@ import { expect, type Page, test } from '@playwright/test';
 import { atCue, collectErrors, customProperty, demos } from '../demo-helpers.ts';
 
 const demo = demos.find((d) => d.demo === 'duchess');
+
+test('the Duchess game uses the illustrated card soldiers before they march away', async ({
+  page,
+}, testInfo) => {
+  test.skip(!demo, 'no Duchess demo in this build');
+  await page.addInitScript(() => localStorage.setItem('alice-demos:art', 'engraved'));
+  await page.goto(demo?.url ?? '');
+  await expect(page.locator('.demo')).toHaveAttribute('data-attached', '', { timeout: 30_000 });
+  await atCue(page, 'game', 0.1);
+  const soldiers = page.locator('.dc__player:not([data-far])');
+  const count = await soldiers.count();
+  expect(count).toBeGreaterThan(0);
+  await expect(soldiers.locator('[data-art="card-soldier"]')).toHaveCount(count);
+  for (const soldier of await soldiers.locator('[data-art="card-soldier"]').all()) {
+    await expect(soldier).toHaveAttribute('data-generated', '');
+    const image = soldier.locator('image');
+    await expect(image).toHaveCount(1);
+    await expect(image).toHaveAttribute('href', /card-soldier\.any\.generated/);
+    expect(
+      await image.evaluate(async (element) => {
+        const decoder = new Image();
+        decoder.src = element.getAttribute('href') ?? '';
+        await decoder.decode();
+        return decoder.naturalWidth > 0;
+      }),
+    ).toBe(true);
+  }
+  await page.screenshot({
+    path: `/workspace/alice-audit-evidence-20261101/scene-review/duchess-card-soldiers-${testInfo.project.name}.png`,
+  });
+});
 const MORALS = '.dc__morals';
 const RIBBON = '.dc__ribbon[data-shown]';
+const evidenceRoot = '/workspace/alice-audit-evidence-20261101/backgrounds';
+
+test('the Duchess’s walk includes her engraved manor behind the tree line', async ({ page }) => {
+  test.skip(!demo, 'no duchess demo page in this build');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'sense', 0.5);
+  const house = page.locator('.dc__background-house img');
+  await expect(house).toBeVisible();
+  const image = await house.evaluate((node) => {
+    const img = node as HTMLImageElement;
+    return {
+      width: img.naturalWidth,
+      height: img.naturalHeight,
+      filter: getComputedStyle(img).filter,
+    };
+  });
+  expect(image.width).toBe(1536);
+  expect(image.height).toBe(1024);
+  expect(image.filter).toBe('grayscale(1)');
+  const screen = (page.viewportSize()?.width ?? 0) < 700 ? 'phone' : 'desktop';
+  await page.screenshot({ path: `${evidenceRoot}/duchess-manor-${screen}-after.png` });
+});
 
 test.describe('duchess: the morals', () => {
   test.skip(!demo, 'no duchess demo page in the build');

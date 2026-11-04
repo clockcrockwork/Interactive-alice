@@ -11,6 +11,33 @@ import { atCue, demos, scrollTo } from '../demo-helpers.ts';
 
 const house = demos.find((candidate) => candidate.demo === 'rabbit-house');
 const bill = demos.find((candidate) => candidate.demo === 'bill-the-lizard');
+const evidenceRoot = '/workspace/alice-audit-evidence-20261101/backgrounds';
+
+test('Rabbit House opens on its generated engraved facade', async ({ page }) => {
+  test.skip(!house, 'no rabbit-house demo in this build');
+  await page.goto(house?.url ?? '');
+  await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
+  const rig = page.locator('.hs__arrival svg[data-generated-rig="rabbit-house/front"]');
+  await expect(rig).toHaveAttribute('data-rig-ready', '', { timeout: 10_000 });
+  const image = rig.locator('image[data-rig-image]');
+  await expect(image).toHaveAttribute('href', /rabbit-house-front\.generated-/);
+  const fallback = await rig
+    .locator('[data-rig-fallback]')
+    .evaluate((node) => getComputedStyle(node).display);
+  expect(fallback).toBe('none');
+  const screen = (page.viewportSize()?.width ?? 0) < 700 ? 'phone' : 'desktop';
+  await page.screenshot({ path: `${evidenceRoot}/rabbit-house-front-${screen}-after.png` });
+});
+
+test('the Rabbit House keeps its original facade drawing if the image fails', async ({ page }) => {
+  test.skip(!house, 'no rabbit-house demo in this build');
+  await page.route(/rabbit-house-front\.generated-.*\.webp/, (route) => route.abort());
+  await page.goto(house?.url ?? '');
+  const rig = page.locator('.hs__arrival svg[data-generated-rig="rabbit-house/front"]');
+  await expect(rig).toHaveAttribute('data-rig-failed', '', { timeout: 10_000 });
+  await expect(rig.locator('[data-rig-fallback]')).toBeVisible();
+  await expect(rig.locator('[data-rig-generated]')).toBeHidden();
+});
 
 const houseState = (page: Page) =>
   page.evaluate(() => {
@@ -36,6 +63,24 @@ const box = (page: Page, selector: string) =>
     const r = document.querySelector(sel)?.getBoundingClientRect();
     return r ? { left: r.left, right: r.right, top: r.top, bottom: r.bottom } : undefined;
   }, selector);
+
+test('the Rabbit’s room has an engraved rose wallpaper layer', async ({ page }) => {
+  test.skip(!house, 'no rabbit-house demo in this build');
+  await page.goto(house?.url ?? '');
+  await atCue(page, 'room', 0.5);
+  const walls = page.locator('.hs__face--back');
+  await expect(walls).toBeVisible();
+  const wallStyle = await walls.evaluate((wall) => {
+    const texture = getComputedStyle(wall, '::before');
+    return { image: texture.backgroundImage, opacity: texture.opacity };
+  });
+  expect(wallStyle.image).toContain('rabbit-house-wallpaper.any.generated');
+  expect(wallStyle.opacity).toBe('0.2');
+  const screen = (page.viewportSize()?.width ?? 0) < 700 ? 'phone' : 'desktop';
+  await page.screenshot({
+    path: `${evidenceRoot}/rabbit-house-room-wallpaper-${screen}-after.png`,
+  });
+});
 
 test.describe('Growing in the House', () => {
   test.skip(!house, 'no rabbit-house demo in this build');
@@ -161,11 +206,23 @@ test.describe('Growing in the House', () => {
     await expect(page.locator('.hs__rim')).toHaveCSS('opacity', '0');
     await scrollTo(page, 1);
     await expect(page.locator('.hs__rim')).toHaveCSS('opacity', '1', { timeout: 8000 });
-    const last = await page.locator('.hs__rim svg').evaluate((svg) => svg.outerHTML);
+    const lastSvg = page.locator('.hs__rim > .hs__rim-svg');
+    await expect(lastSvg.locator('svg[data-generated-rig="pat"]')).toHaveAttribute(
+      'data-rig-ready',
+      '',
+    );
+    const last = await lastSvg.evaluate((svg) => svg.outerHTML);
     await page.goto(bill?.url ?? '');
     await expect(page.locator('.bl__rooftop')).toHaveCSS('opacity', '1');
-    const first = await page.locator('.bl__rooftop svg').evaluate((svg) => svg.outerHTML);
-    expect(first).toBe(last);
+    const firstSvg = page.locator('.bl__rooftop > .hs__rim-svg');
+    await expect(firstSvg.locator('svg[data-generated-rig="pat"]')).toHaveAttribute(
+      'data-rig-ready',
+      '',
+    );
+    const first = await firstSvg.evaluate((svg) => svg.outerHTML);
+    const normalizePaintIds = (svg: string): string =>
+      svg.replace(/garden-paint-\d+/g, 'garden-paint-id').replace(/ data-rig-ready=""/g, '');
+    expect(normalizePaintIds(first)).toBe(normalizePaintIds(last));
   });
 });
 

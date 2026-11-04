@@ -1,14 +1,39 @@
 /** Pig and Pepper's own props: the little house, the tree, the hearth and the
     cauldron, the crockery the cook throws, and Alice's own two hands. */
 
-import { figure } from '../art/art.ts';
+import { svgFigure } from '../art/art.ts';
 import { type ArtStyle, artStyle } from '../art/treatments.ts';
 
 /** Her two hands at the bottom of the frame, and the bundle between them. */
 export const hands = (bundle: string): string =>
-  `<div class="pp__hand pp__hand--left">${figure('alice/hand-left')}</div>` +
-  `<div class="pp__held">${bundle}</div>` +
-  `<div class="pp__hand pp__hand--right">${figure('alice/hand-right')}</div>`;
+  `<div class="pp__hands-pair"><svg viewBox="0 0 1536 1024" aria-hidden="true" focusable="false">${svgFigure('alice/hands-cradling', 0, 0, 1536, 1024, '', artStyle(), 'pig-and-pepper')}</svg></div>` +
+  `<div class="pp__held">${bundle}</div>`;
+
+const CAUGHT_BABY_IMAGE = new URL(
+  '../../assets/images/figures/pig-baby--caught.any.generated.webp',
+  import.meta.url,
+).href;
+const TURNING_BABY_IMAGE = new URL(
+  '../../assets/images/figures/pig-baby--turning.any.generated.webp',
+  import.meta.url,
+).href;
+const PIGLET_IMAGE = new URL(
+  '../../assets/images/figures/pig-baby--pig.any.generated.webp',
+  import.meta.url,
+).href;
+
+/** Three matching plates let the infant turn while the existing vector stays as fallback. */
+export const caughtBabyIllustration = (): string =>
+  [
+    ['caught', CAUGHT_BABY_IMAGE],
+    ['turning', TURNING_BABY_IMAGE],
+    ['piglet', PIGLET_IMAGE],
+  ]
+    .map(
+      ([stage, src]) =>
+        `<img class="pp__baby-illustration pp__baby-illustration--${stage}" data-caught-baby="${stage}" src="${src}" alt="" aria-hidden="true" draggable="false">`,
+    )
+    .join('');
 
 /** The house front at the wood's edge: a wall, a roof, a window, and a door
     whose leaf is its own element so it can swing open. */

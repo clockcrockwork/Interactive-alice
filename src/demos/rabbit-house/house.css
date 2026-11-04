@@ -78,6 +78,23 @@
     transform: translateZ(-600px);
   }
 
+  /* A generated rose-damask engraving gives the room the printed wallpaper
+     that the flat colour planes lacked. Keep the underlying room palette and
+     vertical seam fallback visible if the decorative tile fails to load. */
+  .hs__face--back::before,
+  .hs__face--left::before,
+  .hs__face--right::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.2;
+    mix-blend-mode: multiply;
+    background-image: url("../../assets/images/interiors/rabbit-house-wallpaper.any.generated.webp");
+    background-repeat: repeat;
+    background-size: 380px 380px;
+  }
+
   .hs__face--left {
     transform-origin: 0 50%;
     transform: rotateY(90deg);
@@ -253,6 +270,65 @@
       var(--hs-grass) 58.5%,
       var(--hs-grass-deep)
     );
+  }
+
+  .hs__garden-tree {
+    position: absolute;
+    inset-block-end: 14%;
+    inline-size: clamp(9rem, 28vh, 22rem);
+    aspect-ratio: 2 / 3;
+    opacity: 0.68;
+  }
+
+  .hs__garden-tree--left {
+    inset-inline-start: 2%;
+  }
+
+  .hs__garden-tree--right {
+    inset-inline-end: 4%;
+    inline-size: clamp(7rem, 22vh, 18rem);
+    opacity: 0.48;
+  }
+
+  .hs__garden-tree > .scenery {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .hs__garden-hedge,
+  .hs__garden-grass {
+    position: absolute;
+    inset-inline: -8vw;
+    background-repeat: repeat-x;
+    background-position: left bottom;
+    pointer-events: none;
+  }
+
+  .hs__garden-hedge {
+    inset-block-start: 42%;
+    block-size: 19vh;
+    opacity: 0.72;
+  }
+
+  .hs__garden-grass {
+    inset-block-start: 58%;
+    block-size: 20vh;
+    opacity: 0.48;
+  }
+
+  .hs__garden-hedge > .scenery,
+  .hs__garden-grass > .scenery {
+    opacity: 0;
+  }
+
+  .hs__garden-hedge:has([data-generated-rig="scenery/hedge"][data-rig-ready]) {
+    background-image: url("../../assets/images/scenery/field-hedge.generated.webp");
+    background-size: 57vh 19vh;
+  }
+
+  .hs__garden-grass:has([data-generated-rig="scenery/ground"][data-rig-ready]) {
+    background-image: url("../../assets/images/scenery/ground.generated.webp");
+    background-size: 57vh 19vh;
   }
 
   .hs__svg {

@@ -31,6 +31,16 @@ describe('outdoor engraved scenery', () => {
       expect(scenery(asset, 'paper')).toBe('');
     });
   }
+  it('serves a responsive engraved panorama and a phone-specific composition', () => {
+    const markup = scenery('wildflower-highlands', 'engraved');
+    expect(markup).toContain('<picture class="scenery scenery--wildflower-highlands"');
+    expect(markup).toContain('media="(max-width: 700px)"');
+    expect(markup).toContain('wildflower-highlands-phone.generated');
+    expect(markup).toContain('wildflower-highlands.generated');
+    expect(markup).toContain('alt="" decoding="async"');
+    expect(scenery('wildflower-highlands', 'flat')).toBe('');
+    expect(scenery('wildflower-highlands', 'paper')).toBe('');
+  });
   it('keeps both chapter joins on the shared field and decorates the existing moving land', () => {
     const field = read('../riverbank/field.ts');
     expect(field).toContain("scenery('tree')");
@@ -53,6 +63,41 @@ describe('outdoor engraved scenery', () => {
     expect(css).toContain('aspect-ratio: 3 / 4');
     expect(css).toContain('> .tp__tree-original');
     expect(read('../tea-party/tea-party.css')).toContain('tan(var(--pitch) * 1deg)');
+  });
+  it('reuses the engraved tree, hedge and ground across the Duchess walk', () => {
+    const main = read('../duchess/main.ts');
+    expect(main).toContain("scenery('tree')");
+    expect(main).toContain("scenery('hedge')");
+    expect(main).toContain("scenery('ground')");
+    const css = read('../duchess/duchess.css');
+    expect(css).toContain('.dc__hedge:has([data-generated-rig="scenery/hedge"][data-rig-ready])');
+    expect(css).toContain(
+      '.dc__turf-art:has([data-generated-rig="scenery/ground"][data-rig-ready])',
+    );
+    expect(css).toContain('background-size: 57vh 19vh');
+  });
+  it('reuses the same meadow and cloud panorama across the Caucus Race and Mouse Tale', () => {
+    expect(read('../caucus-race/main.ts')).toContain("scenery('wildflower-highlands')");
+    expect(read('../mouse-tale/main.ts')).toContain("scenery('wildflower-highlands')");
+    expect(read('../../assets/images/scenery-provenance.json')).toContain(
+      'wildflower-highlands.generated.webp',
+    );
+    expect(scenery('wildflower-highlands', 'engraved')).toContain(
+      'wildflower-highlands-phone.generated',
+    );
+  });
+  it('puts the same reusable engraved plants and grass around the Rabbit house', () => {
+    const main = read('../rabbit-house/main.ts');
+    for (const asset of ['tree', 'hedge', 'ground']) {
+      expect(main).toContain(`scenery('${asset}')`);
+    }
+    const css = read('../rabbit-house/house.css');
+    expect(css).toContain(
+      '.hs__garden-hedge:has([data-generated-rig="scenery/hedge"][data-rig-ready])',
+    );
+    expect(css).toContain(
+      '.hs__garden-grass:has([data-generated-rig="scenery/ground"][data-rig-ready])',
+    );
   });
   it('gives all inset-positioned decorations absolute layout, with separate near-ground geometry', () => {
     const css = read('./generated-scenery.css');
@@ -134,26 +179,49 @@ describe('scenery delivery records', () => {
     );
     expect(record.routeBytes.caterpillar).toBe(bytes);
   });
-  it('matches seven shipped images and accounts for only each route’s used sources', () => {
+  it('matches shipped images and accounts for only each route’s used sources', () => {
     const record = JSON.parse(read('../../assets/images/scenery-provenance.json'));
-    expect(record.assets).toHaveLength(7);
+    expect(record.assets).toHaveLength(9);
     let total = 0;
     let tea = 0;
     let night = 0;
+    let duchess = 0;
+    let rabbitHouse = 0;
     for (const asset of record.assets) {
       const bytes = readFileSync(new URL(`../../assets/images/${asset.asset}`, import.meta.url));
       expect(bytes.length).toBe(asset.bytes);
       expect(createHash('sha256').update(bytes).digest('hex')).toBe(asset.sha256);
-      expect(asset.candidateToDeliveryAlphaExact).toBe(true);
-      if (!asset.id.startsWith('night-')) total += bytes.length;
-      else night += bytes.length;
+      if (asset.candidateToDeliveryAlphaExact !== null) {
+        expect(asset.candidateToDeliveryAlphaExact).toBe(true);
+      }
+      if (asset.id.startsWith('night-')) night += bytes.length;
+      else if (!asset.id.startsWith('wildflower-highlands')) total += bytes.length;
       if (asset.id === 'tree' || asset.id === 'ground') tea += bytes.length;
+      if (asset.id === 'tree' || asset.id === 'ground' || asset.id === 'hedge') {
+        duchess += bytes.length;
+        rabbitHouse += bytes.length;
+      }
     }
     expect(record.routeBytes.riverbank).toBe(total);
     expect(record.routeBytes['rabbit-hole']).toBe(total);
     expect(record.routeBytes['tea-party']).toBe(tea);
     expect(tea).toBeLessThan(total);
     expect(record.routeBytes['cheshire-cat']).toBe(night);
+    expect(record.routeBytes.duchess).toBe(duchess);
+    expect(record.routeBytes['rabbit-house']).toBe(rabbitHouse);
+    const highlandsBytes = readFileSync(
+      new URL('../../assets/images/scenery/wildflower-highlands.generated.webp', import.meta.url),
+    ).length;
+    expect(record.routeBytes['caucus-race']).toBe(highlandsBytes);
+    expect(record.routeBytes['mouse-tale']).toBe(highlandsBytes);
+    const phoneHighlandsBytes = readFileSync(
+      new URL(
+        '../../assets/images/scenery/wildflower-highlands-phone.generated.webp',
+        import.meta.url,
+      ),
+    ).length;
+    expect(record.mobileRouteBytes['caucus-race']).toBe(phoneHighlandsBytes);
+    expect(record.mobileRouteBytes['mouse-tale']).toBe(phoneHighlandsBytes);
   });
 });
 

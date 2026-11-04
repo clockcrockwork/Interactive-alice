@@ -4,6 +4,52 @@ import { atCue, customProperty, demos } from '../demo-helpers.ts';
 const demo = demos.find((d) => d.demo === 'pool-of-tears');
 const LEAN = '.pt__sea';
 
+test('Dinah is the generated engraved cat in her memory beat', async ({ page }) => {
+  test.skip(!demo, 'the pool-of-tears demo is not built');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'cats', 0.55);
+  await expect(page.locator('.pt__dinah')).toBeVisible();
+  await expect(page.locator('.pt__dinah image')).toHaveAttribute(
+    'href',
+    /dinah-cat\.any\.generated-/,
+  );
+  const decoded = await page.locator('.pt__dinah image').evaluate(async (node) => {
+    const href = (node as SVGImageElement).href.baseVal;
+    const image = new Image();
+    image.src = href;
+    await image.decode();
+    return [image.naturalWidth, image.naturalHeight];
+  });
+  expect(decoded).toEqual([480, 400]);
+});
+
+test('Dinah keeps her drawn silhouette when the cutout fails to load', async ({ page }) => {
+  test.skip(!demo, 'the pool-of-tears demo is not built');
+  await page.route(/dinah-cat\.any\.generated-.*\.webp/, (route) => route.abort());
+  await page.goto(demo?.url ?? '');
+  await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
+  await atCue(page, 'cats', 0.55);
+  const state = await page
+    .locator('.pt__dinah svg[data-generated-rig="dinah-cat"]')
+    .evaluate((svg) => {
+      const fallback = svg.querySelector('[data-rig-fallback]');
+      const generated = svg.querySelector('[data-rig-generated]');
+      return {
+        ready: svg.hasAttribute('data-rig-ready'),
+        fallbackDisplay: getComputedStyle(fallback as Element).display,
+        fallbackWidth: (fallback as SVGGElement).getBBox().width,
+        imageDisplay: getComputedStyle(generated as Element).display,
+      };
+    });
+  expect(state).toMatchObject({
+    ready: false,
+    fallbackDisplay: 'inline',
+    imageDisplay: 'none',
+  });
+  expect(state.fallbackWidth).toBeGreaterThan(100);
+  expect(state.fallbackWidth).toBeLessThan(101);
+});
+
 /** Presses a lean button without moving the mouse over it, which would lean the water itself. */
 const press = async (page: Parameters<typeof atCue>[0], side: 'left' | 'right') => {
   const button = page.locator(`.pt__prop--${side}`);
@@ -146,6 +192,59 @@ test.describe('reduced motion: drowned in her own tears', () => {
     // And up again by the next beat.
     await atCue(page, 'mouse', 0);
     await expect.poll(async () => (await look()).under, { timeout: 8000 }).toBeLessThan(0.05);
+  });
+});
+
+test.describe('underwater engraving', () => {
+  test.use({ reducedMotion: 'reduce' });
+
+  test('the responsive illustration loads below the words and controls', async ({
+    page,
+  }, testInfo) => {
+    test.skip(!demo, 'the pool-of-tears demo is not built');
+    await page.goto(demo?.url ?? '');
+    await atCue(page, 'swim', 0.6);
+    await expect
+      .poll(() => page.locator('.pt__under').evaluate((el) => Number(getComputedStyle(el).opacity)))
+      .toBeGreaterThan(0.9);
+    const image = page.locator('.pt__under-engraving img');
+    await expect(image).toBeVisible();
+    await expect
+      .poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth))
+      .toBeGreaterThan(0);
+    const view = await image.evaluate((img: HTMLImageElement) => ({
+      source: img.currentSrc,
+      filter: getComputedStyle(img).filter,
+      pointerEvents: getComputedStyle(img.parentElement ?? img).pointerEvents,
+      blendMode: getComputedStyle(img.parentElement ?? img).mixBlendMode,
+    }));
+    const expectedSource =
+      (page.viewportSize()?.width ?? 1280) <= 700
+        ? 'pool-underwater-phone'
+        : 'pool-underwater-wide';
+    expect(view.source).toContain(expectedSource);
+    expect(view.filter).toContain('grayscale(1)');
+    expect(view.pointerEvents).toBe('none');
+    expect(view.blendMode).toBe('normal');
+    await expect(page.locator('.demo__stage .demo-beat[data-cue="swim"]')).toBeVisible();
+    await page.screenshot({ path: testInfo.outputPath('pool-underwater-after.png') });
+  });
+
+  test('the original blue gradient remains when the artwork fails to load', async ({ page }) => {
+    test.skip(!demo, 'the pool-of-tears demo is not built');
+    await page.route(/pool-underwater-.*\.webp/, (route) => route.abort());
+    await page.goto(demo?.url ?? '');
+    await atCue(page, 'swim', 0.6);
+    await expect
+      .poll(() => page.locator('.pt__under').evaluate((el) => Number(getComputedStyle(el).opacity)))
+      .toBeGreaterThan(0.9);
+    const image = page.locator('.pt__under-engraving img');
+    await expect.poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(0);
+    const fallback = await page
+      .locator('.pt__under')
+      .evaluate((el) => getComputedStyle(el).backgroundImage);
+    expect(fallback).toContain('linear-gradient');
+    await expect(page.locator('.demo__stage .demo-beat[data-cue="swim"]')).toBeVisible();
   });
 });
 

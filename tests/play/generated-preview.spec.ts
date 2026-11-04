@@ -44,11 +44,20 @@ for (const locale of ['', 'ja/']) {
   }
 }
 
-test('ordinary rabbit hole and shared-falling scenes keep their original art', async ({ page }) => {
+test('Rabbit Hole uses the falling master with comparison controls opt-in; other scenes stay independent', async ({
+  page,
+}) => {
   for (const scene of ['rabbit-hole', 'drink-me', 'duchess', 'trial']) {
     await page.goto(`/demos/${scene}/${scene === 'rabbit-hole' ? '' : '?artPreview=overhead'}`);
     await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
-    await expect(page.locator('[data-generated-master]')).toHaveCount(0);
+    if (scene === 'rabbit-hole') {
+      await expect(page.locator('[data-generated-master]')).toHaveCount(1);
+      await expect(page.locator('[data-generated-master]')).toBeVisible();
+      await expect(page.locator('.rh__alice > .art')).toHaveAttribute('data-generated-preview');
+      await expect(page.locator('.rh__preview-controls')).toHaveCount(0);
+    } else {
+      await expect(page.locator('[data-generated-master]')).toHaveCount(0);
+    }
     await expect(page.locator('[data-generated-toggle]')).toHaveCount(0);
   }
 });

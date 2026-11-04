@@ -9,9 +9,71 @@ import { atCue, customProperty, demos } from '../demo-helpers.ts';
  */
 const demo = demos.find((d) => d.demo === 'mouse-tale');
 const member = (page: Page, kind: string) => page.locator(`.mt__member[data-kind="${kind}"]`);
+const evidenceRoot = '/workspace/alice-audit-evidence-20261102/mouse-tale';
 
 test.describe("the Mouse's tale", () => {
   test.skip(!demo, 'no mouse-tale page in this build');
+
+  test('the shared meadow engraving stays behind the bank and story', async ({ page }) => {
+    await page.goto(demo?.url ?? '');
+    await atCue(page, 'dinah', 0.5);
+    const panorama = page.locator('.mt__highlands picture.scenery--wildflower-highlands img');
+    await expect(panorama).toBeVisible();
+    await expect
+      .poll(() => panorama.evaluate((image: HTMLImageElement) => image.naturalWidth))
+      .toBeGreaterThan(0);
+    const screen = (page.viewportSize()?.width ?? 0) < 700 ? 'phone' : 'desktop';
+    const currentSource = await panorama.evaluate((image: HTMLImageElement) => image.currentSrc);
+    expect(currentSource).toContain(
+      screen === 'phone' ? 'wildflower-highlands-phone' : 'wildflower-highlands.generated',
+    );
+    await page.screenshot({ path: `${evidenceRoot}/${screen}-after.png` });
+  });
+
+  test('Dinah appears as an engraved leap and travels in the direction she faces', async ({
+    page,
+  }) => {
+    await page.goto(demo?.url ?? '');
+    await atCue(page, 'dinah', 0.3);
+    const cat = page.locator('.mt__dinah .art');
+    const rig = cat.locator('svg[data-generated-rig="dinah-cat/pouncing"]');
+    await expect(rig).toHaveAttribute('data-rig-ready', '', { timeout: 10_000 });
+    await expect(rig.locator('image[data-rig-image]')).toHaveAttribute(
+      'href',
+      /dinah-cat--pouncing\.any\.generated-/,
+    );
+    const first = await cat.boundingBox();
+    const screen = (page.viewportSize()?.width ?? 0) < 700 ? 'phone' : 'desktop';
+    await page.screenshot({ path: `${evidenceRoot}/dinah-pouncing-${screen}-after.png` });
+    const overlapsText = await page.evaluate(() => {
+      const cat = document.querySelector('.mt__dinah .art')?.getBoundingClientRect();
+      if (!cat) return true;
+      return [
+        ...document.querySelectorAll<HTMLElement>(
+          '.demo__captions .demo-beat[data-cue="dinah"] .line',
+        ),
+      ].some((line) => {
+        const style = getComputedStyle(line);
+        const box = line.getBoundingClientRect();
+        return (
+          Number(style.opacity) > 0.1 &&
+          box.width > 0 &&
+          box.height > 0 &&
+          cat.left < box.right &&
+          box.left < cat.right &&
+          cat.top < box.bottom &&
+          box.top < cat.bottom
+        );
+      });
+    });
+    expect(overlapsText, `Dinah overlaps a story caption on ${screen}`).toBe(false);
+    await atCue(page, 'dinah', 0.8);
+    const later = await cat.boundingBox();
+    expect(first).not.toBeNull();
+    expect(later).not.toBeNull();
+    if (!first || !later) throw new Error('Dinah’s bounding box is missing');
+    expect(later.x).toBeGreaterThan(first.x);
+  });
 
   test('a real tap on the Mouse reaches it, and pulls the tail', async ({ page }) => {
     await page.goto(demo?.url ?? '');

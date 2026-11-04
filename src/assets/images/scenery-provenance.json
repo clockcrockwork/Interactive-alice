@@ -184,6 +184,52 @@
         "bytes": 745752,
         "sha256": "840388bc4fbd08435a9941ebe3718d76c1c7c3a53012caee2b045228117efdba"
       }
+    },
+    {
+      "id": "wildflower-highlands",
+      "asset": "scenery/wildflower-highlands.generated.webp",
+      "width": 2056,
+      "height": 765,
+      "bytes": 434394,
+      "sha256": "2732dff947edc7f36ebaeb34a6709326337ad27d9467963f2473ad8cb6e90af0",
+      "source": {
+        "file": "/workspace/generated_images/exec-b7af0cb9-6d64-4c53-8aec-d4ddbb0ca116.png",
+        "sha256": "29a287ce80bf75759f3bcda5b50721b9b20c5ca44d061e576b5e064b8b005207",
+        "bytes": 3567252
+      },
+      "candidateToDeliveryAlphaExact": null,
+      "generation": {
+        "key": "wildflower-highlands",
+        "prompt": "Wide horizontal storybook panorama: monochrome engraved meadow with winding path, scattered small wildflowers, distant layered hills and mountains, tall trees/woodland at both edges, soft etched clouds; open low-detail center horizon; no people, houses, or text.",
+        "tool": "built-in image_gen",
+        "transparent_background": false,
+        "generated_at": "2026-11-01T10:31Z",
+        "file": "/workspace/generated_images/exec-b7af0cb9-6d64-4c53-8aec-d4ddbb0ca116.png"
+      },
+      "delivery": "ImageMagick WebP q86, metadata stripped; full-color raster is warm monochrome ink/paper."
+    },
+    {
+      "id": "wildflower-highlands-phone",
+      "asset": "scenery/wildflower-highlands-phone.generated.webp",
+      "width": 800,
+      "height": 1729,
+      "bytes": 358964,
+      "sha256": "61170b52665ce9ed673dbf45ea322bd0eac5f95e8cfd5b86594853b6598fb7c6",
+      "source": {
+        "file": "wildflower-highlands-phone.generated.png",
+        "sha256": "c3c4eae37bed7ce341467c246f1446d4ca6f5f1620936a74d82bef589a4a839d",
+        "bytes": 3782541
+      },
+      "candidateToDeliveryAlphaExact": null,
+      "generation": {
+        "key": "wildflower-highlands-phone",
+        "prompt": "Create a portrait 9:19 monochrome storybook engraving based on the provided existing wide highlands panorama. Match its warm ink on cream paper, fine nineteenth-century cross-hatching, and etched cloud marks. Compose a soft cloudy sky across the upper third, distant layered mountains, a clear winding path from mid-distance toward the lower center, softly rolling meadow with sparse wildflowers, and a few tall trees framing both edges. Keep the central middle area lower detail for characters and captions. No people, houses, letters, color, photographic texture, borders, or text.",
+        "tool": "built-in image_gen",
+        "transparent_background": false,
+        "generated_at": "2026-11-02T12:01Z",
+        "reference": "scenery/wildflower-highlands.generated.webp"
+      },
+      "delivery": "ImageMagick resized to 800x1729, WebP q80 method 6, metadata stripped; muted warm monochrome ink/paper."
     }
   ],
   "routeBytes": {
@@ -191,8 +237,16 @@
     "rabbit-hole": 3162878,
     "tea-party": 1301810,
     "cheshire-cat": 1408742,
-    "caterpillar": 1035056
+    "caterpillar": 1035056,
+    "duchess": 2089656,
+    "rabbit-house": 2089656,
+    "caucus-race": 434394,
+    "mouse-tale": 434394
   },
-  "scope": "Riverbank, shared Field/Rabbit Hole intro, Tea Party horizon, Cheshire night depth planes, Caterpillar scaling meadow. Other chapters remain separate scenery work.",
-  "recoveryNote": "Delivery WebPs re-encoded from recovered PNG masters on 2026-10-28. Current delivery differs in bytes from earlier local delivery; previousDelivery retains historical metrics."
+  "mobileRouteBytes": {
+    "caucus-race": 358964,
+    "mouse-tale": 358964
+  },
+  "scope": "Shared outdoor scenery: riverbank, Rabbit Hole, Tea Party horizon, Cheshire night depth, Caterpillar meadow, Rabbit House garden, Duchess walk, plus wildflower-highlands panorama reused in Mouse Tale and Caucus Race. Other chapters remain scene-specific scenery work.",
+  "recoveryNote": "Delivery WebPs re-encoded from recovered PNG masters on 2026-10-28. Current delivery differs in bytes from earlier local delivery; previousDelivery retains historical metrics. The wildflower-highlands panorama uses a responsive portrait WebP in Mouse Tale and Caucus Race below 700px; the routeBytes field records the wide desktop source and mobileRouteBytes records the phone source selected by picture."
 }

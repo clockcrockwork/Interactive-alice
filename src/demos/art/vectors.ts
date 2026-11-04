@@ -387,6 +387,32 @@ export function handSvg(side: 'left' | 'right'): string {
 </svg>`;
 }
 
+/** Alice's hands seen from her side of the baby: the backs face the reader and
+ * the inward thumbs and curled fingers leave a clear place for the baby's face. */
+export const PIG_HAND_PAIR_SVG = `
+<svg viewBox="0 0 1536 1024" focusable="false">
+  <g class="pp__pair-hand">
+    <path d="M0 1024 V816 Q74 726 187 675 L303 640 L370 703 L322 799 L270 1024 Z" fill="var(--alice-dress)"/>
+    <path d="M253 718 Q291 680 329 680 L371 716 Q354 751 319 770 L274 761 Z" fill="var(--alice-apron)" stroke="var(--alice-apron-shadow)" stroke-width="5"/>
+    <path d="M284 710 q13 -21 28 -12 l10 16 q-13 18 -29 14 M315 694 q15 -18 29 -7 l8 18 q-14 16 -31 10 M341 697 q14 -14 27 -2 l5 18 q-13 14 -28 6" fill="var(--alice-apron)" stroke="var(--ink-secondary)" stroke-width="4"/>
+    <path d="M292 694 Q260 655 270 592 L294 365 Q300 323 335 328 Q366 333 362 375 L350 521 L376 255 Q380 211 416 214 Q450 217 444 260 L420 526 L454 296 Q460 257 493 264 Q526 271 518 310 L485 550 L524 390 Q533 351 562 363 Q592 375 579 414 L539 591 Q556 639 519 677 L441 723 Q373 750 321 731 Z" fill="var(--alice-skin)" stroke="var(--alice-skin-shadow)" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M300 374 q22 -12 45 1 M386 258 q22 -12 44 2 M464 308 q21 -9 42 5 M531 401 q18 -6 34 9" fill="none" stroke="var(--alice-skin-shadow)" stroke-width="6" stroke-linecap="round"/>
+    <path d="M343 344 q8 -7 16 0 M402 230 q9 -7 18 0 M478 280 q9 -7 18 0 M541 378 q8 -6 16 2" fill="none" stroke="var(--alice-skin-shadow)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M330 472 q10 10 19 0 M356 418 q12 10 22 0 M432 405 q10 9 20 -1 M449 470 q11 8 21 -2 M505 472 q10 8 20 -4" fill="none" stroke="var(--alice-skin-shadow)" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+  </g>
+  <g transform="translate(1536 0) scale(-1 1)">
+    <g class="pp__pair-hand">
+      <path d="M0 1024 V816 Q74 726 187 675 L303 640 L370 703 L322 799 L270 1024 Z" fill="var(--alice-dress)"/>
+      <path d="M253 718 Q291 680 329 680 L371 716 Q354 751 319 770 L274 761 Z" fill="var(--alice-apron)" stroke="var(--alice-apron-shadow)" stroke-width="5"/>
+      <path d="M284 710 q13 -21 28 -12 l10 16 q-13 18 -29 14 M315 694 q15 -18 29 -7 l8 18 q-14 16 -31 10 M341 697 q14 -14 27 -2 l5 18 q-13 14 -28 6" fill="var(--alice-apron)" stroke="var(--ink-secondary)" stroke-width="4"/>
+      <path d="M292 694 Q260 655 270 592 L294 365 Q300 323 335 328 Q366 333 362 375 L350 521 L376 255 Q380 211 416 214 Q450 217 444 260 L420 526 L454 296 Q460 257 493 264 Q526 271 518 310 L485 550 L524 390 Q533 351 562 363 Q592 375 579 414 L539 591 Q556 639 519 677 L441 723 Q373 750 321 731 Z" fill="var(--alice-skin)" stroke="var(--alice-skin-shadow)" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M300 374 q22 -12 45 1 M386 258 q22 -12 44 2 M464 308 q21 -9 42 5 M531 401 q18 -6 34 9" fill="none" stroke="var(--alice-skin-shadow)" stroke-width="6" stroke-linecap="round"/>
+      <path d="M343 344 q8 -7 16 0 M402 230 q9 -7 18 0 M478 280 q9 -7 18 0 M541 378 q8 -6 16 2" fill="none" stroke="var(--alice-skin-shadow)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M330 472 q10 10 19 0 M356 418 q12 10 22 0 M432 405 q10 9 20 -1 M449 470 q11 8 21 -2 M505 472 q10 8 20 -4" fill="none" stroke="var(--alice-skin-shadow)" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+    </g>
+  </g>
+</svg>`;
+
 /** The Caterpillar on nothing: it sits on the mushroom the demo draws. */
 export const CATERPILLAR_SVG = `
 <svg viewBox="0 0 240 200" focusable="false">
@@ -981,6 +1007,16 @@ export const PIG_BABY_SVG = `
   </g>
   <ellipse cx="100" cy="136" rx="46" ry="34" fill="var(--paper-base)"/>
   <ellipse class="pp__pig-skin" cx="100" cy="136" rx="46" ry="34" fill="color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm))"/>
+  <g class="pp__baby-etch" fill="none" stroke="var(--sepia-dark)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M72 126 q10 -5 18 0 M110 126 q10 -5 18 0 M87 155 q13 7 26 0" stroke-width="1.7" opacity=".55"/>
+    <path d="M68 136 q-4 4 0 8 M132 136 q4 4 0 8 M82 166 l-5 4 M91 169 l-3 4 M109 169 l3 4 M118 166 l5 4" stroke-width="1.2" opacity=".5"/>
+    <path d="M65 52 q9 -12 18 -13 M84 34 q7 -3 13 -3 M104 31 q10 2 15 7 M121 42 q8 5 12 13" stroke-width="1.5" opacity=".6"/>
+  </g>
+  <g class="pp__diaper">
+    <path d="M64 145 Q100 158 136 145 L126 165 Q100 178 74 165 Z" fill="var(--paper-aged)" stroke="var(--sepia-mid)" stroke-width="2"/>
+    <path d="M75 151 Q100 160 125 151 M79 164 Q100 171 121 164 M100 158 v12" fill="none" stroke="var(--paper-warm)" stroke-width="2.2" stroke-linecap="round"/>
+    <path d="M69 147 l-5 5 8 2 M131 147 l5 5 -8 2" fill="none" stroke="var(--sepia-mid)" stroke-width="1.5" stroke-linejoin="round"/>
+  </g>
   <path class="pp__tail" d="M144 130 q18 -12 8 -26 q-10 -8 -2 -16" stroke="color-mix(in oklab, var(--wonder-red-faded) 35%, var(--paper-warm))" stroke-width="5" fill="none" stroke-linecap="round"/>
   <g class="pp__head">
     <circle cx="100" cy="76" r="44" fill="var(--paper-warm)"/>

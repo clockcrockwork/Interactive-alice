@@ -113,8 +113,53 @@
     --rate: 0.3;
   }
 
+  /* The Duchess's manor sits deep in the landscape behind the moving trees.
+     It shares their parallax and the engraved monochrome treatment. */
+  .dc__background-house {
+    position: absolute;
+    inset-inline-start: 48vw;
+    inset-block-start: calc((var(--dc-horizon) - 31) * 1%);
+    inline-size: clamp(11rem, 31vw, 29rem);
+    aspect-ratio: 3 / 2;
+    translate: -50% 0;
+    opacity: 0.78;
+  }
+
+  .dc__background-house img {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: contain;
+    filter: grayscale(1);
+  }
+
   .dc__band--mid {
     --rate: 0.6;
+  }
+
+  /* Engraved trees share the meadow plate used in other outdoor chapters. Keep
+     them behind the hedge so their roots disappear into the field. */
+  .dc__background-tree {
+    position: absolute;
+    inset-inline-start: var(--tree-x);
+    inset-block-start: calc((var(--dc-horizon) - 43) * 1%);
+    inline-size: clamp(9rem, 30vh, 22rem);
+    aspect-ratio: 2 / 3;
+    translate: -50% 0;
+    opacity: 0.72;
+  }
+
+  .dc__background-tree--2,
+  .dc__background-tree--4 {
+    inset-block-start: calc((var(--dc-horizon) - 37) * 1%);
+    inline-size: clamp(7rem, 24vh, 18rem);
+    opacity: 0.52;
+  }
+
+  .dc__background-tree > .scenery {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
   }
 
   /* A hedge along the horizon, far off. */
@@ -132,6 +177,18 @@
       0 100%,
       5vw 100%;
     background-repeat: repeat-x;
+  }
+
+  .dc__hedge > .scenery,
+  .dc__turf-art > .scenery {
+    opacity: 0;
+  }
+
+  .dc__hedge:has([data-generated-rig="scenery/hedge"][data-rig-ready]) {
+    background-image: url("../../assets/images/scenery/field-hedge.generated.webp");
+    background-size: 57vh 19vh;
+    background-repeat: repeat-x;
+    background-position: left bottom;
   }
 
   /* The near turf: ridges and furrows, side-on, wide enough for the whole walk. */
@@ -152,6 +209,19 @@
         oklch(from var(--paper-base) l c h / 0.08) 7.5vh 9vh
       ),
       linear-gradient(to bottom, var(--dc-turf), var(--dc-turf-deep));
+  }
+
+  .dc__turf-art {
+    position: absolute;
+    inset: 0;
+    opacity: 0.7;
+  }
+
+  .dc__turf-art:has([data-generated-rig="scenery/ground"][data-rig-ready]) {
+    background-image: url("../../assets/images/scenery/ground.generated.webp");
+    background-size: 57vh 19vh;
+    background-position: left bottom;
+    background-repeat: repeat-x;
   }
 
   /* --- The game, behind: small pieces standing at the horizon. */

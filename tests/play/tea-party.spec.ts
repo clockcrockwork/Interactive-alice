@@ -39,6 +39,40 @@ const lineOf = (page: Page, cue: string, speaker: string, last = false) =>
 
 const status = (page: Page) => page.locator('.demo__status');
 
+test('the tea-party: its chairs and shared engraved food fit the table on desktop and phone', async ({
+  page,
+}) => {
+  test.skip(!demo, 'no tea-party demo in this build');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'tea-time', 0.5);
+  await expect(page.locator('.tp__chair-seat')).toHaveCount(6);
+  await expect(page.locator('.tp__table-spread')).toHaveCount(3);
+  await expect(page.locator('.tp__chair-seat svg[data-generated-rig]')).toHaveCount(6);
+  await expect(page.locator('.tp__table-spread svg[data-generated-rig]')).toHaveCount(3);
+  await expect(page.locator('.tp__chair-seat svg[data-generated-rig][data-rig-ready]')).toHaveCount(
+    6,
+    {
+      timeout: 8000,
+    },
+  );
+  await expect(
+    page.locator('.tp__table-spread svg[data-generated-rig][data-rig-ready]'),
+  ).toHaveCount(3, {
+    timeout: 8000,
+  });
+  await expect(
+    page.locator('.tp__house svg[data-generated-rig="tea-party/march-hare-house"][data-rig-ready]'),
+  ).toHaveCount(1, { timeout: 8000 });
+  const overlap = await page.evaluate(() => {
+    const table = document.querySelector('.tp__cloth')?.getBoundingClientRect();
+    const party = [...document.querySelectorAll('.tp__party')].map((node) =>
+      node.getBoundingClientRect(),
+    );
+    return Boolean(table && party.some((box) => box.bottom < table.top && box.height > 0));
+  });
+  expect(overlap).toBe(false);
+});
+
 test('the tea-party: the places sat at stay used, and a used one tapped makes the Hatter frown', async ({
   page,
 }) => {
@@ -216,6 +250,78 @@ test('the tea-party: at tea-time the sentences stand beside the table, clear of 
     return count;
   });
   expect(overlaps).toBe(0);
+});
+
+test('the tea-party: phone captions let the tableware show through at every story cue', async ({
+  page,
+}) => {
+  test.skip(!demo, 'no tea-party demo in this build');
+  test.skip((page.viewportSize()?.width ?? 0) > 700, 'phone layout only');
+  await page.goto(demo?.url ?? '');
+  await expect(page.locator('.demo')).toHaveAttribute('data-attached', '', { timeout: 30_000 });
+
+  const cues = await page
+    .locator('.demo__stage .demo-beat[data-cue]')
+    .evaluateAll((beats) => [
+      ...new Set(
+        beats.map((beat) => beat.dataset.cue).filter((cue): cue is string => Boolean(cue)),
+      ),
+    ]);
+  expect(cues).toHaveLength(20);
+
+  for (const cue of cues) {
+    await atCue(page, cue, 0.5);
+    const fills = await page.locator(`.demo-beat[data-cue="${cue}"] .line`).evaluateAll((lines) =>
+      lines
+        .filter((line) => getComputedStyle(line).visibility === 'visible')
+        .map((line) => ({
+          background: getComputedStyle(line).backgroundColor,
+          paperOpacity: getComputedStyle(line).getPropertyValue('--tp-caption-opacity'),
+          textShadow: getComputedStyle(line).textShadow,
+        })),
+    );
+    expect(fills.length, `${cue}: active dialogue cards`).toBeGreaterThan(0);
+    for (const fill of fills) {
+      const alpha = Number(fill.background.match(/\/(\s*[\d.]+)\s*\)$/)?.[1]);
+      if (cue === 'twinkle' || cue === 'tea-time') {
+        // Narration uses --demo-slip at 90% opacity, so its composited paper
+        // alpha is 0.432 while dialogue bubbles use the full 0.48.
+        expect(alpha, `${cue}: stronger text paper ${fill.background}`).toBeGreaterThanOrEqual(
+          0.43,
+        );
+        expect(alpha, `${cue}: paper remains translucent ${fill.background}`).toBeLessThanOrEqual(
+          0.49,
+        );
+        expect(fill.paperOpacity).toBe('48%');
+        expect(fill.textShadow, `${cue}: broader ink halo`).toContain('3px');
+      } else {
+        expect(alpha, `${cue}: other cues keep their lighter paper`).toBeLessThanOrEqual(0.35);
+      }
+      expect(fill.textShadow, `${cue}: text halo`).not.toBe('none');
+    }
+  }
+});
+
+test('the tea-party: phone captions use the lower margin without touching the scroll cue', async ({
+  page,
+}) => {
+  test.skip(!demo, 'no tea-party demo in this build');
+  test.skip((page.viewportSize()?.width ?? 0) > 700, 'phone layout only');
+  await page.goto(demo?.url ?? '');
+  const height = page.viewportSize()?.height ?? 844;
+
+  for (const cue of ['table', 'tea-time']) {
+    await atCue(page, cue, 0.5);
+    const box = await page.locator(`.demo-beat[data-cue="${cue}"]`).boundingBox();
+    expect(box, `${cue}: caption stack is visible`).not.toBeNull();
+    if (!box) {
+      continue;
+    }
+    expect(box.y + box.height, `${cue}: stack sits in the lower part of the frame`).toBeGreaterThan(
+      height * 0.88,
+    );
+    expect(box.y + box.height, `${cue}: bottom margin remains`).toBeLessThan(height - 24);
+  }
 });
 
 test('the tea-party: leaning the pointer to the edge never shows the edge of the world', async ({

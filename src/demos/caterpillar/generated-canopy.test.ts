@@ -10,7 +10,9 @@ describe('Caterpillar canopy integration', () => {
     expect(source).toContain('class="ct__leaves ct__leaves--0"');
     expect(source).toContain('viewBox="0 0 1000 1000"');
     expect(source).toContain('class="ct__nest" cx="240" cy="820"');
-    expect(source).toContain('const neckPaths =');
+    expect(source).toContain('const neckBase = treetops.querySelector<SVGPathElement>');
+    expect(source).toContain('const neckShade = treetops.querySelector<SVGPathElement>');
+    expect(source).toContain('const neckEtch = treetops.querySelector<SVGPathElement>');
     expect(source).toContain('leafGroup?.setAttribute(');
     const css = read('./caterpillar.css');
     expect(css).toContain('transform-origin: 50% 66%');

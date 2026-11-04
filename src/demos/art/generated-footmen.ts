@@ -71,7 +71,10 @@ const rigs: Record<Kind, Rig> = {
           '../../assets/images/generated-layers/frog-footman~body.any.generated.webp',
           import.meta.url,
         ).href,
-        size: [926, 1699],
+        // The recovered three-quarter-facing plate has its own, slightly
+        // wider canvas. Keep its aspect ratio instead of stretching it onto
+        // the old front-facing plate's canvas.
+        size: [971, 1619],
         map: [119, 72, 0.75],
       },
       curls: {

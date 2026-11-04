@@ -185,7 +185,7 @@ export const RIM_SVG = `
     <path d="M14 0 l5 8 l6 -4 l4 9 l6 -7 l7 5 l2 -11 Z" fill="var(--hs-shade)"/>
   </g>
   <g transform="translate(346 560) rotate(-10)">${svgFigure('white-rabbit/garden', -15, -40, 30, 40)}</g>
-  <g transform="translate(404 548) rotate(-8)">${svgFigure('pat', -14, -33, 28, 33)}</g>
+  <g transform="translate(404 548) rotate(-8)">${svgFigure('pat', -14, -33, 28, 33, '', undefined, 'rabbit-house')}</g>
   <!-- The roof, from the eave toward his feet: the rows of slates close up far off -->
   <polygon points="-40,600 812,600 940,1000 -40,1000" fill="var(--hs-roof)"/>
   <path d="M-40 626 h866 M-40 656 h876 M-40 692 h888 M-40 736 h902 M-40 788 h918 M-40 850 h938" stroke="var(--hs-roof-deep)" stroke-width="4" opacity="0.55"/>

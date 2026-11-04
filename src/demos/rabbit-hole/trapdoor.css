@@ -90,6 +90,16 @@
     backface-visibility: visible;
   }
 
+  .trapdoor__leaf-art {
+    position: absolute;
+    inset: 0;
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: contain;
+    pointer-events: none;
+  }
+
   /* Open: the leaf swings down, away from the eye above, into the hall. */
   .trapdoor[data-open] .trapdoor__leaf {
     transform: rotateX(-105deg);

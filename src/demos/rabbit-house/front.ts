@@ -1,3 +1,8 @@
+const RABBIT_HOUSE_FRONT = new URL(
+  '../../assets/images/scenery/rabbit-house-front.generated.webp',
+  import.meta.url,
+).href;
+
 /**
  * The Rabbit's house from the path, in a small module of its own: the
  * caucus-race's last frame, the Mouse's tale and this demo's first frame all
@@ -21,7 +26,8 @@ export const DISTANT_HOUSE = (narrow: boolean): { hx: number; hy: number; hz: nu
  * grass are the page's own layers.
  */
 export const HOUSE_FRONT_SVG = `
-<svg class="hs__front" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice" focusable="false">
+<svg class="hs__front" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid meet" focusable="false" data-generated-rig="rabbit-house/front">
+<g data-rig-fallback="">
   <ellipse cx="500" cy="580" rx="300" ry="34" fill="var(--hs-grass-deep)" opacity="0.35"/>
   <path d="M468 560 L532 560 L640 700 L360 700 Z" fill="var(--hs-wall-shade)" opacity="0.7"/>
   <rect x="340" y="330" width="320" height="230" fill="var(--hs-wall)"/>
@@ -43,4 +49,6 @@ export const HOUSE_FRONT_SVG = `
     <circle cx="522" cy="502" r="5" fill="var(--hs-brass)"/>
   </g>
   <rect x="455" y="558" width="90" height="10" fill="var(--hs-wall-shade)"/>
+</g>
+<g data-rig-generated="" visibility="hidden" display="none"><image data-rig-image="" href="${RABBIT_HOUSE_FRONT}" x="0" y="0" width="1000" height="700" preserveAspectRatio="xMidYMid meet"/></g>
 </svg>`;

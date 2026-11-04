@@ -23,7 +23,7 @@ import {
   BOTTLE_GLASS_SVG,
   bottleSvg,
   cakeSvg,
-  KEY_SVG,
+  keyMarkup,
   type LabelLayout,
   labelFaceSvg,
 } from './figures.ts';
@@ -110,7 +110,7 @@ function buildHall(
     lamps +
     '</div>' +
     `<div class="dk__table">${legs}<div class="dk__table-top"></div>` +
-    `<div class="dk__key">${KEY_SVG}</div>` +
+    `<div class="dk__key">${keyMarkup()}</div>` +
     `<div class="dk__bottle">${bottleSvg(bottleLabel, layout)}</div>` +
     `<div class="dk__cake">${cakeSvg(cakeLabel)}</div></div>`;
 }
@@ -965,7 +965,7 @@ function mount(shell: DemoShell): void {
   const keyOnTable = hall.querySelector<HTMLElement>('.dk__key');
   const keyInHand = document.createElement('div');
   keyInHand.className = 'dk__hand dk__hand--key';
-  keyInHand.innerHTML = `<div class="dk__key-turn">${KEY_SVG}</div>`;
+  keyInHand.innerHTML = `<div class="dk__key-turn">${keyMarkup()}</div>`;
   hands.append(keyInHand);
   const keyTurn = keyInHand.querySelector<HTMLElement>('.dk__key-turn');
   const keyButton = shell.prop(shell.ui.demoTakeKey ?? '', 'dk__prop dk__prop--key');

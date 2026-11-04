@@ -197,7 +197,7 @@
       "width": 972,
       "height": 1619,
       "logicalBox": [120, 200],
-      "consumers": ["caterpillar", "pig-and-pepper", "lobster-quadrille"],
+      "consumers": ["caterpillar", "lobster-quadrille"],
       "placement": {
         "scale": 0.12345679012345678,
         "x": 0.0,
@@ -241,7 +241,7 @@
       "width": 972,
       "height": 1619,
       "logicalBox": [120, 200],
-      "consumers": ["caterpillar", "pig-and-pepper", "lobster-quadrille"],
+      "consumers": ["caterpillar", "lobster-quadrille"],
       "placement": {
         "scale": 0.12345679012345678,
         "x": 0.0,
@@ -285,7 +285,7 @@
       "width": 971,
       "height": 1619,
       "logicalBox": [120, 200],
-      "consumers": ["caterpillar", "pig-and-pepper", "lobster-quadrille"],
+      "consumers": ["caterpillar", "lobster-quadrille"],
       "placement": {
         "scale": 0.12353304508956146,
         "x": 0.024706609017911774,
@@ -329,7 +329,7 @@
       "width": 971,
       "height": 1619,
       "logicalBox": [120, 200],
-      "consumers": ["caterpillar", "pig-and-pepper", "lobster-quadrille"],
+      "consumers": ["caterpillar", "lobster-quadrille"],
       "placement": {
         "scale": 0.12353304508956146,
         "x": 0.024706609017911774,
@@ -451,10 +451,100 @@
       },
       "promptIntent": "A true overhead headless shoulder and skirt view, with a visible central neck attachment and no head or long neck.",
       "reference": "existing vector geometry and corresponding yellow generated pose for the blue edit"
+    },
+    {
+      "id": "alice/hands-cradling",
+      "variant": "yellow",
+      "asset": "figures/alice--hands-cradling.yellow.generated.webp",
+      "bytes": 385112,
+      "sha256": "560443f5ff35eb71a56ac8cbad028d7043cf554f1792242bd657bac3e3ecb616",
+      "width": 1536,
+      "height": 1024,
+      "logicalBox": [1536, 1024],
+      "consumers": ["pig-and-pepper"],
+      "placement": {
+        "scale": 1,
+        "x": 0,
+        "y": 0
+      },
+      "anchor": {
+        "source": [0, 1024],
+        "logical": [0, 1024],
+        "meaning": "full-width paired-hand plate; transparent center reserved for the baby"
+      },
+      "source": {
+        "filename": "exec-0051dd24-60da-4d92-830d-8837ec6636b0.png",
+        "bytes": 2326581,
+        "sha256": "459a0a52a66ce21d7dc0741194ef87b0fd05119ad74fd68720d7861eb2df45f7"
+      },
+      "alphaExtrema": [0, 254],
+      "alphaBounds": {
+        "0": [0, 21, 1536, 1024],
+        "16": [0, 65, 1536, 1024],
+        "32": [0, 66, 1536, 1024],
+        "128": [0, 66, 1536, 1024],
+        "224": [0, 67, 1536, 1024]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; source RGBA pixels passed directly to WebP encoding; alpha channel preserved exactly"
+      },
+      "generationPrompt": "Create a transparent-background storybook illustration of ONLY a matched pair of Alice's hands and wrists, seen from a first-person viewpoint while she holds a baby toward herself. The baby is not in this image. Both hands must show their BACKS to the camera (dorsal side, knuckles and small fingernails visible, no palm creases), because the palms are turned inward toward the baby. Correct mirrored anatomy: the left hand appears on the left side with its thumb on the inner right edge; the right hand appears on the right side with its thumb on the inner left edge. Both wrists enter from the lower left and lower right corners, wearing matching Victorian puffed yellow sleeves with white lace cuffs. Fingers curl gently inward and upward to support the baby's lower sides, leaving a generous clear transparent oval gap in the center for the baby's face and body. Keep the two hands separated, same scale and angle, fingers complete and natural, no extra digits, no overlap, no baby, no text. Warm sepia-and-ochre nineteenth-century engraved illustration with fine cross-hatched shading, matching a classic Alice storybook, clean transparent cutout edges.",
+      "fullPrompt": "See generationPrompt; exact prompt text recorded for this variant."
+    },
+    {
+      "id": "alice/hands-cradling",
+      "variant": "blue",
+      "asset": "figures/alice--hands-cradling.blue.generated.webp",
+      "bytes": 342352,
+      "sha256": "1b511e65032cb8892236cc5a70a971b527d16e89c90f684fe2fc3a8bedf7a8d0",
+      "width": 1536,
+      "height": 1024,
+      "logicalBox": [1536, 1024],
+      "consumers": ["pig-and-pepper"],
+      "placement": {
+        "scale": 1,
+        "x": 0,
+        "y": 0
+      },
+      "anchor": {
+        "source": [0, 1024],
+        "logical": [0, 1024],
+        "meaning": "full-width paired-hand plate; transparent center reserved for the baby"
+      },
+      "source": {
+        "filename": "exec-4f3e1d77-431b-4ecd-a596-77468d5c2872.png",
+        "bytes": 2271817,
+        "sha256": "cf451c0d45cb0bffba71c2c3b6192ec37b5c4c5492e87a47c2da21652d971015"
+      },
+      "alphaExtrema": [0, 254],
+      "alphaBounds": {
+        "0": [0, 27, 1536, 1024],
+        "16": [0, 64, 1536, 1024],
+        "32": [0, 64, 1536, 1024],
+        "128": [0, 65, 1536, 1024],
+        "224": [0, 65, 1536, 1024]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; source RGBA pixels passed directly to WebP encoding; alpha channel preserved exactly"
+      },
+      "generationPrompt": "Preserve this transparent storybook cutout exactly: hands, anatomy, pose, placement, sepia hatching, lace cuffs, clear center, and alpha transparency. Make only the two puffed sleeve fabrics a soft medium storybook blue matching Alice's dress. Keep cuffs ivory and hands warm peach. Remove any preview grid/checkerboard; the output background must be genuinely transparent. Do not add an opaque background or checker pattern.",
+      "fullPrompt": "See generationPrompt; exact prompt text recorded for this variant."
     }
   ],
   "budget": {
-    "shippingBytes": 4410442,
+    "shippingBytes": 5137906,
     "encoding": "WebP Q92 unchanged canvas and exact alpha",
     "productionBudgetPass": false,
     "note": "High-resolution checkpoint delivery, not AVIF/srcset or per-page performance acceptance."

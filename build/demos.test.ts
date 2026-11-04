@@ -5,6 +5,7 @@ import {
   arrivalScript,
   DEMO_INDEX,
   DEMO_ORDER,
+  demoBootScript,
   demoDir,
   generateDemoPages,
   generateDemoPagesFrom,
@@ -30,6 +31,20 @@ const segmentIds = (html: string): string[] =>
   [...html.matchAll(/data-segment="([^"]+)"/g)].map((match) => match[1] ?? '');
 
 describe('the concept-demo pages', () => {
+  it('keeps the full text fallback hidden until the scene attaches without hiding no-script pages', () => {
+    for (const page of pages.filter((candidate) =>
+      /(?:^|\/)demos\/[^/]+\/index\.html$/.test(candidate.path),
+    )) {
+      expect(page.html, page.path).toContain(demoBootScript);
+      expect(page.html.indexOf(demoBootScript), page.path).toBeLessThan(
+        page.html.indexOf('<script type="module"'),
+      );
+      expect(page.html, page.path).not.toContain('data-demo-booting=""');
+    }
+    expect(demoBootScript).toContain('data-demo-booting');
+    expect(demoBootScript).toContain('unhandledrejection');
+  });
+
   it('generates the index and one page per demo, in the fixed order', () => {
     expect(pages.map((page) => page.path)).toEqual([
       'demos/index.html',

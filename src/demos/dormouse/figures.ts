@@ -1,4 +1,6 @@
-/** The Dormouse on the rim, and the teapot he ends up in. Decorative SVG. */
+/** The Dormouse on the rim, and the teapot he ends up in. */
+
+import { type ArtStyle, artStyle } from '../art/treatments.ts';
 
 export const TEAPOT_SVG = `
 <svg viewBox="0 0 160 120" focusable="false">
@@ -11,6 +13,22 @@ export const TEAPOT_SVG = `
   </g>
   <path d="M56 72 q24 18 48 0" stroke="var(--world-water)" stroke-width="4" fill="none" stroke-linecap="round"/>
 </svg>`;
+
+/** The falling-in beat reuses the engraved teapot cutouts used at the tea table.
+ * Its old vector remains the atomic image-load fallback; the lid stays a live
+ * layer so the existing timeline can still open it as the mouse dives in.
+ */
+export function teapotMarkup(style: ArtStyle = artStyle()): string {
+  if (style !== 'engraved') return TEAPOT_SVG;
+  const body = new URL(
+    '../../assets/images/figures/teapot-body.any.generated.webp',
+    import.meta.url,
+  ).href;
+  const lid = new URL('../../assets/images/figures/teapot-lid.any.generated.webp', import.meta.url)
+    .href;
+  const fallback = TEAPOT_SVG.replace(/^\s*<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
+  return `<svg viewBox="0 0 160 120" focusable="false" data-generated-rig="dormouse/teapot"><g data-rig-fallback="">${fallback}</g><g data-rig-generated="" visibility="hidden" display="none"><image class="art__image" data-variant="any" data-rig-image="" href="${body}" x="0" y="0" width="160" height="120" preserveAspectRatio="xMidYMid meet"/><g class="dm__lid"><image class="art__image" data-variant="any" data-rig-image="" href="${lid}" x="0" y="0" width="160" height="120" preserveAspectRatio="xMidYMid meet"/></g></g></svg>`;
+}
 
 /** The sisters' little bucket, drawn about its middle so it can ride the spiral:
     a pail with a handle, brimming with treacle that runs over its lip. */

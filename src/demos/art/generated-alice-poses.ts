@@ -82,8 +82,35 @@ const sources: Record<
       ),
     },
   },
+  'alice/hands-cradling': {
+    scenes: ['pig-and-pepper'],
+    variants: {
+      yellow: {
+        src: new URL(
+          '../../assets/images/figures/alice--hands-cradling.yellow.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 1536,
+        height: 1024,
+        scale: 1,
+        x: 0,
+        y: 0,
+      },
+      blue: {
+        src: new URL(
+          '../../assets/images/figures/alice--hands-cradling.blue.generated.webp',
+          import.meta.url,
+        ).href,
+        width: 1536,
+        height: 1024,
+        scale: 1,
+        x: 0,
+        y: 0,
+      },
+    },
+  },
   'alice/hand-left': {
-    scenes: ['caterpillar', 'pig-and-pepper', 'lobster-quadrille'],
+    scenes: ['caterpillar', 'lobster-quadrille'],
     variants: {
       yellow: hand(
         new URL(
@@ -100,7 +127,7 @@ const sources: Record<
     },
   },
   'alice/hand-right': {
-    scenes: ['caterpillar', 'pig-and-pepper', 'lobster-quadrille'],
+    scenes: ['caterpillar', 'lobster-quadrille'],
     variants: {
       yellow: hand(
         new URL(

@@ -40,6 +40,18 @@ const ALICE_SCRIPT =
   'if(r==="flat"||r==="paper")d.dataset.art=r}catch(e){}</script>';
 
 /**
+ * Keep the readable text fallback from painting as a wall of sentences before the
+ * deferred scene module attaches. JavaScript-disabled pages never set the flag.
+ */
+export const demoBootScript =
+  '<script>(function(){var d=document.documentElement;' +
+  'd.setAttribute("data-demo-booting","");' +
+  'var show=function(){d.removeAttribute("data-demo-booting")};' +
+  'addEventListener("error",function(e){var t=e.target;' +
+  'if(t===window||(t&&t.tagName==="SCRIPT"&&t.type==="module"))show()},true);' +
+  'addEventListener("unhandledrejection",show,{once:true})})()</script>';
+
+/**
  * The arriving page's half of the turn between pages, inline in the head because
  * `pagereveal` fires before any module script runs. It names the page's own kind of
  * turn, absorbs a turn the browser skips, and marks the root `data-arriving` until
@@ -541,6 +553,7 @@ ${htmlOpen(project.locale, project.settings)}
     <link rel="icon" href="${root}assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="${root}styles/base.css" />
     ${ALICE_SCRIPT}
+    ${demoBootScript}
     ${arrivalScript(transitionKindFor(`/demos/${demo.id}/`))}
     <script type="module" src="${root}demos/${demo.id}/main.ts"></script>
     <script type="application/json" id="demo-ui">${escapeHtml(JSON.stringify(forScript)).replace(/&quot;/g, '"')}</script>

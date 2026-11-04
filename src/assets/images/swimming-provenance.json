@@ -1,7 +1,7 @@
 {
   "batch": "swimming-canvas-2026-10-21",
-  "date": "2026-10-21",
-  "status": "integrated candidate; offline placement reviewed, browser and art acceptance pending",
+  "date": "2026-11-01",
+  "status": "integrated; yellow hair corrected; desktop/phone browser tests passed",
   "styleId": "IA-ENGRAVED-CUTOUT-V1",
   "runtime": "src/demos/pool-of-tears/generated-swimmers.ts",
   "waterlineMeaning": "Each source waterline maps to local y=0. Four local units below the waterline render at 28% opacity. Jump and entrance motion move the source cut to the actual waterline.",
@@ -13,20 +13,20 @@
       "asset": "figures/alice--swimming.yellow.generated.webp",
       "width": 1254,
       "height": 1254,
-      "bytes": 662394,
-      "sha256": "e48fb5fbb2e0c0de9c684a6413ce2fa609268c313113b51aca6eb25cfba7ef59",
+      "bytes": 570268,
+      "sha256": "0648da8044426472e05c2fd7a6d918dc448f6b29a940c0e882649e0b8f0555d4",
       "placement": {
         "centreX": 630,
         "waterlineY": 975,
         "scale": 0.05741626794258373
       },
-      "alphaAbove32Bounds": [55, 43, 1208, 1151],
-      "rasterEdits": "none; runtime source-rectangle clipping only",
+      "alphaAbove32Bounds": [53, 43, 1209, 1152],
+      "rasterEdits": "Hair recolored from golden blonde to chestnut brown; pose, framing, dress, and canvas dimensions preserved. Transparency retained; edge alpha may vary. WebP q92 method6.",
       "generator": "OpenAI image_gen; model not exposed",
       "source": {
-        "filename": "exec-3d7e25af-23bb-48be-a143-2c05aebb06b3.png",
-        "sha256": "fc67d214f358cb75a757ced5afe61a0d83971ef7c8044b14235402a4b27d4e36",
-        "bytes": 2896053
+        "filename": "exec-d864cc4f-6102-4454-b5f2-8f6385606eaf.png",
+        "sha256": "b0ea1d99e35e83d30e74fa05162eb28c6c97293c967a5c5fa97a044b5fc7ba87",
+        "bytes": 2571323
       },
       "alphaPreservedExactly": true,
       "encoding": {
@@ -36,7 +36,9 @@
         "canvasUnchanged": true,
         "metadataStripped": true
       },
-      "promptIntent": "Dedicated head-and-shoulders engraved swimming cutout with the established face, hair and pinafore identity; no painted water or background."
+      "promptIntent": "Dedicated head-and-shoulders engraved swimming cutout with the established face, hair and pinafore identity; no painted water or background.",
+      "dimensions": [1254, 1254],
+      "sourceSha256": "b0ea1d99e35e83d30e74fa05162eb28c6c97293c967a5c5fa97a044b5fc7ba87"
     },
     {
       "id": "alice",
@@ -195,5 +197,6 @@
       "generator": "reused existing image_gen cutout; see provenance.json",
       "existingProvenance": "provenance.json#figures/runner--magpie.any.generated.webp"
     }
-  ]
+  ],
+  "editing": null
 }

@@ -196,6 +196,22 @@
     backface-visibility: hidden;
   }
 
+  .dk__panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      url("../../assets/images/interiors/drink-me-damask.generated.webp") center / 230px 230px
+      repeat;
+    opacity: 0.1;
+    pointer-events: none;
+  }
+
+  .dk__panel > * {
+    z-index: 1;
+  }
+
   .dk__door {
     --w: 220px;
     --h: 520px;

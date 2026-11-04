@@ -25,17 +25,19 @@ import { scenery } from '../art/generated-scenery.ts';
 import { attachDemo, type DemoShell, mix } from '../shell/shell.ts';
 import {
   butterMarkup,
+  chairMarkup,
   cupBackMarkup,
   cupFrontMarkup,
   deskMarkup,
   FROWN_SVG,
-  HOUSE_SVG,
+  houseMarkup,
   knifeMarkup,
   NOTES_SVG,
   ravenMarkup,
   SETTING_USE,
   settingSymbolMarkup,
   TREE_SVG,
+  tableSpreadMarkup,
   teapotMarkup,
   trayMarkup,
   watchMarkup,
@@ -118,7 +120,7 @@ function mount(shell: DemoShell): void {
     `<div class="tp__scenery-ground">${scenery('ground')}</div>` +
     '<div class="tp__sun"><div class="tp__sun-disc"></div><div class="tp__hands">' +
     '<div class="tp__hand tp__hand--hour"></div><div class="tp__hand tp__hand--minute"></div></div></div>' +
-    `<div class="tp__house">${HOUSE_SVG}</div><div class="tp__tree"><div class="tp__tree-original">${TREE_SVG}</div>${scenery('tree')}</div></div>`;
+    `<div class="tp__house">${houseMarkup()}</div><div class="tp__tree"><div class="tp__tree-original">${TREE_SVG}</div>${scenery('tree')}</div></div>`;
   const sun = sky.querySelector<HTMLElement>('.tp__sun');
   const house = sky.querySelector<HTMLElement>('.tp__house');
   const time = { hour: AFTERNOON, spin: 0, clock: 0, dusk: 0 };
@@ -167,22 +169,33 @@ function mount(shell: DemoShell): void {
   }
   const pot = piece('tp__teapot', teapotMarkup(), 30, -330, 230);
   piece('tp__butter-dish', butterMarkup(), -40, -560, 120);
+  // More chairs and a shared centre spread make the table read as a crowded
+  // room to sit at, not a runway ending in three floating figures.
+  for (const z of [-220, -720, -1220]) {
+    for (const side of [-1, 1]) {
+      const seat = piece('tp__chair-seat', chairMarkup(), side * 310, z, 118);
+      seat.style.setProperty('--chair-side', String(side));
+    }
+  }
+  piece('tp__table-spread tp__table-spread--bread', tableSpreadMarkup('bread'), -60, -750, 172);
+  piece('tp__table-spread tp__table-spread--cakes', tableSpreadMarkup('cakes'), -36, -930, 214);
+  piece('tp__table-spread tp__table-spread--tarts', tableSpreadMarkup('tarts'), 68, -1120, 206);
   // The party, crowded together at the far end. Their seat follows the round.
   const hatter = piece(
     'tp__party tp__hatter',
     `<div class="tp__hatter-turn">${figure('hatter')}${FROWN_SVG}</div>`,
     -150,
     PARTY_Z + 20,
-    230,
+    250,
   );
   const dormouse = piece(
     'tp__party tp__dormouse',
     `${figure('dormouse')}<div class="tp__notes">${NOTES_SVG}</div>`,
     0,
     PARTY_Z - 10,
-    170,
+    185,
   );
-  const hare = piece('tp__party tp__hare', figure('march-hare'), 150, PARTY_Z + 20, 230);
+  const hare = piece('tp__party tp__hare', figure('march-hare'), 150, PARTY_Z + 20, 250);
 
   // --- The camera: Alice. Standing at the table's end first.
   const camera: Camera = { pitch: 10, yaw: 0, x: 0, y: 400, z: 0 };

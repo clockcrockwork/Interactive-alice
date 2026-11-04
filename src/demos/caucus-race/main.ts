@@ -15,6 +15,7 @@
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { hydrateGeneratedRig } from '../art/generated-rig.ts';
+import { scenery } from '../art/generated-scenery.ts';
 import { DISTANT_HOUSE, HOUSE_FRONT_SVG } from '../rabbit-house/front.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import './caucus.css';
@@ -53,7 +54,8 @@ function mount(shell: DemoShell): void {
   const iThimble = cue('thimble');
   const iBow = cue('bow');
 
-  shell.layer('cr__sky');
+  const sky = shell.layer('cr__sky');
+  sky.innerHTML = `<div class="cr__highlands">${scenery('wildflower-highlands')}</div>`;
   const world = shell.layer('cr__world');
   const ring = document.createElement('div');
   ring.className = 'cr__ring';

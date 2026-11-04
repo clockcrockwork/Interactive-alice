@@ -84,6 +84,11 @@
     inset-inline: -20%;
   }
 
+  .lq__shore > .coast__clouds,
+  .lq__shore > .coast__gulls {
+    inset-inline: 0;
+  }
+
   .lq__sky {
     inset-block: 0 46%;
     background: linear-gradient(to bottom, var(--lq-sky), var(--lq-sky-low));
@@ -130,6 +135,25 @@
       auto;
   }
 
+  .lq__shingle-engraving {
+    inset-block: 60% 0;
+    z-index: 0;
+    opacity: 0.42;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  .lq__shingle-engraving img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    object-position: center bottom;
+    filter: grayscale(1);
+  }
+
   /* The run: a plane of shingle lying on the shore and streaming toward the
      camera under the runners, there while they run and gone as they arrive.
      One tile of the pattern is one loop of the stream. */
@@ -139,6 +163,7 @@
 
   .lq__stream {
     inset-block: 60% 0;
+    z-index: 1;
     perspective: 40vh;
     perspective-origin: 50% 0;
     overflow: hidden;
@@ -701,6 +726,15 @@
   }
 
   @media (max-width: 700px) {
+    /* Keep the whole ring of dancers inside the tall phone frame. The wider
+       desktop radius clips the two edge partners on the opening round. */
+    .demo--lobster-quadrille {
+      --lq-radius: clamp(140px, 29vmin, 220px);
+      --lq-span: min(34vw, calc(var(--lq-radius) * 1.4));
+      --lq-dancer: clamp(3.5rem, 13vmin, 6rem);
+      --lq-host: clamp(5rem, 18vmin, 8rem);
+    }
+
     /* A tall narrow frame: the song's verses and the run are long, so they are
        set smaller, and the creatures of the song swim lower in the sea, under them. */
     .demo--lobster-quadrille

@@ -80,6 +80,66 @@
     );
   }
 
+  /* The house is an actual horizon landmark between the sky and the party. */
+  .demo--mouse-tale .hs__arrival {
+    z-index: 0;
+  }
+
+  .demo--mouse-tale .cr__world {
+    z-index: 1;
+  }
+
+  .mt__highlands {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 11%;
+    block-size: 46%;
+    opacity: 0.32;
+    pointer-events: none;
+  }
+
+  .mt__highlands .scenery {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  /* Shared engraved bank scenery fills the open horizon without competing
+     with the birds, story text, or the later Rabbit-house arrival. */
+  .mt__bank-tree {
+    position: absolute;
+    inset-block-start: 47%;
+    inline-size: clamp(5rem, 19vmin, 12rem);
+    block-size: clamp(7.5rem, 29vmin, 18rem);
+    opacity: 0.54;
+    pointer-events: none;
+  }
+
+  .mt__bank-tree--left {
+    inset-inline-start: 2vw;
+  }
+
+  .mt__bank-tree--right {
+    inset-inline-end: 2vw;
+    transform: scaleX(-1);
+  }
+
+  .mt__bank-hedge {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 57%;
+    block-size: clamp(2.5rem, 8vmin, 5rem);
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .mt__bank-tree .scenery,
+  .mt__bank-hedge .scenery {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
   /* The house's garden waits under everything until the last frame: it never
      takes a tap meant for the party or the tail. */
   .demo--mouse-tale .hs__garden {
@@ -142,6 +202,9 @@
   /* The tail: one SVG in stage pixels, the chunks of the verses laid along its
      curve, each a little smaller than the last. */
   .mt__tail {
+    /* This SVG is appended after the world, but the world has an explicit
+       stacking level. Keep the reading path above it so drags reach its grip. */
+    z-index: 2;
     pointer-events: none;
     overflow: visible;
     transition: opacity var(--demo-quick) var(--demo-ease);
@@ -186,6 +249,9 @@
     stroke-linejoin: round;
     opacity: 0;
     user-select: none;
+    /* The invisible lyric labels overlap the broad drag path underneath. Keep
+       pointer input on that path so a drag beginning on a word reads it. */
+    pointer-events: none;
   }
 
   /* The line under the reading-glass, swollen by its transform, in full ink. */
@@ -255,12 +321,20 @@
 
   .mt__dinah .art {
     position: absolute;
-    inset-inline-start: 68%;
-    inset-block-start: 18%;
-    inline-size: clamp(8rem, 28vmin, 17rem);
+    inset-inline-start: 76%;
+    inset-block-start: 30%;
+    inline-size: clamp(8rem, 24vmin, 15rem);
     color: var(--mt-ghost);
     opacity: 0;
-    filter: blur(1px) drop-shadow(0 0 18px var(--world-glow));
+    filter: blur(0.4px) drop-shadow(0 0 12px var(--world-glow));
+  }
+
+  @media (max-width: 700px) {
+    .mt__dinah .art {
+      inset-inline-start: 56%;
+      inset-block-start: 34%;
+      inline-size: clamp(6rem, 20vmin, 9rem);
+    }
   }
 
   .mt__rabbit {

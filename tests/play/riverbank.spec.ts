@@ -8,12 +8,41 @@ import { atCue, customProperty, demos, scrollTo } from '../demo-helpers.ts';
  * without a seam.
  */
 const demo = demos.find((d) => d.demo === 'riverbank');
+const auditImages = '/workspace/alice-audit-evidence-20261101/backgrounds';
 
 const opacity = (page: Page, selector: string) =>
   page.evaluate(
     (sel) => Number(getComputedStyle(document.querySelector(sel) as Element).opacity),
     selector,
   );
+
+test('the mountain and cloud horizon is one decoded background across the shared field cut', async ({
+  page,
+}, testInfo) => {
+  test.skip(!demo, 'no riverbank page in this build');
+  await page.addInitScript(() => localStorage.setItem('alice-demos:art', 'engraved'));
+  for (const [route, selector] of [
+    [demo?.url ?? '', '.rb__field .field__highlands'],
+    ['/demos/rabbit-hole/', '.rh__surface .field__highlands'],
+  ] as const) {
+    await page.goto(route);
+    await expect(page.locator('.demo')).toHaveAttribute('data-attached', '', { timeout: 30_000 });
+    const rabbitHole = route.includes('rabbit-hole');
+    await atCue(page, rabbitHole ? 'tunnel' : 'field', rabbitHole ? 0.05 : 0.9);
+    const landscape = page.locator(
+      `${selector} svg[data-generated-rig="scenery/wildflower-highlands"]`,
+    );
+    await expect(landscape).toHaveAttribute('data-rig-ready', '');
+    await expect(landscape.locator('image[data-rig-image]')).toHaveAttribute(
+      'href',
+      /wildflower-highlands\.generated/,
+    );
+    await expect(page.locator(selector)).toBeVisible();
+    await page.screenshot({
+      path: `${auditImages}/shared-field-highlands-${rabbitHole ? 'hole' : 'riverbank'}-${testInfo.project.name}.png`,
+    });
+  }
+});
 
 test.describe('the riverbank: across the field', () => {
   test.skip(!demo, 'no riverbank page in this build');

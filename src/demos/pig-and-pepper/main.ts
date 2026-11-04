@@ -20,6 +20,7 @@ import { closeBough } from '../cheshire-cat/figures.ts';
 import { attachDemo, type DemoShell, mix, REDUCED_SETTLE, seeded } from '../shell/shell.ts';
 import './pig.css';
 import {
+  caughtBabyIllustration,
   cauldronMarkup,
   DOOR_LEAF_SVG,
   HEARTH_SVG,
@@ -165,7 +166,9 @@ function mount(shell: DemoShell): void {
 
   // --- Her own hands, and the bundle in them.
   const handsLayer = shell.layer('pp__hands');
-  handsLayer.innerHTML = hands(`<div class="pp__baby" data-stage="0">${figure('pig-baby')}</div>`);
+  handsLayer.innerHTML = hands(
+    `<div class="pp__baby" data-stage="0">${figure('pig-baby')}${caughtBabyIllustration()}</div>`,
+  );
   const held = handsLayer.querySelector<HTMLElement>('.pp__baby');
 
   // --- The join: a bough at the wood's edge, close, with a grin arriving on it.
@@ -301,6 +304,7 @@ function mount(shell: DemoShell): void {
   letterButton.addEventListener('click', openLetter);
   const letterShown = (): void => {
     const inside = master.time() >= iInvitation && master.time() < iLaugh;
+    outside.toggleAttribute('data-letter-up', inside);
     if (inside) {
       letterButton.show();
     } else {

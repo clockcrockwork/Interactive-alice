@@ -9,6 +9,34 @@ import { atCue, customProperty, demos, scrollTo } from '../demo-helpers.ts';
 const demo = demos.find((d) => d.demo === 'caucus-race');
 const runner = (page: Page, kind: string) => page.locator(`.cr__runner[data-kind="${kind}"]`);
 
+test('the Race ends beside the same generated Rabbit House seen on the riverbank', async ({
+  page,
+}, testInfo) => {
+  test.skip(!demo, 'no Caucus Race demo in this build');
+  await page.addInitScript(() => localStorage.setItem('alice-demos:art', 'engraved'));
+  await page.goto(demo?.url ?? '');
+  await expect(page.locator('.demo')).toHaveAttribute('data-attached', '', { timeout: 30_000 });
+  await atCue(page, 'bow', 0.7);
+  const house = page.locator('.hs__arrival svg[data-generated-rig="rabbit-house/front"]');
+  await expect(house).toHaveAttribute('data-rig-ready', '');
+  await expect(house.locator('image[data-rig-image]')).toHaveAttribute(
+    'href',
+    /rabbit-house-front\.generated/,
+  );
+  const opacity = await page
+    .locator('.hs__arrival')
+    .evaluate((element) => Number(getComputedStyle(element).opacity));
+  expect(opacity).toBeGreaterThan(0.8);
+  const imageBox = await house.boundingBox();
+  expect(imageBox?.width).toBeGreaterThan(0);
+  if (!imageBox) throw new Error('Rabbit House has no rendered box');
+  expect(imageBox.x + imageBox.width).toBeGreaterThan(0);
+  expect(imageBox.x).toBeLessThan(page.viewportSize()?.width ?? 0);
+  await page.screenshot({
+    path: `/workspace/alice-audit-evidence-20261101/backgrounds/caucus-house-arrival-${testInfo.project.name}.png`,
+  });
+});
+
 /** Which runner, if any, a real pointer at this runner's centre would land on. */
 const landsOn = (page: Page, kind: string) =>
   page.evaluate((k) => {
@@ -25,6 +53,26 @@ const landsOn = (page: Page, kind: string) =>
 
 test.describe('the Caucus-race', () => {
   test.skip(!demo, 'no caucus-race page in this build');
+
+  test('the shared meadow, mountains and cloud engraving decodes behind the course', async ({
+    page,
+  }) => {
+    await page.goto(demo?.url ?? '');
+    await atCue(page, 'bank', 0.5);
+    const panorama = page.locator('.cr__highlands picture.scenery--wildflower-highlands img');
+    await expect(panorama).toBeVisible();
+    await expect
+      .poll(() => panorama.evaluate((image: HTMLImageElement) => image.naturalWidth))
+      .toBeGreaterThan(0);
+    const screen = (page.viewportSize()?.width ?? 0) < 700 ? 'phone' : 'desktop';
+    const currentSource = await panorama.evaluate((image: HTMLImageElement) => image.currentSrc);
+    expect(currentSource).toContain(
+      screen === 'phone' ? 'wildflower-highlands-phone' : 'wildflower-highlands.generated',
+    );
+    await page.screenshot({
+      path: `/workspace/alice-audit-evidence-20261102/caucus-race/${screen}-after.png`,
+    });
+  });
 
   test('a real tap reaches a runner: no layer over the ring takes it', async ({ page }) => {
     await page.goto(demo?.url ?? '');

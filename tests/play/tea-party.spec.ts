@@ -276,13 +276,27 @@ test('the tea-party: phone captions let the tableware show through at every stor
         .filter((line) => getComputedStyle(line).visibility === 'visible')
         .map((line) => ({
           background: getComputedStyle(line).backgroundColor,
+          paperOpacity: getComputedStyle(line).getPropertyValue('--tp-caption-opacity'),
           textShadow: getComputedStyle(line).textShadow,
         })),
     );
     expect(fills.length, `${cue}: active dialogue cards`).toBeGreaterThan(0);
     for (const fill of fills) {
       const alpha = Number(fill.background.match(/\/(\s*[\d.]+)\s*\)$/)?.[1]);
-      expect(alpha, `${cue}: paper opacity ${fill.background}`).toBeLessThanOrEqual(0.35);
+      if (cue === 'twinkle' || cue === 'tea-time') {
+        // Narration uses --demo-slip at 90% opacity, so its composited paper
+        // alpha is 0.432 while dialogue bubbles use the full 0.48.
+        expect(alpha, `${cue}: stronger text paper ${fill.background}`).toBeGreaterThanOrEqual(
+          0.43,
+        );
+        expect(alpha, `${cue}: paper remains translucent ${fill.background}`).toBeLessThanOrEqual(
+          0.49,
+        );
+        expect(fill.paperOpacity).toBe('48%');
+        expect(fill.textShadow, `${cue}: broader ink halo`).toContain('3px');
+      } else {
+        expect(alpha, `${cue}: other cues keep their lighter paper`).toBeLessThanOrEqual(0.35);
+      }
       expect(fill.textShadow, `${cue}: text halo`).not.toBe('none');
     }
   }

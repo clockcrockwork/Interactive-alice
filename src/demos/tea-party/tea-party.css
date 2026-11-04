@@ -1022,40 +1022,74 @@
     }
 
     /* On a narrow frame the near end of the table sits behind the captions.
-       Keep the story cards legible, but let the cups and food show through the
-       paper instead of hiding them under an opaque panel. */
+       The two long passages need a little more paper and a broader ink halo so
+       fine tableware lines do not cut through the words; food still shows. */
     .demo--tea-party .line {
-      background-color: color-mix(in oklch, var(--paper-base) 34%, transparent);
-      backdrop-filter: blur(2px);
-      -webkit-backdrop-filter: blur(2px);
+      background-color: color-mix(
+        in oklch,
+        var(--paper-base) var(--tp-caption-opacity, 34%),
+        transparent
+      );
       box-shadow: 0 3px 12px oklch(from var(--ink-primary) l c h / 0.12);
       text-shadow:
         0 0 0.35em var(--paper-base),
         0 1px 2px var(--paper-base);
     }
 
+    .demo--tea-party .demo-beat:is([data-cue="twinkle"], [data-cue="tea-time"]) .line {
+      --tp-caption-opacity: 48%;
+      text-shadow:
+        0 0 0.55em var(--paper-base),
+        0 1px 3px var(--paper-base),
+        0 0 1px var(--paper-base);
+    }
+
     .demo--tea-party .line[data-kind="narration"] {
-      background-color: color-mix(in oklch, var(--demo-slip) 34%, transparent);
+      background-color: color-mix(
+        in oklch,
+        var(--demo-slip) var(--tp-caption-opacity, 34%),
+        transparent
+      );
     }
 
     .demo--tea-party .line[data-speaker="alice"] {
-      background-color: color-mix(in oklch, var(--tp-bubble-alice) 34%, transparent);
+      background-color: color-mix(
+        in oklch,
+        var(--tp-bubble-alice) var(--tp-caption-opacity, 34%),
+        transparent
+      );
     }
 
     .demo--tea-party .line[data-speaker="hatter"] {
-      background-color: color-mix(in oklch, var(--tp-bubble-hatter) 34%, transparent);
+      background-color: color-mix(
+        in oklch,
+        var(--tp-bubble-hatter) var(--tp-caption-opacity, 34%),
+        transparent
+      );
     }
 
     .demo--tea-party .line[data-speaker="march-hare"] {
-      background-color: color-mix(in oklch, var(--tp-bubble-hare) 34%, transparent);
+      background-color: color-mix(
+        in oklch,
+        var(--tp-bubble-hare) var(--tp-caption-opacity, 34%),
+        transparent
+      );
     }
 
     .demo--tea-party .line[data-speaker="dormouse"] {
-      background-color: color-mix(in oklch, var(--tp-bubble-dormouse) 34%, transparent);
+      background-color: color-mix(
+        in oklch,
+        var(--tp-bubble-dormouse) var(--tp-caption-opacity, 34%),
+        transparent
+      );
     }
 
     .demo--tea-party .line[data-speaker="queen-of-hearts"] {
-      background-color: color-mix(in oklch, var(--tp-bubble-queen) 34%, transparent);
+      background-color: color-mix(
+        in oklch,
+        var(--tp-bubble-queen) var(--tp-caption-opacity, 34%),
+        transparent
+      );
     }
 
     .tp__butter-pat {

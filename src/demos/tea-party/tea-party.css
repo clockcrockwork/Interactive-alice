@@ -994,6 +994,12 @@
       --tp-origin: 48%;
     }
 
+    /* Use the phone's lower margin so dialogue cards cover less of the spread,
+       while leaving room for the scroll-on cue at the foot of the first beat. */
+    .demo--tea-party .demo-beat {
+      inset-block-end: 7vh;
+    }
+
     .tp__cutout {
       inset-block-start: 20%;
     }

@@ -288,6 +288,28 @@ test('the tea-party: phone captions let the tableware show through at every stor
   }
 });
 
+test('the tea-party: phone captions use the lower margin without touching the scroll cue', async ({
+  page,
+}) => {
+  test.skip(!demo, 'no tea-party demo in this build');
+  test.skip((page.viewportSize()?.width ?? 0) > 700, 'phone layout only');
+  await page.goto(demo?.url ?? '');
+  const height = page.viewportSize()?.height ?? 844;
+
+  for (const cue of ['table', 'tea-time']) {
+    await atCue(page, cue, 0.5);
+    const box = await page.locator(`.demo-beat[data-cue="${cue}"]`).boundingBox();
+    expect(box, `${cue}: caption stack is visible`).not.toBeNull();
+    if (!box) {
+      continue;
+    }
+    expect(box.y + box.height, `${cue}: stack sits in the lower part of the frame`).toBeGreaterThan(
+      height * 0.88,
+    );
+    expect(box.y + box.height, `${cue}: bottom margin remains`).toBeLessThan(height - 24);
+  }
+});
+
 test('the tea-party: leaning the pointer to the edge never shows the edge of the world', async ({
   page,
 }) => {

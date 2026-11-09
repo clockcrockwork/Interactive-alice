@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-21",
+  "status": "provisional standing-Duchess-only composition; not literal contact, final art or browser acceptance",
+  "acceptedScenes": ["duchess"],
+  "runtimeImageBytesAdded": 0,
+  "asset": {
+    "file": "figures/duchess.any.generated.webp",
+    "width": 1205,
+    "height": 1305,
+    "bytes": 545860,
+    "sha256": "1afca7a000012be1f840efecd0671621608ad40d45d1950c18b49470140e1230",
+    "source": {
+      "filename": "exec-dadfd48c-b054-4199-869f-cdd20e973e73.png",
+      "sha256": "cfda472817167c7771ff287278d120c0740e717b643c84c3750a54626d2e3fd1"
+    },
+    "generator": "OpenAI image_gen, model not exposed",
+    "reusedWithoutReencoding": true,
+    "priorEncoding": "Existing WebP quality 92, unchanged source dimensions and exact alpha per provenance.json. This consumer performs no re-encoding or raster edits."
+  },
+  "composition": {
+    "logicalBox": [240, 260],
+    "uniformScale": 0.14155712841253792,
+    "x": 29.403437815975735,
+    "y": 76.11729019211324,
+    "width": 170.5763397371082,
+    "height": 184.732052578362,
+    "approximateSourceChin": [640, 310],
+    "sourceFoot": 1299,
+    "targetChin": [120, 120],
+    "targetFloor": 260,
+    "landmarkUncertaintySourcePixels": 15,
+    "sourceCanvasUnchanged": true,
+    "bottomPaintMargin": "Image canvas extends 0.8493 logical units below the fixed paint box. Source foot row 1299 is the floor anchor; remaining source rows 1300–1304 have maximum alpha 7/255. Source file bytes are unchanged."
+  },
+  "validation": {
+    "literalChinContactVerified": false,
+    "generatedAliceEnabled": false,
+    "independentReview": "Standing-only chin-floor mapping reads naturally; no new penetration or disconnected limb observed. Smaller silhouette is a visual checkpoint, not a functional blocker.",
+    "offlineStates": [
+      "neutral",
+      "lean=1/wince=1",
+      "shrug apex",
+      "bite/flinch",
+      "snap/flinch",
+      "Alice pass=0.35 after Duchess gone"
+    ],
+    "preserved": "Original scene CSS and timelines, fixed whole-art box, all outer lean/shrug/flinch/bob hooks, original Alice and original articulated flamingo.",
+    "inheritedLimitation": "Old seated logical chin and Alice shoulder also do not meet in static reconstruction. Preserving approximate old chin/floor does not certify contact.",
+    "aliceExclusion": "Generated falling Alice shifts the unchanged flamingo bite toward upper chest/neck in static comparison; both colours remain original for this chapter.",
+    "browser": "not run; no full-stage clipping, real timeline, bob phase, reverse, reduced-motion event timing or performance acceptance claimed",
+    "review": "docs/generated-assets-review/duchess-standing-composition-20261021.md"
+  }
+}

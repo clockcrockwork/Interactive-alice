@@ -1,0 +1,15 @@
+@layer tokens, base, layout, scene, utilities;
+
+@layer scene {
+  /* Generated opaque lids cover the baked eyes progressively, rather than
+     cross-fading two expressions. Their parent retains the original head turn. */
+  svg[data-generated-rig="alice/sitting"][data-rig-ready] .rb__lids {
+    transform: none;
+  }
+
+  svg[data-generated-rig="alice/sitting"][data-rig-ready] .rb__generated-lid-reveal {
+    transform-box: view-box;
+    transform-origin: 0 0;
+    transform: translateY(320px) scaleY(clamp(0, var(--droop, 0), 1));
+  }
+}

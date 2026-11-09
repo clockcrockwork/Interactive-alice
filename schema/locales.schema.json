@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/clockcrockwork/Interactive-alice/schema/locales.schema.json",
   "title": "Locale registry",
-  "description": "The languages the experience can be read in, their authoring budgets, and the presentation facts a scene needs in order to lay their text out.",
+  "description": "The languages the experience can be read in, their authoring budgets, and the locale profile: what each language IS, declared once, so that build, CSS and runtime read these facts and never infer them from a language name. See docs/text-experience-binding.md, Language differences.",
   "type": "object",
   "required": ["sourceLocale", "baseLocale", "locales"],
   "additionalProperties": false,
@@ -29,7 +29,12 @@
           "status",
           "dir",
           "lineBreak",
-          "significantSpaces"
+          "significantSpaces",
+          "setApart",
+          "wordUnit",
+          "emphasis",
+          "glyphWidth",
+          "numbers"
         ],
         "additionalProperties": false,
         "properties": {
@@ -53,6 +58,29 @@
           "significantSpaces": {
             "type": "boolean",
             "description": "True when spaces inside a segment are authored content, as in the Japanese phrase spacing. Such text must never be trimmed, collapsed, or re-wrapped by a template or a minifier."
+          },
+          "setApart": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "enum": ["quotes", "capitals"] },
+            "description": "How this language marks a word that is on display (written on a thing, named as a word), in order of preference: 'quotes' is any paired quotation marks, corner brackets included; 'capitals' is an all-capitals run of two or more letters, a capitalised word of five or more letters, or a capital standing alone as a letter. scripts/check-experience.py verifies a demo's declared reads against exactly these methods."
+          },
+          "wordUnit": {
+            "enum": ["spaces", "segmenter"],
+            "description": "How a line is split into the units a stage lights or lays out one at a time (sung words, the tail's chunks, a label's two lines): 'spaces' when the language writes its units with spaces between them (phrase spaces count), 'segmenter' when it does not, so Intl.Segmenter finds the words. One helper implements both: units() in src/demos/shell/words.ts."
+          },
+          "emphasis": {
+            "enum": ["italic", "slip"],
+            "description": "How speech and thought are set apart from narration: 'italic' where the script has an italic, 'slip' (a warmer slip, never a synthesised slant) where it does not. Written to the page as data-emphasis."
+          },
+          "glyphWidth": {
+            "enum": ["half", "full"],
+            "description": "Whether the script's glyphs fill the em box ('full': CJK, kana, Hangul) or not ('half'). Drives the smaller caption size and the looser leading; written to the page as data-glyph-width. For a mixed run, isWide() in words.ts remains the per-character truth."
+          },
+          "numbers": {
+            "type": "string",
+            "pattern": "^[a-z]{2,3}(-[A-Za-z0-9]+)*$",
+            "description": "The Intl locale tag numbers (and words, for the segmenter) are formatted with, e.g. 'en-GB', 'ja-JP'. A demo never passes the page's lang to Intl itself; it asks shell.locale."
           },
           "notes": { "type": "string" }
         }

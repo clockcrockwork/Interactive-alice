@@ -1,0 +1,16 @@
+{
+  "id": "jury",
+  "source": "exec-cf0d751c-a242-402d-84bf-5c737d18dd40.png",
+  "sourceSha256": "3d184ed6c8cc01aa091f36dc4a021c82cbd564a0623a8380052929810154dc13",
+  "encodedSha256": "310cf0a6e5c5e69ae0800b9d05ce1ef3f499be71b34e37d11a354f3947aa1c1e",
+  "bytes": 516170,
+  "dimensions": [1852, 849],
+  "encoding": "WebP quality92 method6 exact true; unchanged dimensions and exact alpha",
+  "alphaBoundsAbove32": [2, 122, 1851, 781],
+  "groundSourceY": 780,
+  "logicalBox": [480, 220],
+  "slateMapping": "unchanged source groups; ready-only parent translateY even24 odd10",
+  "sourceIntent": "12 animal jurors with bench, no slates; original layout reference and generated herald style reference",
+  "promptHash": null,
+  "verification": "offline SVG composition and unit contracts; browser not executed"
+}

@@ -7,10 +7,15 @@ const schema = JSON.parse(
   readFileSync(fileURLToPath(new URL('../schema/ui-strings.schema.json', import.meta.url)), 'utf8'),
 );
 
-/** What a locale's UI copy looks like when it is right. */
+/**
+ * What a locale's UI copy looks like when it is right: one non-empty string per key
+ * the schema requires, read from the schema so adding a key does not break the test.
+ */
 const valid = () => ({
   locale: 'xx',
-  strings: { partPending: 'a', localePartial: 'b', localeNone: 'c' },
+  strings: Object.fromEntries(
+    (schema.properties.strings.required as string[]).map((key, index) => [key, String(index)]),
+  ),
 });
 
 /**

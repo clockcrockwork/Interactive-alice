@@ -1,0 +1,45 @@
+{
+  "purpose": "Responsive transparent engraving overlay visible only while Alice is briefly under the water in Pool of Tears.",
+  "style": "Monochrome 19th-century graphite-and-ivory cross-hatching; the existing live water stays blue, dynamic, and interactive.",
+  "references": [
+    "src/assets/images/scenery/mock-turtle-school-wide.generated.webp",
+    "src/assets/images/scenery/lobster-shingle-wide.generated.webp",
+    "src/assets/images/scenery/mock-turtle-school-phone.generated.webp"
+  ],
+  "display": {
+    "route": "pool-of-tears",
+    "cue": "swim",
+    "opacity": {
+      "desktop": 1,
+      "phone": 0.8
+    },
+    "blend": "normal",
+    "filter": "grayscale(1)",
+    "center": "mostly transparent to leave captions and swimmers clear",
+    "fallback": "The existing blue water gradient and animated CSS caustics remain when the image fails to load."
+  },
+  "assets": [
+    {
+      "file": "src/assets/images/scenery/pool-underwater-wide.generated.webp",
+      "source": "/workspace/generated_images/exec-160f504c-57fe-4c2f-a408-23a89c0ad791.png",
+      "source_sha256": "81c74a2413794399f47154737f8786b134678a9a2cf661c412accb6956809503",
+      "source_bytes": 1928686,
+      "dimensions": "1672x941",
+      "sha256": "2da631b81b2956165d8c01bb8f0471cdec536d7da1bf736e7225e6783a799fe1",
+      "bytes": 374212,
+      "format": "WebP q84",
+      "note": "Replaced the low-contrast draft with stronger engraved wave contours and a clear center for legibility on desktop."
+    },
+    {
+      "file": "src/assets/images/scenery/pool-underwater-phone.generated.webp",
+      "source": "/workspace/generated_images/exec-1d7dc039-7141-43fa-9608-42b8b46be6be.png",
+      "source_sha256": "c3dd875571627da0d46add92de0f5642b10b109ff28d845bbad6cb887ac8240d",
+      "source_bytes": 582839,
+      "dimensions": "800x1421",
+      "sha256": "c40346c32153c6eda92e47cb678fef6c884a24971ebba2fe3877acedc5f82ebc",
+      "bytes": 91592,
+      "format": "WebP q80",
+      "note": "Portrait output was refined to remove kelp-like branches; it retains only water contours and sparse bubble trails."
+    }
+  ]
+}

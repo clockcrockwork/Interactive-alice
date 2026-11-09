@@ -1,0 +1,36 @@
+{
+  "purpose": "Subtle illustrated shingle overlay for the Lobster Quadrille shore; the existing CSS sea, sand gradient, streaming plane, dancers, and caption layout remain active.",
+  "style": "Monochrome 19th-century book engraving in warm graphite and ivory, consistent with the shared ground and Mock Turtle school scenery.",
+  "references": [
+    "src/assets/images/scenery/ground.generated.webp",
+    "src/assets/images/scenery/mock-turtle-school-wide.generated.webp"
+  ],
+  "presentation": {
+    "filter": "grayscale(1)",
+    "opacity": 0.42,
+    "blend": "multiply",
+    "fallback": "The CSS pebble and shingle gradients stay visible when the raster fails to load."
+  },
+  "assets": [
+    {
+      "file": "src/assets/images/scenery/lobster-shingle-wide.generated.webp",
+      "source": "/workspace/generated_images/exec-05045e7b-3801-4a14-997a-b5f83250819b.png",
+      "source_sha256": "22b725a5710f5c4f68ea18d1d7066cb33e362bddc11e72214c9c5ab5cdc9e1fe",
+      "source_bytes": 670777,
+      "dimensions": "1400x788",
+      "sha256": "e968645e2eca117eb7819d5fe72bda28068818ffd82ae21436ebfd5f838d0b1a",
+      "bytes": 99290,
+      "format": "WebP q80"
+    },
+    {
+      "file": "src/assets/images/scenery/lobster-shingle-phone.generated.webp",
+      "source": "/workspace/generated_images/exec-53e1a00c-7ac1-45e1-a203-9354d53f068d.png",
+      "source_sha256": "56f6c692f4b7b2171edc09d189378a469f1af5c716460ebd2514bbd0f6f6ff9d",
+      "source_bytes": 1070214,
+      "dimensions": "800x1200",
+      "sha256": "8526e9f09f7ba0b172ac2905a7c407731b2f1fe2e8c27eee01d575814acbe29a",
+      "bytes": 49488,
+      "format": "WebP q80"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "status": "provisional; browser unverified",
+  "images": [
+    {
+      "pose": "walk",
+      "sourceFile": "exec-9d15804e-4802-41c0-bb11-3dadce5ce777.png",
+      "sourceSha256": "6a8fbcf56a325f8769548a8178f25358d4f19207b9f3f0fab0d699e173257d13",
+      "file": "src/assets/images/generated-layers/hedgehog~walk.any.generated.webp",
+      "sha256": "b13a77cc8e854c5b207b9d0dc7b5c385f71c197961ab1e0e31bde43a9b0d1d7f",
+      "bytes": 610170,
+      "width": 1414,
+      "height": 1112,
+      "alphaBoundsGt32": [86, 125, 1370, 986],
+      "encoding": "WebP quality92 method6; original dimensions and alpha unchanged",
+      "generation": "image_gen by parent; walk based on old vector layout and established engraving style; ball edited from walk master",
+      "promptHash": null
+    },
+    {
+      "pose": "ball",
+      "sourceFile": "exec-f0f857fb-c3d3-4a09-89d2-e2f867698540.png",
+      "sourceSha256": "e4c9b14161db95e7746f1e84d8f507851b4e67385045e5e5f6f70c4b1c95b30a",
+      "file": "src/assets/images/generated-layers/hedgehog~ball.any.generated.webp",
+      "sha256": "3b8fb2a98831ca1b7c9f33aa7dc07c1287cab4e99aee9dd4218e24c3e602abe6",
+      "bytes": 478264,
+      "width": 1426,
+      "height": 1103,
+      "alphaBoundsGt32": [252, 167, 1194, 1037],
+      "encoding": "WebP quality92 method6; original dimensions and alpha unchanged",
+      "generation": "image_gen by parent; walk based on old vector layout and established engraving style; ball edited from walk master",
+      "promptHash": null
+    }
+  ]
+}

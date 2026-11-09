@@ -1,0 +1,340 @@
+{
+  "batch": "cheshire-cat-layers-2026-10-21",
+  "date": "2026-10-21",
+  "status": "provisional generated articulated rigs; not owner art acceptance or browser acceptance",
+  "generator": "image_gen",
+  "model": "not exposed by generation tool",
+  "styleId": "IA-ENGRAVED-CUTOUT-V1",
+  "fullPrompt": "not available to integration worker; intent recorded per asset",
+  "assets": [
+    {
+      "part": "head-face",
+      "asset": "cheshire-cat~head-face.any.generated.webp",
+      "bytes": 487852,
+      "sha256": "e4aad1db78ab8b4ccf09b76d50ab21ceec32e66978ee48e8005e78e4ca2159e2",
+      "width": 1374,
+      "height": 1145,
+      "source": {
+        "key": "catHeadLayer_face",
+        "filename": "exec-c009bc6d-18fb-4a88-9c0c-3ab1a2c87f38.png",
+        "sha256": "a98ad3cef11828c0e200798e22eda2e137c7e2ca15421e5be7c3849577f9d9d0"
+      },
+      "master": {
+        "filename": "exec-6c89e89f-71cb-4d8d-924d-e30f66fe59e5.png",
+        "sha256": "eb84d9d99e3667bc0bd020e08d639c80511a9733f8189c83ea13464231d5960b"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [0, 4, 1359, 1121],
+        "16": [24, 198, 1356, 1095],
+        "128": [25, 199, 1355, 1094],
+        "224": [29, 204, 1345, 1090]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Transparent Cheshire Cat head-face layer, preserving a shared identity while leaving motion and expressions live.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      }
+    },
+    {
+      "part": "head-ears",
+      "asset": "cheshire-cat~head-ears.any.generated.webp",
+      "bytes": 169350,
+      "sha256": "8bec0b6fa69317e3c7de38302ec89fe2ce61143446673fbfd42733a81ab7e3e6",
+      "width": 1374,
+      "height": 1145,
+      "source": {
+        "key": "catHeadLayer_ears",
+        "filename": "exec-4d6c72ba-a598-48ce-940e-8fe32840a67b.png",
+        "sha256": "77bf6b1de3eb7c1d507a313b22d4f52cd109d5fe391a832c8878c62ab9d043d6"
+      },
+      "master": {
+        "filename": "exec-6c89e89f-71cb-4d8d-924d-e30f66fe59e5.png",
+        "sha256": "eb84d9d99e3667bc0bd020e08d639c80511a9733f8189c83ea13464231d5960b"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [0, 19, 1322, 1121],
+        "16": [152, 33, 1242, 458],
+        "128": [154, 35, 1240, 453],
+        "224": [160, 36, 1236, 451]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Transparent Cheshire Cat head-ears layer, preserving a shared identity while leaving motion and expressions live.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      }
+    },
+    {
+      "part": "head-eye-left",
+      "asset": "cheshire-cat~head-eye-left.any.generated.webp",
+      "bytes": 59690,
+      "sha256": "59e62accbe5444d86ef6b465170ec3813cbc871850eced4b6002b10d1f9c185a",
+      "width": 1374,
+      "height": 1145,
+      "source": {
+        "key": "catHeadLayer_leftEye",
+        "filename": "exec-c31e9789-6ecc-44d1-bbde-622888484b43.png",
+        "sha256": "549951907812db9b43cf8b1fac6aabebc7b7e8153865059a890ea0a209fc4454"
+      },
+      "master": {
+        "filename": "exec-6c89e89f-71cb-4d8d-924d-e30f66fe59e5.png",
+        "sha256": "eb84d9d99e3667bc0bd020e08d639c80511a9733f8189c83ea13464231d5960b"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [49, 37, 1338, 1112],
+        "16": [262, 491, 680, 749],
+        "128": [265, 494, 677, 747],
+        "224": [278, 495, 666, 746]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Transparent Cheshire Cat head-eye-left layer, preserving a shared identity while leaving motion and expressions live.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      }
+    },
+    {
+      "part": "head-eye-right",
+      "asset": "cheshire-cat~head-eye-right.any.generated.webp",
+      "bytes": 39296,
+      "sha256": "8cd137e69373cce1dd9e6163d816077662a22762babb88e1e275a66a17746251",
+      "width": 1374,
+      "height": 1145,
+      "source": {
+        "key": "catRightEyeCorrection",
+        "filename": "exec-c472b8ee-0f3d-45df-bdb3-001eee515976.png",
+        "sha256": "c3f21b8e5ec8132b5d405370c9774f1ca7b88c527b6d6e2fff147fded65e7231"
+      },
+      "master": {
+        "filename": "exec-6c89e89f-71cb-4d8d-924d-e30f66fe59e5.png",
+        "sha256": "eb84d9d99e3667bc0bd020e08d639c80511a9733f8189c83ea13464231d5960b"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [25, 181, 1322, 1056],
+        "16": [584, 496, 1049, 741],
+        "128": [585, 497, 1048, 741],
+        "224": [586, 498, 1046, 740]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Retain the blank right eyeball and narrow eyelid rim while removing the surrounding brow and cheek fur for staged eye-only appearance and a clean wink.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      },
+      "replacedSource": {
+        "key": "catHeadLayer_rightEye",
+        "filename": "exec-877cee20-4b8c-4d2a-8f27-2768c7fb446e.png",
+        "sha256": "6bdf4201f5420269889ffcc34adefadb1524e8b0d17aeae09f95a76dc5319eff"
+      }
+    },
+    {
+      "part": "head-grin",
+      "asset": "cheshire-cat~head-grin.any.generated.webp",
+      "bytes": 41426,
+      "sha256": "8c0e593deaa4465eeeb9fd984526ed5ff62db3710fa18f2b994fc5023238d7fe",
+      "width": 1374,
+      "height": 1145,
+      "source": {
+        "key": "catHeadLayer_grin",
+        "filename": "exec-31ed2e40-1acf-4cbd-98e2-d2f6ff9a8079.png",
+        "sha256": "2c889c4efd1f4509d34afc75f8cf7f081115297275e79aec57ef2fc1e100d8d3"
+      },
+      "master": {
+        "filename": "exec-6c89e89f-71cb-4d8d-924d-e30f66fe59e5.png",
+        "sha256": "eb84d9d99e3667bc0bd020e08d639c80511a9733f8189c83ea13464231d5960b"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [116, 118, 1320, 1055],
+        "16": [331, 725, 1043, 913],
+        "128": [332, 726, 1042, 912],
+        "224": [333, 727, 1040, 911]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Transparent Cheshire Cat head-grin layer, preserving a shared identity while leaving motion and expressions live.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      }
+    },
+    {
+      "part": "bough-body",
+      "asset": "cheshire-cat~bough-body.any.generated.webp",
+      "bytes": 397132,
+      "sha256": "690f1b32ae27e58cc097d340354ccbea72ce44b88b7de0e382b8384378e13609",
+      "width": 1619,
+      "height": 971,
+      "source": {
+        "key": "layers5_catBoughBody",
+        "filename": "exec-574080db-78f5-4d22-b514-fba2b49b4fc3.png",
+        "sha256": "95e60cf54d38335cca6648bb2fa0c3e0b426db99ac3d4122faf1188eba676888"
+      },
+      "master": {
+        "filename": "exec-9d2b2ccd-7371-4a18-8ead-e040a98c1808.png",
+        "sha256": "a817a1562d11d944a4dc7f0db7c3d67b0375230ff6f928e8cf50dd8d23d54552"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [79, 47, 1589, 908],
+        "16": [155, 182, 1583, 901],
+        "128": [157, 184, 1581, 899],
+        "224": [159, 185, 1580, 898]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Transparent Cheshire Cat bough-body layer, preserving a shared identity while leaving motion and expressions live.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      }
+    },
+    {
+      "part": "bough-tail",
+      "asset": "cheshire-cat~bough-tail.any.generated.webp",
+      "bytes": 138894,
+      "sha256": "f0fb7c754c1e83169d8f54a1a806324b5b16aff8c6bd5d6b133a0fdd969f4076",
+      "width": 1620,
+      "height": 971,
+      "source": {
+        "key": "catBoughTailCorrection",
+        "filename": "exec-b2947df8-bd46-4f1f-8d2d-a9cbb0f9f61b.png",
+        "sha256": "c4509e7e1d479c03a418ea2d2be71c55cd7ee7b98496487ead71558bbddd7164"
+      },
+      "master": {
+        "filename": "exec-9d2b2ccd-7371-4a18-8ead-e040a98c1808.png",
+        "sha256": "a817a1562d11d944a4dc7f0db7c3d67b0375230ff6f928e8cf50dd8d23d54552"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [26, 45, 916, 886],
+        "16": [29, 97, 624, 767],
+        "128": [31, 98, 623, 766],
+        "224": [32, 99, 622, 763]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Retain the same transparent curled striped tail and canvas while removing the stray fork inside the loop.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      },
+      "replacedSource": {
+        "key": "layers5_catBoughTail",
+        "filename": "exec-9b693ac7-7fe3-4160-a984-b7e8d17fdb03.png",
+        "sha256": "a448487810dba006a70e6dc78a53c0e7ae369ab8910112fd41969bf7ed47a00a"
+      }
+    },
+    {
+      "part": "hearth-body",
+      "asset": "cheshire-cat~hearth-body.any.generated.webp",
+      "bytes": 443628,
+      "sha256": "4ac12f17feb4f8b6580640d69a4dc8337fa8cd2167840a26b0d6fcd943ba20c2",
+      "width": 1536,
+      "height": 1024,
+      "source": {
+        "key": "layers5_catHearthBody",
+        "filename": "exec-46ad1118-a42d-41b4-8802-ca5c23bf6f52.png",
+        "sha256": "147903f1447abafa1a6bd235a872d3329ca029b301428936d4ee52e09f0d4a04"
+      },
+      "master": {
+        "filename": "exec-217c0fbe-c6c8-4483-a1e3-bcf94cb7d832.png",
+        "sha256": "64289f6ab37d0b616417cb2ae205f4c3dd3d36e17cf72d44c16430f05a8107b6"
+      },
+      "alphaExtrema": [0, 254],
+      "alphaBounds": {
+        "0": [0, 38, 1520, 1024],
+        "16": [21, 295, 1518, 911],
+        "128": [25, 297, 1517, 910],
+        "224": [26, 299, 1514, 907]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Transparent Cheshire Cat hearth-body layer, preserving a shared identity while leaving motion and expressions live.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      }
+    }
+  ],
+  "budget": {
+    "shippingBytes": 1777268,
+    "perConsumerBytes": {
+      "croquetHead": 797614,
+      "cheshireBough": 1333640,
+      "pigAndPepperHearth": 1241242
+    }
+  },
+  "composition": {
+    "headSourceCanvas": [1374, 1145],
+    "eyeMaps": {
+      "left": {
+        "scale": 0.55,
+        "x": 236.5,
+        "y": 240.25
+      },
+      "right": {
+        "scale": 0.52,
+        "x": 481.2,
+        "y": 261.6
+      }
+    },
+    "pupils": {
+      "sourceCenters": [[495, 584], [905, 584]],
+      "sourceRadii": [14, 38],
+      "treatment": "Live SVG pupils inside fixed SVG apertures, with original scene input variables and smaller ready-only travel."
+    },
+    "headPlacement": "Original catFace centers/radii retained: head (120,110,76), bough (300,96,52), hearth (170,76,46). Root scale 0.14, offset (23.4,18.4), adjusted uniformly for each original radius.",
+    "boughBody": {
+      "scale": 0.1548,
+      "x": 96.1,
+      "y": 74.3
+    },
+    "boughTail": {
+      "scale": 0.1404,
+      "x": 70.72,
+      "y": 52.52,
+      "pivot": [126.7, 155.3],
+      "reviewedAngles": [-8, 10]
+    },
+    "hearthBody": {
+      "scale": 0.15,
+      "x": 4.8,
+      "y": 22
+    },
+    "fallback": "Every original vector shape remains within unique original live groups. Generated layers switch atomically after all required image decodes; any failure retains the complete vector."
+  }
+}

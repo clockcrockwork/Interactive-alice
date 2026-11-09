@@ -1,0 +1,55 @@
+{
+  "id": "croquet",
+  "titleChapter": 8,
+  "joinsPrevious": true,
+  "shots": [
+    {
+      "id": "the-rose-tree",
+      "beats": [
+        { "id": "white-roses", "cue": "roses", "segments": ["ch08.s0010", "ch08.s0020", "ch08.s0030"] },
+        { "id": "look-out-five", "cue": "splash", "segments": ["ch08.s0040", "ch08.s0050"] },
+        { "id": "why-painting", "cue": "why", "segments": ["ch08.s0060", "ch08.s0070", "ch08.s0080", "ch08.s0090"] },
+        { "id": "the-queen-comes", "cue": "flat", "segments": ["ch08.s0100", "ch08.s0110", "ch08.s0120"] }
+      ]
+    },
+    {
+      "id": "the-procession",
+      "beats": [
+        { "id": "footsteps", "cue": "footsteps", "segments": ["ch08.s0130", "ch08.s0140", "ch08.s0150"] },
+        { "id": "courtiers-and-children", "cue": "courtiers", "segments": ["ch08.s0160", "ch08.s0170", "ch08.s0180"] },
+        { "id": "the-crown", "cue": "crown", "segments": ["ch08.s0190", "ch08.s0200"] },
+        { "id": "who-is-this", "cue": "who", "segments": ["ch08.s0210", "ch08.s0220", "ch08.s0230", "ch08.s0240"] },
+        { "id": "who-are-these", "cue": "these", "segments": ["ch08.s0250", "ch08.s0260", "ch08.s0270"] },
+        { "id": "off-with-her-head", "cue": "head", "segments": ["ch08.s0280", "ch08.s0290", "ch08.s0300", "ch08.s0310"] },
+        { "id": "only-a-child", "cue": "consider", "segments": ["ch08.s0320"] },
+        { "id": "the-gardeners", "cue": "gardeners", "segments": ["ch08.s0330", "ch08.s0340", "ch08.s0350", "ch08.s0360"] },
+        { "id": "can-you-play", "cue": "play", "segments": ["ch08.s0370", "ch08.s0380", "ch08.s0390"] }
+      ]
+    },
+    {
+      "id": "the-game",
+      "beats": [
+        { "id": "places", "cue": "places", "segments": ["ch08.s0400", "ch08.s0410"] },
+        { "id": "the-ground", "cue": "ground", "segments": ["ch08.s0420", "ch08.s0430", "ch08.s0440"] },
+        { "id": "the-arches", "cue": "arches", "segments": ["ch08.s0450", "ch08.s0460"] },
+        { "id": "the-flamingo", "cue": "flamingo", "segments": ["ch08.s0470", "ch08.s0480", "ch08.s0490"] },
+        { "id": "the-hedgehog", "cue": "hedgehog", "segments": ["ch08.s0500", "ch08.s0510", "ch08.s0520"] },
+        { "id": "quarrelling", "cue": "quarrel", "segments": ["ch08.s0530", "ch08.s0540"] },
+        { "id": "once-a-minute", "cue": "fury", "segments": ["ch08.s0550", "ch08.s0560", "ch08.s0570"] }
+      ]
+    },
+    {
+      "id": "a-head-in-the-air",
+      "beats": [
+        { "id": "a-grin", "cue": "grin", "segments": ["ch08.s0580", "ch08.s0590", "ch08.s0600"] },
+        { "id": "eyes-then-ears", "cue": "eyes", "segments": ["ch08.s0610", "ch08.s0620", "ch08.s0630"] },
+        { "id": "not-fairly", "cue": "complain", "segments": ["ch08.s0640", "ch08.s0650"] },
+        { "id": "the-queen-listening", "cue": "listening", "segments": ["ch08.s0660", "ch08.s0670"] },
+        { "id": "a-cat-may-look", "cue": "king", "segments": ["ch08.s0680", "ch08.s0690", "ch08.s0700", "ch08.s0710", "ch08.s0720"] },
+        { "id": "removed", "cue": "removed", "segments": ["ch08.s0730", "ch08.s0740"] },
+        { "id": "the-argument", "cue": "argument", "segments": ["ch08.s0750", "ch08.s0760", "ch08.s0770"] },
+        { "id": "fading-away", "cue": "fade", "segments": ["ch08.s0780", "ch08.s0790", "ch08.s0800", "ch08.s0810"] }
+      ]
+    }
+  ]
+}

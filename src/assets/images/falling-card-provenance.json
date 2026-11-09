@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-01",
+  "generator": "OpenAI image_gen, model not exposed",
+  "intent": "Coherent whole falling pose with original vector layout and provisional Alice identity reference; blue is a reference colour edit of yellow",
+  "promptHash": null,
+  "editing": "Yellow hair color only was corrected to chestnut brown; canvas dimensions and source alpha matte retained. WebP q92 method6.",
+  "scope": "Drink Me and Trial whole-figure cards only. Rabbit Hole independent rig and Duchess contact consumer remain original. Refused separated leg edit not retried or reconstructed.",
+  "browser": "targeted Drink Me and Trial browser behavior pending",
+  "assets": [
+    {
+      "variant": "yellow",
+      "asset": "figures/alice--falling-card.yellow.generated.webp",
+      "source": {
+        "filename": "exec-8d3ad129-33d5-454f-af62-76fdbf41f1b2.png",
+        "sha256": "5d367f3bd6805a2953ce06e8e7fb48b2a1372dae991a9a845bb9cdf1b1f5281e",
+        "bytes": 2225360
+      },
+      "sourceSha256": "5d367f3bd6805a2953ce06e8e7fb48b2a1372dae991a9a845bb9cdf1b1f5281e",
+      "sha256": "80e00f4eab24d3ce142009333b670c8fcf32e1a7c1ab704c8d7ef4d79b23d266",
+      "bytes": 488110,
+      "dimensions": [971, 1619],
+      "alphaBoundsAbove32": [26, 22, 953, 1597],
+      "footY": 1596,
+      "width": 971,
+      "height": 1619,
+      "rasterEdits": "Hair recolored from golden blonde to chestnut brown; pose, framing, dress, and canvas dimensions preserved. Transparency retained; edge alpha may vary. WebP q92 method6."
+    },
+    {
+      "variant": "blue",
+      "asset": "figures/alice--falling-card.blue.generated.webp",
+      "source": "exec-22d9ae5c-4ec4-439f-8308-7ec1bd045953.png",
+      "sourceSha256": "bfb23a30608951d251c105fef652f9c69af33cb5380f2a67456eae42ced4b1bb",
+      "sha256": "07c3a90d2257847df2f792799c365f911e10faac07d4c99d94c04602049446b2",
+      "bytes": 450596,
+      "dimensions": [971, 1619],
+      "alphaBoundsAbove32": [27, 23, 955, 1598],
+      "footY": 1597
+    }
+  ]
+}

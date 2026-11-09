@@ -1,0 +1,306 @@
+{
+  "batch": "alice-sitting-layers-2026-10-21",
+  "date": "2026-10-21",
+  "status": "provisional candidates; static contact proof and independent code review only; browser and owner art review pending",
+  "generator": "image_gen",
+  "model": "not exposed by generation tool",
+  "styleId": "IA-ENGRAVED-CUTOUT-V1",
+  "fullPrompt": "not available to integration worker; intent recorded rather than reconstructed as an exact prompt",
+  "fullPromptHash": null,
+  "promptIntent": "Separate seated Alice into head with hair, dressed body with resting left arm and feet, reaching right arm, and closed eyelids. Blue colourway supplied as separate image_gen edits of the yellow source layers.",
+  "reference": "Provisional generated seated master exec-7881ccb6-20fa-45d5-9114-173ee426479d.png; original ALICE_SITTING_SVG remains authority for runtime hooks and fallback. Not owner-approved artwork.",
+  "motion": {
+    "headPivot": [80.8, 64.7],
+    "armPivot": [104.475, 60.5],
+    "chainContainer": [124.8, 87],
+    "firstFlowerCenter": [140.8, 103],
+    "handContact": {
+      "source": [1225, 1053],
+      "logical": [140.775, 103.015]
+    },
+    "lidReveal": "Opaque closed-lid pixels revealed top-down in their own coordinate system; no opacity blend with the baked open eyes."
+  },
+  "budget": {
+    "shippingBytes": 1658396,
+    "files": 7,
+    "perVariantFiles": 4,
+    "sharedFiles": 1
+  },
+  "assets": [
+    {
+      "id": "alice/sitting",
+      "part": "body",
+      "variant": "yellow",
+      "asset": "generated-layers/alice--sitting~body.yellow.generated.webp",
+      "bytes": 262926,
+      "sha256": "e77ed04ce09e1e2de4fedffde13c3cd60945e9781c65530337ea686bf5e0bec9",
+      "width": 1295,
+      "height": 1215,
+      "logicalBox": [160, 150],
+      "consumers": ["riverbank"],
+      "placement": {
+        "x": 4,
+        "y": 10.496,
+        "scale": 0.116
+      },
+      "source": {
+        "filename": "exec-c9450153-d54a-4502-9473-44235a48c98e.png",
+        "bytes": 1424783,
+        "sha256": "22b9918dd150df409566bbcf8653c7c6876f709b5592e602afa6208025301520"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [0, 39, 1295, 1200],
+        "greaterThan16": [9, 405, 1293, 1193],
+        "greaterThan128": [10, 406, 1292, 1192],
+        "greaterThan224": [10, 406, 1291, 1191]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "alphaQuality": 100,
+        "effort": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      }
+    },
+    {
+      "id": "alice/sitting",
+      "part": "head",
+      "variant": "yellow",
+      "asset": "generated-layers/alice--sitting~head.yellow.generated.webp",
+      "bytes": 559630,
+      "sha256": "3efddc3413d3f2701c259b08a499796275a7b9391fccb16490088fc5cb7f306d",
+      "width": 1295,
+      "height": 1215,
+      "logicalBox": [160, 150],
+      "consumers": ["riverbank"],
+      "placement": {
+        "x": 36,
+        "y": 7.7,
+        "scale": 0.064
+      },
+      "source": {
+        "filename": "exec-441c2ae0-d8c4-4dd0-8421-1325f3603516.png",
+        "bytes": 2674639,
+        "sha256": "eff80a5ea0b4fa771d06acc33d824deca9a90b88858157ec20c1b66ebf193bfc"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [0, 5, 1295, 1215],
+        "greaterThan16": [5, 10, 1293, 1202],
+        "greaterThan128": [6, 11, 1290, 1201],
+        "greaterThan224": [14, 12, 1286, 1200]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "alphaQuality": 100,
+        "effort": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      }
+    },
+    {
+      "id": "alice/sitting",
+      "part": "arm-right",
+      "variant": "yellow",
+      "asset": "generated-layers/alice--sitting~arm-right.yellow.generated.webp",
+      "bytes": 94166,
+      "sha256": "20e0bd382b5b457aecaecc87e2152be90bb0f70cd49e2438094848c6b187a072",
+      "width": 1295,
+      "height": 1215,
+      "logicalBox": [160, 150],
+      "consumers": ["riverbank"],
+      "placement": {
+        "x": 73.4,
+        "y": 45.1,
+        "scale": 0.055
+      },
+      "source": {
+        "filename": "exec-57562ac5-1e12-4c53-bd15-edac53276b9f.png",
+        "bytes": 472300,
+        "sha256": "5984482a2ab42dbdb5a97b98c9d0dac8202690ff16df516f4aa15604dff5528b"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [25, 33, 1279, 1215],
+        "greaterThan16": [495, 263, 1259, 1119],
+        "greaterThan128": [496, 264, 1258, 1118],
+        "greaterThan224": [497, 265, 1257, 1118]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "alphaQuality": 100,
+        "effort": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      }
+    },
+    {
+      "id": "alice/sitting",
+      "part": "lids",
+      "variant": "any",
+      "asset": "generated-layers/alice--sitting~lids.any.generated.webp",
+      "bytes": 16252,
+      "sha256": "3be76acb4f3f54d9eeb8e67b1d6d1d69b26269cc6db68ae025a81ac8a65f3a91",
+      "width": 1295,
+      "height": 1215,
+      "logicalBox": [160, 150],
+      "consumers": ["riverbank"],
+      "placement": {
+        "x": 0,
+        "y": 0,
+        "scale": 1,
+        "parent": [36, 7.7, 0.064],
+        "matrix": [0.979, -0.254, 0.254, 0.979, -119.35, 351.9]
+      },
+      "source": {
+        "filename": "exec-3b735e36-7ae8-4011-af89-ff3b73891fcb.png",
+        "bytes": 92060,
+        "sha256": "f5d2de0a59ec8db4624f322e72b4de9a32c3baac06ef9d122dab56aefcc71fba"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [276, 152, 1267, 1093],
+        "greaterThan16": [550, 331, 841, 395],
+        "greaterThan128": [552, 334, 839, 392],
+        "greaterThan224": [554, 335, 837, 391]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "alphaQuality": 100,
+        "effort": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      }
+    },
+    {
+      "id": "alice/sitting",
+      "part": "body",
+      "variant": "blue",
+      "asset": "generated-layers/alice--sitting~body.blue.generated.webp",
+      "bytes": 215312,
+      "sha256": "3082b26cfed505ca6d9d43e937517d352f5a328276e19237e9a2df24dfccfb7a",
+      "width": 1295,
+      "height": 1215,
+      "logicalBox": [160, 150],
+      "consumers": ["riverbank"],
+      "placement": {
+        "x": 4,
+        "y": 10.496,
+        "scale": 0.116
+      },
+      "source": {
+        "filename": "exec-5e726708-c56c-46f7-a0f7-2fea4d5c3135.png",
+        "bytes": 1320247,
+        "sha256": "c7da36d92faa6d61f27f2bf99eaccf9c994421bccc24f78eeaf732f6ad6c41d7"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [0, 147, 1295, 1197],
+        "greaterThan16": [9, 404, 1286, 1192],
+        "greaterThan128": [10, 405, 1285, 1191],
+        "greaterThan224": [10, 405, 1284, 1191]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "alphaQuality": 100,
+        "effort": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      }
+    },
+    {
+      "id": "alice/sitting",
+      "part": "head",
+      "variant": "blue",
+      "asset": "generated-layers/alice--sitting~head.blue.generated.webp",
+      "bytes": 425300,
+      "sha256": "e76fb27ce34e54fd83119a38961a843ea603c6537c25376445a470919f12c877",
+      "width": 1295,
+      "height": 1215,
+      "logicalBox": [160, 150],
+      "consumers": ["riverbank"],
+      "placement": {
+        "x": 36,
+        "y": 7.7,
+        "scale": 0.064
+      },
+      "source": {
+        "filename": "exec-5f356186-802c-4af5-95e3-c8019b1c35bf.png",
+        "bytes": 2480458,
+        "sha256": "ade48928312b98be27f13a39052e47d2928e4fb7aa0992112975f9124ef3f5d3"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [0, 5, 1295, 1215],
+        "greaterThan16": [4, 10, 1295, 1203],
+        "greaterThan128": [5, 10, 1294, 1202],
+        "greaterThan224": [6, 11, 1293, 1201]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "alphaQuality": 100,
+        "effort": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      }
+    },
+    {
+      "id": "alice/sitting",
+      "part": "arm-right",
+      "variant": "blue",
+      "asset": "generated-layers/alice--sitting~arm-right.blue.generated.webp",
+      "bytes": 84810,
+      "sha256": "63f25acb6742c4b423b643e81f5540104da25aeeeef3b42a1830e6b3fb7f3f7c",
+      "width": 1295,
+      "height": 1215,
+      "logicalBox": [160, 150],
+      "consumers": ["riverbank"],
+      "placement": {
+        "x": 73.4,
+        "y": 45.1,
+        "scale": 0.055
+      },
+      "source": {
+        "filename": "exec-f9674b55-9d7f-4b53-a9b6-df1a94dd79de.png",
+        "bytes": 468702,
+        "sha256": "9414d5d8fef3e1a23ad226405c82d3fd63a4d67cce6483d9382a45ec54392e26"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "greaterThan0": [0, 0, 1262, 1175],
+        "greaterThan16": [493, 262, 1258, 1120],
+        "greaterThan128": [494, 263, 1257, 1119],
+        "greaterThan224": [494, 264, 1256, 1118]
+      },
+      "alphaPreservedExactly": true,
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "alphaQuality": 100,
+        "effort": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour or alpha cleanup"
+      }
+    }
+  ]
+}

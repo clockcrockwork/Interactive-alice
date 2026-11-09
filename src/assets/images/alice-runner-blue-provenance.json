@@ -1,0 +1,62 @@
+{
+  "batch": "alice-runner-blue-2026-10-26",
+  "generator": "built-in image_gen; exact model not exposed",
+  "sourceRef": "a0f846234ae26eb36446ab18eeb1199dc2cabd55",
+  "originals": "Master PNGs retained outside repository, not lost PC output recovery.",
+  "anchors": {
+    "measurement": "Manual source-pixel palm/apron placement; palm uncertainty approximately 4 px. Floor: exclusive alpha > 127 bound.",
+    "palm": [909, 607],
+    "pocket": [730, 730],
+    "footY": {
+      "rest": 1337,
+      "carry": 1339
+    },
+    "scale": "112 / 1339",
+    "restOffsetY": "2 * scale",
+    "carryOffsetY": 0,
+    "thimbleRimOffset": 9.36
+  },
+  "budget": {
+    "shippingBytes": 616608,
+    "files": 2,
+    "perVariantFiles": 2,
+    "productionBudgetPass": false
+  },
+  "verificationLimits": [
+    "No browser replay or exact-head Preview verification yet.",
+    "Source alpha 1\u20132 coloured edge speckles preserved, not cleaned.",
+    "Art acceptance remains provisional."
+  ],
+  "assets": [
+    {
+      "asset": "figures/runner--alice~rest.blue.generated.webp",
+      "bytes": 320804,
+      "sha256": "ca35d1ef64166a6e2487f72046f51a1983d3c18c31055b67a9fce71b4f0151f1",
+      "width": 1164,
+      "height": 1351,
+      "alphaPreservedExactly": true,
+      "source": {
+        "filename": "runner-rest-blue-candidate-v1.png",
+        "bytes": 1649894,
+        "sha256": "2a3b5f655ddaa61f58f7d153882351a72bc889472ab2e50914637d8af279bb76"
+      },
+      "encoding": "WebP quality 92, alpha quality 100, effort 6; unchanged canvas; no crop, resize, recolour, or cleanup",
+      "prompt": "Edit the provided reference image only. This is a transparent sprite for a Victorian engraved storybook. Preserve the exact character identity, face, entire body silhouette, front-facing resting pose with both hands down, all fingers, clothes shapes, hair curls, ribbon, line engraving, framing and shoe placement. Change the yellow dress only to muted blue: base #5A76B8, highlights #7F96CC, shadows #2F4272 and deep #435C98. Change hair colour to golden blonde #D9B45A, highlights #ECD08A, shadows #B8933F while retaining every curl. Preserve skin, ivory pinafore, stockings, brown strap shoes, and all other colours. Keep full head/ribbon and both complete shoe soles in the image, with clear transparent margin, no cut-off feet. Truly transparent background, clean antialiased edges, no coloured speckles or halo, no background, shadows, props, lettering or watermark. Do not change pose or invent new anatomy. Output a single full-body cutout."
+    },
+    {
+      "asset": "figures/runner--alice~carry.blue.generated.webp",
+      "bytes": 295804,
+      "sha256": "8af1a8b45f7c2bc0113d83871db9986bf94dce35d1f35c883d6d54e43c6b226a",
+      "width": 1164,
+      "height": 1351,
+      "alphaPreservedExactly": true,
+      "source": {
+        "filename": "runner-carry-blue-candidate-v1.png",
+        "bytes": 1590648,
+        "sha256": "3275a6c6bca96efc82547cdc63838efae834ac70dc56d3f14cf536aa664d691f"
+      },
+      "encoding": "WebP quality 92, alpha quality 100, effort 6; unchanged canvas; no crop, resize, recolour, or cleanup",
+      "prompt": "Edit the provided reference image only. Transparent Victorian engraved storybook game sprite, full-body character. Preserve exact identity, face, proportions, whole silhouette, clothes shapes, hair curls, ribbon, feet and canvas framing. Preserve the specific carry pose: the arm on IMAGE RIGHT is bent outward, its open natural hand palm-up at the exact existing location, the other arm hangs down. Keep all fingers anatomically coherent, empty hand, no held object. Change yellow dress only to muted blue #5A76B8, highlights #7F96CC, shadows #2F4272 and deep #435C98. Hair becomes golden blonde #D9B45A, highlights #ECD08A, shadows #B8933F. Preserve skin, ivory pinafore, stockings, brown strap shoes, all other colours and engraved linework. Include entire ribbon and both complete shoe soles with a clear transparent margin, no cropped feet. Real transparent background, clean antialiased silhouette, no coloured speckles, no halo, no background, shadow, text or watermark. Do not alter arm/hand support location or pose. Output one full-body transparent cutout."
+    }
+  ]
+}

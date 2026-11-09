@@ -1,0 +1,339 @@
+{
+  "$schema": "../../schema/chapter-structure.schema.json",
+  "chapter": 4,
+  "sourceFile": "text/raw/ch04-the-rabbit-sends-in-a-little-bill.txt",
+  "sections": [
+    {
+      "id": "the-little-bottle"
+    },
+    {
+      "id": "growing"
+    },
+    {
+      "id": "the-window"
+    },
+    {
+      "id": "bill-down-the-chimney"
+    },
+    {
+      "id": "there-goes-bill"
+    },
+    {
+      "id": "the-puppy"
+    }
+  ],
+  "segments": [
+    {
+      "id": "ch04.s0200",
+      "section": "the-little-bottle",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0210",
+      "section": "the-little-bottle",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0220",
+      "section": "the-little-bottle",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0230",
+      "section": "the-little-bottle",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch04.s0240",
+      "section": "the-little-bottle",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch04.s0250",
+      "section": "growing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0260",
+      "section": "growing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0270",
+      "section": "growing",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch04.s0280",
+      "section": "growing",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch04.s0290",
+      "section": "growing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0300",
+      "section": "growing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0310",
+      "section": "growing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0320",
+      "section": "growing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0330",
+      "section": "growing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0340",
+      "section": "growing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0350",
+      "section": "growing",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch04.s0360",
+      "section": "growing",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch04.s0370",
+      "section": "growing",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0380",
+      "section": "the-window",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0390",
+      "section": "the-window",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0400",
+      "section": "the-window",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch04.s0410",
+      "section": "the-window",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch04.s0420",
+      "section": "the-window",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0430",
+      "section": "the-window",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0440",
+      "section": "the-window",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0450",
+      "section": "the-window",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0460",
+      "section": "the-window",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch04.s0461",
+      "section": "the-window",
+      "kind": "dialogue",
+      "speaker": "pat"
+    },
+    {
+      "id": "ch04.s0462",
+      "section": "the-window",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch04.s0463",
+      "section": "the-window",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch04.s0464",
+      "section": "the-window",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch04.s0465",
+      "section": "the-window",
+      "kind": "dialogue",
+      "speaker": "pat"
+    },
+    {
+      "id": "ch04.s0466",
+      "section": "the-window",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0467",
+      "section": "the-window",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch04.s0468",
+      "section": "the-window",
+      "kind": "dialogue",
+      "speaker": "pat"
+    },
+    {
+      "id": "ch04.s0469",
+      "section": "the-window",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch04.s0470",
+      "section": "bill-down-the-chimney",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0480",
+      "section": "bill-down-the-chimney",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch04.s0490",
+      "section": "bill-down-the-chimney",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch04.s0500",
+      "section": "bill-down-the-chimney",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch04.s0510",
+      "section": "bill-down-the-chimney",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch04.s0520",
+      "section": "bill-down-the-chimney",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0530",
+      "section": "bill-down-the-chimney",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0540",
+      "section": "bill-down-the-chimney",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch04.s0550",
+      "section": "bill-down-the-chimney",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0560",
+      "section": "there-goes-bill",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0570",
+      "section": "there-goes-bill",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch04.s0580",
+      "section": "there-goes-bill",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0590",
+      "section": "there-goes-bill",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0600",
+      "section": "there-goes-bill",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0610",
+      "section": "there-goes-bill",
+      "kind": "dialogue",
+      "speaker": "bill"
+    },
+    {
+      "id": "ch04.s0620",
+      "section": "there-goes-bill",
+      "kind": "dialogue",
+      "speaker": "bill"
+    },
+    {
+      "id": "ch04.s0630",
+      "section": "there-goes-bill",
+      "kind": "dialogue",
+      "speaker": "bill"
+    },
+    {
+      "id": "ch04.s0640",
+      "section": "there-goes-bill",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0650",
+      "section": "the-puppy",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0660",
+      "section": "the-puppy",
+      "kind": "narration"
+    },
+    {
+      "id": "ch04.s0670",
+      "section": "the-puppy",
+      "kind": "thought",
+      "speaker": "alice"
+    }
+  ]
+}

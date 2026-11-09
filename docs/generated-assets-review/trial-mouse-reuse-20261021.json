@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-21",
+  "id": "mouse/swimming",
+  "use": "Trial dream symbol only; reuse of an existing whole mouse, not a newly generated swimming pose",
+  "acceptedScenes": ["trial"],
+  "style": "engraved",
+  "asset": "src/assets/images/figures/runner--mouse.any.generated.webp",
+  "bytes": 299808,
+  "sha256": "e67edc18550e70339947173c0f3e25f70ab69935a58cfe27efdee1086e0682eb",
+  "dimensions": [1164, 1351],
+  "alphaBoundsAbove32": [36, 434, 1154, 1118],
+  "alphaBoundsAbove0": [33, 23, 1164, 1351],
+  "sourceRecord": "src/assets/images/provenance.json: figures/runner--mouse.any.generated.webp",
+  "sourceSha256": "24a268f41b4b11ba50d9fb04f4ce6df3cda024d44911b5f30ea63c4a09faeef7",
+  "newGeneration": false,
+  "assetBytesChanged": false,
+  "edits": "None. Existing WebP referenced directly; no new encoding, crop, resize, repaint, recolor or alpha cleanup.",
+  "logicalBox": [120, 60],
+  "mapping": {
+    "uniformScale": "56 / 684",
+    "imageX": "60 - 595 * (56 / 684)",
+    "imageY": "2 - 434 * (56 / 684)",
+    "paintBox": [0, 0, 120, 60],
+    "visibleAlphaAbove32Bounds": [14.23391812865497, 2, 105.76608187134503, 58],
+    "note": "The fixed SVG paint box clips only low-alpha padded canvas outside it, not the measured alpha > 32 silhouette. Original file pixels remain unchanged."
+  },
+  "fallback": "Original mouse/swimming registry markup is empty; failure preserves that empty fallback rather than inventing content.",
+  "browserVerified": false,
+  "verification": "Source pixels and alpha bounds inspected; static SVG composition and focused helper/loader contracts. Browser playback and responsive framing remain checkpoints."
+}

@@ -51,4 +51,18 @@ describe('generated tea-party knife, butter and tray', () => {
       'x="-0.063297" y="-2.338687" width="160.052905" height="53.350968"',
     );
   });
+
+  it('does not request the shared table-spread assets outside engraved style', () => {
+    for (const kind of ['tarts', 'bread', 'cakes'] as const) {
+      const generated = tea.tableSpreadMarkup(kind, 'engraved');
+      expect(generated.match(/<image /g)).toHaveLength(1);
+      expect(generated).toContain('data-rig-fallback');
+      for (const style of ['flat', 'paper'] as const) {
+        const fallback = tea.tableSpreadMarkup(kind, style);
+        expect(fallback).not.toContain('<image');
+        expect(fallback).not.toContain('data-rig-generated');
+        expect(fallback).toContain('<path');
+      }
+    }
+  });
 });

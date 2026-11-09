@@ -35,9 +35,12 @@ describe('generated croquet flamingo', () => {
     expect(html.match(/class="cq__flamingo-body"/g)).toHaveLength(1);
     expect(html.match(/class="cq__flamingo-head"/g)).toHaveLength(1);
     expect(html.match(/class="cq__flamingo-eye"/g)).toHaveLength(2);
-    expect(html).toMatch(/<g class="cq__flamingo-body"[^>]*>[\s\S]*data-flamingo-head-mounted=""/);
-    expect(html).toMatch(/data-flamingo-head-mounted=""><use href="#art-flamingo-head-\d+"\/>/);
-    expect(html).toMatch(/data-flamingo-head-original=""><use href="#art-flamingo-head-\d+"\/>/);
+    expect(html).toMatch(
+      /<g class="cq__flamingo-body"[^>]*><use href="#art-flamingo-body-\d+"\/><g data-rig-generated="" visibility="hidden" display="none"><g data-flamingo-head-mounted=""><use class="cq__flamingo-head" href="#art-flamingo-head-\d+"/,
+    );
+    expect(html).toMatch(
+      /data-flamingo-head-original=""><use class="cq__flamingo-head-fallback" href="#art-flamingo-head-\d+"\/>/,
+    );
   });
 
   it('does not reveal any generated paint until both same-canvas parts decode', () => {
@@ -80,7 +83,7 @@ describe('generated croquet flamingo', () => {
   it('retains live scene mood, pointer, swing and pause consumers', () => {
     const runtime = readFileSync(new URL('../croquet/main.ts', import.meta.url), 'utf8');
     const css = readFileSync(new URL('../croquet/croquet.css', import.meta.url), 'utf8');
-    expect(runtime).toContain("querySelector<SVGGElement>('.cq__flamingo-head')");
+    expect(runtime).toContain("querySelector<SVGUseElement>('.cq__flamingo-head')");
     expect(runtime).toContain("head.style.setProperty('--look-x'");
     expect(runtime).toContain("flamingo.style.setProperty('--mood'");
     expect(runtime).toContain("flamingo.style.setProperty('--nod'");

@@ -119,30 +119,12 @@ for (const style of ['flat', 'paper']) {
 }
 
 for (const locale of ['', 'ja/']) {
-  test(`index herald previews stay distinct while changing style: ${locale || 'en-simple'}`, async ({
+  test(`the public Riverbank entry has no art-style picker: ${locale || 'en-simple'}`, async ({
     page,
   }) => {
-    await page.goto(`/demos/${locale}`);
-    const engraved = page.locator('.demos__art-figure[data-art-style="engraved"]');
-    const image = engraved.locator('image');
-    const source = (await image.getAttribute('href')) ?? '';
-    expect(source).toContain('white-rabbit--herald.any.generated');
-    expect(
-      await page.evaluate(async (url) => {
-        const image = new Image();
-        image.src = url;
-        await image.decode();
-        return image.naturalWidth;
-      }, source),
-    ).toBe(1001);
-    for (const style of ['flat', 'paper', 'engraved']) {
-      await page.locator(`.demos__art-choice[data-art-style="${style}"]`).click();
-      await expect(image).toBeVisible();
-      for (const fallback of ['flat', 'paper']) {
-        const preview = page.locator(`.demos__art-figure[data-art-style="${fallback}"]`);
-        await expect(preview.locator('[data-generated]')).toHaveCount(0);
-        await expect(preview.locator('svg')).toBeVisible();
-      }
-    }
+    await page.goto(`/demos/${locale}riverbank/`);
+    await expect(page.locator('.demo')).toHaveAttribute('data-demo', 'riverbank');
+    await expect(page.locator('.demos__art-choice, .demos__art-figure')).toHaveCount(0);
+    await expect(page.locator('.demo__languages')).toBeVisible();
   });
 }

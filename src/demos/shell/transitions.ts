@@ -70,7 +70,12 @@ export function installTransitions(): void {
   window.addEventListener('pageswap', (event) => {
     const swap = event as PageTransitionEvent;
     const destination = swap.activation?.entry?.url ?? '';
-    swap.viewTransition?.types.add(transitionKindFor(destination));
+    try {
+      swap.viewTransition?.types.add(transitionKindFor(destination));
+    } catch {
+      // Some navigations have a ViewTransition object whose opt-in has already
+      // been disabled. The screen still navigates normally without the effect.
+    }
     tolerateSkip(swap.viewTransition);
   });
 }

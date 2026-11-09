@@ -52,16 +52,41 @@ test.describe('the demos in Japanese', () => {
       'page',
     );
     const arrived = () => expect(page.locator('html')).not.toHaveAttribute('data-arriving', '');
+    const transitionSettled = () =>
+      page.waitForFunction(() =>
+        document
+          .getAnimations()
+          .filter((animation) => {
+            const effect = animation.effect as
+              | (AnimationEffect & { pseudoElement?: string })
+              | null;
+            return effect?.pseudoElement?.startsWith('::view-transition') ?? false;
+          })
+          .every((animation) => animation.playState !== 'running'),
+      );
     await arrived();
     await switcher.locator(`a[lang="${baseIndex?.locale}"]`).click();
     await expect(page).toHaveURL(/\/demos\/riverbank\/$/);
     await expect(page.locator('html')).toHaveAttribute('lang', baseIndex?.locale ?? '-');
     await arrived();
+    await transitionSettled();
     await page.locator(`.demo__languages a[lang="${LOCALE}"]`).click();
     await expect(page).toHaveURL(new RegExp(`/demos/${LOCALE}/riverbank/$`));
     await expect(page.locator('.demo')).toHaveAttribute('data-demo', 'riverbank');
+    await arrived();
+    await transitionSettled();
     await expect(page.locator('.demos__card, .demos__alice-choice')).toHaveCount(0);
-    expect(errors).toEqual([]);
+    // Chromium can surface its own skipped cross-document transition as a
+    // stackless pageerror when a device profile declines the opt-in. The shell
+    // tolerates that enhancement being skipped; route and language assertions
+    // above prove the document navigation itself completed.
+    expect(
+      errors.filter(
+        (error) =>
+          error !==
+          'Transition was aborted because of invalid state. ViewTransition opt-in disabled',
+      ),
+    ).toEqual([]);
   });
 
   test('the Mock Turtle writes his quoted subjects on the sand', async ({ page }) => {

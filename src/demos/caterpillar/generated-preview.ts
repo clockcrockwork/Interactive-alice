@@ -7,6 +7,9 @@ export const previewEnabled = (search: string): boolean =>
 export const mushroomEnabled = (search: string, style: ArtStyle): boolean =>
   style === 'engraved' || previewEnabled(search);
 
+export const previewControlsEnabled = (hostname: string, search: string): boolean =>
+  isLocalPreviewHost(hostname) && previewEnabled(search);
+
 /** Loading is not sufficient: keep the complete original until decoding succeeds. */
 export async function decodedMushroom(
   image: Pick<HTMLImageElement, 'decode' | 'naturalWidth' | 'isConnected'>,
@@ -45,11 +48,8 @@ export const previewPlacement = () => {
 };
 
 export function installGeneratedPreview(root: HTMLElement, ui: Record<string, string>): void {
-  if (
-    !isLocalPreviewHost(window.location.hostname) ||
-    !mushroomEnabled(window.location.search, artStyle())
-  )
-    return;
+  const preview = previewControlsEnabled(window.location.hostname, window.location.search);
+  if (artStyle() !== 'engraved' && !preview) return;
   const figure = root.querySelector<HTMLElement>('.ct__mushroom > .art');
   if (!figure) return;
   const source = previewSource();
@@ -60,7 +60,7 @@ export function installGeneratedPreview(root: HTMLElement, ui: Record<string, st
   image.alt = '';
   image.hidden = true;
   image.decoding = 'async';
-  if (previewEnabled(window.location.search)) image.fetchPriority = 'low';
+  if (preview) image.fetchPriority = 'low';
   image.className = 'ct__generated-mushroom';
   image.dataset.generatedMushroom = '';
   image.style.setProperty('--preview-x', `${(placement.x / placement.box[0]) * 100}%`);
@@ -70,7 +70,7 @@ export function installGeneratedPreview(root: HTMLElement, ui: Record<string, st
 
   let toggle: HTMLInputElement | undefined;
   let note: HTMLParagraphElement | undefined;
-  if (previewEnabled(window.location.search)) {
+  if (preview) {
     const panel = document.createElement('details');
     panel.className = 'ct__preview-controls';
     const summary = document.createElement('summary');

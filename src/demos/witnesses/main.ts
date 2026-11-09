@@ -656,6 +656,11 @@ function mount(shell: DemoShell): void {
   const applyLizard = (): void => {
     const t = master.time();
     const shown = t >= iPardon + 0.45 && t < iRule + 0.3;
+    // The timeline is also sought backwards when readers reconstruct a cue.
+    // Keep the story state derived from time instead of relying on a call
+    // callback to undo its latch during reverse seeks.
+    righting.story = t >= iLizard + 0.55;
+    if (t < iPardon + 0.45) righting.play = false;
     const right = righting.story || righting.play;
     lizard.toggleAttribute('data-shown', shown);
     lizard.toggleAttribute('data-upside-down', shown && !right);
@@ -677,9 +682,7 @@ function mount(shell: DemoShell): void {
     );
   };
   lizardAt(iPardon + 0.45, () => {
-    if (master.time() < iPardon + 0.45) {
-      righting.play = false;
-    }
+    righting.play = false;
   });
   lizardAt(iLizard + 0.55, () => {
     righting.story = master.time() >= iLizard + 0.55;

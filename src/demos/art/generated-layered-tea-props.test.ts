@@ -38,7 +38,7 @@ describe('generated layered tea props', () => {
       ['cakes', 'tea-cakes.any.generated.webp'],
       ['tarts', 'tarts-table.any.generated.webp'],
     ] as const) {
-      const spread = tea.tableSpreadMarkup(kind);
+      const spread = tea.tableSpreadMarkup(kind, 'engraved');
       expect(spread).toContain(`tea-party/${kind}`);
       expect(spread).toContain('data-rig-fallback=""');
       expect(spread).toContain(asset);

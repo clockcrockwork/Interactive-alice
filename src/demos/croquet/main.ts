@@ -572,7 +572,7 @@ function mount(shell: DemoShell): void {
   const hold = hands.querySelector<HTMLElement>('.cq__hold') ?? hands;
   between(hands, iFlamingo, iGrin + 0.6);
   const flamingo = hands.querySelector<HTMLElement>('.cq__flamingo') ?? hands;
-  const head = hands.querySelector<SVGGElement>('.cq__flamingo-head');
+  const head = hands.querySelector<SVGUseElement>('.cq__flamingo-head');
   const strokeZone = hands.querySelector<HTMLElement>('.cq__stroke');
   const flamingoState = { looking: false, puzzled: false, away: false, swinging: false };
   master.fromTo(

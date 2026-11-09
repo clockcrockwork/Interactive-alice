@@ -117,8 +117,43 @@ const TILT_WAIT = 1000;
 
 /** Going on by itself: remembered per visitor, off until the reader turns it on. */
 const AUTO_KEY = 'alice-demos:auto';
+/** The destination of a deliberate reverse edge, so the previous page restores at its end. */
+const REVERSE_ARRIVAL_KEY = 'alice-demos:reverse-arrival';
 /** Seconds at the very end before the next page comes by itself. */
 const AUTO_DWELL = 4;
+
+const markReverseArrival = (link: HTMLAnchorElement): void => {
+  try {
+    const target = new URL(link.href, window.location.href);
+    sessionStorage.setItem(
+      REVERSE_ARRIVAL_KEY,
+      `${Date.now()}\n${target.pathname}${target.search}${target.hash}`,
+    );
+  } catch {
+    // A blocked session store leaves the ordinary route usable.
+  }
+};
+
+const consumeReverseArrival = (): boolean => {
+  try {
+    const marker = sessionStorage.getItem(REVERSE_ARRIVAL_KEY);
+    sessionStorage.removeItem(REVERSE_ARRIVAL_KEY);
+    if (!marker) return false;
+    const separator = marker.indexOf('\n');
+    const createdAt = Number(marker.slice(0, separator));
+    const target = marker.slice(separator + 1);
+    const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    return (
+      separator > 0 &&
+      Number.isFinite(createdAt) &&
+      Date.now() - createdAt < 10_000 &&
+      target === current
+    );
+  } catch {
+    return false;
+  }
+};
+
 const readAuto = (): boolean => {
   try {
     return localStorage.getItem(AUTO_KEY) === '1';
@@ -272,6 +307,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   if (!root || !track) {
     return undefined;
   }
+  const reverseArrival = consumeReverseArrival();
   const ui = readUi();
   const realia = readRealia(root);
   const profile = pageProfile();
@@ -568,6 +604,18 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   // A saved scroll position at either edge is inert. Boundary navigation and the
   // optional dwell both require a fresh, deliberate input from this document.
   let autoArmed = false;
+  window.addEventListener(
+    'pageshow',
+    (event) => {
+      if (!event.persisted) return;
+      // A BFCache restore preserves this closure, but the restored boundary is
+      // inert until the reader makes a new deliberate gesture.
+      left = false;
+      autoArmed = false;
+      dwell = 0;
+    },
+    { signal },
+  );
   const atStart = (): boolean => window.scrollY <= 1;
   const atEnd = (): boolean =>
     window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
@@ -575,8 +623,25 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     const link = direction === 'next' ? nextLink : previousLink;
     if (!link || left) return;
     left = true;
+    if (direction === 'previous') markReverseArrival(link);
+    else {
+      try {
+        sessionStorage.removeItem(REVERSE_ARRIVAL_KEY);
+      } catch {
+        // Boundary navigation remains available if storage is blocked.
+      }
+    }
     location.assign(link.href);
   };
+  previousLink?.addEventListener(
+    'click',
+    (event) => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+        return;
+      markReverseArrival(previousLink);
+    },
+    { signal },
+  );
   const scrollKeys = new Set(['ArrowDown', 'PageDown', ' ', 'End', 'ArrowUp', 'PageUp', 'Home']);
   window.addEventListener(
     'wheel',
@@ -1147,6 +1212,13 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
       document.documentElement.removeAttribute('data-demo-booting');
       return undefined;
     }
+  }
+  if (reverseArrival) {
+    // The scene module has now mounted its layers. Refresh against the final
+    // document height, then restore the preceding narrative at its last frame.
+    ScrollTrigger.refresh();
+    window.scrollTo(0, trigger.end);
+    ScrollTrigger.update();
   }
   document.documentElement.removeAttribute('data-demo-booting');
   return shell;

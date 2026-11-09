@@ -1,10 +1,7 @@
-/** Browser contracts prepared for the generated rig; not executed in this checkpoint. */
-import { createHash } from 'node:crypto';
 import { expect, test } from '@playwright/test';
 import { atCue, collectErrors } from '../demo-helpers.ts';
 
 const selector = 'svg[data-generated-rig="flamingo"]';
-const digest = (bytes: Buffer): string => createHash('sha256').update(bytes).digest('hex');
 
 for (const locale of ['', 'ja/']) {
   for (const motion of ['no-preference', 'reduce'] as const) {
@@ -49,27 +46,39 @@ for (const locale of ['', 'ja/']) {
         }
       });
       const head = rig.locator('.cq__flamingo-head');
-      const rotation = () =>
-        head.evaluate((node) => {
+      const pose = () =>
+        head.evaluate((node: SVGUseElement) => {
           const matrix = new DOMMatrix(getComputedStyle(node).transform);
-          return (Math.atan2(matrix.b, matrix.a) * 180) / Math.PI;
+          const box = node.getBoundingClientRect();
+          const rigBox = node.ownerSVGElement?.getBoundingClientRect();
+          if (!rigBox) throw new Error('head use has no rendered rig');
+          return {
+            rotation: (Math.atan2(matrix.b, matrix.a) * 180) / Math.PI,
+            bounds: [box.left - rigBox.left, box.top - rigBox.top, box.width, box.height],
+          };
         });
-      await expect.poll(rotation).toBeCloseTo(0, 2);
-      const content = digest(await rig.screenshot());
+      await expect.poll(async () => (await pose()).rotation).toBeCloseTo(0, 2);
+      const content = await pose();
       await page.locator('.cq__flamingo').evaluate((node) => {
         node.setAttribute('data-mood', 'sulking');
         (node as HTMLElement).style.setProperty('--mood', '0');
       });
-      await expect.poll(rotation).toBeCloseTo(52, 2);
-      // Checking the source node alone cannot prove that <use> painted the change.
-      const sulking = digest(await rig.screenshot());
-      expect(sulking).not.toBe(content);
+      await expect.poll(async () => (await pose()).rotation).toBeCloseTo(52, 2);
+      // The queried node is the visible <use>, so its geometry proves the paint
+      // changed without hashing the moving story frame behind it.
+      const sulking = await pose();
+      expect(sulking.bounds).not.toEqual(content.bounds);
       await page.locator('.cq__flamingo').evaluate((node) => {
         node.setAttribute('data-mood', 'content');
         (node as HTMLElement).style.setProperty('--mood', '1');
       });
-      await expect.poll(rotation).toBeCloseTo(0, 2);
-      await expect.poll(async () => digest(await rig.screenshot())).toBe(content);
+      await expect.poll(async () => (await pose()).rotation).toBeCloseTo(0, 2);
+      await head.evaluate(async (node) => {
+        await Promise.all(
+          node.getAnimations().map((animation) => animation.finished.catch(() => {})),
+        );
+      });
+      await expect.poll(async () => (await pose()).bounds).toEqual(content.bounds);
       expect(errors).toEqual([]);
     });
   }

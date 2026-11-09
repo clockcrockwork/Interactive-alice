@@ -43,7 +43,9 @@ for (const locale of ['', 'ja/']) {
       const lizard = page.locator('.wt__lizard');
       const art = lizard.locator('.art');
       await ready(lizard.locator('svg[data-generated-rig="bill"]'), 2);
-      await atCue(page, 'lizard', 0.2);
+      // The lizard is upside down while the King promises he will be put right;
+      // under reduced motion the `lizard` cue already lands after that story turn.
+      await atCue(page, 'pardon', 0.5);
       await expect(lizard).toHaveAttribute('data-upside-down', '');
       await expect(art).toHaveCSS('animation-name', motion === 'reduce' ? 'none' : 'wt-wave');
       expect(
@@ -57,7 +59,12 @@ for (const locale of ['', 'ja/']) {
       await expect(lizard).not.toHaveAttribute('data-upside-down');
       await atCue(page, 'pardon', 0.1);
       await atCue(page, 'lizard', 0.2);
-      await expect(lizard).toHaveAttribute('data-upside-down', '');
+      // The story has already turned Bill right-side up by this cue, including
+      // when reduced motion jumps directly between narrative landmarks.
+      await expect(lizard).toHaveAttribute(
+        motion === 'reduce' ? 'data-right' : 'data-upside-down',
+        '',
+      );
       await atCue(page, 'lizard', 0.9);
       await expect(lizard).toHaveAttribute('data-right', '');
       expect(errors).toEqual([]);

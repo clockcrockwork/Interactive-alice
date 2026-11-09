@@ -157,7 +157,8 @@ for (const locale of ['', 'ja/']) {
       expect(heldBox).toEqual(flyingBox);
       expect(heldBox.width / heldBox.height).toBeCloseTo(4 / 3, 2);
       await responsiveWidth(held, 7, 22, 12);
-      await responsiveWidth(partner, 4.5, 15, 9, 0.56);
+      const phone = (page.viewportSize()?.width ?? 0) <= 700;
+      await responsiveWidth(partner, phone ? 3.5 : 4.5, phone ? 13 : 15, phone ? 6 : 9, 0.56);
 
       await cue(page, 'advance', motion === 'reduce' ? 0.5 : 0.62);
       const partnerArt = partner.locator(':scope > .art');
@@ -399,7 +400,7 @@ for (const locale of ['', 'ja/']) {
     const mushroom = page.locator('.ct__mushroom > [data-art="mushroom"]');
     await expect(mushroom).not.toHaveAttribute('data-generated', '');
     await expect(mushroom.locator(':scope > svg')).toHaveAttribute('viewBox', '0 0 400 320');
-    const baked = mushroom.locator(':scope > img');
+    const baked = mushroom.locator(':scope > img.art__image--baked');
     await expect(baked).toHaveAttribute('src', /mushroom\.any(?:[-.]|$)/);
     expect(
       await baked.evaluate(async (el) => {

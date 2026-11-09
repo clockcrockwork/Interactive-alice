@@ -1,5 +1,6 @@
 /** Prepared browser contracts. This checkpoint does not claim browser execution. */
 import { expect, test } from '@playwright/test';
+import { RABBIT_DIVING_SVG } from '../../src/demos/art/vectors.ts';
 
 const scenes = [
   { name: 'rabbit-hole', rig: 'bat', part: '.rh__wing', animation: 'rh-flap', asset: 'bat' },
@@ -98,14 +99,36 @@ for (const scene of scenes) {
       for (const fallback of await rig.locator('[data-rig-fallback]').all())
         await expect(fallback).not.toHaveCSS('display', 'none');
       if (scene.name === 'riverbank') {
+        const sourceBoxes = await page.evaluate((markup) => {
+          const namespacedMarkup = markup.replace(
+            '<svg ',
+            '<svg xmlns="http://www.w3.org/2000/svg" ',
+          );
+          const parsed = new DOMParser().parseFromString(namespacedMarkup, 'image/svg+xml');
+          const source = document.importNode(
+            parsed.documentElement,
+            true,
+          ) as unknown as SVGSVGElement;
+          source.setAttribute(
+            'style',
+            'position:fixed;left:-10000px;top:-10000px;visibility:hidden',
+          );
+          document.body.append(source);
+          const boxes = [...source.querySelectorAll<SVGGElement>('[data-part^="foot-"]')].map(
+            (part) => {
+              const { x, y, width, height } = part.getBBox();
+              return { x, y, width, height };
+            },
+          );
+          source.remove();
+          return boxes;
+        }, RABBIT_DIVING_SVG);
         for (const [index, part] of (await rig.locator(scene.part).all()).entries()) {
           const box = await part.evaluate((node) => {
             const b = (node as SVGGraphicsElement).getBBox();
             return { x: b.x, y: b.y, width: b.width, height: b.height };
           });
-          expect(box.x + box.width / 2).toBeCloseTo(index === 0 ? 22 : 78, 3);
-          expect(box.y + box.height * 0.9).toBeCloseTo(91.97221010748488, 3);
-          expect(box.height * 0.04).toBeCloseTo(1.1972210107484877, 3);
+          expect(box).toEqual(sourceBoxes[index]);
         }
       }
     });

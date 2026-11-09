@@ -141,9 +141,10 @@ test.describe('how the figures are drawn', () => {
     const flamingo = page.locator('.cq__flamingo .art--cut');
     await expect(flamingo).toHaveCount(1);
     // The parts keep their classes, so the demo's transforms on them still apply.
-    await expect(flamingo.locator('g.cq__flamingo-body > image')).toHaveCount(1);
-    await expect(flamingo.locator('g.cq__flamingo-head > image')).toHaveCount(1);
-    await expect(flamingo.locator('path')).toHaveCount(0);
+    await expect(flamingo.locator('g.cq__flamingo-body [data-rig-image]')).toHaveCount(1);
+    await expect(flamingo.locator('g.cq__flamingo-head [data-rig-image]')).toHaveCount(1);
+    // The shared SVG keeps its engraved contour paths beneath the generated cut-outs.
+    await expect(flamingo.locator('image')).toHaveCount(2);
     const loaded = await flamingo.locator('image').evaluateAll((images) =>
       Promise.all(
         images.map(
@@ -157,7 +158,8 @@ test.describe('how the figures are drawn', () => {
         ),
       ),
     );
-    expect(loaded.length).toBeGreaterThanOrEqual(3);
+    // Provenance and the runtime mapping each declare exactly body and head.
+    expect(loaded).toHaveLength(2);
     expect(loaded.every(Boolean)).toBe(true);
   });
 });

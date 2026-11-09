@@ -38,6 +38,9 @@ test('keyboard scroll keys need an extra action at scene boundaries', async ({ p
   await page.keyboard.press('Home');
   await previous;
   await expect(page.locator('.demo')).toHaveAttribute('data-demo', 'riverbank');
+  await expect
+    .poll(() => page.evaluate(() => window.__aliceDemo?.progress() ?? 0))
+    .toBeGreaterThan(0.995);
 });
 
 test('touch scrolling carries a phone forward and back across the Riverbank seam', async ({
@@ -73,6 +76,9 @@ test('touch scrolling carries a phone forward and back across the Riverbank seam
   await touch('touchEnd');
   await previous;
   await expect(page.locator('.demo')).toHaveAttribute('data-demo', 'riverbank');
+  await expect
+    .poll(() => page.evaluate(() => window.__aliceDemo?.progress() ?? 0))
+    .toBeGreaterThan(0.995);
 });
 
 test('ordinary scroll traverses every document edge in both directions', async ({ page }) => {
@@ -104,7 +110,87 @@ test('ordinary scroll traverses every document edge in both directions', async (
     await page.mouse.wheel(0, -64);
     await arrived;
     await expect(page.locator('.demo')).toHaveAttribute('data-demo', previous.demo ?? '');
+    await expect
+      .poll(() => page.evaluate(() => window.__aliceDemo?.progress() ?? 0))
+      .toBeGreaterThan(0.995);
   }
+});
+
+test('reverse scroll restores the previous ending, keeps its story, and preserves history', async ({
+  page,
+}) => {
+  test.setTimeout(90_000);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('./demos/drink-me/');
+  await settled(page);
+  await expect
+    .poll(() => page.evaluate(() => window.__aliceDemo?.progress() ?? 1))
+    .toBeLessThan(0.005);
+
+  const arriveAtRabbitHole = page.waitForURL((url) => /\/demos\/rabbit-hole\/$/.test(url.pathname));
+  await page.mouse.wheel(0, -64);
+  await arriveAtRabbitHole;
+  await settled(page);
+  await expect(page.locator('.demo')).toHaveAttribute('data-demo', 'rabbit-hole');
+  await expect
+    .poll(() => page.evaluate(() => window.__aliceDemo?.progress() ?? 0))
+    .toBeGreaterThan(0.995);
+  await expect(page.locator('.demo__stage .demo-beat').last()).toHaveAttribute('data-active', '');
+  expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+
+  await page.mouse.wheel(0, -900);
+  await settled(page);
+  await expect(page).toHaveURL(/\/demos\/rabbit-hole\/$/);
+  await expect
+    .poll(() => page.evaluate(() => window.__aliceDemo?.progress() ?? 1))
+    .toBeLessThan(0.995);
+
+  await page.goBack({ waitUntil: 'commit' });
+  await expect(page).toHaveURL(/\/demos\/drink-me\/$/);
+  await expect
+    .poll(() => page.evaluate(() => window.__aliceDemo?.progress() ?? 1))
+    .toBeLessThan(0.005);
+  await page.goForward({ waitUntil: 'commit' });
+  await expect(page).toHaveURL(/\/demos\/rabbit-hole\/$/);
+  await expect
+    .poll(() => page.evaluate(() => window.__aliceDemo?.progress() ?? 0))
+    .toBeGreaterThan(0.8);
+});
+
+test('BFCache restores boundary controls inertly, then accepts fresh input and history', async ({
+  page,
+}) => {
+  test.setTimeout(60_000);
+  await page.addInitScript(() => {
+    localStorage.setItem('alice-demos:auto', '1');
+    window.addEventListener('pageshow', (event) => {
+      (window as Window & { __alicePersisted?: boolean }).__alicePersisted = event.persisted;
+    });
+  });
+  await page.goto('./demos/rabbit-hole/');
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await settled(page);
+
+  const firstForward = page.waitForURL((url) => /\/demos\/drink-me\/$/.test(url.pathname));
+  await page.mouse.wheel(0, 64);
+  await firstForward;
+  await page.goBack({ waitUntil: 'commit' });
+  await expect(page).toHaveURL(/\/demos\/rabbit-hole\/$/);
+  await expect
+    .poll(() =>
+      page.evaluate(() => (window as Window & { __alicePersisted?: boolean }).__alicePersisted),
+    )
+    .toBe(true);
+  await page.waitForTimeout(1200);
+  await expect(page).toHaveURL(/\/demos\/rabbit-hole\/$/);
+
+  const freshForward = page.waitForURL((url) => /\/demos\/drink-me\/$/.test(url.pathname));
+  await page.mouse.wheel(0, 64);
+  await freshForward;
+  await page.goBack({ waitUntil: 'commit' });
+  await expect(page).toHaveURL(/\/demos\/rabbit-hole\/$/);
+  await page.goForward({ waitUntil: 'commit' });
+  await expect(page).toHaveURL(/\/demos\/drink-me\/$/);
 });
 
 test('restoring a saved scene at its boundary does not navigate until new input', async ({

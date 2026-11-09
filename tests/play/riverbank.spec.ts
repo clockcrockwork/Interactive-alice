@@ -29,12 +29,9 @@ test('the mountain and cloud horizon is one decoded background across the shared
     await expect(page.locator('.demo')).toHaveAttribute('data-attached', '', { timeout: 30_000 });
     const rabbitHole = route.includes('rabbit-hole');
     await atCue(page, rabbitHole ? 'tunnel' : 'field', rabbitHole ? 0.05 : 0.9);
-    const landscape = page.locator(
-      `${selector} svg[data-generated-rig="scenery/wildflower-highlands"]`,
-    );
-    await expect(landscape).toHaveAttribute('data-rig-ready', '');
-    await expect(landscape.locator('image[data-rig-image]')).toHaveAttribute(
-      'href',
+    const landscape = page.locator(`${selector} picture.scenery--wildflower-highlands`);
+    await expect(landscape.locator('img')).toHaveAttribute(
+      'src',
       /wildflower-highlands\.generated/,
     );
     await expect(page.locator(selector)).toBeVisible();

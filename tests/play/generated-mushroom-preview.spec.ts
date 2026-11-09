@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { expect, type Page, test } from '@playwright/test';
 import type { LocaleUIStrings } from '../../src/types/schema.ts';
-import { atCue, press } from '../demo-helpers.ts';
+import { atCue, press, settled } from '../demo-helpers.ts';
 
 const original = '.ct__mushroom > .art';
 const candidate = '[data-generated-mushroom]';
@@ -24,6 +24,31 @@ const geometry = (page: Page) =>
     };
     return [rect('.ct__mushroom'), rect('.ct__mushroom > .art'), rect('.ct__caterpillar')] as const;
   });
+
+test('a visitor host keeps engraved mushroom art and hides local comparison controls', async ({
+  page,
+}) => {
+  const baseURL = test.info().project.use.baseURL;
+  if (typeof baseURL !== 'string') throw new Error('Playwright baseURL is required');
+  const publicURL = new URL('/demos/caterpillar/?artPreview=mushroom', baseURL);
+  publicURL.hostname = 'alice.public.test';
+  await page.route('**/*', async (route) => {
+    const requestURL = new URL(route.request().url());
+    if (requestURL.hostname !== 'alice.public.test') return route.continue();
+    requestURL.hostname = new URL(baseURL).hostname;
+    const response = await route.fetch({ url: requestURL.toString() });
+    await route.fulfill({ response });
+  });
+  await page.addInitScript(() => localStorage.setItem('alice-demos:art', 'paper'));
+  await page.goto(publicURL.href);
+  await expect(page.locator('html')).not.toHaveAttribute('data-art', 'flat');
+  await expect(page.locator('html')).not.toHaveAttribute('data-art', 'paper');
+  await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
+  await atCue(page, 'who', 0.9);
+  await expect(page.locator(candidate)).toBeVisible();
+  await expect(page.locator(original)).toHaveAttribute('data-generated-mushroom-active', '');
+  await expect(page.locator(panel)).toHaveCount(0);
+});
 
 for (const locale of ['en-simple', 'ja']) {
   const prefix = locale === 'en-simple' ? '' : `${locale}/`;
@@ -152,7 +177,7 @@ test('mushroom query never installs a comparison in another scene', async ({ pag
   await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
   await expect(page.locator(candidate)).toHaveCount(0);
   await expect(page.locator(control)).toHaveCount(0);
-  await expect(page.locator('[data-generated-master]')).toHaveCount(0);
+  await expect(page.locator('[data-generated-mushroom]')).toHaveCount(0);
 });
 
 for (const viewport of [
@@ -166,6 +191,8 @@ for (const viewport of [
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/demos/caterpillar/');
     await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
+    await atCue(page, 'who', 0.9);
+    const initialWho = await geometry(page);
     await atCue(page, 'sides', 0.9);
     await expect(page.locator(candidate)).toBeVisible();
     await expect(page.locator(original)).toHaveAttribute('data-generated-mushroom-active', '');
@@ -189,10 +216,12 @@ for (const viewport of [
     await expect(tape).toHaveAttribute('aria-valuenow', '3.0');
     await press(page, left);
     await expect(tape).toHaveAttribute('aria-valuenow', '5.1');
+    await settled(page);
     const smaller = await geometry(page);
     expect(smaller[0].width / before[0].width).toBeCloseTo(1 / 1.7, 3);
     await press(page, right);
     await expect(tape).toHaveAttribute('aria-valuenow', '3.0');
+    await expect.poll(async () => (await geometry(page))[0].width).toBeCloseTo(before[0].width, 2);
     const restored = await geometry(page);
     expect(restored[0].width).toBeCloseTo(before[0].width, 2);
     expect(restored[1].width).toBeCloseTo(before[1].width, 2);
@@ -201,8 +230,14 @@ for (const viewport of [
     const large = await geometry(page);
     expect(large[0].width).toBeGreaterThan(before[0].width);
     await atCue(page, 'who', 0.9);
+    await settled(page);
+    await expect
+      .poll(async () => (await geometry(page))[0].width)
+      .toBeCloseTo(initialWho[0].width, 2);
     const reversed = await geometry(page);
-    expect(reversed[0].width).toBeCloseTo(before[0].width, 2);
+    // The meadow has a different scale at `sides` and `who`. Compare the return
+    // with the same `who` cue captured before leaving it, not across compositions.
+    expect(reversed[0].width).toBeCloseTo(initialWho[0].width, 2);
     await expect(page.locator(candidate)).toBeVisible();
   });
 }

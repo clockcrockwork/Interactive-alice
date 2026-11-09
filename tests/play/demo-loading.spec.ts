@@ -36,7 +36,8 @@ test('the scene text stays hidden until the stage is ready, including after re-e
 
   await page.locator('.demo__back').click();
   await expect(page).toHaveURL(/\/demos\/pig-and-pepper\/$/);
-  await page.goBack();
+  // A BFCache restore resumes the prior document without firing `load` again.
+  await page.goBack({ waitUntil: 'commit' });
   await expect(page).toHaveURL(/\/demos\/cheshire-cat\/$/);
   await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
   await expect(page.locator('.demo-beat[data-active]')).toHaveCount(1);

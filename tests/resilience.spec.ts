@@ -263,26 +263,14 @@ test.describe('a language that is behind', () => {
     expect(statusBox?.y ?? 0).toBeGreaterThanOrEqual((titleBox?.y ?? 0) + (titleBox?.height ?? 0));
   });
 
-  test('says on the home page that it cannot be read yet, and still links it', async ({ page }) => {
-    const strings = behind().ui.get('ja')?.localeNone ?? '';
-    await serveGenerated(page, 'index.html', './');
+  test('the public entry opens Riverbank without an incomplete-locale picker', async ({ page }) => {
     await page.goto('./');
-
-    const item = page.locator('.home__locale[data-locale="ja"]');
-    await expect(item).toHaveAttribute('data-availability', 'none');
-    await expect(item.locator('.home__status')).toHaveText(strings);
-    await expect(item.locator('.home__status')).toHaveAttribute('lang', 'ja');
-    await expect(item.locator('a')).toHaveAttribute('href', './ja/');
-
-    // The complete language says nothing, because there is nothing to warn about.
-    const full = page.locator('.home__locale[data-locale="en-simple"]');
-    await expect(full).toHaveAttribute('data-availability', 'full');
-    await expect(full.locator('.home__status')).toHaveCount(0);
-
-    const linkBox = await item.locator('a').boundingBox();
-    const statusBox = await item.locator('.home__status').boundingBox();
-    expect(statusBox?.height ?? 0).toBeGreaterThan(0);
-    expect(statusBox?.y ?? 0).toBeGreaterThanOrEqual((linkBox?.y ?? 0) + (linkBox?.height ?? 0));
+    await expect(page.locator('.demo')).toHaveAttribute('data-demo', 'riverbank');
+    await expect(page.locator('.home__locale, .home__status')).toHaveCount(0);
+    await expect(page.locator('.demo__languages a[lang="ja"]')).toHaveAttribute(
+      'href',
+      './demos/ja/riverbank/',
+    );
   });
 });
 
@@ -304,15 +292,23 @@ test.describe('back and forward', () => {
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(1800);
     await expect.poll(() => progressOf(page, scene), { timeout: 5000 }).toBeGreaterThan(0);
     const progress = await progressOf(page, scene);
+    const beforeGeometry = await geometryOf(page, scene);
+    expect(progress).toBeCloseTo((1800 - beforeGeometry.top) / beforeGeometry.travel, 2);
 
     await page.goto(back);
-    await page.goBack();
+    await page.goBack({ waitUntil: 'commit' });
 
-    // Whether the document came from the back/forward cache or was rebuilt, the
-    // reader must land where they left. `pageshow.persisted` is a browser decision
-    // and is deliberately not asserted here; see docs/performance-budget.md.
+    // A pointer-capability media query can change the scene's art-directed length
+    // while the page is away (Rabbit Hole is 500svh for touch, 1000svh for fine
+    // pointers). History restores the document offset; progress must follow the
+    // current measured geometry, rather than the old normalized value.
     await expect.poll(() => page.evaluate(() => window.scrollY), { timeout: 5000 }).toBe(1800);
-    await expect.poll(() => progressOf(page, scene)).toBeCloseTo(progress, 2);
+    const restoredGeometry = await geometryOf(page, scene);
+    const restoredProgress = Math.max(
+      0,
+      Math.min(1, (1800 - restoredGeometry.top) / restoredGeometry.travel),
+    );
+    await expect.poll(() => progressOf(page, scene)).toBeCloseTo(restoredProgress, 2);
   });
 });
 

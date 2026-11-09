@@ -34,9 +34,17 @@ export function chairMarkup(): string {
 }
 
 /** The shared table centre alternates engraved tarts and bread-and-butter. */
-export function tableSpreadMarkup(kind: 'tarts' | 'bread' | 'cakes'): string {
+export function tableSpreadMarkup(
+  kind: 'tarts' | 'bread' | 'cakes',
+  style: ArtStyle = typeof document === 'undefined' ? 'flat' : artStyle(),
+): string {
+  const fallback =
+    '<ellipse cx="130" cy="116" rx="116" ry="18" fill="var(--tp-china-shade)"/><ellipse cx="130" cy="108" rx="105" ry="28" fill="var(--tp-china)"/><path d="M62 100 Q72 45 130 48 Q188 45 198 100 Z" fill="var(--tp-butter)" stroke="var(--tp-ink-cut)" stroke-width="4"/><path d="M80 83 Q130 53 180 83 M95 97 Q130 77 165 97" fill="none" stroke="var(--tp-ink-cut)" stroke-width="3"/>';
+  if (style !== 'engraved') {
+    return `<svg viewBox="0 0 260 140" focusable="false" aria-hidden="true" data-generated-rig="tea-party/${kind}">${fallback}</svg>`;
+  }
   const href = kind === 'tarts' ? TARTS_TABLE : kind === 'cakes' ? TEA_CAKES : BREAD_AND_BUTTER;
-  return `<svg viewBox="0 0 260 140" focusable="false" aria-hidden="true" data-generated-rig="tea-party/${kind}"><g data-rig-fallback=""><ellipse cx="130" cy="116" rx="116" ry="18" fill="var(--tp-china-shade)"/><ellipse cx="130" cy="108" rx="105" ry="28" fill="var(--tp-china)"/><path d="M62 100 Q72 45 130 48 Q188 45 198 100 Z" fill="var(--tp-butter)" stroke="var(--tp-ink-cut)" stroke-width="4"/><path d="M80 83 Q130 53 180 83 M95 97 Q130 77 165 97" fill="none" stroke="var(--tp-ink-cut)" stroke-width="3"/></g><g data-rig-generated="" visibility="hidden" display="none"><image data-rig-image="" href="${href}" width="260" height="140" preserveAspectRatio="xMidYMid meet"/></g></svg>`;
+  return `<svg viewBox="0 0 260 140" focusable="false" aria-hidden="true" data-generated-rig="tea-party/${kind}"><g data-rig-fallback="">${fallback}</g><g data-rig-generated="" visibility="hidden" display="none"><image data-rig-image="" href="${href}" width="260" height="140" preserveAspectRatio="xMidYMid meet"/></g></svg>`;
 }
 
 const SETTING_CLEAN = `    <ellipse cx="104" cy="92" rx="44" ry="14" fill="var(--tp-china-shade)"/>

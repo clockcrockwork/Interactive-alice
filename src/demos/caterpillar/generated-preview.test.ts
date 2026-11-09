@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   decodedMushroom,
   mushroomEnabled,
+  previewControlsEnabled,
   previewEnabled,
   previewPlacement,
   previewSource,
@@ -68,6 +69,12 @@ describe('mushroom comparison opt-in', () => {
 
   it('activates only the explicit mushroom comparison', () => {
     expect(previewEnabled('?artPreview=mushroom')).toBe(true);
+  });
+
+  it('keeps comparison controls local while allowing the ordinary engraved art publicly', () => {
+    expect(previewControlsEnabled('localhost', '?artPreview=mushroom')).toBe(true);
+    expect(previewControlsEnabled('alice.public.test', '?artPreview=mushroom')).toBe(false);
+    expect(mushroomEnabled('', 'engraved')).toBe(true);
   });
 });
 

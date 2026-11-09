@@ -33,10 +33,14 @@ export function generatedFlamingoSvg(
   const key = ++sequence;
   const headId = `art-flamingo-head-${key}`;
   const bodyId = `art-flamingo-body-${key}`;
-  const headUse = `<use href="#${headId}"/>`;
-  // A single definition remains the live pointer target. Only the generated
-  // instance is nested inside breathing; the original head remains a sibling.
-  const headDefinition = `<g class="cq__flamingo-head" id="${headId}" data-rig-part="" style="--rig-origin: ${650 * scale}px ${310 * scale}px">${fallback(originalHead[1] ?? '')}${generated(image(head))}</g>`;
-  const bodyDefinition = `<g class="cq__flamingo-body" id="${bodyId}" data-rig-part="" style="--rig-origin: 170px 300px">${fallback(originalBody[1] ?? '')}${generated(image(body))}${generated(`<g data-flamingo-head-mounted="">${headUse}</g>`)}</g>`;
-  return `<svg viewBox="0 0 300 420" focusable="false" data-generated-rig="flamingo"><defs>${headDefinition}${bodyDefinition}</defs><g data-flamingo-hands="">${hands}</g><use href="#${bodyId}"/>${fallback(`<g data-flamingo-head-original="">${headUse}</g>`)}</svg>`;
+  // Keep the articulated hooks on visible instances: transforms on referenced
+  // definition nodes are not reliably painted by the browser's <use> shadow tree.
+  const headDefinition = `<g id="${headId}" data-rig-part="" style="--rig-origin: ${650 * scale}px ${310 * scale}px">${fallback(originalHead[1] ?? '')}${generated(image(head))}</g>`;
+  const bodyDefinition = `<g id="${bodyId}" data-rig-part="" style="--rig-origin: 170px 300px">${fallback(originalBody[1] ?? '')}${generated(image(body))}</g>`;
+  // Animate the rendered use instances, not their definitions. CSS transforms on
+  // a node inside <defs> are not consistently painted by Chromium's <use> shadow
+  // tree, especially with reduced motion's immediate transform changes.
+  const mounted = `<g class="cq__flamingo-body" data-rig-part="" style="--rig-origin: 170px 300px"><use href="#${bodyId}"/>${generated(`<g data-flamingo-head-mounted=""><use class="cq__flamingo-head" href="#${headId}" style="--rig-origin: ${650 * scale}px ${310 * scale}px"/></g>`)}</g>`;
+  const originalHeadUse = `<g data-flamingo-head-original=""><use class="cq__flamingo-head-fallback" href="#${headId}"/></g>`;
+  return `<svg viewBox="0 0 300 420" focusable="false" data-generated-rig="flamingo"><defs>${headDefinition}${bodyDefinition}</defs><g data-flamingo-hands="">${hands}</g>${mounted}${fallback(originalHeadUse)}</svg>`;
 }

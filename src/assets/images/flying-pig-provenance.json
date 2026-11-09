@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-21",
+  "id": "pig-baby",
+  "scope": "Duchess whole-figure flying cutaway only; original wings separate, Kitchen stages untouched",
+  "generator": "OpenAI image_gen; model not exposed",
+  "source": "exec-fe553d0f-175e-42e9-988d-18753e209912.png",
+  "sourceSha256": "56507f71ef0d0b1eb4dcb21569e1d41c252e5b25b5290a93fc2aaed6de31d835",
+  "asset": "figures/pig-baby--flying.any.generated.webp",
+  "sha256": "3d471d1958b74d6f0ddb165ae1ff7ac365a69f1c53468827f9082523721f9d76",
+  "bytes": 479538,
+  "dimensions": [1254, 1254],
+  "alphaBoundsAbove32": [137, 66, 1136, 1177],
+  "footY": 1176,
+  "logicalBox": [200, 200],
+  "edits": "WebP q92 exact true, unchanged dimensions and exact alpha",
+  "promptHash": null,
+  "verification": "Whole source visual inspection and original paper-wing composition; browser unexecuted"
+}

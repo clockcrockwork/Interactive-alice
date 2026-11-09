@@ -1,0 +1,53 @@
+{
+  "batch": "caterpillar-canopy-20261030",
+  "status": "bounded replacement candidate; static review only",
+  "asset": {
+    "file": "src/assets/images/scenery/caterpillar-canopy.generated.webp",
+    "bytes": 848228,
+    "sha256": "49c07ff2a74e9e30cce9fd07151b015743db76b5a955cfb61b37bdcaff377379",
+    "width": 1659,
+    "height": 948
+  },
+  "source": {
+    "file": "docs/generated-assets-review/sources/caterpillar-canopy-20261030.source.png",
+    "bytes": 4215541,
+    "sha256": "38af3db7c374e97e3bf9a304e4b6d27400b01650553b8bc020c39751a9c39a3b",
+    "width": 1659,
+    "height": 948
+  },
+  "conversion": "ImageMagick libwebp quality88 alpha-quality100; no resize, crop or retouch",
+  "candidateToDeliveryAlphaExact": true,
+  "decodedAlphaSha256": "a41bc340e071bef2d7c374e31033de887a0b7a01c8fc2e11ea00e4e4f34ce8f8",
+  "generation": {
+    "tool": "built-in image_gen",
+    "transparentBackground": true,
+    "intent": "Quiet overhead engraved tree crowns; one targeted viewpoint edit replaced upward stems with radial centers.",
+    "rejectedFirstCandidate": "Side-view/upward branch fans; not shipped. Original and both prompts retained in integration archive."
+  },
+  "placement": {
+    "outerViewBox": "0 0 1000 1000",
+    "imageBox": [-180, 348, 1360, 777.142857],
+    "preserveAspectRatio": "xMidYMid meet",
+    "carrier": "existing .ct__leaves group",
+    "fallback": "Existing ellipses until successful decode; exact original markup in flat/paper.",
+    "unchanged": [
+      "nest",
+      "Alice shoulder rig",
+      "both live neck paths",
+      "sky",
+      "leaf translation",
+      "canopy sway/dip",
+      "scene fade",
+      "meadow",
+      "camera and controls"
+    ]
+  },
+  "routeBytes": {
+    "caterpillar": 848228
+  },
+  "limits": [
+    "Static studies use actual source geometry/cutouts but approximate CSS colors, filtering and shoulder rotation sampling.",
+    "No browser retry: previous Chromium socket permission failure remains respected.",
+    "No complete playback, reduced-motion, phone/device or performance-budget acceptance."
+  ]
+}

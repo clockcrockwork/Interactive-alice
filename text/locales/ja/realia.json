@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../schema/realia.schema.json",
+  "locale": "ja",
+  "realia": {
+    "cat-mishearing": { "picture": "lid" },
+    "m-things": [
+      { "picture": "trap" },
+      { "picture": "moon" },
+      { "picture": "rice-ball" },
+      { "picture": "muchness" }
+    ],
+    "height": { "unit": "finger", "perInch": 0.3333, "notch": 1 },
+    "marks": { "yes": "circle", "no": "cross" }
+  }
+}

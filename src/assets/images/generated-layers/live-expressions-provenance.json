@@ -1,0 +1,255 @@
+{
+  "batch": "live-expressions-2026-10-21",
+  "date": "2026-10-21",
+  "status": "provisional generated live rigs; not owner art acceptance or browser acceptance",
+  "generator": "image_gen",
+  "model": "not exposed by generation tool",
+  "styleId": "IA-ENGRAVED-CUTOUT-V1",
+  "fullPrompt": "not available to integration worker; intent recorded per asset",
+  "assets": [
+    {
+      "id": "hatter",
+      "part": "base",
+      "asset": "hatter~base.any.generated.webp",
+      "bytes": 332590,
+      "sha256": "67963782051b82d7d0c0e6fed613c20302bf0359cd41db239200cbccbd763c4e",
+      "width": 984,
+      "height": 1599,
+      "source": {
+        "filename": "exec-542b7919-7714-4302-9108-c9d88b8d55cf.png",
+        "sha256": "90205c9c04972145cad14731ede93afbbd1d810acd5feb5dc85070f996db8645"
+      },
+      "master": {
+        "filename": "exec-2e6ee2e0-c157-4c54-a792-272f822a7dd5.png",
+        "sha256": "8a06078c5507159f68cd79c0fe7eb18957731e99975f8e6cac91643c398e0ab0"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [74, 23, 930, 1599],
+        "16": [76, 179, 924, 1587],
+        "128": [77, 180, 923, 1586],
+        "224": [77, 182, 923, 1585]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Preserve the generated Hatter while removing his hat and eye marks for live SVG eyes and a separate lifting hat.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      }
+    },
+    {
+      "id": "hatter",
+      "part": "hat",
+      "asset": "hatter~hat.any.generated.webp",
+      "bytes": 60868,
+      "sha256": "a6816d2ea59deee549700bce464297c474f31da6bc7a932128cb6f9b2c96b859",
+      "width": 984,
+      "height": 1599,
+      "source": {
+        "filename": "exec-961a3c07-2055-430a-a79e-70b2a1c6c630.png",
+        "sha256": "eada17a750f5ea882be782e2528d4d3596e74305016c4fc7b9223a1bfee6a2c6"
+      },
+      "master": {
+        "filename": "exec-2e6ee2e0-c157-4c54-a792-272f822a7dd5.png",
+        "sha256": "8a06078c5507159f68cd79c0fe7eb18957731e99975f8e6cac91643c398e0ab0"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [114, 0, 729, 1072],
+        "16": [300, 8, 727, 360],
+        "128": [301, 8, 726, 359],
+        "224": [302, 9, 726, 358]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Extract the generated Hatter hat as a transparent layer for the witness hat lift.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      }
+    },
+    {
+      "id": "dormouse",
+      "part": "base",
+      "asset": "dormouse~base.any.generated.webp",
+      "bytes": 422444,
+      "sha256": "ecfb411c0b40048b4a9fe63a6bc0f6cbf9bf43bfb99e98dfd31940e593b4571a",
+      "width": 1415,
+      "height": 1111,
+      "source": {
+        "filename": "exec-cd3b7a9d-9c1b-4b9a-b25c-4a70ea81189c.png",
+        "sha256": "0447f340993aee50f789e2315bee4de969feedbed6b70cab747f4ffc5abbfbcd"
+      },
+      "master": {
+        "filename": "exec-ad5a00c3-9da6-44e2-ac27-248202259cc3.png",
+        "sha256": "877dd6e7f1fed77810e0de4a6331120364690a8b64626b0c7a70f18b8b941b5a"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [0, 69, 1399, 1025],
+        "16": [20, 267, 1394, 1016],
+        "128": [22, 269, 1393, 1015],
+        "224": [23, 270, 1389, 1014]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Preserve the engraved Dormouse while removing its closed eye for live sleep and wake expressions.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      }
+    },
+    {
+      "id": "queen-of-hearts",
+      "part": "base",
+      "asset": "queen-of-hearts~base.any.generated.webp",
+      "bytes": 444740,
+      "sha256": "084a4996125fe575de56a5f9f48e023751e56e7afa6205228ce649bbe283f4d6",
+      "width": 1023,
+      "height": 1537,
+      "source": {
+        "filename": "exec-1fafda54-ce85-412a-b4f9-81327239203e.png",
+        "sha256": "e9c70ea73bb9727445441c8ff1e95272d998d7e8117c45477459749621e3836c"
+      },
+      "master": {
+        "filename": "exec-27718265-b09b-486c-be5c-722a51cafe1e.png",
+        "sha256": "403dac833eafb21cd9a561a49933008c85c70d6df72bce7b54c68e27e7a658d0"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [0, 0, 1023, 1537],
+        "16": [3, 2, 1019, 1532],
+        "128": [4, 3, 1018, 1532],
+        "224": [5, 5, 1018, 1531]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Preserve the generated Queen while removing only the mouth for the existing SVG shout morph.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      }
+    },
+    {
+      "id": "cook",
+      "part": "base",
+      "asset": "cook~base.any.generated.webp",
+      "bytes": 241554,
+      "sha256": "f7212714e9ded473b8cd925c02a686c9bc17efc17d1c8ea9b56577722fad944c",
+      "width": 1100,
+      "height": 1430,
+      "source": {
+        "filename": "exec-c7c11919-a27d-47b1-9ba4-297d43989c24.png",
+        "sha256": "15d4706cbd9a915b1d3c4e1aeb22a0ca705b3ae13d6d57edae39848bfd34836a"
+      },
+      "master": {
+        "filename": "exec-a35e0c74-8cdd-4ce6-952f-95c786480f80.png",
+        "sha256": "21d64bcaa2f2749e8f48b950cd938807570da9809e2edccd4865dca5393a3a57"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [33, 39, 1054, 1417],
+        "16": [181, 129, 823, 1415],
+        "128": [181, 130, 822, 1414],
+        "224": [182, 131, 821, 1414]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Preserve the generated cook while removing the raised arm and ladle for a separately moving layer.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      }
+    },
+    {
+      "id": "cook",
+      "part": "arm",
+      "asset": "cook~arm.any.generated.webp",
+      "bytes": 117670,
+      "sha256": "ffd87813593c2de324274baef532d6841560412201d60ea643bb1274da7240c2",
+      "width": 1100,
+      "height": 1430,
+      "source": {
+        "filename": "exec-1cf5a4f0-0527-4414-acfe-ef19e5bc4fdf.png",
+        "sha256": "ed55ba42d67fa731cd213edf28ffeaac1b6f934aa003d52d43447565c5d9868d"
+      },
+      "master": {
+        "filename": "exec-a35e0c74-8cdd-4ce6-952f-95c786480f80.png",
+        "sha256": "21d64bcaa2f2749e8f48b950cd938807570da9809e2edccd4865dca5393a3a57"
+      },
+      "alphaExtrema": [0, 255],
+      "alphaBounds": {
+        "0": [33, 59, 1100, 1374],
+        "16": [291, 62, 1088, 926],
+        "128": [292, 62, 1088, 926],
+        "224": [293, 63, 1087, 925]
+      },
+      "alphaPreservedExactly": true,
+      "promptIntent": "Extract the cook raised arm and ladle from its master for independent stirring and throwing.",
+      "encoding": {
+        "format": "WebP",
+        "quality": 92,
+        "method": 6,
+        "canvasUnchanged": true,
+        "metadataStripped": true,
+        "rasterEdits": "none; no crop, resize, recolour, alpha cleanup, or manual raster edits"
+      }
+    }
+  ],
+  "composition": {
+    "method": "CSS/SVG layout of untouched raster layers and existing vector expressions",
+    "hatter": {
+      "logicalBox": [160, 260],
+      "sourceScale": 0.16260162601626016,
+      "footY": 1586,
+      "hatSourceTransform": {
+        "scale": 0.87,
+        "translate": [46, 5]
+      },
+      "eyeSourceCenters": [[452, 319], [530, 319]]
+    },
+    "dormouse": {
+      "logicalBox": [140, 110],
+      "sourceScale": 0.0989399293286219,
+      "footY": 1015,
+      "eyeSourceCenter": [1193, 640]
+    },
+    "queen-of-hearts": {
+      "logicalBox": [160, 240],
+      "sourceScale": 0.1561483409238777,
+      "footY": 1532,
+      "mouthSourceCenter": [498, 257]
+    },
+    "cook": {
+      "logicalBox": [200, 260],
+      "sourceScale": 0.18181818181818182,
+      "footY": 1414,
+      "armSourceTransform": {
+        "scale": 0.59,
+        "translate": [420, -29]
+      },
+      "shoulderSourcePivot": [616, 450]
+    }
+  },
+  "budget": {
+    "shippingBytes": 1619866,
+    "scope": "concept demos only; not story PoC image budget",
+    "formatException": "WebP only, following existing generated cutout convention; no AVIF or responsive derivative generated in this pass"
+  }
+}

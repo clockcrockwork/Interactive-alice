@@ -1,0 +1,42 @@
+{
+  "batch": "court-wall-20261030",
+  "status": "candidate; static review only, not browser playback acceptance",
+  "style": "IA-ENGRAVED-CUTOUT-V1",
+  "asset": {
+    "file": "src/assets/images/scenery/court-wall.generated.webp",
+    "bytes": 238232,
+    "sha256": "8a1ca737e07b33da75a1a082d7de797a1ee182f5f675db1098b9c58ba43d03b6",
+    "width": 2172,
+    "height": 724
+  },
+  "source": {
+    "file": "docs/generated-assets-review/sources/court-wall-20261030.source.png",
+    "bytes": 1252721,
+    "sha256": "8f46d485f170e2af619845684241b81d9215b79b30f85860109370c98d454dad",
+    "width": 2172,
+    "height": 724
+  },
+  "conversion": "ImageMagick libwebp quality88 alpha-quality100; no resize, crop or retouch",
+  "candidateToDeliveryAlphaExact": true,
+  "routeBytes": {
+    "trial": 238232,
+    "witnesses": 238232
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "transparentBackground": true,
+    "intent": "One transparent three-panel classical courtroom wall elevation; quiet black/ivory engraved pilasters, open panel centers; no actors, furniture or floor. Actual delivered dimensions 2172x724."
+  },
+  "placement": {
+    "depth": "unchanged -700px rear plane",
+    "opacity": 0.38,
+    "pattern": "original + horizontal mirror; 4344x724 period",
+    "viewBox": "-1086 0 21720 724",
+    "alignment": "xMidYMid slice; original image center behind central actors"
+  },
+  "limitations": [
+    "Separate architectural bays have transparent gaps; not a seamless material texture.",
+    "Static projection studies simplify CSS curtain/floor and omit other actors, live facial overlays and controls.",
+    "Chromium launch blocked by socket Operation not permitted; no browser, mobile-device or full-motion acceptance."
+  ]
+}

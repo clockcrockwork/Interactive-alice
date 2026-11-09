@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-31",
+  "id": "pig-baby-piglet",
+  "scope": "Pig and Pepper first-person catch morph only; Duchess flying plate remains unchanged.",
+  "generator": "OpenAI image_gen; model not exposed",
+  "source": "pig-baby-pig-source.png",
+  "sourceSha256": "62d2c8812a762b705c95b609bf6a8ce2ca764c09b332d5bda4ed3c158c7075c5",
+  "sourceDimensions": [1187, 1326],
+  "sourceAlphaBounds": [33, 0, 1177, 1300],
+  "asset": "figures/pig-baby--pig.any.generated.webp",
+  "assetSha256": "536b39c116b5eafa4ce7070dbf6ca228537c0d28993099a69b9ac958bbef2c86",
+  "bytes": 490078,
+  "dimensions": [1187, 1326],
+  "logicalBox": [200, 200],
+  "promptSummary": "Fully transformed small piglet, still wearing the same full embroidered outfit and bonnet, in the matching starfish pose.",
+  "edits": "WebP q92 and alpha q100 conversion only. No resize, crop, recolouring or cleanup.",
+  "verification": "Composition and alpha inspected; checked in desktop/phone Pig and Pepper first-person morph screenshots."
+}

@@ -1,0 +1,653 @@
+{
+  "$schema": "../../schema/chapter-structure.schema.json",
+  "chapter": 5,
+  "sourceFile": "text/raw/ch05-advice-from-a-caterpillar.txt",
+  "sections": [
+    {
+      "id": "who-are-you"
+    },
+    {
+      "id": "the-mushroom"
+    },
+    {
+      "id": "serpent"
+    }
+  ],
+  "segments": [
+    {
+      "id": "ch05.s0010",
+      "section": "who-are-you",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0020",
+      "section": "who-are-you",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0030",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "caterpillar"
+    },
+    {
+      "id": "ch05.s0040",
+      "section": "who-are-you",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0050",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0060",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0070",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0080",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "caterpillar"
+    },
+    {
+      "id": "ch05.s0090",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "caterpillar"
+    },
+    {
+      "id": "ch05.s0100",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0110",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "caterpillar"
+    },
+    {
+      "id": "ch05.s0120",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0130",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "caterpillar"
+    },
+    {
+      "id": "ch05.s0140",
+      "section": "who-are-you",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0150",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "caterpillar"
+    },
+    {
+      "id": "ch05.s0160",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0170",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0180",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "caterpillar"
+    },
+    {
+      "id": "ch05.s0190",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0200",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0210",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "caterpillar"
+    },
+    {
+      "id": "ch05.s0220",
+      "section": "who-are-you",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0230",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0240",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0250",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0260",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0270",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0280",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0290",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0300",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0310",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0320",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0330",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0340",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0350",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0360",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0370",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0380",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0390",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0400",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0410",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0420",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0430",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0440",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0450",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0460",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0470",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0480",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0490",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0500",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0510",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0520",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0530",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0540",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0550",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "caterpillar"
+    },
+    {
+      "id": "ch05.s0560",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0570",
+      "section": "who-are-you",
+      "kind": "dialogue",
+      "speaker": "caterpillar"
+    },
+    {
+      "id": "ch05.s0580",
+      "section": "the-mushroom",
+      "kind": "dialogue",
+      "speaker": "caterpillar"
+    },
+    {
+      "id": "ch05.s0590",
+      "section": "the-mushroom",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0600",
+      "section": "the-mushroom",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0610",
+      "section": "the-mushroom",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0620",
+      "section": "the-mushroom",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0630",
+      "section": "the-mushroom",
+      "kind": "dialogue",
+      "speaker": "caterpillar"
+    },
+    {
+      "id": "ch05.s0640",
+      "section": "the-mushroom",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0650",
+      "section": "the-mushroom",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0660",
+      "section": "the-mushroom",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0670",
+      "section": "the-mushroom",
+      "kind": "dialogue",
+      "speaker": "caterpillar"
+    },
+    {
+      "id": "ch05.s0680",
+      "section": "the-mushroom",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0690",
+      "section": "the-mushroom",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0700",
+      "section": "the-mushroom",
+      "kind": "dialogue",
+      "speaker": "caterpillar"
+    },
+    {
+      "id": "ch05.s0710",
+      "section": "the-mushroom",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0720",
+      "section": "the-mushroom",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0730",
+      "section": "the-mushroom",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0740",
+      "section": "the-mushroom",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0750",
+      "section": "the-mushroom",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0760",
+      "section": "the-mushroom",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0770",
+      "section": "the-mushroom",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0780",
+      "section": "the-mushroom",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0790",
+      "section": "the-mushroom",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0800",
+      "section": "the-mushroom",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0810",
+      "section": "the-mushroom",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0820",
+      "section": "serpent",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0830",
+      "section": "serpent",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0840",
+      "section": "serpent",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0850",
+      "section": "serpent",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0860",
+      "section": "serpent",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0870",
+      "section": "serpent",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0880",
+      "section": "serpent",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0890",
+      "section": "serpent",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0900",
+      "section": "serpent",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0910",
+      "section": "serpent",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0920",
+      "section": "serpent",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s0930",
+      "section": "serpent",
+      "kind": "dialogue",
+      "speaker": "pigeon"
+    },
+    {
+      "id": "ch05.s0940",
+      "section": "serpent",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0950",
+      "section": "serpent",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s0960",
+      "section": "serpent",
+      "kind": "dialogue",
+      "speaker": "pigeon"
+    },
+    {
+      "id": "ch05.s0970",
+      "section": "serpent",
+      "kind": "dialogue",
+      "speaker": "pigeon"
+    },
+    {
+      "id": "ch05.s0980",
+      "section": "serpent",
+      "kind": "dialogue",
+      "speaker": "pigeon"
+    },
+    {
+      "id": "ch05.s0990",
+      "section": "serpent",
+      "kind": "dialogue",
+      "speaker": "pigeon"
+    },
+    {
+      "id": "ch05.s1000",
+      "section": "serpent",
+      "kind": "dialogue",
+      "speaker": "pigeon"
+    },
+    {
+      "id": "ch05.s1010",
+      "section": "serpent",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s1020",
+      "section": "serpent",
+      "kind": "dialogue",
+      "speaker": "pigeon"
+    },
+    {
+      "id": "ch05.s1030",
+      "section": "serpent",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch05.s1040",
+      "section": "serpent",
+      "kind": "dialogue",
+      "speaker": "pigeon"
+    },
+    {
+      "id": "ch05.s1050",
+      "section": "serpent",
+      "kind": "dialogue",
+      "speaker": "pigeon"
+    },
+    {
+      "id": "ch05.s1060",
+      "section": "serpent",
+      "kind": "dialogue",
+      "speaker": "pigeon"
+    },
+    {
+      "id": "ch05.s1070",
+      "section": "serpent",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s1080",
+      "section": "serpent",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s1090",
+      "section": "serpent",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s1100",
+      "section": "serpent",
+      "kind": "narration"
+    },
+    {
+      "id": "ch05.s1110",
+      "section": "serpent",
+      "kind": "narration"
+    }
+  ]
+}

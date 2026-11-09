@@ -16,7 +16,14 @@ between the two layers rather than the staging itself:
   * references never run backwards against the text's reading order, across
     scene boundaries as well as inside one scene
   * experience files carry no visible or localized text
-  * text files carry no experience concepts, at any nesting level
+  * text files carry no experience concepts, at any nesting level, and no realia
+    id names a demo
+  * every concept demo file matches its schema; the segments its `reads` names are
+    segments it stages, and its `realia` ids exist in the base locale's realia
+  * the staging contract: in every locale that publishes a demo, each segment its
+    `reads` names gives the stage what it reads, by that locale's profile in
+    text/locales.json (a word set apart by the locale's own methods, a letter named
+    as a letter, a moral after a colon, a noise of kind sound)
 
 Segments no scene stages are reported as todo lines, not errors: a beat may be
 pure staging, and a chapter is mapped scene by scene.
@@ -29,7 +36,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
+import unicodedata
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -40,11 +49,12 @@ STORY_FILE = REPO_ROOT / "experience" / "story.json"
 SCHEMA_DIR = REPO_ROOT / "schema"
 STRUCTURE_DIR = REPO_ROOT / "text" / "story"
 TEXT_DIR = REPO_ROOT / "text"
+DEMO_DIR = REPO_ROOT / "experience" / "demos"
 
 # Keys that would mean visible text had leaked into the experience layer.
 TEXT_KEYS = {"text", "title", "caption", "locale", "translations", "strings"}
 # Keys that would mean composition had leaked into the text layer.
-EXPERIENCE_KEYS = {"scene", "scenes", "shot", "shots", "beat", "beats"}
+EXPERIENCE_KEYS = {"scene", "scenes", "shot", "shots", "beat", "beats", "demo", "demos", "cue", "cues"}
 
 
 def load(path: Path) -> dict:
@@ -79,13 +89,217 @@ def forbidden_keys(value, forbidden: set[str], label: str, problems: list[str]) 
             forbidden_keys(item, forbidden, f"{label}[{index}]", problems)
 
 
-def check_text_layer(errors: list[str]) -> None:
-    """The text layer must not know how anything is staged."""
+def check_text_layer(errors: list[str], demo_ids: set[str]) -> None:
+    """The text layer must not know how anything is staged.
+
+    Realia name things a sentence is about, keyed by their own ids; an id that is a
+    demo's id would be the text layer addressing a stage, which is the other way round.
+    """
     for path in sorted(STRUCTURE_DIR.glob("*.json")) + sorted(TEXT_DIR.glob("locales/*/*.json")):
         problems: list[str] = []
-        forbidden_keys(load(path), EXPERIENCE_KEYS, path.relative_to(REPO_ROOT).as_posix(), problems)
+        doc = load(path)
+        label = path.relative_to(REPO_ROOT).as_posix()
+        forbidden_keys(doc, EXPERIENCE_KEYS, label, problems)
+        if path.name == "realia.json" and isinstance(doc.get("realia"), dict):
+            for key in doc["realia"]:
+                if key in demo_ids:
+                    problems.append(f"{label}: realia id {key!r} is a demo's id")
         for problem in problems:
             errors.append(f"{problem}. Scene, shot and beat composition belongs in experience/.")
+
+
+# --- The staging contract (docs/text-experience-binding.md, Language differences).
+# The same rules as gateRuns and gateLetters in src/demos/shell/words.ts, which a
+# unit test holds to this implementation. They are stricter than the stage's own
+# readings on purpose, so that whatever passes here the stage finds.
+
+OPEN = "「『“‘«‹„\""
+CLOSE = "」』”’»›“\""
+
+
+def quoted(text: str) -> list[str]:
+    """Every run of words a sentence puts inside quotation marks, in order."""
+    found: list[str] = []
+    i = 0
+    while i < len(text):
+        which = OPEN.find(text[i])
+        if which < 0:
+            i += 1
+            continue
+        end = text.find(CLOSE[which], i + 1)
+        if end < 0:
+            i += 1
+            continue
+        inside = text[i + 1 : end].strip()
+        if inside:
+            found.append(inside)
+        i = end + 1
+    return found
+
+
+def graphemes(text: str) -> int:
+    """User-perceived characters, near enough: base characters, not their marks."""
+    joiners = {"\u200d", "\ufe0e", "\ufe0f"}
+    return sum(
+        1 for char in text if not unicodedata.category(char).startswith("M") and char not in joiners
+    )
+
+
+# A maximal run of letters and digits: what \p{L}/\p{N} boundaries delimit.
+WORD = re.compile(r"[^\W_]+")
+
+
+def is_punctuation(char: str) -> bool:
+    return unicodedata.category(char).startswith("P")
+
+
+def gate_runs(text: str, methods: list[str]) -> list[str]:
+    """Runs set apart by the locale's methods: any quoted run; for capitals, a word of
+    capitals only (two letters or more), or a capitalised word of five letters or more
+    that does not open the sentence."""
+    runs: list[str] = []
+    for method in methods:
+        if method == "quotes":
+            runs += quoted(text)
+            continue
+        words = list(WORD.finditer(text))
+        opening = words[0].start() if words else -1
+        for match in words:
+            word = match.group()
+            letters = [char for char in word if char.isalpha()]
+            if len(letters) != len(word):
+                continue
+            if len(word) >= 2 and all(char.isupper() for char in word):
+                runs.append(word)
+            elif (
+                len(word) >= 5
+                and word[0].isupper()
+                and all(char.islower() for char in word[1:])
+                and match.start() != opening
+            ):
+                runs.append(word)
+    return runs
+
+
+def gate_letters(text: str, methods: list[str]) -> list[str]:
+    """Letters named as letters: a quoted run of one grapheme; for capitals, a capital
+    standing alone just before punctuation or the end ("with an M.")."""
+    found: list[str] = []
+    for method in methods:
+        if method == "quotes":
+            found += [run for run in quoted(text) if graphemes(run) == 1]
+            continue
+        for match in WORD.finditer(text):
+            word = match.group()
+            if len(word) != 1 or not word.isupper():
+                continue
+            rest = text[match.end() :].lstrip()
+            if rest == "" or is_punctuation(rest[0]):
+                found.append(word)
+    return found
+
+
+MORAL = re.compile(r"[:：]\s*\S")
+
+
+def read_problem(kind: str, text: str, segment: dict, methods: list[str]) -> str | None:
+    """Why a segment does not give the stage what its demo reads from it, or None."""
+    if kind == "setApart" and not gate_runs(text, methods):
+        return f"sets no word apart by its locale's methods ({', '.join(methods)})"
+    if kind == "letter" and not gate_letters(text, methods):
+        return f"names no single letter by its locale's methods ({', '.join(methods)})"
+    if kind == "moral" and not MORAL.search(text):
+        return "has no colon (of either width) followed by words"
+    if kind == "sound":
+        if segment.get("kind") != "sound":
+            return f"is of kind {segment.get('kind')!r} in the structure, not 'sound'"
+        if not text.strip():
+            return "is empty"
+    return None
+
+
+def check_demos(errors: list[str], notes: list[str]) -> set[str]:
+    """Every concept demo file, and its staging contract in every locale that publishes it.
+
+    A demo is published in a locale when its title and every segment it stages have
+    text there (isPublishable in build/demos.ts); a locale that does not publish it
+    yet is a todo, not an error. Returns the demo ids, for the text-layer check.
+    """
+    schema = load(SCHEMA_DIR / "experience-demo.schema.json")
+    registry = load(TEXT_DIR / "locales.json")
+    base = registry["baseLocale"]
+    base_realia_path = TEXT_DIR / "locales" / base / "realia.json"
+    base_realia = load(base_realia_path)["realia"] if base_realia_path.exists() else {}
+    structure: dict[str, dict] = {}
+    for path in sorted(STRUCTURE_DIR.glob("ch*.structure.json")):
+        for segment in load(path)["segments"]:
+            structure[segment["id"]] = segment
+    texts: dict[tuple[str, str], dict | None] = {}
+
+    def chapter_text(locale: str, chapter: int) -> dict | None:
+        key = (locale, f"ch{chapter:02d}")
+        if key not in texts:
+            path = TEXT_DIR / "locales" / locale / f"{key[1]}.json"
+            texts[key] = load(path) if path.exists() else None
+        return texts[key]
+
+    ids: set[str] = set()
+    for path in sorted(DEMO_DIR.glob("*.demo.json")):
+        label = path.relative_to(REPO_ROOT).as_posix()
+        demo = load(path)
+        demo_errors = validate(demo, schema, label)
+        forbidden_keys(demo, TEXT_KEYS, label, demo_errors)
+        if demo_errors:
+            errors += demo_errors
+            continue
+        ids.add(demo["id"])
+        staged = [s for shot in demo["shots"] for beat in shot["beats"] for s in beat["segments"]]
+        for segment_id in staged:
+            if segment_id not in structure:
+                errors.append(f"{label}: {segment_id} does not exist in the chapter structure")
+        for realia_id in demo.get("realia", []):
+            if realia_id not in base_realia:
+                errors.append(
+                    f"{label}: reads realia {realia_id!r}, which {base}/realia.json does not have"
+                )
+        reads = demo.get("reads", {})
+        for kind, segment_ids in reads.items():
+            for segment_id in segment_ids:
+                if segment_id not in staged:
+                    errors.append(
+                        f"{label}: reads.{kind} names {segment_id}, which this demo does not stage"
+                    )
+
+        for locale, settings in registry["locales"].items():
+            title_text = chapter_text(locale, demo["titleChapter"])
+            if title_text is None:
+                title = ""
+            elif "titleSection" in demo:
+                title = title_text["sections"].get(demo["titleSection"], "")
+            else:
+                title = title_text["title"]
+            lines = {}
+            for segment_id in staged:
+                text = chapter_text(locale, chapter_of(segment_id))
+                if text is not None and segment_id in text["segments"]:
+                    lines[segment_id] = text["segments"][segment_id]
+            if not title or len(lines) != len(staged):
+                if reads:
+                    notes.append(f"{locale}: {demo['id']} is not published yet, so its reads are unchecked")
+                continue
+            for kind, segment_ids in reads.items():
+                for segment_id in segment_ids:
+                    if segment_id not in lines or segment_id not in structure:
+                        continue
+                    problem = read_problem(
+                        kind, lines[segment_id], structure[segment_id], settings["setApart"]
+                    )
+                    if problem:
+                        errors.append(
+                            f"{locale} {segment_id}: {demo['id']} reads it as {kind}, but it "
+                            f"{problem}. Fix the text, or the demo's reads."
+                        )
+    return ids
 
 
 def check_shots(scene: dict, label: str, errors: list[str]) -> None:
@@ -233,7 +447,8 @@ def main() -> int:
             )
 
     check_parts(story, errors)
-    check_text_layer(errors)
+    demo_ids = check_demos(errors, notes)
+    check_text_layer(errors, demo_ids)
 
     for chapter in sorted(chapters):
         order = reading_order(chapter, chapters, errors)
@@ -256,7 +471,10 @@ def main() -> int:
         print(f"\n{len(errors)} problem(s) found", file=sys.stderr)
         return 1
     if not args.quiet:
-        print(f"ok: {len(seen_scenes)} scene(s), {len(owners)} segment reference(s)")
+        print(
+            f"ok: {len(seen_scenes)} scene(s), {len(owners)} segment reference(s), "
+            f"{len(demo_ids)} demo(s) with their staging contracts"
+        )
     return 0
 
 

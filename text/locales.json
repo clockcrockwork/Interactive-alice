@@ -12,6 +12,11 @@
       "dir": "ltr",
       "lineBreak": "auto",
       "significantSpaces": false,
+      "setApart": ["quotes", "capitals"],
+      "wordUnit": "spaces",
+      "emphasis": "italic",
+      "glyphWidth": "half",
+      "numbers": "en-GB",
       "notes": "Child-friendly retelling written from the public-domain 1865 text. Every other locale is translated from this, not from the original."
     },
     "ja": {
@@ -23,6 +28,11 @@
       "dir": "ltr",
       "lineBreak": "strict",
       "significantSpaces": true,
+      "setApart": ["quotes"],
+      "wordUnit": "spaces",
+      "emphasis": "slip",
+      "glyphWidth": "full",
+      "numbers": "ja-JP",
       "notes": "Lower-primary reading level: mostly kana, simple kanji only, and spaces between phrases to help a new reader chunk the line. Those spaces are content."
     }
   }

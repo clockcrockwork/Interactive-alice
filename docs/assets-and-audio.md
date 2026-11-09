@@ -28,6 +28,12 @@ Prompts therefore describe the project's own visual language, not another work's
 look, and a generated image that reads as a recognizable adaptation character is
 rejected rather than retouched.
 
+The direction chosen for the characters, for now, is **engraved**: ink line and hatching,
+like an old book's engraved plates, today baked from the project's own vectors (see
+[`art-trials.md`](art-trials.md)). Generated cut-outs that replace them follow that look
+in the project's own drawing, never a historical illustrator's plates or a later
+adaptation's.
+
 ## 3. Image intake
 
 1. Generate at a comfortable size, larger than the largest rendered size.

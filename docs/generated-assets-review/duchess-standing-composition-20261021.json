@@ -1,0 +1,139 @@
+{
+  "logicalBox": [240, 260],
+  "sources": [
+    {
+      "label": "Original seated",
+      "chin": [120, 120]
+    },
+    {
+      "label": "dadfd48c full-height",
+      "chin": [127.47126436781609, 61.76245210727969],
+      "map": {
+        "x": -0.03831417624520839,
+        "y": 0,
+        "width": 240.07662835249042,
+        "height": 260,
+        "scale": 0.19923371647509577,
+        "sourceChin": [640, 310],
+        "sourceFoot": 1299,
+        "uncertainty": 15
+      }
+    },
+    {
+      "label": "dadfd48c chin-floor",
+      "chin": [120, 120],
+      "map": {
+        "x": 29.403437815975735,
+        "y": 76.11729019211324,
+        "width": 170.5763397371082,
+        "height": 184.732052578362,
+        "scale": 0.14155712841253792,
+        "sourceChin": [640, 310],
+        "sourceFoot": 1299,
+        "uncertainty": 15
+      }
+    },
+    {
+      "label": "ff50b2d7 full-height",
+      "chin": [128.46094946401223, 65.69678407350689],
+      "map": {
+        "x": 0.05359877488514542,
+        "y": 0,
+        "width": 239.8928024502297,
+        "height": 260,
+        "scale": 0.1990811638591118,
+        "sourceChin": [645, 330],
+        "sourceFoot": 1301,
+        "uncertainty": 15
+      }
+    },
+    {
+      "label": "ff50b2d7 chin-floor",
+      "chin": [120, 120],
+      "map": {
+        "x": 27.003089598352204,
+        "y": 72.42018537590113,
+        "width": 173.7384140061792,
+        "height": 188.30072090628218,
+        "scale": 0.14418125643666324,
+        "sourceChin": [645, 330],
+        "sourceFoot": 1301,
+        "uncertainty": 15
+      }
+    }
+  ],
+  "alice": {
+    "width": 115.2,
+    "height": 192,
+    "offset": [230.4, 68]
+  },
+  "states": [
+    {
+      "label": "Neutral",
+      "lean": 0,
+      "wince": 0,
+      "shrugged": 0,
+      "up": 0,
+      "flinch": 0,
+      "pass": 0,
+      "flamingo": "neutral",
+      "bite": 0
+    },
+    {
+      "label": "Chin + wince",
+      "lean": 1,
+      "wince": 1,
+      "shrugged": 0,
+      "up": 0,
+      "flinch": 0,
+      "pass": 0,
+      "flamingo": "eye",
+      "bite": 0
+    },
+    {
+      "label": "Shrug apex",
+      "lean": 1,
+      "wince": 1,
+      "shrugged": 1,
+      "up": 1,
+      "flinch": 0,
+      "pass": 0,
+      "flamingo": "eye",
+      "bite": 0
+    },
+    {
+      "label": "Bite + flinch",
+      "lean": 1,
+      "wince": 0.45,
+      "shrugged": 0,
+      "up": 0,
+      "flinch": 1,
+      "pass": 0,
+      "flamingo": "bite-open",
+      "bite": 1
+    },
+    {
+      "label": "Snap + flinch",
+      "lean": 1,
+      "wince": 0.45,
+      "shrugged": 0,
+      "up": 0,
+      "flinch": 1,
+      "pass": 0,
+      "flamingo": "bite-snap",
+      "bite": 1
+    },
+    {
+      "label": "Pass .35 (Duchess gone)",
+      "lean": 0.2,
+      "wince": 0,
+      "shrugged": 0,
+      "up": 0,
+      "flinch": 0,
+      "pass": 0.35,
+      "flamingo": "neutral",
+      "bite": 0,
+      "gone": true
+    }
+  ]
+}

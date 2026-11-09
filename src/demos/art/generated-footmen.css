@@ -1,0 +1,12 @@
+@layer tokens, base, layout, scene, utilities;
+
+@layer scene {
+  /* These are complete alternate wigs, not an overlay of stray vector curls. */
+  .pp__footman[data-tangled] svg[data-generated-rig$="-footman"][data-rig-ready] .pp__curls {
+    opacity: 0;
+  }
+
+  .demo[data-paused] .pp__footman[data-bow] svg[data-generated-rig$="-footman"] .pp__body {
+    animation-play-state: paused;
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "status": "provisional; browser unverified",
+  "generation": "image_gen from common gardener master; corrected base removes image-right arm; separate brush includes moving sleeve/forearm/hand",
+  "fullPrompt": "unavailable to integrator, no hash invented",
+  "encoding": "WebP q92 method6 unchanged dimensions and exact alpha",
+  "placement": {
+    "stage": [926, 1699],
+    "footY": 1646,
+    "brushMap": [540, 30, 0.5],
+    "brushPivot": [690, 480],
+    "pipMap": [0.9, 0, 0, 0.8, 0, -10]
+  },
+  "images": [
+    {
+      "part": "base",
+      "source": "exec-065b631f-bb47-44e9-8d75-1f14035cd8a0.png",
+      "sourceSha256": "eb5789a4cb190df7d61fd7d6f3532fd0e3acae1174d2bfba7feef744d367040b",
+      "file": "src/assets/images/generated-layers/gardener~base.any.generated.webp",
+      "sha256": "3b013b3c4f261edb400041d4867cdbc816f14e31ebba93088ecec821aeae5161",
+      "bytes": 214188,
+      "width": 926,
+      "height": 1698,
+      "alphaBoundsGt32": [39, 44, 722, 1647]
+    },
+    {
+      "part": "brush",
+      "source": "exec-89f48a6a-1bb3-46c2-bd2d-059b400ea18a.png",
+      "sourceSha256": "973ba49cf0d92379d5a1dda612b7a8a88f4223ee22e30c36ce4da7a86879a4e0",
+      "file": "src/assets/images/generated-layers/gardener~brush.any.generated.webp",
+      "sha256": "1658747e674c03ad7b0580d13945e62302397a4412b0ae87a39e2b94615ccf98",
+      "bytes": 205182,
+      "width": 926,
+      "height": 1699,
+      "alphaBoundsGt32": [278, 60, 895, 1451]
+    }
+  ]
+}

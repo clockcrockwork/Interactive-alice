@@ -17,7 +17,8 @@ this text is a separate contract, documented in
 | Structure | `text/story/chNN.structure.json` | Story-section order, segment order, speaker, segment kind. No visible text | Authored once per chapter |
 | Text | `text/locales/<locale>/chNN.json` | One short sentence per segment id, plus chapter and section titles | Adapter / translator |
 | UI copy | `text/locales/<locale>/ui.json` | The words the site says about itself, not the story's words | Adapter / translator |
-| Config | `text/locales.json` | The locale list: role, reading level, per-sentence budget, writing direction, line-break keyword, whether spaces are content | Maintainer |
+| Realia | `text/locales/<locale>/realia.json` | The things this language's sentences are about, which a stage draws or measures (§3, Realia) | Adapter / translator |
+| Config | `text/locales.json` | The locale list and each language's profile: role, reading level, per-sentence budget, writing direction, line-break keyword, whether spaces are content, how it sets a word apart, how a line splits into units, its emphasis, its glyph width, its number locale | Maintainer |
 | Registry | `text/characters.json` | Every speaker a structure file may name | Maintainer |
 
 The split matters because of the product rule that scene logic and visible text
@@ -55,6 +56,14 @@ Segment ids look like `ch01.s0420`:
   without renumbering anything or breaking other languages;
 - an id, once published, is permanent. Changing the wording of a segment keeps
   its id. Dropping a beat means deleting the id from every language at once.
+- the one exception is a renumber, allowed only when a whole passage must enter
+  where the free ids cannot hold it, every locale lives in this repository and is
+  renumbered in the same commit, and every experience reference is updated in the
+  same commit. The map is computed once by a script and applied to the structure,
+  every locale and every experience file alike, so no sentence changes its words
+  or its order. It has happened once: chapter 5 kept `s0010`–`s0180`, the
+  Caterpillar's *You are old, Father William* took `s0190`–`s0570`, and every
+  later id moved up by 390 (`s0190` became `s0580`).
 
 Each structure entry also carries:
 
@@ -108,6 +117,41 @@ between phrases to help a new reader chunk the line. Spaces are part of the
 text, not formatting, so they are stored in the JSON and the locale entry sets
 `significantSpaces`. Nothing downstream may trim, collapse, or re-wrap them.
 
+Speech is not wrapped in 「」: speakers are told apart by style. 「」 is kept for
+words set apart as words — something written on an object, a word being named or
+argued about — which is what the locale profile declares (`"setApart": ["quotes"]`),
+so a page that shows such words reads them the way it reads the capitals of the
+English (`src/demos/shell/words.ts`, used by every demo that reads a word out of a
+sentence), and the gate checks every sentence a stage reads that way (see *Set
+apart, and realia* below). Names are fixed across
+the book and the site's own labels: 白うさぎ, 女王さま, 王さま, ぼうしや, 三月うさぎ,
+ヤマネ, こうしゃくふじん, コック, チェシャねこ, にせウミガメ, グリフォン.
+Measures become things a child can picture (three inches is ゆび 一本ぶん) or metric
+(a mile is 1キロ), and money is in 円. In a verse, a comma (、) parts its phrases: a
+stage that regroups a line (the Mouse's tail) breaks there by preference, so write the
+seven and the five between commas; a run in 「」 is never broken by a stage or a
+caption.
+
+### Set apart, and realia
+
+Two things a translation decides that a stage depends on, both checked by the gate
+(the standard is [`text-experience-binding.md`](text-experience-binding.md) §9):
+
+- **A word on display is set apart the way the locale declares** (`setApart` in
+  `text/locales.json`): in quotation marks of any kind, or by capitals. A demo file
+  lists the sentences its stage reads a word, a letter, a moral or a cry out of
+  (`reads`), and `npm run check:experience` fails a translation of one of them that
+  no longer gives the stage what it reads, naming the segment. Keep the mark when
+  rewording such a sentence.
+- **Realia** (`text/locales/<locale>/realia.json`) name the things a sentence is
+  *about* when a stage draws or measures them: what the Cat hears instead of a pig,
+  the things the sisters drew in the order the sentence lists them, the measure
+  Alice's height is given in, the marks the language's readers write for yes and no. When a translation's joke lands on a different thing,
+  change its realia to name that thing, so the stage draws the language's joke and
+  not the English one. A thing no stage draws yet has to be drawn first; the unit test
+  in `src/demos/realia.test.ts` says which. Realia hold ids and numbers, never words:
+  the name of a unit is UI copy.
+
 ### One sentence per segment, with one exception
 
 A segment is one line of text, normally one sentence. A paired or repeated cry
@@ -122,10 +166,20 @@ the set stays small and visible; there are four per language today.
    explain itself.
 2. Add an entry to `text/locales.json` with its name, `role: "translation"`, a
    `maxChars` budget, its writing direction and line-break keyword, whether its
-   spaces are content, and a note about the intended reading level.
-3. Create `text/locales/<locale>/chNN.json` for each finished chapter, copying
+   spaces are content, a note about the intended reading level, and the rest of its
+   **locale profile**: how it sets a word apart (`setApart`), whether a line splits
+   at its spaces or needs a segmenter (`wordUnit`), whether its script has an italic
+   (`emphasis`), whether its glyphs fill the em (`glyphWidth`), and its number locale
+   (`numbers`). What each means, and what reads it:
+   [`text-experience-binding.md`](text-experience-binding.md) §9.
+3. Add `text/locales/<locale>/realia.json` with every id the schema requires, each
+   naming what this language's sentence is about (§3, *Set apart, and realia*).
+4. Create `text/locales/<locale>/chNN.json` for each finished chapter, copying
    the segment ids from the chapter structure.
-4. Run `npm run check:text`.
+5. Run `npm run check:data`. The text checker verifies the profile, the UI copy
+   and the realia; the experience checker verifies, demo by demo, that every
+   sentence a stage reads gives it what it reads, by this language's profile, and
+   names the segment when one does not.
 
 The checker reports an untranslated chapter as a `todo:` line rather than an
 error, so a language can ship chapter by chapter.
@@ -183,8 +237,16 @@ Publishability is derived from this layer, not declared by a flag:
   there is nothing for the other languages to be translated from;
 - the build logs every part it skipped and why, so a gap is visible rather than quiet.
 
-So adding a scene that stages chapter 2 never breaks the English build because the
-Japanese chapter 2 is still being written.
+So adding a scene that stages a chapter never breaks the English build because its
+Japanese text is still being written.
+
+The **concept demos** follow the same rule at a finer grain, since a demo stages
+sentences rather than whole chapters: a demo page is generated for a language when
+its title and every segment it stages have text there (`isPublishable` in
+`build/demos.ts`). A demo that cannot be shown yet keeps its card on that language's
+index, titled in the base locale with that locale's `lang` and the `partPending`
+note, and is skipped by "Next scene"; its URL is an honest 404. In the base locale a
+missing segment is a build error, as for a part.
 
 #### What a reader meets
 
@@ -213,8 +275,10 @@ npm run check:text
 ```
 
 It verifies the raw files against their checksums, the structure's ids and
-ordering, section and segment parity between every locale and the structure, and
-that each line of text is a single sentence within budget.
+ordering, section and segment parity between every locale and the structure, that
+each line of text is a single sentence within budget, that every locale has its
+UI copy and its realia in full (the realia shaped as the base locale's), and the
+locale profile's own integrity.
 
 Both checkers validate every file against its schema in `schema/` before
 applying their own rules. `scripts/check-experience.py` covers the other side of
@@ -226,4 +290,4 @@ once, and stay in reading order across the whole scene list.
 | Chapter | Structure | en-simple | ja | Experience mapping |
 | --- | --- | --- | --- | --- |
 | 1. Down the Rabbit-Hole | done | done | done | Rabbit Hole scene only (`s0200`–`s0630`, 44 of 137 segments) |
-| 2–12 | not started | not started | not started | not started |
+| 2–12 | done | done | done | Concept demos only (`docs/concept-demos.md`); no story scene yet |

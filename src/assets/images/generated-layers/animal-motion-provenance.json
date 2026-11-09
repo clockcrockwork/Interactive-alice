@@ -1,0 +1,189 @@
+{
+  "status": "integrated-review-checkpoint-browser-validation-pending",
+  "generatedAt": "2026-10-21",
+  "generator": "OpenAI built-in image_gen",
+  "styleId": "IA-ENGRAVED-CUTOUT-V1",
+  "promptIntent": "Separate three original engraved animal masters into coherent body and moving arm, paw and wing plates while retaining their common source canvas and scale.",
+  "transforms": "WebP quality 92, method 6, exact alpha, metadata stripped. No source crop, resize, cleanup, recolouring or alpha edits. Runtime SVG uses a common uniform scale per rig and centres the 1346px guinea-pig layers within their 1347px master stage.",
+  "validation": {
+    "inspectedSourceImages": 10,
+    "alphaIntegrity": "All seven WebP alpha channels exactly match their source PNGs.",
+    "staticComposition": "Source-PNG SVG composites inspected at neutral and tortoise -22 degrees, guinea-pig -70/+45 degrees, pigeon -30/+30 and +35/-35 degrees, and reduced-motion -16/+16 degrees.",
+    "browser": "Pending. Offline SVG composition is not verification of browser CSS pivots, load fallback, interactive actions, pause or reduced motion.",
+    "limitations": [
+      "The guinea-pig paw is in front of its body so Bill's lift remains visible; the rounded fur shoulder is still visible as a cut-out join.",
+      "The tortoise cane-arm and pigeon wings sit behind their body plates to conceal their roots.",
+      "Existing scene rotation directions and angles are retained. The witnesses -70-degree pose extends the paw down-left; this has not been changed to invent a new gesture.",
+      "Extreme cane and pigeon wing poses exceed the fixed logical box; the existing generated-art overflow rule preserves them.",
+      "Low-alpha generation noise is retained without cleanup.",
+      "This is a review checkpoint, not final art or motion acceptance."
+    ]
+  },
+  "budget": {
+    "shippingBytes": 1284540,
+    "class": "Concept-demo raster assets; outside story page budgets.",
+    "criticality": "Requested with demo figure markup; no new lazy-loading mechanism.",
+    "storyPageImageBudgetImpactBytes": 0
+  },
+  "rigs": [
+    {
+      "figure": "tortoise-master",
+      "demos": ["mock-turtle"],
+      "logicalBox": [200, 240],
+      "sourceStage": [1145, 1374],
+      "footY": 1330,
+      "sourcePivots": {
+        "cane": [830, 550]
+      },
+      "sourceReferenceSha256": "bb11dcf3876d3a276367a2eac40db808f49b76b1cc09e531b49756a5723711be",
+      "assets": [
+        {
+          "part": "body",
+          "asset": "tortoise-master~body.any.generated.webp",
+          "width": 1145,
+          "height": 1374,
+          "alphaAbove32Bounds": [139, 39, 928, 1330],
+          "sourceSha256": "211381e1547cb6c5c885f2e8fc805f0a5f95e653ff9691f09bc42344bdaa23c4",
+          "sha256": "ec0a446c236855fc81ece8e9aad0298555210a74e90841980e913c48820ad1f4",
+          "bytes": 373166,
+          "alphaPreservedExactly": true
+        },
+        {
+          "part": "cane",
+          "asset": "tortoise-master~cane.any.generated.webp",
+          "width": 1145,
+          "height": 1374,
+          "alphaAbove32Bounds": [783, 480, 1079, 1325],
+          "sourceSha256": "052d78cb3f44a895a25003f24d0ae84b82a2289c7140f055166bd74963755bb4",
+          "sha256": "ca6ed32bd66605ee5ddfc4122c8f3014615b5a263c7f070086594df8f406992f",
+          "bytes": 56290,
+          "alphaPreservedExactly": true
+        }
+      ],
+      "motionBounds": [
+        {
+          "partAnglesDegrees": [0],
+          "visibleAlphaAbove32Bounds": [24.279, 14.498, 188.297, 239.825]
+        },
+        {
+          "partAnglesDegrees": [-22],
+          "visibleAlphaAbove32Bounds": [24.279, 14.498, 219.131, 239.825]
+        }
+      ]
+    },
+    {
+      "figure": "guinea-pig",
+      "demos": ["witnesses", "bill-the-lizard"],
+      "logicalBox": [120, 104],
+      "sourceStage": [1347, 1168],
+      "footY": 1089,
+      "sourcePivots": {
+        "paw": [380, 735]
+      },
+      "sourceReferenceSha256": "c46ef1b97cb9a4027d77c39ee1765839f4f546765bd3615a4cbbcb5b67a0873b",
+      "assets": [
+        {
+          "part": "body",
+          "asset": "guinea-pig~body.any.generated.webp",
+          "width": 1346,
+          "height": 1168,
+          "alphaAbove32Bounds": [74, 106, 1274, 1089],
+          "sourceSha256": "74897f9fdf01eea3dd4441455b23cf1f64027354ea147f048bf73286e4e31c8d",
+          "sha256": "28922328c7576ad69b896193b7a2c8b5681dda173b9894a5e53fdff711fc2d1c",
+          "bytes": 397882,
+          "alphaPreservedExactly": true
+        },
+        {
+          "part": "paw",
+          "asset": "guinea-pig~paw.any.generated.webp",
+          "width": 1346,
+          "height": 1168,
+          "alphaAbove32Bounds": [120, 540, 414, 807],
+          "sourceSha256": "d903121379e618b8263e4d45cff9a3eb3680e78851ac51e52f6af2076dc1f306",
+          "sha256": "6699f51566d4bdc017c3e64e523f0ee64df6b55f4b9273bc84b039563f4f05c8",
+          "bytes": 35856,
+          "alphaPreservedExactly": true
+        }
+      ],
+      "motionBounds": [
+        {
+          "partAnglesDegrees": [0],
+          "visibleAlphaAbove32Bounds": [6.664, 16.473, 113.425, 103.911]
+        },
+        {
+          "partAnglesDegrees": [-70],
+          "visibleAlphaAbove32Bounds": [6.664, 16.473, 113.425, 103.911]
+        },
+        {
+          "partAnglesDegrees": [45],
+          "visibleAlphaAbove32Bounds": [6.664, 16.473, 113.425, 103.911]
+        }
+      ]
+    },
+    {
+      "figure": "pigeon",
+      "demos": ["caterpillar"],
+      "logicalBox": [260, 200],
+      "sourceStage": [1430, 1100],
+      "footY": 1049,
+      "sourcePivots": {
+        "wing-left": [625, 500],
+        "wing-right": [825, 500]
+      },
+      "sourceReferenceSha256": "3ff39fa9bb368f70f5019922ab8bfdd3f77c6fdd6673d85f9588f50d1adc4181",
+      "assets": [
+        {
+          "part": "body",
+          "asset": "pigeon~body.any.generated.webp",
+          "width": 1430,
+          "height": 1100,
+          "alphaAbove32Bounds": [488, 263, 947, 1048],
+          "sourceSha256": "6652976a954c1382b19fc7dc44da27dc07e8303f59b86fae17681f5aefc80020",
+          "sha256": "c8e82e45604467a5c009869e19ef91b269118b93e7b64248dbd7cc4d1cd4ce44",
+          "bytes": 127296,
+          "alphaPreservedExactly": true
+        },
+        {
+          "part": "wing-left",
+          "asset": "pigeon~wing-left.any.generated.webp",
+          "width": 1430,
+          "height": 1100,
+          "alphaAbove32Bounds": [11, 89, 675, 753],
+          "sourceSha256": "19e4118402152123bd964607853ac4d3bfa44afe718481ab1d12e8171ae540e3",
+          "sha256": "1dd884225ff3503b8e55f421394cfcadc58aa1badee4da1d8d29d274e655b476",
+          "bytes": 147198,
+          "alphaPreservedExactly": true
+        },
+        {
+          "part": "wing-right",
+          "asset": "pigeon~wing-right.any.generated.webp",
+          "width": 1430,
+          "height": 1100,
+          "alphaAbove32Bounds": [782, 84, 1420, 762],
+          "sourceSha256": "4f99004ab7e70a24f9b1d035c9a2c2861eabe7a7826ae0c86758e440d5668b0f",
+          "sha256": "b86a57bf60e5aee563535f2f3489a9e81b43814b9ea43ae3d82de69f1705ed94",
+          "bytes": 146852,
+          "alphaPreservedExactly": true
+        }
+      ],
+      "motionBounds": [
+        {
+          "partAnglesDegrees": [0, 0],
+          "visibleAlphaAbove32Bounds": [2.0, 24.545, 258.0, 199.636]
+        },
+        {
+          "partAnglesDegrees": [-30, 30],
+          "visibleAlphaAbove32Bounds": [-16.238, 57.091, 276.708, 199.636]
+        },
+        {
+          "partAnglesDegrees": [35, -35],
+          "visibleAlphaAbove32Bounds": [42.654, -19.968, 219.016, 199.636]
+        },
+        {
+          "partAnglesDegrees": [-16, 16],
+          "visibleAlphaAbove32Bounds": [-11.42, 54.132, 271.213, 199.636]
+        }
+      ]
+    }
+  ]
+}

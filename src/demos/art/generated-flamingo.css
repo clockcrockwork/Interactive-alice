@@ -1,0 +1,37 @@
+@layer tokens, base, layout, scene, utilities;
+
+@layer scene {
+  /* The long neck belongs to the body. Rotate its separate head about the
+     measured overlap, without the old vector's large skew/translation. */
+  svg[data-generated-rig="flamingo"][data-rig-ready] .cq__flamingo-head {
+    transform: rotate(calc(var(--sulk) * 52deg - var(--nod) * 6deg));
+  }
+
+  .cq__flamingo[data-looking] svg[data-generated-rig="flamingo"][data-rig-ready] .cq__flamingo-head,
+  .cq__flamingo[data-puzzled]
+    svg[data-generated-rig="flamingo"][data-rig-ready]
+    .cq__flamingo-head {
+    transform: rotate(calc(52deg + var(--look-x) * 1deg - var(--nod) * 6deg));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cq__flamingo[data-mood] svg[data-generated-rig="flamingo"][data-rig-ready] .cq__flamingo-head {
+      transform: none;
+    }
+
+    .cq__flamingo[data-mood="wary"]
+      svg[data-generated-rig="flamingo"][data-rig-ready]
+      .cq__flamingo-head {
+      transform: rotate(24deg);
+    }
+
+    .cq__flamingo[data-mood="sulking"]
+      svg[data-generated-rig="flamingo"][data-rig-ready]
+      .cq__flamingo-head,
+    .cq__flamingo[data-puzzled]
+      svg[data-generated-rig="flamingo"][data-rig-ready]
+      .cq__flamingo-head {
+      transform: rotate(52deg);
+    }
+  }
+}

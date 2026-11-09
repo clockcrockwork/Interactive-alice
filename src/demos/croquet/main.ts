@@ -572,7 +572,6 @@ function mount(shell: DemoShell): void {
   const hold = hands.querySelector<HTMLElement>('.cq__hold') ?? hands;
   between(hands, iFlamingo, iGrin + 0.6);
   const flamingo = hands.querySelector<HTMLElement>('.cq__flamingo') ?? hands;
-  const head = hands.querySelector<SVGUseElement>('.cq__flamingo-head');
   const strokeZone = hands.querySelector<HTMLElement>('.cq__stroke');
   const flamingoState = { looking: false, puzzled: false, away: false, swinging: false };
   master.fromTo(
@@ -695,8 +694,8 @@ function mount(shell: DemoShell): void {
       flamingo.toggleAttribute('data-looking', looking);
     }
     // The pupils follow the pointer a little while it looks at you.
-    if (head && (looking || flamingoState.puzzled)) {
-      head.style.setProperty('--look-x', (shell.pointer.x * 4).toFixed(2));
+    if (looking || flamingoState.puzzled) {
+      flamingo.style.setProperty('--look-x', (shell.pointer.x * 4).toFixed(2));
     }
   });
   const strike = (): void => {

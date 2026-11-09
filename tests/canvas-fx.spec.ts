@@ -740,6 +740,9 @@ test.describe('on a phone', () => {
       expect(stirred.moved, 'a tap works exactly like a click').toBe(true);
 
       await expect.poll(async () => (await fxOne(page)).detail.impulse, { timeout: 5000 }).toBe(0);
+      await expect
+        .poll(async () => (await fxOne(page)).detail.looping, { timeout: 5000 })
+        .toBe(false);
       expect((await canvasSignature(page)).hash).toBe(resting.hash);
     });
   }

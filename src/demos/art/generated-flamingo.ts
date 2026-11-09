@@ -40,7 +40,7 @@ export function generatedFlamingoSvg(
   // Animate the rendered use instances, not their definitions. CSS transforms on
   // a node inside <defs> are not consistently painted by Chromium's <use> shadow
   // tree, especially with reduced motion's immediate transform changes.
-  const mounted = `<g class="cq__flamingo-body" data-rig-part="" style="--rig-origin: 170px 300px"><use href="#${bodyId}"/>${generated(`<g data-flamingo-head-mounted=""><use class="cq__flamingo-head" href="#${headId}" style="--rig-origin: ${650 * scale}px ${310 * scale}px"/></g>`)}</g>`;
+  const mounted = `<g class="cq__flamingo-body" data-rig-part="" style="--rig-origin: 170px 300px"><use href="#${bodyId}"/>${generated(`<g data-flamingo-head-mounted=""><use class="cq__flamingo-head" data-rig-part="" href="#${headId}" style="--rig-origin: ${650 * scale}px ${310 * scale}px"/></g>`)}</g>`;
   const originalHeadUse = `<g data-flamingo-head-original=""><use class="cq__flamingo-head-fallback" href="#${headId}"/></g>`;
   return `<svg viewBox="0 0 300 420" focusable="false" data-generated-rig="flamingo"><defs>${headDefinition}${bodyDefinition}</defs><g data-flamingo-hands="">${hands}</g>${mounted}${fallback(originalHeadUse)}</svg>`;
 }

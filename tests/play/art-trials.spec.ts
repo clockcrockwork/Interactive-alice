@@ -140,14 +140,25 @@ test.describe('how the figures are drawn', () => {
     await page.goto(url('croquet'));
     const flamingo = page.locator('.cq__flamingo .art--cut');
     await expect(flamingo).toHaveCount(1);
-    // The parts keep their classes, so the demo's transforms on them still apply.
-    await expect(flamingo.locator('g.cq__flamingo-body [data-rig-image]')).toHaveCount(1);
-    await expect(flamingo.locator('g.cq__flamingo-head [data-rig-image]')).toHaveCount(1);
+    const rig = flamingo.locator('svg[data-generated-rig="flamingo"]');
+    await expect(rig).toHaveAttribute('data-rig-ready', '');
+    // The visible <use> instances reference cut-outs held in SVG definitions.
+    const bodyHref = await rig.locator('g.cq__flamingo-body > use').getAttribute('href');
+    const headHref = await rig
+      .locator('g[data-flamingo-head-mounted] > use.cq__flamingo-head')
+      .getAttribute('href');
+    expect(bodyHref).toMatch(/^#art-flamingo-body-/);
+    expect(headHref).toMatch(/^#art-flamingo-head-/);
+    const bodyImage = rig.locator(`defs > g${bodyHref} image[data-rig-image]`);
+    const headImage = rig.locator(`defs > g${headHref} image[data-rig-image]`);
+    await expect(bodyImage).toHaveCount(1);
+    await expect(headImage).toHaveCount(1);
     // The shared SVG keeps its engraved contour paths beneath the generated cut-outs.
-    await expect(flamingo.locator('image')).toHaveCount(2);
-    const loaded = await flamingo.locator('image').evaluateAll((images) =>
+    const images = rig.locator('image[data-rig-image]');
+    await expect(images).toHaveCount(2);
+    const loaded = await images.evaluateAll((nodes) =>
       Promise.all(
-        images.map(
+        nodes.map(
           (image) =>
             new Promise<boolean>((resolve) => {
               const probe = new Image();

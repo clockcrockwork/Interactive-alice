@@ -36,7 +36,7 @@ describe('generated croquet flamingo', () => {
     expect(html.match(/class="cq__flamingo-head"/g)).toHaveLength(1);
     expect(html.match(/class="cq__flamingo-eye"/g)).toHaveLength(2);
     expect(html).toMatch(
-      /<g class="cq__flamingo-body"[^>]*><use href="#art-flamingo-body-\d+"\/><g data-rig-generated="" visibility="hidden" display="none"><g data-flamingo-head-mounted=""><use class="cq__flamingo-head" href="#art-flamingo-head-\d+"/,
+      /<g class="cq__flamingo-body"[^>]*><use href="#art-flamingo-body-\d+"\/><g data-rig-generated="" visibility="hidden" display="none"><g data-flamingo-head-mounted=""><use class="cq__flamingo-head" data-rig-part="" href="#art-flamingo-head-\d+"/,
     );
     expect(html).toMatch(
       /data-flamingo-head-original=""><use class="cq__flamingo-head-fallback" href="#art-flamingo-head-\d+"\/>/,
@@ -83,13 +83,17 @@ describe('generated croquet flamingo', () => {
   it('retains live scene mood, pointer, swing and pause consumers', () => {
     const runtime = readFileSync(new URL('../croquet/main.ts', import.meta.url), 'utf8');
     const css = readFileSync(new URL('../croquet/croquet.css', import.meta.url), 'utf8');
-    expect(runtime).toContain("querySelector<SVGUseElement>('.cq__flamingo-head')");
-    expect(runtime).toContain("head.style.setProperty('--look-x'");
+    expect(runtime).toContain("flamingo.style.setProperty('--look-x'");
+    expect(runtime).not.toContain("head.style.setProperty('--look-x'");
     expect(runtime).toContain("flamingo.style.setProperty('--mood'");
     expect(runtime).toContain("flamingo.style.setProperty('--nod'");
     expect(runtime).toContain('swing.to(flamingo');
     expect(css).toContain('.demo[data-paused] .cq__flamingo-body');
     expect(css).toContain('prefers-reduced-motion');
+    expect(css).toContain('--look-x: 0');
+    expect(css).toContain('--sulk: calc(1 - var(--mood))');
+    expect(css).toContain('.cq__flamingo[data-mood="sulking"] .cq__flamingo-head-fallback');
+    expect(css).toContain('.cq__flamingo[data-puzzled] .cq__flamingo-head-fallback');
   });
 
   it('uses ready-only joint rotation and retains three reduced-motion mood cuts', () => {

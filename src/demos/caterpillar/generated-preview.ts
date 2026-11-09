@@ -1,4 +1,4 @@
-import { type ArtStyle, artStyle } from '../art/treatments.ts';
+import { type ArtStyle, artStyle, isLocalPreviewHost } from '../art/treatments.ts';
 
 /** The comparison controls remain opt-in; ordinary engraved pages use the new art. */
 export const previewEnabled = (search: string): boolean =>
@@ -45,7 +45,11 @@ export const previewPlacement = () => {
 };
 
 export function installGeneratedPreview(root: HTMLElement, ui: Record<string, string>): void {
-  if (!mushroomEnabled(window.location.search, artStyle())) return;
+  if (
+    !isLocalPreviewHost(window.location.hostname) ||
+    !mushroomEnabled(window.location.search, artStyle())
+  )
+    return;
   const figure = root.querySelector<HTMLElement>('.ct__mushroom > .art');
   if (!figure) return;
   const source = previewSource();

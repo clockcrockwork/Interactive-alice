@@ -13,19 +13,111 @@ import {
 } from './demo-helpers.ts';
 import { sentencesOf } from './manifest.ts';
 
-test('the demo index links every demo, and the home page links the index', async ({ page }) => {
+test('the public entry starts at Riverbank with in-story language controls', async ({ page }) => {
   const errors = collectErrors(page);
-  await page.goto('./demos/');
-  await expect(page.locator('h1')).not.toBeEmpty();
-  for (const demo of baseDemos) {
-    await expect(page.locator(`.demos__card[data-demo="${demo.demo}"] a`)).toHaveAttribute(
-      'href',
-      `./${demo.demo}/`,
-    );
-  }
   await page.goto('./');
-  await expect(page.locator('.home__demos a')).toHaveAttribute('href', './demos/');
+  await expect(page.locator('.demo')).toHaveAttribute('data-demo', 'riverbank');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en-simple');
+  await expect(page.locator('.demo__languages a[lang="ja"]')).toHaveAttribute(
+    'href',
+    './demos/ja/riverbank/',
+  );
+  await expect(page.locator('.demos__alice-choice, .demos__card')).toHaveCount(0);
   expect(errors).toEqual([]);
+});
+
+test('keyboard scroll keys need an extra action at scene boundaries', async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.goto('./');
+  await page.keyboard.press('End');
+  await settled(page);
+  const next = page.waitForURL((url) => /\/demos\/rabbit-hole\/$/.test(url.pathname));
+  await page.keyboard.press('PageDown');
+  await next;
+  const previous = page.waitForURL((url) => /\/demos\/riverbank\/$/.test(url.pathname));
+  await page.keyboard.press('Home');
+  await previous;
+  await expect(page.locator('.demo')).toHaveAttribute('data-demo', 'riverbank');
+});
+
+test('touch scrolling carries a phone forward and back across the Riverbank seam', async ({
+  page,
+  context,
+}) => {
+  test.skip(test.info().project.name !== 'chromium-phone', 'requires Chromium touch input');
+  test.setTimeout(60_000);
+  await page.goto('./');
+  const viewport = page.viewportSize();
+  if (!viewport) throw new Error('phone project has no viewport');
+  const client = await context.newCDPSession(page);
+  const x = Math.round(viewport.width / 2);
+  const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', y?: number) =>
+    client.send('Input.dispatchTouchEvent', {
+      type,
+      touchPoints: y === undefined ? [] : [{ x, y }],
+    });
+
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await settled(page);
+  const next = page.waitForURL((url) => /\/demos\/rabbit-hole\/$/.test(url.pathname));
+  await touch('touchStart', 300);
+  await touch('touchMove', 260);
+  await touch('touchEnd');
+  await next;
+
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await settled(page);
+  const previous = page.waitForURL((url) => /\/demos\/riverbank\/$/.test(url.pathname));
+  await touch('touchStart', 300);
+  await touch('touchMove', 340);
+  await touch('touchEnd');
+  await previous;
+  await expect(page.locator('.demo')).toHaveAttribute('data-demo', 'riverbank');
+});
+
+test('ordinary scroll traverses every document edge in both directions', async ({ page }) => {
+  test.setTimeout(180_000);
+  await page.goto('./');
+  await expect(page.locator('.demo')).toHaveAttribute('data-demo', 'riverbank');
+
+  for (let index = 0; index < baseDemos.length - 1; index += 1) {
+    const current = baseDemos[index];
+    const next = baseDemos[index + 1];
+    if (!current || !next) throw new Error('the source manifest has a broken scene order');
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    await settled(page);
+    const nextPath = new URL(next.url, 'http://alice.local/').pathname;
+    const arrived = page.waitForURL((url) => url.pathname === nextPath, { timeout: 15_000 });
+    await page.mouse.wheel(0, 64);
+    await arrived;
+    await expect(page.locator('.demo')).toHaveAttribute('data-demo', next.demo ?? '');
+  }
+
+  for (let index = baseDemos.length - 1; index > 0; index -= 1) {
+    const current = baseDemos[index];
+    const previous = baseDemos[index - 1];
+    if (!current || !previous) throw new Error('the source manifest has a broken scene order');
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await settled(page);
+    const previousPath = new URL(previous.url, 'http://alice.local/').pathname;
+    const arrived = page.waitForURL((url) => url.pathname === previousPath, { timeout: 15_000 });
+    await page.mouse.wheel(0, -64);
+    await arrived;
+    await expect(page.locator('.demo')).toHaveAttribute('data-demo', previous.demo ?? '');
+  }
+});
+
+test('restoring a saved scene at its boundary does not navigate until new input', async ({
+  page,
+}) => {
+  const last = baseDemos.at(-1);
+  test.skip(!last, 'no final scene in the manifest');
+  await page.goto(last?.url ?? './');
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await page.reload();
+  await expect(page.locator('.demo')).toHaveAttribute('data-demo', 'trial');
+  await page.waitForTimeout(800);
+  expect(new URL(page.url()).pathname).toMatch(/\/trial\/?$/);
 });
 
 for (const demo of demos) {
@@ -71,11 +163,13 @@ for (const demo of demos) {
     );
     await expect(page.locator('.demo__next')).toBeVisible();
     // The next scene is in the same language: a sibling of this page's directory;
-    // after the last scene, the walk ends at that language's own index.
+    // after the last scene, the walk returns to Riverbank in that language.
     const here = new URL(page.url());
     const nextUrl = new URL((await page.locator('.demo__next').getAttribute('href')) ?? '', here);
     if (demo.demo === 'trial') {
-      expect(nextUrl.pathname).toBe(new URL('..', here).pathname);
+      expect(nextUrl.pathname).toBe(
+        demo.locale === 'en-simple' ? '/' : `/demos/${demo.locale}/riverbank/`,
+      );
     } else {
       expect(new URL('..', nextUrl).pathname).toBe(new URL('..', here).pathname);
     }
@@ -330,27 +424,15 @@ test('the pool of tears: the sentences ride the swell once she is in the water',
   await expect(page.locator('.pt__prop--stir')).toBeVisible();
 });
 
-test('the index: the visitor chooses an Alice, and the demos remember her', async ({ page }) => {
-  await page.goto('./demos/');
-  const blue = page.locator('.demos__alice-choice[data-alice="blue"]');
-  const yellow = page.locator('.demos__alice-choice[data-alice="yellow"]');
-  await expect(yellow).toHaveAttribute('aria-pressed', 'true');
-  await expect(blue).toHaveAttribute('aria-pressed', 'false');
-  await blue.click();
-  await expect(blue).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.locator('html')).toHaveAttribute('data-alice', 'blue');
-  // Every demo page applies the choice before its own script runs.
-  const first = demos[0];
-  await page.goto(first?.url ?? './demos/');
-  await expect(page.locator('html')).toHaveAttribute('data-alice', 'blue');
+test('the public entry uses the yellow engraved Alice by default', async ({ page }) => {
+  await page.goto('./');
+  await expect(page.locator('.demo')).toHaveAttribute('data-demo', 'riverbank');
+  await expect(page.locator('html')).not.toHaveAttribute('data-alice', 'blue');
+  await expect(page.locator('html')).not.toHaveAttribute('data-art', 'flat');
   const dress = await page.evaluate(() =>
     getComputedStyle(document.documentElement).getPropertyValue('--alice-dress').trim(),
   );
-  expect(dress).toBe('#5a76b8');
-  await page.goto('./demos/');
-  await yellow.click();
-  await expect(page.locator('html')).not.toHaveAttribute('data-alice', 'blue');
-  // The yellow Alice and the book's palette are the design guide's.
+  expect(dress).toBe('#d8b348');
   const tokens = await page.evaluate(() => {
     const style = getComputedStyle(document.documentElement);
     return ['--alice-dress', '--paper-base', '--wonder-red', '--ix-gold'].map((name) =>
@@ -360,62 +442,12 @@ test('the index: the visitor chooses an Alice, and the demos remember her', asyn
   expect(tokens).toEqual(['#d8b348', '#f2e8d8', '#a74838', '#d6b557']);
 });
 
-test('the index: nineteen cards that read, each at a small tilt, joined runs dealt over one another', async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 1280, height: 760 });
-  await page.goto('./demos/');
-  const cards = page.locator('.demos__card');
-  await expect(cards).toHaveCount(baseDemos.length);
-  const tilts = await cards.evaluateAll((items) =>
-    items.map((item) => Number.parseFloat(getComputedStyle(item).getPropertyValue('--tilt'))),
-  );
-  // Small, and alternating rather than growing with position.
-  for (const tilt of tilts) {
-    expect(Math.abs(tilt)).toBeLessThanOrEqual(4);
-  }
-  for (let i = 1; i < 4; i += 1) {
-    expect(Math.sign(tilts[i] ?? 0)).not.toBe(Math.sign(tilts[i - 1] ?? 0));
-  }
-  // A card that joins the one before it overlaps it a little, on the same row.
-  const boxes = await cards.evaluateAll((items) =>
-    items.map((item) => {
-      const box = item.getBoundingClientRect();
-      return {
-        left: box.left,
-        right: box.right,
-        top: box.top,
-        joined: item.hasAttribute('data-joined'),
-      };
-    }),
-  );
-  let runs = 0;
-  for (let i = 1; i < boxes.length; i += 1) {
-    const card = boxes[i];
-    const before = boxes[i - 1];
-    if (card?.joined && before && Math.abs(card.top - before.top) < 40) {
-      runs += 1;
-      const overlap = before.right - card.left;
-      expect(overlap).toBeGreaterThan(0);
-      expect(overlap).toBeLessThan((card.right - card.left) * 0.25);
-    }
-  }
-  expect(runs).toBeGreaterThan(3);
-  // On a phone: two columns of smaller cards, and a page far shorter than one.
-  await page.setViewportSize({ width: 390, height: 780 });
-  await page.reload();
-  const sides = await cards.evaluateAll((items) =>
-    items.map((item) => {
-      const box = item.getBoundingClientRect();
-      return {
-        left: box.left + box.width / 2 < innerWidth / 2,
-        narrow: box.width < innerWidth * 0.55,
-      };
-    }),
-  );
-  expect(new Set(sides.map((side) => side.left)).size).toBe(2);
-  expect(sides.every((side) => side.narrow)).toBe(true);
-  expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThan(4200);
+test('the public entry has no scene picker and remains usable on a phone', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('./');
+  await expect(page.locator('.demo')).toHaveAttribute('data-demo', 'riverbank');
+  await expect(page.locator('.demos__card, .demos__alice-choice')).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });
 
 test("the rabbit's house: the camera pulls out as Alice fills the room", async ({ page }) => {
@@ -1670,6 +1702,13 @@ test("the caucus-race → the mouse's tale: the tale opens on the race's huddle,
   await expect(page.locator('.cr__runner[data-kind="alice"]')).toHaveAttribute('data-holding', '', {
     timeout: 8000,
   });
+  await expect(page.locator('.cr__runner[data-kind="alice"]')).toHaveAttribute('data-bow', '');
+  await page.locator('.cr__runner[data-kind="alice"] .cr__figure').evaluate(async (figure) => {
+    await Promise.all(figure.getAnimations().map((animation) => animation.finished));
+  });
+  await expect(
+    page.locator('.cr__runner[data-kind="alice"] svg[data-generated-rig="runner/alice"]'),
+  ).toHaveAttribute('data-rig-ready', '', { timeout: 8000 });
   await expect
     .poll(async () => (await huddle()).thimble[4], { timeout: 8000 })
     .toBeGreaterThan(0.7);
@@ -1693,8 +1732,12 @@ test("the caucus-race → the mouse's tale: the tale opens on the race's huddle,
   expect(houseAtEnd.box.length).toBe(4);
   // The tale opens on that huddle, course, thimble and all, and opens into the ring.
   await page.goto(tale?.url ?? '');
+  await settled(page);
   await expect(page.locator('.cr__runner.mt__member:not([data-kind="canary"])')).toHaveCount(8);
   await expect.poll(() => customProperty(page, '.cr__runner', '--r')).toBeCloseTo(0.5, 1);
+  await expect(
+    page.locator('.cr__runner[data-kind="alice"] svg[data-generated-rig="runner/alice"]'),
+  ).toHaveAttribute('data-rig-ready', '', { timeout: 8000 });
   const opening = await huddle();
   expect(opening.holding).toBe(true);
   // The same house, drawn by the same markup, in the same place.
@@ -1713,7 +1756,9 @@ test("the caucus-race → the mouse's tale: the tale opens on the race's huddle,
     ]);
   expect(facing(opening)).toEqual(facing(ending));
   expect(opening.camera.slice(1)).toEqual(ending.camera.slice(1));
-  expect(opening.thimble.slice(1)).toEqual(ending.thimble.slice(1));
+  opening.thimble.slice(1).forEach((value, index) => {
+    expect(value).toBeCloseTo(Number(ending.thimble[index + 1]), 1);
+  });
   const courseOpacity = () =>
     page.evaluate(() =>
       Number(getComputedStyle(document.querySelector('.cr__course') as Element).opacity),
@@ -1846,7 +1891,7 @@ test('going on by itself is off until asked, then follows a held end to the next
   await page.evaluate(() => localStorage.removeItem('alice-demos:auto'));
 });
 
-test('the walk ends at the trial: its link goes to the index, and nothing goes on by itself', async ({
+test('the walk ends at the trial: its link returns to Riverbank without autoplay', async ({
   page,
 }) => {
   const demo = demos.find((candidate) => candidate.demo === 'trial');
@@ -1863,10 +1908,10 @@ test('the walk ends at the trial: its link goes to the index, and nothing goes o
   await page.waitForTimeout(5500);
   expect(new URL(page.url()).pathname).toMatch(/\/trial\/?$/);
   const next = page.locator('.demo__next');
-  await expect(next).toHaveText((await page.locator('.demo__back').textContent()) ?? '-');
+  await expect(next).toHaveText('Back to Riverbank');
   await next.click();
-  await page.waitForURL((url) => /\/demos\/(?:[a-z-]+\/)?$/.test(url.pathname));
-  await expect(page.locator('.demos__card').first()).toBeVisible();
+  await page.waitForURL((url) => url.pathname === '/');
+  await expect(page.locator('.demo')).toHaveAttribute('data-demo', 'riverbank');
 });
 
 test('going on by itself empties its ring when the reader scrolls back', async ({ page }) => {

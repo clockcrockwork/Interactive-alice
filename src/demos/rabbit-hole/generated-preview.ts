@@ -1,5 +1,5 @@
 import { type AliceVariant, aliceVariant } from '../art/art.ts';
-import { artStyle } from '../art/treatments.ts';
+import { artStyle, isLocalPreviewHost } from '../art/treatments.ts';
 
 /** Opt-in, scene-local comparison. The source master is not an articulated rig. */
 export const previewEnabled = (search: string): boolean =>
@@ -27,7 +27,7 @@ export const previewSource = (
       };
 
 export function installGeneratedPreview(root: HTMLElement, ui: Record<string, string>): void {
-  if (artStyle() !== 'engraved') return;
+  if (!isLocalPreviewHost(window.location.hostname) || artStyle() !== 'engraved') return;
   const figure = root.querySelector<HTMLElement>('.rh__alice > .art');
   if (!figure) return;
   const compare = previewEnabled(window.location.search);

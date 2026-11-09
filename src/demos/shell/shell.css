@@ -235,6 +235,32 @@
     min-inline-size: var(--demo-target-min);
   }
 
+  .demo__languages {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex: 0 0 auto;
+    max-inline-size: 34vw;
+    overflow-x: auto;
+    font-size: 0.72rem;
+    white-space: nowrap;
+  }
+
+  .demo__languages a,
+  .demo__languages span {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .demo__languages span {
+    opacity: 0.72;
+  }
+
+  .demo__languages a:focus-visible {
+    outline: 2px solid var(--ix-gold);
+    outline-offset: 2px;
+  }
+
   /* A control the shell has not offered (no script ran, or the staging was rolled
      back) stays out of sight, whatever display a narrow bar gives its pills. */
   .demo__bar [hidden],

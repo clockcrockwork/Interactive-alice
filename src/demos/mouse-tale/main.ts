@@ -1015,13 +1015,6 @@ function mount(shell: DemoShell): void {
   // on a narrow screen, where the race's last frame left it; it fills the frame
   // by the end.
   const house = DISTANT_HOUSE(lite);
-  // On a tall phone the house is a horizon landmark, not a prop beside the
-  // birds: keep it smaller and lower in the distant bank.
-  if (lite) {
-    house.hx = 42;
-    house.hy = -16;
-    house.hz = 0.05;
-  }
   const applyHouse = (): void => {
     arrival.style.setProperty('--hx', house.hx.toFixed(2));
     arrival.style.setProperty('--hy', house.hy.toFixed(2));

@@ -51,11 +51,11 @@ Each page is a real HTML file, so the site works with JavaScript disabled or
 still loading, and every page is independently linkable and cacheable.
 
 ```text
-/                     language pick + entry
+/                     Riverbank, the canonical public opening
 /<locale>/            story entry for that language
 /<locale>/<part>/     one part of the story, hosting one or more Scenes
-/demos/               the concept demos and their index, in the base locale; see concept-demos.md
-/demos/<locale>/      the same demos in another language, under the same scheme
+/demos/<id>/          direct links to ordered scenes in the base locale
+/demos/<locale>/<id>/ direct links to scenes in another language
 ```
 
 All three levels are generated from the data. Every registered language has an entry
@@ -66,11 +66,13 @@ means for the site.
 The locale lives in the path, which keeps the static output free of negotiation
 logic and lets a CDN cache each language separately. No cookie, no redirect, no
 runtime language switch that rewrites the DOM: switching language navigates to the
-sibling URL. The demos follow the same rule with one difference kept on purpose:
-the base locale's demos stay at the plain `/demos/<id>/` URLs they were published
-at, and every other locale's are at `/demos/<locale>/<id>/`. Each demo index links
-the others (a link, not a stored preference), and a demo page links only to pages in
-its own language.
+sibling URL. The scenes follow the same rule with one difference kept on purpose:
+the base locale's Riverbank page is also served at `/`, while direct scene links stay
+at `/demos/<id>/`; other locales are at `/demos/<locale>/<id>/`. A quiet in-story
+link switches the current scene's language. The Riverbank page is the public opening;
+no public scene index or art-style choice precedes it. Ordinary vertical scrolling
+crosses document boundaries in both directions, with a fresh edge gesture required
+to navigate so loading or restoring a page cannot send the reader away.
 
 ### A document is not a Scene
 

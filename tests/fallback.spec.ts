@@ -14,7 +14,7 @@ const sample = demos.filter((page) => SAMPLE.includes(page.demo ?? ''));
 /**
  * Every staged sentence is on the page, shown, in the flow in reading order (no
  * two of them on top of each other), and inside the width of the viewport; and the
- * links on to the next scene and back to the index are there to follow.
+ * next link is there to follow; a previous link exists after Riverbank.
  */
 async function expectReadable(page: Page, segments: readonly string[]): Promise<void> {
   await expect(page.locator('.demo')).not.toHaveAttribute('data-attached', '');
@@ -53,7 +53,8 @@ async function expectReadable(page: Page, segments: readonly string[]): Promise<
   await expect(page.locator('.demo__auto')).toBeHidden();
   await expect(page.locator('.demo__end')).not.toHaveAttribute('inert', '');
   await expect(page.locator('.demo__next')).toBeVisible();
-  await expect(page.locator('.demo__back')).toBeVisible();
+  if (await page.locator('.demo__back').count())
+    await expect(page.locator('.demo__back')).toBeVisible();
 }
 
 /** The next link and the back link go where they say. */
@@ -63,10 +64,12 @@ async function expectLinksWork(page: Page): Promise<void> {
   await page.locator('.demo__next').click();
   await page.waitForURL(next.href);
   await page.goto(here);
-  const back = new URL((await page.locator('.demo__back').getAttribute('href')) ?? '', here);
-  await page.locator('.demo__back').click();
-  await page.waitForURL(back.href);
-  await expect(page.locator('h1')).not.toBeEmpty();
+  if (await page.locator('.demo__back').count()) {
+    const back = new URL((await page.locator('.demo__back').getAttribute('href')) ?? '', here);
+    await page.locator('.demo__back').click();
+    await page.waitForURL(back.href);
+    await expect(page.locator('h1')).not.toBeEmpty();
+  }
 }
 
 test.describe('with JavaScript switched off', () => {

@@ -1,17 +1,16 @@
 # Concept demos
 
-> Canonical document for the nineteen standalone concept demos under `/demos/`: what they are for, how they relate to the story runtime, what each one stages, and how they are checked. Product intent is in [`product-principles.md`](product-principles.md); the story runtime is in [`scene-shot-model.md`](scene-shot-model.md) and [`frontend-architecture.md`](frontend-architecture.md).
+> Canonical document for the nineteen authored scenes: what each stages, how they relate to the runtime, and how they are checked. Public navigation begins at Riverbank and follows the story order. Product intent is in [`product-principles.md`](product-principles.md); runtime decisions are in [`scene-shot-model.md`](scene-shot-model.md) and [`frontend-architecture.md`](frontend-architecture.md).
 
 ## 1. What they are
 
-Nineteen ambitious, self-contained stagings of one moment of the book each, built to
-show how far an interactive telling can go before the story runtime is asked to carry
-it. They are demonstrations, not the product: each one chooses the technique that
-makes its moment strongest and spends its budget on that.
+Nineteen authored, self-contained stagings of the book's moments. Together they form
+the public work, in reading order; each uses the technique that best serves its scene.
 
 ```text
-/demos/                  the index: nineteen cards on a table, and the choice of Alice
-/demos/riverbank/        A Golden Afternoon: the bank, a book without pictures, a rabbit with a watch
+/                       A Golden Afternoon: Riverbank, the canonical public opening
+/demos/riverbank/        Riverbank's compatible direct link
+/demos/<id>/            the next scenes, in story order, through the trial
 /demos/rabbit-hole/      Down the Rabbit-Hole: a WebGL well the camera falls down
 /demos/drink-me/         Drink Me: a first-person hall in CSS 3D that scales around her
 /demos/pool-of-tears/    The Pool of Tears: a Canvas sea the reader can stir
@@ -30,8 +29,7 @@ makes its moment strongest and spends its budget on that.
 /demos/lobster-quadrille/ The Lobster Quadrille: a dance on the shore the reader joins
 /demos/witnesses/        Who Stole the Tarts?: the court through its doors, the witnesses, Alice a mile high
 /demos/trial/            Sentence First: the pack flies, the leaves fall, her sister's dream
-/demos/ja/               the same index and the same nineteen, in Japanese (§1, Locales)
-/demos/ja/<id>/          ...one page per demo, for every demo Japanese can show
+/demos/ja/<id>/          each published scene in Japanese (§1, Locales)
 ```
 
 ### Colour, and which Alice
@@ -48,21 +46,13 @@ tokens resolve from them, and no literal colour names a thing a token could. A d
 that steps off the palette on purpose says so in its section below, under
 *Off the palette*.
 
-The index deals the nineteen cards in the book's order. Each lies at its own small
-tilt, written by the build and alternating; a card whose demo joins the one before
-it lies a little over that card's edge, a dealt run; on a phone the cards are two
-columns, smaller.
-
-The index offers two Alices, and every demo draws the one chosen. The **yellow
-Alice** is the guide's, and the default: yellow dress, white apron, brown hair, the
-earlier Alice for those who remember her. The **blue Alice** is the one everyone
-knows: blue dress, fair hair. The choice is the set of Alice tokens (`--alice-hair`,
+The public work uses the **yellow Alice**: yellow dress, white apron and brown hair.
+The blue Alice and alternate flat/paper renderings remain available to internal
+tests, but have no visitor-facing picker and are not applied from old local storage.
+Every public page uses the engraved default. The tokens (`--alice-hair`,
 `--alice-dress`, `--alice-apron`, `--alice-skin`, `--alice-shoes`, `--alice-band`,
-`--alice-shadow`, with their light and shadow steps) on the root, switched by
-`data-alice="blue"`, remembered in the visitor's own browser under the demos' key,
-and applied by a line in each page's head before first paint so no figure flashes the
-other colours. Every Alice in the demos, SVG or Canvas, reads those tokens; nothing
-names a colour of hers directly. The words on the picker are UI copy in `ui.json`.
+`--alice-shadow`, and their light and shadow steps) remain the source for figures in
+SVG or Canvas.
 
 **Off the palette, on purpose.** Where a moment earns it, a demo steps off the resting
 palette, always inside the guide's own colours and always transiently:
@@ -91,14 +81,13 @@ palette, always inside the guide's own colours and always transiently:
 - the quadrille's thrown lobster trails coral;
 - the trial keeps to red and sepia, with gold only on the jurors' focus;
 - the kitchen's invitation is sealed with the Queen's red heart;
-- the index's cards lift with a gold edge.
+- the courtroom's focus treatment carries a gold edge.
 
 ### Locales
 
-The demos are built in every language in `text/locales.json`. The base locale's
-pages keep the URLs they were first published at (`/demos/`, `/demos/<id>/`); every
-other locale's are one level down, `/demos/<locale>/` and `/demos/<locale>/<id>/`,
-mirroring the story's `/<locale>/` scheme without moving the English. Every page
+The scenes are built in every language in `text/locales.json`. The base locale's
+public opening is `/`; direct scene links remain under `/demos/<id>/`. Other locale
+pages live at `/demos/<locale>/<id>/`. Every page
 carries its locale's profile on the root (`<html lang dir data-line-break
 data-significant-spaces data-set-apart data-word-unit data-emphasis data-glyph-width
 data-numbers>`), from the registry and written by the same function as the story's
@@ -106,22 +95,21 @@ pages ([`text-experience-binding.md`](text-experience-binding.md) §9), and ever
 in that language; titles, card descriptions (`demoTech*`) and every label come from
 that locale's `ui.json`.
 
-- **Publishability is derived.** A demo has a page in a language when its title and
+- **Publishability is derived.** A scene has a page in a language when its title and
   every segment it stages have text there (`isPublishable` in `build/demos.ts`);
-  nothing falls back to English. A demo that cannot be shown yet keeps its card on
-  that language's index, face down: titled in the base locale under that locale's
-  own `lang`, with the `partPending` note, and no link. In the base locale a missing
-  segment is a build error. Japanese publishes all nineteen today.
-- **The language switch** is a row of links above each index's title, every language
-  named in its own words (`nativeName`), the page's own marked `aria-current`. It is
+  nothing falls back to English. A scene that cannot be shown in a locale has no
+  route there. In the base locale a missing segment is a build error. Japanese
+  publishes all nineteen today.
+- **The language switch** is a quiet row in each scene bar, each language named in
+  its own words (`nativeName`), the page's own marked `aria-current`. It is
   a link, not stored state: the URL is the choice.
 - **Staying in the language.** "Next scene", the back link, going on by itself and the
   page transitions all stay inside the page's locale: "Next scene" goes to the next
   demo this locale publishes, skipping one it cannot show, and the transition kind
   is read from the demo id wherever it sits in the path.
-- **Shared across languages.** The visitor's Alice, drawing, going-on-by-itself and
-  keepsakes are stored under the same keys for every language (`alice-demos:*`): they
-  are the reader's choices and the reader's record of play, not the language's, so a
+- **Shared across languages.** The reader's going-on-by-itself setting and keepsakes
+  are stored under the same keys for every language (`alice-demos:*`): they are the
+  reader's choices and record of play, not the language's, so a
   daisy chain kept in English lies on the bank in Japanese too. No storage was added.
 - **Things that ride on a word: realia.** Where a picture or a measure rides on a word
   of the text, the thing is the locale's, in `text/locales/<locale>/realia.json`, and
@@ -212,13 +200,14 @@ The three contexts are covered: `figure()` for HTML (an `<img>` per variant, the
 page's `data-alice` showing one), `svgFigure()` for a figure placed inside another
 SVG (an `<image>` per variant), and `loadArtImage()` for a Canvas, which draws its
 own vector stand-in until an image is registered. Alice's two looks come from tokens
-for vectors and from a file per variant for images; the picker changes nothing else.
+for vectors and from a file per variant for images; both variants remain internal.
 The figures are drawn **engraved**, the look chosen after a trial of treatments, and it
 is delivered through this image path: baked pictures where a figure has one, cut-outs
 (one picture per moving part) where a demo moves its parts, and the engraved filter at
 runtime only for what is left; a demo on a dark ground (`"ground": "dark"` in its file)
-gives its figures a paper rim. The index still offers flat and cut paper for now. The
-decision, its reasons and what remains open: [`art-trials.md`](art-trials.md).
+gives its figures a paper rim. Flat and cut-paper variants are retained for internal
+comparison tests and do not appear in visitor output. The decision, its reasons and
+what remains open: [`art-trials.md`](art-trials.md).
 
 **One Cat, one pair of hands.** A figure that appears in more than one demo is
 drawn once. The Cheshire Cat's face (`catFace()` in `art/vectors.ts`: ears, face,
@@ -239,10 +228,9 @@ a beat carries for what happens in it (`drop`, `jar`, `attack`), never by beat i
 index. That is the same boundary the story keeps, drawn with a lighter tool.
 
 **Not shared: the budgets.** The story's per-page budgets in
-[`performance-budget.md`](performance-budget.md) §2 do not apply to the demos; they
-have their own line there. The Three.js demo alone is larger than a story page is
-allowed to be, and that is the point of a concept demo: to find out what a moment is
-worth before deciding what it may cost.
+[`performance-budget.md`](performance-budget.md) §2 do not currently apply to these
+pages. Existing size figures remain a baseline for the Phase B review; this phase does
+not set a new budget or change the shared performance architecture.
 
 ## 3. The shell
 
@@ -348,8 +336,8 @@ leans (`shell/tilt.ts`). Not offered under reduced motion.
 
 **Transitions.** Leaving a page for another sets a view-transition type from the
 destination: a well, the hall or the chimney swallow the screen into a hole; the
-spiral, the pool and the wood whirl it; a court, a race or the index deal it like a
-card. The leaving page sets it on `pageswap` (`shell/transitions.ts`); the arriving
+spiral, the pool and the wood whirl it; the courtroom deals it like a card. The
+leaving page sets it on `pageswap` (`shell/transitions.ts`); the arriving
 page's half runs from a small script in its head (`arrivalScript` in
 `build/demos.ts`), because `pagereveal` fires before any module script, with the
 page's own kind written by the build. That script also absorbs a turn the browser
@@ -365,13 +353,13 @@ the next scene. The ring round the link fills while it waits (in quarters under
 reduced motion), scrolling back empties it, and the motion pause holds it. Off by
 default, and never the only way forward.
 
-**The walk ends at the trial.** *Decision, 2026-10-20.* The demos are a walk through
+**The walk ends at the trial.** *Decision, 2026-10-20.* The scenes are a walk through
 the book, not a loop: the last one a locale publishes (the trial, her sister's dream)
-does not lead round to the riverbank. Its link goes to that locale's demo index and
-is labelled as the bar's back link is (`demoBack`, *All demos*); the page offers no
+does not lead round to the riverbank. Its link goes back to that locale's Riverbank
+route (`demoStart`); the page offers no
 *Go on by itself*, and a choice remembered from the pages before it never fires
 there, so the reader is never carried off the end. `nextDemo()` in `build/demos.ts`
-names the index (`DEMO_INDEX`) for the last demo; the build tests and the browser
+names Riverbank for the last scene; the build tests and the browser
 tests hold both.
 
 **Keepsakes.** A thing the reader does by hand, rather than the story doing it,
@@ -459,12 +447,11 @@ machine whose frames are always that long ran every reaction at a twentieth of i
 speed. So a slow machine shows fewer frames of a two-second wink, not a forty-second
 one.
 
-**Joins.** The demos are viewed in the book's order, and where two adjacent demos are
+**Joins.** The scenes are viewed in the book's order, and where two adjacent scenes are
 one moment of the book they join: the end of the first is staged so that it leads
 straight into the opening of the second, and the opening picks the picture up where
-the first left it. A demo that joins the one before says so in its own file
-(`joinsPrevious` in `experience/demos/<id>.demo.json`), and the index deals its card
-over the one before. Fifteen pairs join today: the riverbank and the rabbit hole at the
+the first left it. A scene that joins the one before says so in its own file
+(`joinsPrevious` in `experience/demos/<id>.demo.json`). Fifteen pairs join today: the riverbank and the rabbit hole at the
 hedge; the rabbit hole and Drink Me through the door in the floor; Drink Me and the
 pool at the roof, in tears; the pool and the race at the bank; the race and the Mouse's
 tale in the huddle; the tale and the house at the house's front; the house and Bill at
@@ -478,7 +465,7 @@ has a reduced-motion version of cuts and cross-fades, and each is described unde
 two demos below. The pairs with another scene of the book between them (Bill and the
 Caterpillar, the Caterpillar and the kitchen, the Cat and the tea-party) change scene through the page transition and
 nothing more. The trial joins nothing after it: the walk ends there, and its link goes
-back to the index (above).
+back to Riverbank.
 
 ## 4. The nineteen demos
 
@@ -1396,14 +1383,14 @@ then the child back.
 
 ## 5. Checks
 
-Unit, `build/demos.test.ts`: the page set and order, every segment present and in
+Unit, `build/demos.test.ts`: the public Riverbank entry, the page set and order, every segment present and in
 composition order with its text, cues written as attributes, titles from the chapter,
 relative URLs, and a refusal when a segment has no text in the base locale; for every
 other locale, its pages under `demos/<locale>/`, all nineteen in Japanese with
 `lang="ja"` and the Japanese sentence (never the English) for every segment, "Next
-scene" inside the locale, the language switch on every index, a demo with a missing
-sentence left out, carded as pending and skipped in the walk, the walk ending at the
-trial (its link the index's, labelled *All demos*, and no *Go on by itself* on it),
+scene" inside the locale, the language switch on every scene, a scene with missing
+text omitted from the locale, the walk ending at the trial (its link back to Riverbank
+and no *Go on by itself* on it),
 every page's root
 carrying its locale's profile, and each locale's realia written onto a page for just
 the ids its demo reads. `shell/words.test.ts` and `mouse-tale/chunks.test.ts` run the
@@ -1463,11 +1450,12 @@ doors and the trial opens inside them; the kitchen ends at the bough the Cat ope
 the Mock Turtle's breath is the quadrille's first sigh; the race's huddle is the tale's
 first frame and the tale's house front is the house's; the tea-party's last cup is the
 Dormouse's first), and scrolling back undoes it; no demo's
-timeline overruns its beats; and the index's picker chooses an Alice the next page
-still wears. The generic page checks run for every locale's pages (the sentences
+timeline overruns its beats; and the public pages use the engraved yellow Alice even
+when older stored comparison preferences are present. The generic page checks run
+for every locale's pages (the sentences
 shown are that locale's, and the next link stays in its directory), the tail's
 readability check runs in each language, and `tests/play/japanese.spec.ts` covers the
-Japanese index and its language switch both ways, the Mock Turtle's quoted subjects on
+Japanese Riverbank and its in-story language switch both ways, the Mock Turtle's quoted subjects on
 the sand, the Dormouse's お, the Cat's lid in the moon (read from realia), the Duchess's
 ribbons with and without a colon, and the tale's words down the tail.
 `tests/play/locale-profile.spec.ts` checks, in every locale, the profile on the root

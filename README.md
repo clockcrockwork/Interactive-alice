@@ -74,7 +74,8 @@ keeps its own licence terms; see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.
 Specification complete for the text layer and the engineering baseline. The first
 implementation milestone is the Rabbit Hole PoC, issue #1.
 
-Nineteen standalone concept demos live under `/demos/` — the golden afternoon on the
+Nineteen authored scenes make up the public experience, beginning with the golden
+afternoon at `/` and continuing under `/demos/` —
 bank, the fall down the rabbit hole
 in WebGL, the hall that grows around Alice as she drinks, the pool of tears on a
 Canvas sea, the Caucus-race as a ring the camera orbits, the Mouse's tale set as a
@@ -86,10 +87,10 @@ Queen's croquet-ground with its live mallets, the walk with the Duchess and her 
 the Mock Turtle's school in the sea, the Lobster Quadrille the reader joins, the
 witness-box where Alice grows too big for the court, and the trial's pack of cards in
 CSS 3D with her sister's dream after it. Where two adjacent demos are one moment of the book,
-the end of one is staged to lead into the opening of the next. The demos wear the
-palette of `docs/visual-design.md`, and the index lets the visitor choose the yellow
-Alice of the guide or the blue one everyone knows. They show how far the
-interactive telling can go; they are not the product.
+the end of one is staged to lead into the opening of the next. Scenes use the
+engraved palette and yellow Alice from `docs/visual-design.md`. Ordinary scrolling
+alone advances through the complete story; the quiet language switch stays in the
+scene bar. Earlier art comparisons remain available to internal tests, not visitors.
 See [`docs/concept-demos.md`](docs/concept-demos.md).
 
 ## Text and translation

@@ -3,9 +3,8 @@
  * look and the default: an old book's engraved plate, delivered as pictures baked
  * through the engraved filter ahead of time (scripts/bake-art.mjs), with the same
  * filter applied at runtime only to the figures that could not be baked. Flat (the
- * vectors as drawn) and cut paper stay selectable on the index for now. The
- * visitor's choice is `data-art` on the root, applied before first paint by the
- * head script beside `data-alice`; engraved sets nothing.
+ * vectors as drawn) and cut paper remain internal test treatments. Public pages use
+ * engraved art and the yellow Alice regardless of old local preferences.
  *
  * Engraved, the paper rim of dark grounds, and cut paper are SVG filters defined
  * once per page and applied by art.css to the drawing inside each figure box.
@@ -27,6 +26,10 @@ export const parseArtStyle = (value: string | null | undefined): ArtStyle =>
 
 /** The style the page is showing: the head script set it before first paint. */
 export const artStyle = (): ArtStyle => parseArtStyle(document.documentElement.dataset.art);
+
+/** Candidate-art comparison controls belong to local QA, never visitor hosts. */
+export const isLocalPreviewHost = (hostname: string): boolean =>
+  ['localhost', '127.0.0.1', '[::1]'].includes(hostname);
 
 /** One tile of hatching, ink-agnostic: only its alpha is used, the ink is a token. */
 const tile = (size: number, path: string): string =>

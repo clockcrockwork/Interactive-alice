@@ -30,10 +30,15 @@ hatched coat keeps its outline against the court's red or the night wood. Flagge
 the Cheshire wood, the court (witnesses, trial), the Mock Turtle's sea and the hall of
 Drink Me.
 
+Current public state (since Phase A / issue #35): the engraved yellow Alice is fixed on
+visitor pages. The former index pickers and cross-page style preferences are internal
+only; candidate comparison panels only install on local QA hosts. The trial notes below
+record the historical decision and implementation evidence.
+
 Still open:
 
-- the index keeps the drawing picker (engraved first and pressed, then flat and cut paper)
-  while the decision is "for now"; removing it is a later change;
+- Phase A removed the public drawing picker; flat and cut paper remain available to
+  internal rendering checks;
 - figures still engraved at runtime somewhere: the Cheshire Cat in its three poses, the
   Caterpillar and the Pigeon, the Cat's head over the croquet-ground, the jury, the
   footmen, the baby in the kitchen, the Dormouse and the Hatter at the tea-party, the
@@ -51,14 +56,10 @@ matters.
 
 ## 1. What it is
 
-The demo index offers a second picker beside the Alice picker: **Choose the drawing**, with
-four choices (three since the decision: engraved, flat, cut paper). Like the Alice choice, it is remembered in the visitor's browser under the
-demos' key (`alice-demos:art`), applied before first paint by the same head script, as
-`data-art` on the root, and it holds on every demo page. During the trial flat was the
-default; since the decision engraved is, and sets nothing, while `flat` and `paper` set
-`data-art`; a stored `baked` (the old pictures choice) and anything unknown read as
-engraved. A flat page is still pixel-identical to the page before the trial existed. The
-labels are UI copy in `ui.json` (`demoArt*`).
+During the trial the demo index offered **Choose the drawing** with engraved, flat and
+cut paper choices, remembered under `alice-demos:art` and applied before first paint.
+That picker is no longer in public pages. The public default is engraved and ignores
+stored art choices; internal tests can still set `data-art` to compare the treatments.
 
 | Choice | `data-art` | What the figures are |
 | --- | --- | --- |

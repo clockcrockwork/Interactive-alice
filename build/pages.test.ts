@@ -1,4 +1,4 @@
-import { existsSync, mkdtempSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -45,6 +45,23 @@ function withPendingFirstPart() {
 }
 
 describe('publishability', () => {
+  it('links every generated page to visitor-accessible credits', () => {
+    for (const page of pages) {
+      const depth = page.path.split('/').length - 1;
+      expect(page.html).toContain(`href="${depth === 0 ? './' : '../'.repeat(depth)}credits.html"`);
+    }
+  });
+
+  it('emits a credits page from the canonical rights files', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'alice-credits-'));
+    const paths = writePages(root, dir);
+    expect(paths).toContain(join(dir, 'credits.html'));
+    const credit = readFileSync(join(dir, 'credits.html'), 'utf8');
+    expect(credit).toContain('Lewis Carroll');
+    expect(credit).toContain('Modern Web Guidance');
+    expect(credit).toContain('Apache License 2.0');
+  });
+
   it('keeps the locale entry when a part is not translated yet, without linking it', () => {
     const { pages, manifest, skipped } = generatePagesFrom(withoutText('ja', 1));
 

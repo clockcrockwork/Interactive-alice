@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { locales, pageGraph, sceneOf, sentencesOf } from './manifest.ts';
+import { pageGraph, sceneOf, sentencesOf } from './manifest.ts';
 
 const pages = pageGraph();
 
@@ -21,14 +21,14 @@ for (const page of pages) {
   });
 }
 
-test('the home page links to every locale entry', async ({ page }) => {
+test('the public entry starts in the story and switches language in place', async ({ page }) => {
   await page.goto('./');
-  for (const locale of locales()) {
-    await expect(page.locator(`.home__locales a[lang="${locale}"]`)).toHaveAttribute(
-      'href',
-      `./${locale}/`,
-    );
-  }
+  await expect(page.locator('.demo')).toHaveAttribute('data-demo', 'riverbank');
+  await expect(page.locator('.home__locales, .demos__cards')).toHaveCount(0);
+  await expect(page.locator('.demo__languages a[lang="ja"]')).toHaveAttribute(
+    'href',
+    './demos/ja/riverbank/',
+  );
 });
 
 for (const entry of pages.filter((page) => page.kind === 'locale')) {

@@ -27,15 +27,9 @@ import { assertValid } from './schema.ts';
 
 const PROJECT_NAME = 'Interactive Alice';
 
-/**
- * Which Alice the visitor chose, and which drawing (docs/art-trials.md), applied
- * before first paint so the figures never flash the other one. The keys are the
- * demos' own; the pickers on the index write them. The engraved drawing and the
- * yellow Alice are the defaults and set nothing; so does any other stored value,
- * such as the trial's `baked`, which was the engraved pictures.
- */
+/** Local browser QA only: old test preferences must never affect visitor pages. */
 const ALICE_SCRIPT =
-  '<script>try{var d=document.documentElement,a=localStorage.getItem("alice-demos:alice"),' +
+  '<script>if(/^(localhost|127\\.0\\.0\\.1|\\[::1\\])$/.test(location.hostname))try{var d=document.documentElement,a=localStorage.getItem("alice-demos:alice"),' +
   'r=localStorage.getItem("alice-demos:art");if(a==="blue")d.dataset.alice=a;' +
   'if(r==="flat"||r==="paper")d.dataset.art=r}catch(e){}</script>';
 
@@ -64,7 +58,7 @@ export const arrivalScript = (kind: string): string =>
   'd.setAttribute("data-arriving","");t.ready.catch(function(){});' +
   't.finished.catch(function(){}).then(function(){d.removeAttribute("data-arriving")})})</script>';
 
-/** Order the index lists them in, and the order "next scene" follows. */
+/** Canonical order of the public scene walk. */
 export const DEMO_ORDER = [
   'riverbank',
   'rabbit-hole',
@@ -506,14 +500,12 @@ export function realiaFor(
   );
 }
 
-/** What `nextDemo` names when there is no demo after this one: the locale's index. */
+/** Internal terminal marker returned after the last scene. */
 export const DEMO_INDEX = 'index';
 
 /**
- * The demo after this one that has a page in the same locale, so "Next scene" and
- * going on by itself never leave the reader's language. The walk ends at the last
- * one the locale publishes (the trial): after it comes the index, not the first
- * demo again (docs/concept-demos.md §3, Going on by itself).
+ * The next published scene in the same locale. The last scene returns to the
+ * Riverbank entry; the terminal marker never becomes a public index route.
  */
 export function nextDemo(project: DemoProject, id: string): string {
   const start = DEMO_ORDER.indexOf(id as (typeof DEMO_ORDER)[number]);
@@ -526,19 +518,59 @@ export function nextDemo(project: DemoProject, id: string): string {
   return DEMO_INDEX;
 }
 
-/** The next link's href from a demo page: a sibling directory, or the index above. */
+/** Legacy relative helper retained for internal generator tests. */
 export const nextHref = (next: string): string => (next === DEMO_INDEX ? '../' : `../${next}/`);
 
-function renderDemo(project: DemoProject, demo: ExperienceConceptDemoFile): string {
+function renderDemo(
+  project: DemoProject,
+  demo: ExperienceConceptDemoFile,
+  rootRoute = false,
+  all: readonly DemoProject[] = [project],
+): string {
   const title = titleOf(project, demo);
   const next = nextDemo(project, demo.id);
-  // The end of the walk: its link goes back to the index, and nothing goes on by itself.
   const last = next === DEMO_INDEX;
   const ui = project.ui;
   const forScript = Object.fromEntries(UI_FOR_SCRIPT.map((key) => [key, ui[key]]));
   // demos/<id>/index.html, or demos/<locale>/<id>/index.html, and one more up out
   // of the generated tree to src/, where styles, assets and the demo code live.
-  const root = up(demoDir(project).split('/').length + 2);
+  const root = rootRoute ? '../' : up(demoDir(project).split('/').length + 2);
+  const routePrefix = rootRoute ? './demos/' : '../';
+  const nextHref = last
+    ? project.base
+      ? rootRoute
+        ? './'
+        : '../../'
+      : '../riverbank/'
+    : `${routePrefix}${next}/`;
+  const previous = DEMO_ORDER[DEMO_ORDER.indexOf(demo.id as (typeof DEMO_ORDER)[number]) - 1];
+  const backHref = previous ? `../${previous}/` : undefined;
+  const backLink = backHref
+    ? `<a class="demo__back" href="${backHref}">${escapeHtml(ui.demoBack)}</a>`
+    : '';
+  const languages = all
+    .map((candidate) => {
+      const locale = candidate.locale;
+      const settings = candidate.settings;
+      const href =
+        locale === project.locale
+          ? undefined
+          : candidate.base
+            ? rootRoute
+              ? `./demos/${demo.id}/`
+              : `../../${demo.id}/`
+            : rootRoute
+              ? `./demos/${locale}/${demo.id}/`
+              : project.base
+                ? `../${locale}/${demo.id}/`
+                : `../../${demo.id}/`;
+      const current = locale === project.locale ? ' aria-current="page"' : '';
+      const label = settings.nativeName;
+      return href
+        ? `<a href="${href}" lang="${locale}" dir="${settings.dir}" hreflang="${locale}"${current}>${escapeHtml(label)}</a>`
+        : `<span lang="${locale}" dir="${settings.dir}" aria-current="page">${escapeHtml(label)}</span>`;
+    })
+    .join('');
   // The things this locale's sentences are about, for the ids the demo reads (the
   // thing the Cat hears instead of a pig, the measure of her height).
   const realiaAttr = demo.realia?.length
@@ -561,8 +593,9 @@ ${htmlOpen(project.locale, project.settings)}
   <body class="demo-body" data-demo="${demo.id}"${demo.ground ? ` data-ground="${demo.ground}"` : ''}>
     <main class="demo demo--${demo.id}" id="demo" data-demo="${demo.id}"${realiaAttr}>
       <header class="demo__bar">
-        <a class="demo__back" href="../">${escapeHtml(ui.demoBack)}</a>
+        ${backLink}
         <h1 class="demo__title">${escapeHtml(title)}</h1>
+        <nav class="demo__languages" aria-label="${escapeHtml(ui.demoLanguages)}">${languages}</nav>
         <button class="demo__motion" type="button" aria-pressed="false" hidden>${escapeHtml(ui.demoPause)}</button>
       </header>
       <p class="demo__hint" data-demo-hint>${escapeHtml(ui.demoScrollHint)}</p>
@@ -570,7 +603,7 @@ ${htmlOpen(project.locale, project.settings)}
 ${renderTrack(project, demo)}
       </div>
       <footer class="demo__end"${last ? ' data-last' : ''}>
-        <a class="demo__next" href="${nextHref(next)}">${escapeHtml(last ? ui.demoBack : ui.demoNext)}</a>${
+        <a class="demo__next" href="${nextHref}">${escapeHtml(last ? ui.demoStart : ui.demoNext)}</a>${
           last
             ? ''
             : `
@@ -605,15 +638,11 @@ const TECH_KEY = {
   witnesses: 'demoTechWitnesses',
 } as const;
 
-/**
- * The demos whose opening picks up the frame the one before it ended on (the
- * joins of docs/concept-demos.md §3). On the index their cards lie a little
- * over the card before, like a dealt run.
- */
+/** The demos whose opening picks up the frame the one before it ended on. */
 /** A small tilt per card, alternating, so nineteen cards on the table all read. */
 const CARD_TILT = [-4, 2, -1, 3, -2.5, 1, -3, 2.5, -1.5];
 
-/** The figure each drawing choice on the index is previewed with. */
+/** Figure used by the legacy internal index renderer. */
 const ART_PREVIEW = 'white-rabbit/herald';
 
 /**
@@ -624,7 +653,7 @@ const ART_PREVIEW = 'white-rabbit/herald';
 export const pageRelativeArt = (html: string, root: string): string =>
   html.replace(/file:\/\/[^"]*?\/src\/assets\//g, `${root}assets/`);
 
-/** How the figures can be drawn, in the order the index offers them: the default first. */
+/** Internal figure-style test treatments. */
 const ART_CHOICES = [
   ['engraved', 'demoArtEngraved', 'demoArtEngravedNote'],
   ['flat', 'demoArtFlat', 'demoArtFlatNote'],
@@ -633,7 +662,7 @@ const ART_CHOICES = [
 
 const up = (depth: number): string => '../'.repeat(depth);
 
-/** The URL of one locale's index from another's, relative to the page. */
+/** The URL of the legacy internal language index from another, relative to the page. */
 function indexHref(from: DemoProject, to: DemoProject): string {
   if (from.locale === to.locale) {
     return './';
@@ -643,8 +672,8 @@ function indexHref(from: DemoProject, to: DemoProject): string {
 }
 
 /**
- * The language switch: every locale's index, each named in its own language. A
- * link, not a stored preference: the URL is the choice.
+ * The legacy internal language index. Public pages use the in-story switch in
+ * `renderDemo` instead.
  */
 function renderLanguages(project: DemoProject, all: readonly DemoProject[]): string {
   if (all.length < 2) {
@@ -664,7 +693,7 @@ ${items}
 `;
 }
 
-function renderIndex(project: DemoProject, all: readonly DemoProject[] = [project]): string {
+export function renderIndex(project: DemoProject, all: readonly DemoProject[] = [project]): string {
   const root = up(demoDir(project).split('/').length + 1);
   const ui = project.ui;
   const cards = project.demos
@@ -750,7 +779,7 @@ ${cards}
 export interface DemoPageEntry {
   path: string;
   url: string;
-  kind: 'demos' | 'demo';
+  kind: 'entry' | 'demos' | 'demo';
   /** The locale the page is in. */
   locale: string;
   demo?: string;
@@ -778,8 +807,8 @@ export const generateDemoPages = (root: string): DemoPageGraph => {
 };
 
 /**
- * Builds one locale's demo pages from already-loaded data: its index, and a page
- * for every demo it can publish. In the base locale every demo must be publishable.
+ * Builds one locale's story pages from already-loaded data. In the base locale
+ * every demo must be publishable; the root is the canonical Riverbank opening.
  */
 export function generateDemoPagesFrom(
   project: DemoProject,
@@ -800,18 +829,29 @@ export function generateDemoPagesFrom(
     }
     return false;
   });
-  const pages: GeneratedPage[] = [{ path: `${dir}/index.html`, html: renderIndex(project, all) }];
-  const manifest: DemoPageEntry[] = [
-    {
-      path: `${dir}/index.html`,
-      url: `./${dir}/`,
-      kind: 'demos',
+  const pages: GeneratedPage[] = [];
+  const manifest: DemoPageEntry[] = [];
+  if (project.base) {
+    const riverbank = published.find((demo) => demo.id === 'riverbank');
+    if (!riverbank) throw new Error('the base locale must publish the Riverbank opening');
+    pages.push({ path: 'index.html', html: renderDemo(project, riverbank, true, all) });
+    manifest.push({
+      path: 'index.html',
+      url: './',
+      kind: 'entry',
       locale: project.locale,
-      published: published.map((demo) => demo.id),
-    },
-  ];
+      demo: riverbank.id,
+      cues: riverbank.shots.flatMap((shot) =>
+        shot.beats.flatMap((beat) => (beat.cue ? [beat.cue] : [])),
+      ),
+      segments: riverbank.shots.flatMap((shot) => shot.beats.flatMap((beat) => [...beat.segments])),
+    });
+  }
   for (const demo of published) {
-    pages.push({ path: `${dir}/${demo.id}/index.html`, html: renderDemo(project, demo) });
+    pages.push({
+      path: `${dir}/${demo.id}/index.html`,
+      html: renderDemo(project, demo, false, all),
+    });
     manifest.push({
       path: `${dir}/${demo.id}/index.html`,
       url: `./${dir}/${demo.id}/`,

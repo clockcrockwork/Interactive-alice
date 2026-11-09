@@ -100,7 +100,7 @@ that fact in the pull request; see `docs/deployment.md` §4.
 | Images, music, sound effects | `docs/assets-and-audio.md` |
 | Preview and production deploy | `docs/deployment.md` |
 | First executable milestone | `docs/poc/rabbit-hole.md`, issue #1 |
-| The standalone concept demos under `/demos/` | `docs/concept-demos.md` |
+| The nineteen-scene public experience and its `/demos/` routes | `docs/concept-demos.md` |
 
 When implementation proves a documented decision wrong, change the document in
 the same body of work. Do not let code and docs disagree on purpose.

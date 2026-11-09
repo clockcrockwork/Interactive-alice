@@ -22,7 +22,7 @@ import { htmlOpen } from './pages.ts';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const project = loadDemoProject(root);
 const all = generateDemoPages(root);
-// The base locale's pages, at the plain demos/ URLs; the other locales' are below.
+// The public Riverbank entry and the base locale's direct scene routes.
 const manifest = { pages: all.manifest.pages.filter((page) => page.locale === project.locale) };
 const basePaths = new Set(manifest.pages.map((page) => page.path));
 const pages = all.pages.filter((page) => basePaths.has(page.path));
@@ -45,24 +45,24 @@ describe('the concept-demo pages', () => {
     expect(demoBootScript).toContain('unhandledrejection');
   });
 
-  it('generates the index and one page per demo, in the fixed order', () => {
+  it('generates one Riverbank entry and one route per demo without a public index', () => {
     expect(pages.map((page) => page.path)).toEqual([
-      'demos/index.html',
+      'index.html',
       ...DEMO_ORDER.map((id) => `demos/${id}/index.html`),
     ]);
-    expect(manifest.pages.map((page) => page.demo ?? page.kind)).toEqual(['demos', ...DEMO_ORDER]);
+    expect(manifest.pages.map((page) => page.demo ?? page.kind)).toEqual([
+      'riverbank',
+      ...DEMO_ORDER,
+    ]);
+    expect(manifest.pages[0]?.kind).toBe('entry');
+    expect(pages.some((page) => page.path === 'demos/index.html')).toBe(false);
   });
 
-  it('reads the joins from the demos themselves, and deals each joined card over the one before', () => {
-    const index = pages.find((page) => page.path === 'demos/index.html')?.html ?? '';
+  it('keeps the story order and adjacent scene links derived from the canonical order', () => {
     const joined = project.demos.filter((demo) => demo.joinsPrevious).map((demo) => demo.id);
-    // The first demo joins nothing; every joined one follows a demo in the order.
     expect(project.demos[0]?.joinsPrevious).toBeFalsy();
     expect(joined.length).toBeGreaterThan(10);
-    for (const demo of project.demos) {
-      const card = new RegExp(`data-demo="${demo.id}"( data-joined)?`).exec(index);
-      expect(Boolean(card?.[1]), demo.id).toBe(Boolean(demo.joinsPrevious));
-    }
+    expect(project.demos.map((demo) => demo.id)).toEqual([...DEMO_ORDER]);
   });
 
   it('carries every segment of the composition, in composition order, with its text', () => {
@@ -98,8 +98,7 @@ describe('the concept-demo pages', () => {
     }
   });
 
-  it('names each demo after its chapter or section, in the demo locale, and links them in order', () => {
-    const index = pages.find((page) => page.path === 'demos/index.html');
+  it('names each demo after its chapter or section and links scenes in order', () => {
     for (const [position, demo] of project.demos.entries()) {
       const title = titleOf(project, demo);
       expect(title).not.toBe('');
@@ -107,20 +106,22 @@ describe('the concept-demo pages', () => {
       if (demo.titleSection) {
         expect(title).not.toBe(project.titles.get(demo.titleChapter));
       }
-      expect(index?.html).toContain(`href="./${demo.id}/"`);
-      expect(index?.html).toContain(title);
       const page = pages.find((candidate) => candidate.path === `demos/${demo.id}/index.html`);
       expect(page?.html).toContain(`<h1 class="demo__title">${title}</h1>`);
-      // In the book's order; the last one goes back to the index, not round.
       const next = DEMO_ORDER[position + 1];
-      expect(page?.html).toContain(`<a class="demo__next" href="${next ? `../${next}/` : '../'}">`);
+      expect(page?.html).toContain(
+        `<a class="demo__next" href="${next ? `../${next}/` : '../../'}">`,
+      );
     }
   });
 
   it('takes its half of the turn between pages in the head, before any module runs', () => {
     for (const page of pages) {
-      const id = /^demos\/(?:[^/]+\/)?([^/]+)\/index\.html$/.exec(page.path)?.[1];
-      const kind = transitionKindFor(id && id !== 'index.html' ? `/demos/${id}/` : '/demos/');
+      const id =
+        page.path === 'index.html'
+          ? 'riverbank'
+          : /^demos\/(?:[^/]+\/)?([^/]+)\/index\.html$/.exec(page.path)?.[1];
+      const kind = transitionKindFor(`/demos/${id ?? 'riverbank'}/`);
       const script = arrivalScript(kind);
       expect(page.html, page.path).toContain(script);
       expect(page.html.indexOf(script), page.path).toBeLessThan(
@@ -131,28 +132,16 @@ describe('the concept-demo pages', () => {
     expect(arrivalScript('hole')).toContain('data-arriving');
   });
 
-  it('applies the remembered drawing before first paint and offers the three, engraved pressed', () => {
+  it('keeps test pickers out of visitor pages and uses the engraved yellow defaults', () => {
     for (const page of pages) {
-      expect(page.html, page.path).toContain('localStorage.getItem("alice-demos:art")');
-      // Only flat and cut paper are written to the root; engraved, and the trial's
-      // old `baked`, leave it absent, which is engraved.
-      expect(page.html, page.path).toContain('if(r==="flat"||r==="paper")d.dataset.art=r');
-      expect(page.html, page.path).not.toContain('"baked"');
+      expect(page.html, page.path).not.toContain('demos__alice-choice');
+      expect(page.html, page.path).not.toContain('data-art-style=');
+      expect(page.html, page.path).toContain('location.hostname');
+      expect(page.html, page.path).toContain('localhost|127\\.0\\.0\\.1|\\[::1\\]');
     }
-    const index = pages.find((page) => page.path === 'demos/index.html')?.html ?? '';
-    const styles = [
-      ...index.matchAll(/<button[^>]*data-art-style="([a-z]+)" aria-pressed="(\w+)"/g),
-    ];
-    expect(styles.map((match) => [match[1], match[2]])).toEqual([
-      ['engraved', 'true'],
-      ['flat', 'false'],
-      ['paper', 'false'],
-    ]);
-    // The engraved preview carries its generated herald image, relative to the page, never a file URL.
-    expect(index).toMatch(
-      /<image class="art__image"[^>]*href="\.\.\/\.\.\/assets\/images\/figures\/white-rabbit--herald\.any\.generated\.webp"/,
-    );
-    expect(index).not.toContain('file:');
+    const entry = pages.find((page) => page.path === 'index.html')?.html ?? '';
+    expect(entry).toContain('data-demo="riverbank"');
+    expect(entry).not.toContain('file:');
   });
 
   it('marks a dark ground on the page when the demo file says so', () => {
@@ -196,12 +185,10 @@ describe('the concept-demo pages in every other locale', () => {
     for (const other of others) {
       const entries = all.manifest.pages.filter((page) => page.locale === other.locale);
       const published = other.demos.filter((demo) => isPublishable(other, demo));
-      expect(entries.map((entry) => entry.path)).toEqual([
-        `demos/${other.locale}/index.html`,
-        ...published.map((demo) => `demos/${other.locale}/${demo.id}/index.html`),
-      ]);
-      expect(entries[0]?.url).toBe(`./demos/${other.locale}/`);
-      expect(entries[0]?.published).toEqual(published.map((demo) => demo.id));
+      expect(entries.map((entry) => entry.path)).toEqual(
+        published.map((demo) => `demos/${other.locale}/${demo.id}/index.html`),
+      );
+      expect(entries[0]?.url).toBe(`./demos/${other.locale}/riverbank/`);
     }
   });
 
@@ -238,10 +225,12 @@ describe('the concept-demo pages in every other locale', () => {
       for (const demo of other.demos.filter((candidate) => isPublishable(other, candidate))) {
         const html = pageAt(`demos/${other.locale}/${demo.id}/index.html`);
         const next = nextDemo(other, demo.id);
-        expect(html).toContain(`<a class="demo__back" href="../">`);
+        if (demo.id !== 'riverbank')
+          expect(html).toContain(
+            `<a class="demo__back" href="../${DEMO_ORDER[DEMO_ORDER.indexOf(demo.id as (typeof DEMO_ORDER)[number]) - 1]}/">`,
+          );
         if (next === DEMO_INDEX) {
-          // The end of the walk: back to this locale's own index.
-          expect(html).toContain(`<a class="demo__next" href="../">`);
+          expect(html).toContain(`<a class="demo__next" href="../riverbank/">`);
           continue;
         }
         // A sibling of this page's own directory: demos/<locale>/<next>/.
@@ -266,8 +255,9 @@ describe('the concept-demo pages in every other locale', () => {
       const html = pageAt(
         from.base ? 'demos/trial/index.html' : `demos/${from.locale}/trial/index.html`,
       );
+      expect(html).toContain(`<footer class="demo__end" data-last>`);
       expect(html).toContain(
-        `<footer class="demo__end" data-last>\n        <a class="demo__next" href="../">${from.ui.demoBack}</a>`,
+        `<a class="demo__next" href="${from.base ? '../../' : '../riverbank/'}">${from.ui.demoStart}</a>`,
       );
       expect(html).not.toContain('class="demo__auto"');
       expect(html).not.toContain(`>${from.ui.demoNext}</a>`);
@@ -279,44 +269,31 @@ describe('the concept-demo pages in every other locale', () => {
     }
   });
 
-  it('links each index to the others, each named in its own language, as a link', () => {
+  it('keeps a quiet language switch on every scene without a language picker page', () => {
     for (const from of projects) {
-      const html = pageAt(from.base ? 'demos/index.html' : `demos/${from.locale}/index.html`);
-      expect(html).toContain(`aria-label="${from.ui.demoLanguages}"`);
+      const html = pageAt(
+        from.base ? 'demos/riverbank/index.html' : `demos/${from.locale}/riverbank/index.html`,
+      );
       for (const to of projects) {
-        const href =
-          from.locale === to.locale
-            ? './'
-            : from.base
-              ? to.base
-                ? './'
-                : `./${to.locale}/`
-              : to.base
-                ? '../'
-                : `../${to.locale}/`;
-        const current = to.locale === from.locale ? ' aria-current="page"' : '';
-        expect(html, `${from.locale} -> ${to.locale}`).toContain(
-          `href="${href}" lang="${to.locale}" dir="${to.dir}" hreflang="${to.locale}"${current}>${to.nativeName}</a>`,
-        );
+        expect(html, `${from.locale} has ${to.locale}`).toContain(`lang="${to.locale}"`);
+        expect(html, `${from.locale} has ${to.locale}`).toContain(to.nativeName);
+        if (from.locale === to.locale) expect(html).toContain(`aria-current="page"`);
       }
     }
+    expect(all.pages.some((page) => /demos\/(?:ja\/)?index\.html$/.test(page.path))).toBe(false);
   });
 
-  it('titles and describes the cards in the locale, with every label from its ui.json', () => {
+  it('keeps visitor pages in their locale without exposing comparison UI', () => {
     const ja = others.find((other) => other.locale === 'ja');
-    const html = pageAt('demos/ja/index.html');
+    const html = pageAt('demos/ja/riverbank/index.html');
     expect(html).toContain('<html lang="ja"');
-    for (const key of ['demosTitle', 'demosIntro', 'demoAliceTitle', 'demoArtTitle'] as const) {
-      expect(html).toContain(ja?.ui[key] ?? '-');
+    const riverbank = ja?.demos.find((demo) => demo.id === 'riverbank');
+    expect(riverbank).toBeDefined();
+    if (ja && riverbank) {
+      expect(html).toContain(`<h1 class="demo__title">${titleOf(ja, riverbank)}</h1>`);
     }
-    for (const demo of ja?.demos ?? []) {
-      expect(html).toContain(`<span class="demos__name">${ja ? titleOf(ja, demo) : ''}</span>`);
-    }
-    expect(html).not.toContain(project.ui.demosTitle);
-    // The engraved preview's generated image, one level deeper than the base index.
-    expect(html).toMatch(
-      /href="\.\.\/\.\.\/\.\.\/assets\/images\/figures\/white-rabbit--herald\.any\.generated\.webp"/,
-    );
+    expect(html).not.toContain('demos__alice-choice');
+    expect(html).not.toContain('data-art-style=');
   });
 
   it('leaves out a demo a locale cannot show yet, lists its card as pending, and skips it in the walk', () => {
@@ -328,17 +305,7 @@ describe('the concept-demo pages in every other locale', () => {
     expect(paths).toContain('demos/ja/duchess/index.html');
     const duchess = graph.pages.find((page) => page.path === 'demos/ja/duchess/index.html');
     expect(duchess?.html).toContain('<a class="demo__next" href="../lobster-quadrille/">');
-    const index = graph.pages.find((page) => page.path === 'demos/ja/index.html')?.html ?? '';
-    const card =
-      /<li class="demos__card" data-available="false" data-demo="mock-turtle"[\s\S]*?<\/li>/.exec(
-        index,
-      )?.[0];
-    expect(card).toBeDefined();
-    expect(card).not.toContain('href=');
-    const turtle = project.demos.find((demo) => demo.id === 'mock-turtle');
-    expect(card).toContain(`lang="${project.locale}"`);
-    expect(card).toContain(turtle ? titleOf(project, turtle) : '-');
-    expect(card).toContain(ja.ui.partPending);
+    expect(paths).not.toContain('demos/ja/index.html');
   });
 
   it("writes each locale's realia for just the ids a demo reads, and none where it reads none", () => {

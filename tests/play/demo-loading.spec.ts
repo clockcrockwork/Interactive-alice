@@ -35,7 +35,7 @@ test('the scene text stays hidden until the stage is ready, including after re-e
   await expect(page.locator('.demo-beat[data-active]')).toHaveCount(1);
 
   await page.locator('.demo__back').click();
-  await expect(page).toHaveURL(/\/demos\/$/);
+  await expect(page).toHaveURL(/\/demos\/pig-and-pepper\/$/);
   await page.goBack();
   await expect(page).toHaveURL(/\/demos\/cheshire-cat\/$/);
   await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');

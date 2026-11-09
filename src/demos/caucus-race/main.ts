@@ -42,6 +42,7 @@ interface Runner {
 
 function mount(shell: DemoShell): void {
   const { master, reducedMotion } = shell;
+  const narrow = matchMedia('(max-width: 700px)').matches;
   const cue = shell.cue;
   const iBank = cue('bank');
   const iProposal = cue('proposal');
@@ -367,7 +368,7 @@ function mount(shell: DemoShell): void {
       centre: aliceAngle,
       toAlice: 1,
       focus: 0,
-      spread: 120,
+      spread: narrow ? 200 : 120,
       duration: reducedMotion ? 0.01 : 0.8,
       ease: 'power2.inOut',
       onUpdate: apply,
@@ -682,7 +683,7 @@ function mount(shell: DemoShell): void {
   // place, as the tale's first frame.
   const distant = shell.layer('hs__arrival');
   distant.innerHTML = HOUSE_FRONT_SVG;
-  const spot = DISTANT_HOUSE(matchMedia('(max-width: 700px)').matches);
+  const spot = DISTANT_HOUSE(narrow);
   distant.style.setProperty('--hx', spot.hx.toFixed(2));
   distant.style.setProperty('--hy', spot.hy.toFixed(2));
   distant.style.setProperty('--hz', spot.hz.toFixed(4));

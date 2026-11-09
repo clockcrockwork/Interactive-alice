@@ -598,9 +598,13 @@ export interface LocaleUIStrings {
      */
     demosIntro: string;
     /**
-     * Link from a demo back to the demo index.
+     * Link from a scene to the previous scene in story order.
      */
     demoBack: string;
+    /**
+     * Link at the end of the story back to Riverbank.
+     */
+    demoStart: string;
     /**
      * Link from a demo to the next demo.
      */

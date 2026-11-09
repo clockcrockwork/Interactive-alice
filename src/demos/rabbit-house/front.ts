@@ -17,7 +17,7 @@ const RABBIT_HOUSE_FRONT = new URL(
  * draw it here, so the two frames match. A narrow frame sets it further right.
  */
 export const DISTANT_HOUSE = (narrow: boolean): { hx: number; hy: number; hz: number } =>
-  narrow ? { hx: 36, hy: -24, hz: 0.09 } : { hx: 26, hy: -26, hz: 0.07 };
+  narrow ? { hx: 42, hy: -16, hz: 0.05 } : { hx: 26, hy: -26, hz: 0.07 };
 
 /**
  * The house from the path outside, door in the middle: the frame the Mouse's

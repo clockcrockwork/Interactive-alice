@@ -1,23 +1,16 @@
 /**
- * How the figures are drawn (docs/art-trials.md): engraved is the default and is
- * delivered as baked pictures that load and are cut out; flat and cut paper are still
- * chosen on the index, remembered, and applied to every demo page as `data-art` on
- * the root before first paint; the trial's old `baked` choice reads as engraved; a
+ * How the figures are drawn (docs/art-trials.md): engraved is the public default,
+ * delivered as baked pictures that load and are cut out. Flat and cut paper remain
+ * internal-only test modes; old visitor preferences do not change the public work. A
  * dark ground rims the figures; and a figure whose parts a demo moves comes as
  * cut-outs there.
  */
 
 import { expect, type Page, test } from '@playwright/test';
-import { demos, pages } from '../demo-helpers.ts';
+import { demos } from '../demo-helpers.ts';
 
-const index = pages.find((page) => page.kind === 'demos');
 const url = (id: string) => demos.find((d) => d.demo === id)?.url ?? '';
-
-const choose = async (page: Page, name: RegExp) => {
-  const button = page.locator('.demos__art-choice').filter({ hasText: name });
-  await button.click();
-  await expect(button).toHaveAttribute('aria-pressed', 'true');
-};
+const styleUrl = (id: string, style: 'flat' | 'paper') => `${url(id)}?qa-art=${style}`;
 
 const rootArt = (page: Page) => page.evaluate(() => document.documentElement.dataset.art ?? null);
 
@@ -39,7 +32,7 @@ const shownPictures = (page: Page, selector: string) =>
   );
 
 test.describe('how the figures are drawn', () => {
-  test.skip(!index || !url('duchess'), 'no demo pages in the build');
+  test.skip(!url('duchess'), 'no demo pages in the build');
 
   test('engraved is the default, as baked pictures that load and are cut out', async ({ page }) => {
     const statuses = new Map<string, number>();
@@ -48,28 +41,16 @@ test.describe('how the figures are drawn', () => {
         statuses.set(response.url(), response.status());
       }
     });
-    await page.goto(index?.url ?? '');
-    await expect(page.locator('.demos__art-choice[aria-pressed="true"]')).toHaveAttribute(
-      'data-art-style',
-      'engraved',
-    );
-    await expect(page.locator('.demos__art-choice').first()).toHaveAttribute(
-      'data-art-style',
-      'engraved',
-    );
-    await expect(page.locator('.demos__art-choice')).toHaveCount(3);
-    expect(await rootArt(page)).toBeNull();
-    await page.locator('.demos__alice-choice[data-alice="blue"]').click();
-
     await page.goto(url('duchess'));
     expect(await rootArt(page)).toBeNull();
+    await expect(page.locator('.demos__art-choice, .demos__alice-choice')).toHaveCount(0);
     await expect(page.locator('.art-defs filter#art-engraved')).toBeAttached();
     const shown = page.locator('img.art__image--baked:visible');
     await expect.poll(() => shown.count(), { timeout: 10_000 }).toBeGreaterThan(1);
-    // The Alice shown is the chosen one's picture.
-    await expect(page.locator('.art[data-art="alice/falling"] img:visible')).toHaveAttribute(
-      'data-variant',
-      'blue',
+    // Public pages always use the yellow Alice, even if an old comparison preference exists.
+    await expect(page.locator('.art[data-art="alice/falling"] svg')).toHaveAttribute(
+      'data-duchess-variant',
+      'yellow',
     );
     for (const image of await shownPictures(page, 'img.art__image--baked:visible')) {
       expect(image.width, image.src).toBeGreaterThan(0);
@@ -97,18 +78,13 @@ test.describe('how the figures are drawn', () => {
     ).toBe('none');
   });
 
-  test('flat and cut paper can still be chosen, and reach every demo page', async ({ page }) => {
-    await page.goto(index?.url ?? '');
-    await choose(page, /Flat/);
+  test('flat and cut paper remain available to internal rendering checks', async ({ page }) => {
+    await page.addInitScript(() => {
+      const style = new URLSearchParams(location.search).get('qa-art');
+      if (style === 'flat' || style === 'paper') localStorage.setItem('alice-demos:art', style);
+    });
+    await page.goto(styleUrl('duchess', 'flat'));
     expect(await rootArt(page)).toBe('flat');
-    expect(await page.evaluate(() => localStorage.getItem('alice-demos:art'))).toBe('flat');
-
-    await page.reload();
-    expect(await rootArt(page)).toBe('flat');
-    await expect(page.locator('.demos__art-choice[data-art-style="flat"]')).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
 
     // Flat leaves a demo page as drawn: no filters, no pictures.
     await page.goto(url('duchess'));
@@ -117,9 +93,7 @@ test.describe('how the figures are drawn', () => {
     await expect(page.locator('.art-defs')).toHaveCount(0);
     await expect(page.locator('img.art__image--baked')).toHaveCount(0);
 
-    await page.goto(index?.url ?? '');
-    await choose(page, /Cut paper/);
-    await page.goto(url('duchess'));
+    await page.goto(styleUrl('duchess', 'paper'));
     expect(await rootArt(page)).toBe('paper');
     await expect(page.locator('.art-defs filter#art-paper')).toBeAttached();
     await expect
@@ -130,27 +104,17 @@ test.describe('how the figures are drawn', () => {
         }),
       )
       .toContain('art-paper');
-
-    // And back: engraved removes the attribute again.
-    await page.goto(index?.url ?? '');
-    await choose(page, /Engraved/);
-    expect(await rootArt(page)).toBeNull();
-    expect(await page.evaluate(() => localStorage.getItem('alice-demos:art'))).toBe('engraved');
   });
 
-  test('the trial’s old pictures choice reads as engraved', async ({ page }) => {
-    await page.addInitScript(() => localStorage.setItem('alice-demos:art', 'baked'));
-    await page.goto(index?.url ?? '');
-    expect(await rootArt(page)).toBeNull();
-    await expect(page.locator('.demos__art-choice[data-art-style="engraved"]')).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
+  test('legacy art and Alice preferences remain usable in local QA', async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem('alice-demos:art', 'flat');
+      localStorage.setItem('alice-demos:alice', 'blue');
+    });
     await page.goto(url('duchess'));
-    expect(await rootArt(page)).toBeNull();
-    await expect
-      .poll(() => page.locator('img.art__image--baked:visible').count(), { timeout: 10_000 })
-      .toBeGreaterThan(1);
+    expect(await rootArt(page)).toBe('flat');
+    await expect(page.locator('html')).toHaveAttribute('data-alice', 'blue');
+    await expect(page.locator('.art[data-art="alice/falling"] svg')).toHaveCount(1);
   });
 
   test('a dark ground gives every engraved figure a paper rim', async ({ page }) => {

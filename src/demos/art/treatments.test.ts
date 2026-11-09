@@ -10,7 +10,13 @@ import { describe, expect, it } from 'vitest';
 import { bakedFor, cutOutsFor, figure, svgFigure } from './art.ts';
 import { BAKED, BAKED_PARTS } from './baked.ts';
 import { ART, CUT_OUTS, LIVE_PARTS, OWN_COLOURS } from './registry.ts';
-import { ART_STYLES, artFilterDefs, ENGRAVINGS, parseArtStyle } from './treatments.ts';
+import {
+  ART_STYLES,
+  artFilterDefs,
+  ENGRAVINGS,
+  isLocalPreviewHost,
+  parseArtStyle,
+} from './treatments.ts';
 
 const DEMOS = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -30,6 +36,14 @@ function fallbacks(markup: string): [string, string][] {
 }
 
 describe('the drawing styles', () => {
+  it('keeps candidate comparison controls on local QA hosts', () => {
+    expect(isLocalPreviewHost('localhost')).toBe(true);
+    expect(isLocalPreviewHost('127.0.0.1')).toBe(true);
+    expect(isLocalPreviewHost('[::1]')).toBe(true);
+    expect(isLocalPreviewHost('interactive-alice.example')).toBe(false);
+    expect(isLocalPreviewHost('preview.example')).toBe(false);
+  });
+
   it("reads a stored choice, and anything else, the trial's `baked` too, as engraved", () => {
     expect(ART_STYLES).toEqual(['engraved', 'flat', 'paper']);
     for (const style of ART_STYLES) {

@@ -558,12 +558,85 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   // and the motion pause holds it.
   const end = root.querySelector<HTMLElement>('.demo__end');
   const nextLink = root.querySelector<HTMLAnchorElement>('.demo__next');
+  const previousLink = root.querySelector<HTMLAnchorElement>('.demo__back');
   const autoButton = root.querySelector<HTMLButtonElement>('.demo__auto');
   // The last demo offers no going on by itself (its link goes back to the index),
   // so a choice remembered from the pages before it never fires here.
   let auto = autoButton ? readAuto() : false;
   let dwell = 0;
   let left = false;
+  // A saved scroll position at either edge is inert. Boundary navigation and the
+  // optional dwell both require a fresh, deliberate input from this document.
+  let autoArmed = false;
+  const atStart = (): boolean => window.scrollY <= 1;
+  const atEnd = (): boolean =>
+    window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+  const follow = (direction: 'next' | 'previous'): void => {
+    const link = direction === 'next' ? nextLink : previousLink;
+    if (!link || left) return;
+    left = true;
+    location.assign(link.href);
+  };
+  const scrollKeys = new Set(['ArrowDown', 'PageDown', ' ', 'End', 'ArrowUp', 'PageUp', 'Home']);
+  window.addEventListener(
+    'wheel',
+    (event) => {
+      if (Math.abs(event.deltaY) < 18) return;
+      autoArmed = true;
+      if (event.deltaY > 0 && atEnd()) follow('next');
+      else if (event.deltaY < 0 && atStart()) follow('previous');
+    },
+    { passive: true, signal },
+  );
+  let touchY: number | undefined;
+  let edgeTravel = 0;
+  window.addEventListener(
+    'touchstart',
+    (event) => {
+      touchY = event.touches[0]?.clientY;
+      edgeTravel = 0;
+    },
+    { passive: true, signal },
+  );
+  window.addEventListener(
+    'touchmove',
+    (event) => {
+      const nextY = event.touches[0]?.clientY;
+      if (nextY === undefined || touchY === undefined) return;
+      const fingerDelta = touchY - nextY;
+      touchY = nextY;
+      if (Math.abs(fingerDelta) >= 8) autoArmed = true;
+      if (atEnd() && fingerDelta > 0) edgeTravel += fingerDelta;
+      else if (atStart() && fingerDelta < 0) edgeTravel += -fingerDelta;
+      else edgeTravel = 0;
+      if (edgeTravel >= 36) follow(fingerDelta > 0 ? 'next' : 'previous');
+    },
+    { passive: true, signal },
+  );
+  window.addEventListener(
+    'touchend',
+    () => {
+      touchY = undefined;
+      edgeTravel = 0;
+    },
+    { signal },
+  );
+  window.addEventListener(
+    'keydown',
+    (event) => {
+      if (!scrollKeys.has(event.key)) return;
+      const target = event.target;
+      if (
+        target instanceof HTMLElement &&
+        target.closest('button, a, input, select, textarea, [contenteditable="true"]')
+      )
+        return;
+      autoArmed = true;
+      if (['ArrowDown', 'PageDown', ' ', 'End'].includes(event.key) && atEnd()) follow('next');
+      else if (['ArrowUp', 'PageUp', 'Home'].includes(event.key) && atStart()) follow('previous');
+    },
+    { signal },
+  );
   const showAuto = (): void => {
     autoButton?.setAttribute('aria-pressed', String(auto));
     end?.toggleAttribute('data-auto', auto);
@@ -574,6 +647,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
       'click',
       () => {
         auto = !auto;
+        autoArmed = auto;
         dwell = 0;
         writeAuto(auto);
         showAuto();
@@ -584,7 +658,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   }
   showAuto();
   const stepDwell = (dt: number): void => {
-    if (!auto || !nextLink || left) {
+    if (!auto || !autoArmed || !nextLink || left) {
       return;
     }
     const atEnd = activeIndex === beats.length - 1 && trigger.progress > 0.995;
@@ -596,8 +670,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
       (reducedMotion ? Math.floor(fill * 4) / 4 : fill).toFixed(3),
     );
     if (dwell >= AUTO_DWELL) {
-      left = true;
-      location.assign(nextLink.href);
+      follow('next');
     }
   };
   frameFns.add(stepDwell);

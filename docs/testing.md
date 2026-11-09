@@ -373,11 +373,14 @@ across a document boundary.
 
 ### The concept demos
 
-The demos under `/demos/` are outside the story runtime, so the pacing fixture and the
-scene probe do not cover them. They have their own layer: `build/demos.test.ts` for
-the page generator, and `tests/demos.spec.ts` in the browser, driven through
-`window.__aliceDemo`. What each proves is listed in
-[`concept-demos.md`](concept-demos.md) §5.
+The nineteen demos form the public reading route from Riverbank at `/`; their scene
+runtime remains separate from the story runtime, so the pacing fixture and scene probe
+do not cover them. They have their own layer: `build/demos.test.ts` for the generated
+page graph, and `tests/demos.spec.ts` in the browser, driven through
+`window.__aliceDemo`. The browser tests traverse every document seam forward and
+backward by scroll, verify boundary input with keyboard and phone touch, and retain the
+scene interactions, language, reduced-motion and pause coverage. What each scene does
+is listed in [`concept-demos.md`](concept-demos.md) §5.
 
 ### Engines, touch screens and slow machines
 

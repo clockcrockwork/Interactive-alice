@@ -27,6 +27,7 @@
         "demosTitle",
         "demosIntro",
         "demoBack",
+        "demoStart",
         "demoNext",
         "demoPause",
         "demoResume",
@@ -255,7 +256,12 @@
         "demoBack": {
           "type": "string",
           "minLength": 1,
-          "description": "Link from a demo back to the demo index."
+          "description": "Link from a scene to the previous scene in story order."
+        },
+        "demoStart": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Link at the end of the story back to Riverbank."
         },
         "demoNext": {
           "type": "string",

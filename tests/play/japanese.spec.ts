@@ -6,15 +6,19 @@ import type { LocaleRealia } from '../../src/types/schema.ts';
 import { atCue, collectErrors, demos, pages } from '../demo-helpers.ts';
 
 /**
- * The demos in Japanese: the index and its language switch, and every place a
+ * The demos in Japanese: the in-story language switch, and every place a
  * demo reads something out of its sentences, read the Japanese way (words set
  * apart in quotation marks rather than by capitals). The words themselves are
  * never written here: they come from the page and the text layer.
  */
 const LOCALE = 'ja';
 const ja = (id: string) => demos.find((d) => d.demo === id && d.locale === LOCALE);
-const index = pages.find((page) => page.kind === 'demos' && page.locale === LOCALE);
-const baseIndex = pages.find((page) => page.kind === 'demos' && page.locale !== LOCALE);
+const index = pages.find(
+  (page) => page.kind === 'demo' && page.locale === LOCALE && page.demo === 'riverbank',
+);
+const baseIndex = pages.find(
+  (page) => page.kind === 'demo' && page.locale !== LOCALE && page.demo === 'riverbank',
+);
 const ui = (
   JSON.parse(
     readFileSync(
@@ -36,47 +40,27 @@ const OPEN = '「';
 const CLOSE = '」';
 
 test.describe('the demos in Japanese', () => {
-  test.skip(!index, 'no Japanese demo index in this build');
+  test.skip(!index, 'no Japanese Riverbank scene in this build');
 
-  test('the index: its own words, every card, and a language switch both ways', async ({
-    page,
-  }) => {
+  test('the Riverbank: its own words, and a language switch both ways', async ({ page }) => {
     const errors = collectErrors(page);
     await page.goto(index?.url ?? '');
     await expect(page.locator('html')).toHaveAttribute('lang', LOCALE);
-    await expect(page.locator('h1')).toHaveText(ui.demosTitle ?? '-');
-    const links = page.locator('.demos__card a');
-    await expect(links).toHaveCount(index?.published?.length ?? -1);
-    for (const id of index?.published ?? []) {
-      await expect(page.locator(`.demos__card[data-demo="${id}"] a`)).toHaveAttribute(
-        'href',
-        `./${id}/`,
-      );
-    }
-    // The switch is a link, and the way back is one too.
-    const switcher = page.locator('.demos__languages');
-    await expect(switcher).toHaveAttribute('aria-label', ui.demoLanguages ?? '-');
-    await expect(switcher.locator(`a[lang="${LOCALE}"]`)).toHaveAttribute('aria-current', 'page');
-    // Each page is let finish turning in before the next link is followed.
+    const switcher = page.locator('.demo__languages');
+    await expect(switcher.locator(`span[lang="${LOCALE}"]`)).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
     const arrived = () => expect(page.locator('html')).not.toHaveAttribute('data-arriving', '');
     await arrived();
     await switcher.locator(`a[lang="${baseIndex?.locale}"]`).click();
-    await expect(page).toHaveURL(/\/demos\/$/);
+    await expect(page).toHaveURL(/\/demos\/riverbank\/$/);
     await expect(page.locator('html')).toHaveAttribute('lang', baseIndex?.locale ?? '-');
     await arrived();
-    await page.locator(`.demos__languages a[lang="${LOCALE}"]`).click();
-    await expect(page).toHaveURL(new RegExp(`/demos/${LOCALE}/$`));
-    // The cards are read by early readers: no technical words in Latin letters.
-    const cards = await page.locator('.demos__card').allTextContents();
-    expect(cards.length).toBeGreaterThan(10);
-    for (const card of cards) {
-      expect(card).not.toMatch(/[A-Za-z]/);
-    }
-    // And a card leads to that demo in Japanese.
-    await arrived();
-    await page.locator('.demos__card[data-demo="riverbank"] a').click();
+    await page.locator(`.demo__languages a[lang="${LOCALE}"]`).click();
     await expect(page).toHaveURL(new RegExp(`/demos/${LOCALE}/riverbank/$`));
-    await expect(page.locator('.demo__back')).toHaveText(ui.demoBack ?? '-');
+    await expect(page.locator('.demo')).toHaveAttribute('data-demo', 'riverbank');
+    await expect(page.locator('.demos__card, .demos__alice-choice')).toHaveCount(0);
     expect(errors).toEqual([]);
   });
 

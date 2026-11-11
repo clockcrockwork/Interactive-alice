@@ -34,6 +34,106 @@
     --demo-say-style: italic;
   }
 
+  /* Who says it, by where they stand. The bench (the King and Queen) speaks from
+     the left; the box and its herald speak from the right, and in "grow" so does
+     the Dormouse, the big one in the near corner. Voices from the gallery and the
+     narration stay in the middle. Alice is the camera until she jumps up in front
+     of everything at the right of the frame: from "Here!" her words come from
+     there. Only where a slip stands changes: the order the sentences are read
+     in, on screen and to assistive technology, is the page's own. */
+  .demo--witnesses .line:is([data-speaker="king-of-hearts"], [data-speaker="queen-of-hearts"]),
+  .demo--witnesses .demo-beat[data-cue="grow"] .line[data-speaker="alice"] {
+    --wt-side: start;
+    --wt-column: 1;
+    --wt-width: 100%;
+  }
+
+  .demo--witnesses
+    .line:is([data-speaker="hatter"], [data-speaker="cook"], [data-speaker="white-rabbit"]),
+  .demo--witnesses .demo-beat[data-cue="grow"] .line[data-speaker="dormouse"],
+  .demo--witnesses
+    .demo-beat:is(
+      [data-cue="here"],
+      [data-cue="pardon"],
+      [data-cue="lizard"],
+      [data-cue="nothing"],
+      [data-cue="important"],
+      [data-cue="rule"],
+      [data-cue="mile"],
+      [data-cue="oldest"]
+    )
+    .line[data-speaker="alice"] {
+    --wt-side: end;
+    --wt-column: 2;
+    --wt-width: 100%;
+  }
+
+  .demo--witnesses .demo-beat:not([data-letter]) .line {
+    justify-self: var(--wt-side, center);
+  }
+
+  /* On a narrow frame a slip that stands to one side keeps a margin on the
+     other, so who is speaking reads at a glance. */
+  @media (max-width: 899px) {
+    .demo--witnesses .demo-beat:not([data-letter]) .line {
+      max-inline-size: 86%;
+    }
+  }
+
+  /* On a wide frame the slips stand in two columns, the bench's on the left and
+     the box's on the right, and the middle of the frame is left to the people
+     they are about. Each sentence keeps a row of its own, so the exchange reads
+     down the frame in its order. A slip with a side takes its column and the
+     column's width (--wt-column, --wt-width); the rest cross the middle as
+     before. The letter's own layout, further down, is left as it is. */
+  @media (min-width: 900px) {
+    .demo--witnesses .demo-beat:not([data-letter]) {
+      max-inline-size: min(96vw, 92rem);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      column-gap: clamp(12rem, 30vw, 34rem);
+    }
+
+    .demo--witnesses .demo-beat:not([data-letter]) .line {
+      grid-column: var(--wt-column, 1 / -1);
+      max-inline-size: var(--wt-width, min(40rem, 50vw));
+    }
+  }
+
+  /* The crowd draws back into the court's shade while the witnesses are heard
+     (--wt-crowd, from main.ts). A colour on each card, so the pack keeps its
+     place in depth among the other pieces, which an opacity on it would not. */
+  .demo--witnesses .tr__card {
+    background: color-mix(
+      in oklch,
+      var(--tr-card),
+      var(--sepia-deep) calc(var(--wt-crowd, 0) * 55%)
+    );
+    color: color-mix(
+      in oklch,
+      var(--tr-card-ink),
+      var(--sepia-deep) calc(var(--wt-crowd, 0) * 45%)
+    );
+  }
+
+  .demo--witnesses .tr__card:is([data-suit="hearts"], [data-suit="diamonds"]) {
+    color: color-mix(
+      in oklch,
+      var(--tr-card-red),
+      var(--sepia-deep) calc(var(--wt-crowd, 0) * 45%)
+    );
+  }
+
+  /* A tall, narrow frame leaves an empty wall above a court that sits low, under
+     its captions: there the court is carried up into it (--wt-lift, from
+     main.ts), and set down again before the frame the trial opens on. It moves
+     the court's box rather than adding a transform: the head above it has its
+     transform written every frame by the pointer's lean. */
+  @media (orientation: portrait) and (max-width: 899px) {
+    .demo--witnesses .tr__court {
+      inset-block: calc(var(--wt-lift, 0) * -16vh) calc(var(--wt-lift, 0) * 16vh);
+    }
+  }
+
   /* The accusation, read off the herald's scroll: the slip is the scroll, a
      roller at its head and another riding down the edge as it unrolls. */
   .demo--witnesses .line[data-scroll] {

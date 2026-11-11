@@ -299,7 +299,91 @@ test('the witnesses: Rule Forty-two is still wet, and looking in the note-book c
   await expect(look).toBeHidden();
 });
 
+/** Every sentence of the shown beat: who says it, where it stands, how far in. */
+const shownLines = (page: Parameters<typeof atCue>[0]) =>
+  page.locator('.demo__stage .demo-beat[data-active] .line').evaluateAll((lines) =>
+    lines.map((line) => {
+      const box = line.getBoundingClientRect();
+      return {
+        speaker: (line as HTMLElement).dataset.speaker ?? '',
+        left: box.left,
+        right: box.right,
+        opacity: Number(getComputedStyle(line).opacity),
+      };
+    }),
+  );
+
+test('the witnesses: the bench speaks from the left and the box from the right, with the court between', async ({
+  page,
+}) => {
+  test.skip(!witnesses, 'no witnesses demo in this build');
+  await page.goto(witnesses?.url ?? '');
+  const width = page.viewportSize()?.width ?? 0;
+  await atCue(page, 'twinkling', 0.7);
+  const lines = await shownLines(page);
+  const king = lines.filter((line) => line.speaker === 'king-of-hearts');
+  const hatter = lines.filter((line) => line.speaker === 'hatter');
+  expect(king.length).toBeGreaterThan(0);
+  expect(hatter.length).toBeGreaterThan(0);
+  // Each stands to its own side of the frame's middle, or at least starts there.
+  for (const line of king) {
+    expect(line.left).toBeLessThan(width * 0.2);
+  }
+  for (const line of hatter) {
+    expect(line.right).toBeGreaterThan(width * 0.8);
+  }
+  if (width >= 900) {
+    // On a wide frame the middle is left to the court: no speaker's slip crosses it.
+    for (const line of [...king, ...hatter]) {
+      expect(line.right <= width * 0.42 || line.left >= width * 0.58).toBe(true);
+    }
+  }
+  // While the witnesses are heard the crowd stands back; after the confusion, not.
+  await expect
+    .poll(() => customProperty(page, '.tr__court', '--wt-crowd'), { timeout: 8000 })
+    .toBeGreaterThan(0.95);
+  await atCue(page, 'called', 0.5);
+  await expect
+    .poll(() => customProperty(page, '.tr__court', '--wt-crowd'), { timeout: 8000 })
+    .toBeLessThan(0.05);
+});
+
+test('the witnesses: a long exchange comes in sentence by sentence, all of it read before it goes', async ({
+  page,
+}) => {
+  test.skip(!witnesses, 'no witnesses demo in this build');
+  await page.goto(witnesses?.url ?? '');
+  // Early in the beat the first sentences are up and the last is still to come.
+  await atCue(page, 'twinkling', 0.2);
+  const early = await shownLines(page);
+  expect(early.length).toBeGreaterThanOrEqual(4);
+  expect(early[0]?.opacity).toBeGreaterThan(0.95);
+  expect(early.at(-1)?.opacity).toBeLessThan(0.05);
+  // By half-way every sentence is up, and stays up until the beat's own fade.
+  for (const at of [0.5, 0.8]) {
+    await atCue(page, 'twinkling', at);
+    for (const line of await shownLines(page)) {
+      expect(line.opacity).toBeGreaterThan(0.95);
+    }
+  }
+  // Back up into it from the beat after: the same sentences, all up.
+  await atCue(page, 'knee', 0.5);
+  await atCue(page, 'twinkling', 0.6);
+  for (const line of await shownLines(page)) {
+    expect(line.opacity).toBeGreaterThan(0.95);
+  }
+});
+
 test.describe('the witnesses under reduced motion', () => {
+  test('a long exchange is there whole from the head of its beat', async ({ page }) => {
+    test.skip(!witnesses, 'no witnesses demo in this build');
+    await page.goto(witnesses?.url ?? '');
+    await atCue(page, 'twinkling', 0.1);
+    for (const line of await shownLines(page)) {
+      expect(line.opacity).toBeGreaterThan(0.95);
+    }
+  });
+
   test.use({ reducedMotion: 'reduce' });
 
   test('at the head of "Here!" she is up and the jury-box is over; the book’s look is a still', async ({

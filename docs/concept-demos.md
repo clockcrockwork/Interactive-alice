@@ -1323,6 +1323,8 @@ same numbers on the same court, so the two demos are one trial.
 
 The jury mark their slates in the marks the page's language writes for yes and no (realia `marks`): a tick and a cross in English, a circle and a cross in Japanese, drawn a little larger than before.
 
+**Who says it, and the crowd standing back.** The testimony's slips stand by who says them: the bench (the King and Queen) on the left, the witness-box and its herald on the right, Alice on the right once she has jumped up in front of everything; the narration and the voices from the gallery stay in the middle. On a wide frame they stand in two columns and leave the middle third to the court; on a narrow one a slip to one side keeps a margin on the other. Only where a slip stands changes: the order the sentences are read in, on screen and to assistive technology, is the page's own. A beat of four sentences or more brings them in by length over its first third (the shell's `caption` hook), so every sentence is up by about half-way and holds until the beat's own fade; under reduced motion each beat's sentences are there whole, as everywhere. From the Hatter's entrance to "Collar that Dormouse!" the crowd of cards draws back into the court's shade (`--wt-crowd`, a colour on each card so the pack keeps its depth), and the confusion brings it back. On a tall, narrow frame the court is lifted into the empty wall above its captions (`--wt-lift`) and set down again at "a mile high", so the trial's opening frame is unchanged.
+
 ### Sentence First: the pack flies, the leaves fall, her sister's dream
 
 The court is the toy theatre of the witnesses, shared with that demo, and this one

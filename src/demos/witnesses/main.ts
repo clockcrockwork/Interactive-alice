@@ -10,7 +10,7 @@
 
 import gsap from 'gsap';
 import { figure } from '../art/art.ts';
-import { attachDemo, type DemoShell, seeded } from '../shell/shell.ts';
+import { attachDemo, type Beat, captionEntry, type DemoShell, seeded } from '../shell/shell.ts';
 import {
   buildCourt,
   buildPack,
@@ -81,6 +81,50 @@ function addPennies(slates: SVGGElement[]): void {
     penny.setAttribute('r', '4.5');
     slate.append(penny);
   }
+}
+
+/** A beat with this many sentences or more brings them in one by one. */
+const PACED_FROM = 4;
+/** The last sentence of a paced beat has begun by this far into its beat, so
+    every sentence is in by about half-way and stays up until the beat ends. */
+const PACED_SPAN = 0.3;
+
+/**
+ * The long testimonies come in at the pace they are read: each sentence enters
+ * when the ones before it have had their share of the beat by length, so a
+ * five-line exchange arrives as an exchange and the court stays in view while
+ * it begins. Nothing is dropped and nothing goes early; every sentence is up by
+ * about half-way and holds until the beat's own fade at its end. Under reduced
+ * motion, and for a short beat, the shell's own caption stands.
+ */
+function pacedCaption(
+  beat: Beat,
+  master: gsap.core.Timeline,
+  reduced: boolean,
+  last: boolean,
+): boolean {
+  const lines = beat.lines;
+  if (reduced || lines.length < PACED_FROM) {
+    return false;
+  }
+  const lengths = lines.map((line) => Math.max(1, (line.textContent ?? '').trim().length));
+  const total = lengths.reduce((sum, length) => sum + length, 0);
+  const lead = total - (lengths.at(-1) ?? 0);
+  const entry = captionEntry(false, beat.index);
+  let before = 0;
+  lines.forEach((line, index) => {
+    master.fromTo(
+      line,
+      { opacity: 0, y: 18 },
+      { opacity: 1, y: 0, duration: 0.12 },
+      entry.at + (lead > 0 ? (PACED_SPAN * before) / lead : 0),
+    );
+    before += lengths[index] ?? 0;
+  });
+  if (!last) {
+    master.to(lines, { opacity: 0, duration: 0.14 }, beat.index + 0.84);
+  }
+  return true;
 }
 
 function mount(shell: DemoShell): void {
@@ -169,6 +213,21 @@ function mount(shell: DemoShell): void {
   }
   // Within the dates, a glance across to the jury adding them up.
   camera.to({ x: -70, z: 120, ry: 6 }, iDates + 0.55, 0.4);
+  // While the witnesses are heard, from the Hatter's entrance to "Collar that
+  // Dormouse!", the crowd of cards draws back into the court's shade, so the
+  // bench, the box and whoever is in it are what the eye finds. It is a colour
+  // on every card (witnesses.css), not an opacity on the pack: the pack keeps its
+  // depth among the other pieces. The confusion brings it all back.
+  gsap.set(court, { '--wt-crowd': 0 });
+  master.to(court, { '--wt-crowd': 1, duration: dur(0.6) }, iHatter + 0.1);
+  master.to(court, { '--wt-crowd': 0, duration: dur(0.4) }, iCollar + 0.05);
+  // On a tall, narrow frame the court sits low and the captions sit on it:
+  // there the court is carried up into the empty wall above (witnesses.css reads
+  // this only on such a frame), and set down again as she grows a mile high, so
+  // the frame the trial opens on is the same.
+  gsap.set(head, { '--wt-lift': 0 });
+  master.to(head, { '--wt-lift': 1, duration: dur(0.8) }, 0.1);
+  master.to(head, { '--wt-lift': 0, duration: dur(0.7) }, iMile);
   master.call(() => court.toggleAttribute('data-high', master.time() >= iMile), [], iMile);
   // Her eyes: the court leans a little with the pointer, as a head does.
   const lean = { x: 0 };
@@ -915,4 +974,8 @@ function mount(shell: DemoShell): void {
   crowd();
 }
 
-attachDemo({ mount });
+attachDemo({
+  mount,
+  caption: (beat, master, reduced, beats) =>
+    pacedCaption(beat, master, reduced, beat.index === beats.length - 1),
+});

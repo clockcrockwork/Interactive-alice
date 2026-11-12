@@ -46,6 +46,7 @@
     --wt-side: start;
     --wt-column: 1;
     --wt-width: 100%;
+    --wt-narrow: 86%;
   }
 
   .demo--witnesses
@@ -66,6 +67,7 @@
     --wt-side: end;
     --wt-column: 2;
     --wt-width: 100%;
+    --wt-narrow: 86%;
   }
 
   .demo--witnesses .demo-beat:not([data-letter]) .line {
@@ -73,10 +75,11 @@
   }
 
   /* On a narrow frame a slip that stands to one side keeps a margin on the
-     other, so who is speaking reads at a glance. */
+     other, so who is speaking reads at a glance (--wt-narrow, set with
+     --wt-side above). A slip in the middle keeps the frame's full measure. */
   @media (max-width: 899px) {
     .demo--witnesses .demo-beat:not([data-letter]) .line {
-      max-inline-size: 86%;
+      max-inline-size: var(--wt-narrow, 100%);
     }
   }
 

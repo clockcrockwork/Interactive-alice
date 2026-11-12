@@ -10,6 +10,9 @@ import { atCue, customProperty, demos, scrollTo } from '../demo-helpers.ts';
 
 const witnesses = demos.find((candidate) => candidate.demo === 'witnesses');
 const trial = demos.find((candidate) => candidate.demo === 'trial');
+const witnessesJa = demos.find(
+  (candidate) => candidate.demo === 'witnesses' && candidate.locale === 'ja',
+);
 
 const hasAttribute = (page: Parameters<typeof atCue>[0], selector: string, name: string) =>
   page.evaluate(([sel, attr]) => document.querySelector(sel)?.hasAttribute(attr) ?? false, [
@@ -371,6 +374,81 @@ test('the witnesses: a long exchange comes in sentence by sentence, all of it re
   await atCue(page, 'twinkling', 0.6);
   for (const line of await shownLines(page)) {
     expect(line.opacity).toBeGreaterThan(0.95);
+  }
+});
+
+/** How much of each face (the top third of the figure) the shown slips cover. */
+const facesCovered = (page: Parameters<typeof atCue>[0], selectors: string[]) =>
+  page.evaluate((sels) => {
+    const slips = [...document.querySelectorAll('.demo__stage .demo-beat[data-active] .line')]
+      .filter((line) => Number(getComputedStyle(line).opacity) > 0.3)
+      .map((line) => line.getBoundingClientRect());
+    return sels.map((sel) => {
+      const box = document.querySelector(sel)?.getBoundingClientRect();
+      if (!box || box.width === 0) {
+        return 1;
+      }
+      const face = {
+        top: box.top,
+        bottom: box.top + box.height / 3,
+        left: box.left,
+        right: box.right,
+      };
+      let covered = 0;
+      for (const slip of slips) {
+        covered +=
+          Math.max(0, Math.min(slip.right, face.right) - Math.max(slip.left, face.left)) *
+          Math.max(0, Math.min(slip.bottom, face.bottom) - Math.max(slip.top, face.top));
+      }
+      return covered / ((face.right - face.left) * (face.bottom - face.top));
+    });
+  }, selectors);
+
+const BENCH_AND_BOX = ['.tr__throne--king', '.tr__throne--queen', '.wt__hatter'];
+
+test('the witnesses: in the longest testimonies the bench and the witness are seen over their slips', async ({
+  page,
+}) => {
+  test.skip(!witnesses, 'no witnesses demo in this build');
+  // English and Japanese: the Japanese slips are the longest. The dates are
+  // reframed on a narrow frame only; a wide one keeps their shot and the
+  // glance across to the jury.
+  const narrow = (page.viewportSize()?.width ?? 0) < 900;
+  const moments: [string, number][] = [
+    ...(narrow ? ([['dates', 0.3]] as [string, number][]) : []),
+    ['twinkling', 0.3],
+    ['twinkling', 0.7],
+    ['down', 0.3],
+    ['down', 0.7],
+  ];
+  for (const url of [witnesses?.url ?? '', witnessesJa?.url ?? '']) {
+    await page.goto(url);
+    for (const [cue, at] of moments) {
+      await atCue(page, cue, at);
+      for (const share of await facesCovered(page, BENCH_AND_BOX)) {
+        expect(share, `${url} ${cue} at ${at}`).toBeLessThan(0.1);
+      }
+    }
+  }
+});
+
+test('the witnesses: narration keeps the frame’s full measure; only a slip to one side is narrowed', async ({
+  page,
+}) => {
+  test.skip(!witnesses, 'no witnesses demo in this build');
+  test.skip((page.viewportSize()?.width ?? 0) >= 900, 'a narrow frame only');
+  await page.goto(witnesses?.url ?? '');
+  await atCue(page, 'hatter', 0.7);
+  const widths = await page
+    .locator('.demo__stage .demo-beat[data-active] .line')
+    .evaluateAll((lines) =>
+      lines.map((line) => [
+        (line as HTMLElement).dataset.speaker ?? '',
+        getComputedStyle(line).maxInlineSize,
+      ]),
+    );
+  for (const [speaker, width] of widths) {
+    expect(width, speaker || 'narration').toBe(speaker === 'king-of-hearts' ? '86%' : '100%');
   }
 });
 

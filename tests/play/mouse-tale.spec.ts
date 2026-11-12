@@ -230,6 +230,23 @@ test.describe("the Mouse's tale", () => {
       test.skip((page.viewportSize()?.width ?? 0) >= 700, 'phone control placement only');
       await expectPhoneTailClear(page, tale.url);
     });
+
+    test(`normal motion keeps the tail clear at 320px (${tale.locale})`, async ({ browser }) => {
+      const context = await browser.newContext({
+        baseURL: 'http://localhost:4173/',
+        viewport: { width: 320, height: 844 },
+        deviceScaleFactor: 3,
+        isMobile: true,
+        hasTouch: true,
+        reducedMotion: 'no-preference',
+      });
+      try {
+        const page = await context.newPage();
+        await expectPhoneTailClear(page, tale.url);
+      } finally {
+        await context.close();
+      }
+    });
   }
 
   for (const size of [
@@ -354,6 +371,23 @@ test.describe("the Mouse's tale under reduced motion", () => {
     test(`the spoken tail clears its phone controls (${tale.locale})`, async ({ page }) => {
       test.skip((page.viewportSize()?.width ?? 0) >= 700, 'phone control placement only');
       await expectPhoneTailClear(page, tale.url);
+    });
+
+    test(`reduced motion keeps the tail clear at 320px (${tale.locale})`, async ({ browser }) => {
+      const context = await browser.newContext({
+        baseURL: 'http://localhost:4173/',
+        viewport: { width: 320, height: 844 },
+        deviceScaleFactor: 3,
+        isMobile: true,
+        hasTouch: true,
+        reducedMotion: 'reduce',
+      });
+      try {
+        const page = await context.newPage();
+        await expectPhoneTailClear(page, tale.url);
+      } finally {
+        await context.close();
+      }
     });
   }
 });

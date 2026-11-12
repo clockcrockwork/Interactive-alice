@@ -739,7 +739,7 @@
     }
 
     .ct__tape-read {
-      inset-inline-start: 0;
+      inset-inline-start: 0.2rem;
       min-inline-size: 100%;
       padding-inline: 0.15em;
       text-align: center;

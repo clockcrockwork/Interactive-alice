@@ -10,6 +10,33 @@ import { atCue, customProperty, demos } from '../demo-helpers.ts';
 const demo = demos.find((d) => d.demo === 'mouse-tale');
 const member = (page: Page, kind: string) => page.locator(`.mt__member[data-kind="${kind}"]`);
 const evidenceRoot = '/workspace/alice-audit-evidence-20261102/mouse-tale';
+const expectPhoneTailClear = async (page: Page, url: string) => {
+  await page.goto(url);
+  for (const cue of ['attending', 'knot']) {
+    await atCue(page, cue, 0.55);
+    const overlaps = await page.evaluate(() => {
+      const controls = [...document.querySelectorAll<HTMLElement>('.mt__prop[data-shown]')].map(
+        (element) => element.getBoundingClientRect(),
+      );
+      return [...document.querySelectorAll<SVGTextElement>('.mt__tail text')]
+        .filter((element) => Number.parseFloat(getComputedStyle(element).opacity) > 0.5)
+        .flatMap((element) => {
+          const text = element.getBoundingClientRect();
+          if (text.bottom <= 0 || text.top >= innerHeight) return [];
+          return controls
+            .filter(
+              (control) =>
+                text.left < control.right &&
+                text.right > control.left &&
+                text.top < control.bottom &&
+                text.bottom > control.top,
+            )
+            .map(() => `${element.dataset.cue}: ${element.textContent?.trim()}`);
+        });
+    });
+    expect(overlaps, `${cue} text overlaps a shown control`).toEqual([]);
+  }
+};
 
 test.describe("the Mouse's tale", () => {
   test.skip(!demo, 'no mouse-tale page in this build');
@@ -198,6 +225,11 @@ test.describe("the Mouse's tale", () => {
         .poll(() => customProperty(page, '.demo__stage', '--mt-pan'), { timeout: 8000 })
         .toBe(0);
     });
+
+    test(`the spoken tail clears its phone controls (${tale.locale})`, async ({ page }) => {
+      test.skip((page.viewportSize()?.width ?? 0) >= 700, 'phone control placement only');
+      await expectPhoneTailClear(page, tale.url);
+    });
   }
 
   for (const size of [
@@ -317,4 +349,11 @@ test.describe("the Mouse's tale under reduced motion", () => {
     await expect(member(page, 'magpie')).toHaveAttribute('data-gone', '', { timeout: 8000 });
     await expect(member(page, 'canary')).toHaveAttribute('data-gone', '');
   });
+
+  for (const tale of demos.filter((entry) => entry.demo === 'mouse-tale')) {
+    test(`the spoken tail clears its phone controls (${tale.locale})`, async ({ page }) => {
+      test.skip((page.viewportSize()?.width ?? 0) >= 700, 'phone control placement only');
+      await expectPhoneTailClear(page, tale.url);
+    });
+  }
 });

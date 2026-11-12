@@ -50,7 +50,9 @@ const SHOTS: Record<string, CameraShot> = {
   twinkling: { x: 24, z: 320, y: -7, rx: -7 },
   knee: { x: 24, z: 180, y: -8, rx: -8 },
   suppress: { x: -26, z: 300, y: -6, rx: -6 },
-  down: { x: 24, z: 160, y: -8, rx: -8 },
+  // "You may stand down": the bench and the box in one frame, level, so the
+  // King's orders and the Hatter's answers stand clear of the people saying them.
+  down: { x: 10, z: 340, ry: -3, y: 8, rx: -3 },
   shoes: { x: 44, z: 40, y: -8, rx: -8 },
   cook: { x: 24, z: 260, y: -8, rx: -8 },
   pepper: { x: 10, z: 20, y: -8, rx: -8 },
@@ -64,6 +66,20 @@ const SHOTS: Record<string, CameraShot> = {
   rule: { x: 14, z: 160, y: -15, rx: -17 },
   mile: HIGH_SHOT,
 };
+
+/**
+ * On a tall, narrow frame the two longest testimonies stack five or six slips
+ * over the lower half: there the camera stands back to the bench and the box
+ * together, raised above the slips, the King, the Queen and the Hatter apart
+ * and each face clear. Read once, as the stage is laid out for its frame.
+ */
+const NARROW_SHOTS: Record<string, CameraShot> = {
+  dates: { x: 0, z: 280, ry: 6, y: 16, rx: -2 },
+  twinkling: { x: 0, z: 280, ry: 6, y: 16, rx: -2 },
+};
+/** The glance across to the jury adding up the dates, at the same height. */
+const JURY_GLANCE: CameraShot = { x: -70, z: 120, ry: 6 };
+const NARROW_JURY_GLANCE: CameraShot = { x: -70, z: 120, ry: 6, y: 16, rx: -2 };
 
 /** The jury sitting as it did: the slate rects' coordinates, for the pennies. */
 function addPennies(slates: SVGGElement[]): void {
@@ -205,14 +221,21 @@ function mount(shell: DemoShell): void {
   // throne shot is a walk in; from "a mile high" it holds the trial's own
   // opening frame.
   const camera = mountCamera(shell, world, court, { x: 0, z: -160 });
+  // The same frame as witnesses.css lifts the court on.
+  const narrow = matchMedia('(orientation: portrait) and (max-width: 899px)').matches;
   for (const beat of shell.beats) {
-    const shot = beat.cue ? SHOTS[beat.cue] : undefined;
+    const cue = beat.cue ?? '';
+    const narrowShot = narrow ? NARROW_SHOTS[cue] : undefined;
+    const shot = narrowShot ?? SHOTS[cue];
     if (shot) {
-      camera.to(shot, beat.index);
+      // A testimony framed for its slips arrives before the exchange has filled
+      // the foot of the frame: the slips come in over the beat's first third.
+      const early = narrowShot !== undefined || cue === 'down';
+      camera.to(shot, beat.index, early ? 0.35 : undefined);
     }
   }
   // Within the dates, a glance across to the jury adding them up.
-  camera.to({ x: -70, z: 120, ry: 6 }, iDates + 0.55, 0.4);
+  camera.to(narrow ? NARROW_JURY_GLANCE : JURY_GLANCE, iDates + 0.55, 0.4);
   // While the witnesses are heard, from the Hatter's entrance to "Collar that
   // Dormouse!", the crowd of cards draws back into the court's shade, so the
   // bench, the box and whoever is in it are what the eye finds. It is a colour

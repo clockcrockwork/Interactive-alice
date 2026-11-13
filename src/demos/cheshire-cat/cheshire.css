@@ -49,6 +49,9 @@
     /* The camera (main.ts): how near Alice stands to the Cat. The wood is scaled
        about the Cat's bough, given as an offset from the wood's middle. */
     scale: var(--cam-s, 1);
+    /* Its own layer: the twinkling and the swinging tail inside it then repaint
+       at the wood's size, not at the camera's. */
+    will-change: transform, scale, translate;
     translate: calc((1 - var(--cam-s, 1)) * var(--cam-fx, 0px))
       calc((1 - var(--cam-s, 1)) * var(--cam-fy, 0px));
     pointer-events: auto;
@@ -301,16 +304,16 @@
   }
 
   /* Alice, from behind, at the wood's near edge: the same engraved figure the
-     court sees, sunk into the night and rimmed by the moon, so she is a shape in
-     the dark looking up rather than a lit figure. She stands at the frame's left,
-     clear of the sentences, and turns toward whichever bough the Cat is on. */
+     court sees, sunk into the night by a colour filter, so she is a shape in the
+     dark looking up rather than a lit figure. No shadow filter: a blur under her
+     costs a frame on a software renderer. She stands at the frame's left, clear
+     of the sentences, and turns toward whichever bough the Cat is on. */
   .cc__alice {
     position: absolute;
     inset-inline-start: 3%;
     inset-block-end: -14%;
     inline-size: clamp(10rem, 34vmin, 20rem);
-    filter: brightness(0.58) sepia(0.4) saturate(0.75)
-      drop-shadow(0 0 0.5vmin oklch(from var(--cc-moon) l c h / 0.55));
+    filter: brightness(0.58) sepia(0.4) saturate(0.75);
     pointer-events: none;
   }
 

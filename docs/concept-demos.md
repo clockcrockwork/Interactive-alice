@@ -954,7 +954,7 @@ picture and the wider grin are cuts held for a moment.
 
 **The grin goes last, and comes first.** Every vanishing is the Cat's own: the body goes and the grin stays a moment after it, on the bough or where the reader's tap took the Cat from; coming back, the grin is there first and the Cat under it.
 
-**Alice in the wood.** Alice is the engraved figure the court sees from behind (`alice/from-behind`), sunk into the night and rimmed by the moon, standing at the frame's near left edge clear of the sentences; on a tall, narrow frame half out of it, her head and shoulders between the bough and the sentences. She was a flat silhouette; the engraved figure, darkened, keeps the quiet of a shape in the dark and is the same Alice the scenes before and after show. On a wide frame the signposts stand in from both edges, clear of her.
+**Alice in the wood.** Alice is the engraved figure the court sees from behind (`alice/from-behind`), sunk into the night by a colour filter, standing at the frame's near left edge clear of the sentences; on a tall, narrow frame half out of it, her head and shoulders between the bough and the sentences. She was a flat silhouette; the engraved figure, darkened, keeps the quiet of a shape in the dark and is the same Alice the scenes before and after show. On a wide frame the signposts stand in from both edges, clear of her.
 
 ### No Room: a long table in CSS 3D, and the clock that is the sun
 

@@ -46,6 +46,11 @@
     overflow: hidden;
     background: linear-gradient(to bottom, var(--cc-night), var(--cc-night-low));
     transform: rotate(calc(var(--tilt) * 1deg)) scale(calc(1 + var(--tilt) * 0.02));
+    /* The camera (main.ts): how near Alice stands to the Cat. The wood is scaled
+       about the Cat's bough, given as an offset from the wood's middle. */
+    scale: var(--cam-s, 1);
+    translate: calc((1 - var(--cam-s, 1)) * var(--cam-fx, 0px))
+      calc((1 - var(--cam-s, 1)) * var(--cam-fy, 0px));
     pointer-events: auto;
     cursor: pointer;
   }
@@ -295,13 +300,17 @@
     animation-delay: calc(var(--i, 0) * -0.31s);
   }
 
+  /* Alice, from behind, at the wood's near edge: the same engraved figure the
+     court sees, sunk into the night and rimmed by the moon, so she is a shape in
+     the dark looking up rather than a lit figure. She stands at the frame's left,
+     clear of the sentences, and turns toward whichever bough the Cat is on. */
   .cc__alice {
     position: absolute;
-    inset-inline-start: 22%;
-    inset-block-end: -4%;
-    inline-size: clamp(7rem, 24vmin, 14rem);
-    color: var(--alice-shadow);
-    filter: drop-shadow(0 0 20px var(--cc-shadow));
+    inset-inline-start: 3%;
+    inset-block-end: -14%;
+    inline-size: clamp(10rem, 34vmin, 20rem);
+    filter: brightness(0.58) sepia(0.4) saturate(0.75)
+      drop-shadow(0 0 0.5vmin oklch(from var(--cc-moon) l c h / 0.55));
     pointer-events: none;
   }
 
@@ -310,10 +319,20 @@
     transition: transform var(--demo-calm) var(--demo-ease);
   }
 
-  .cc__alice svg {
+  .cc__alice :is(svg, img) {
     display: block;
     inline-size: 100%;
     block-size: auto;
+  }
+
+  /* On a tall, narrow frame she stands half out of it, her head and shoulders
+     in the dark between the bough and the sentences at the foot. */
+  @media (orientation: portrait) and (max-width: 899px) {
+    .cc__alice {
+      inset-inline-start: -8%;
+      inset-block-end: 20%;
+      inline-size: 40vw;
+    }
   }
 
   /* The kitchen's pig, trotting across the wood floor behind Alice: placed off
@@ -661,6 +680,16 @@
 
     .cc__pig {
       inset-block-end: 29%;
+    }
+
+    /* Alice stands at the frame's left edge; the signposts stand in from both
+       edges, clear of her. */
+    .cc__sign--left {
+      inset-inline-start: 19%;
+    }
+
+    .cc__sign--right {
+      inset-inline-end: 19%;
     }
   }
 

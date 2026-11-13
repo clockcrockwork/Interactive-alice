@@ -27,7 +27,7 @@ Colour check key: **paired** means this route selects a yellow/brown-haired vers
 | Bill the Lizard | `alice/foot` is shown from Alice’s point of view as Bill kicks her. | Paired yellow/blue source selected. |
 | Caterpillar | `alice/from-above` shoulders, `alice/looking-down`, `alice/foot`, and `alice/hand-left/right` appear in their separate close-up beats. | Paired sources selected for each colored piece. |
 | Pig and Pepper | `alice/hands-cradling` frames the baby/pig from the first-person holding view. | Paired yellow/blue hands selected; infant and pig are separate any-colour generated storybook art. |
-| Cheshire Cat | `alice/silhouette` is the dark listener’s shadow, not a dressed Alice cutout. | Monochrome by design; the shadow does not encode hair or dress colour. |
+| Cheshire Cat | `alice/from-behind`, darkened to the night (changed after this audit; see `concept-demos.md`, The Cheshire Cat). | Paired yellow source, sunk in sepia and shade; the hair and dress read as a shape in the dark. |
 | Tea Party | Alice is the camera seated at the near end of the table; no independent Alice body is rendered. | POV is the story composition; there is no missing Alice image to substitute. |
 | Dormouse | Alice is the camera looking into the teapot/wood scene. | POV is intentional. The teapot and Dormouse are separate illustrated props/figures. |
 | Croquet | Alice remains the reader’s viewpoint through the court and procession; no Alice figure layer is mounted in `croquet/main.ts`. | POV is intentional; the Queen, gardeners, soldiers and animals are the visible actors. |

@@ -294,3 +294,159 @@ test('the cheshire cat, reduced motion: Call the Cat is back when the reader ret
   await expect(call).toHaveAttribute('data-shown', '');
   await context.close();
 });
+
+/** The camera's scale on the wood: 1 is the wood as the scene opens. */
+const cameraScale = (page: Parameters<typeof scrollTo>[0]) =>
+  customProperty(page, '.cc__wood', '--cam-s');
+const tailShown = (page: Parameters<typeof scrollTo>[0]) => customProperty(page, CAT, '--cc-tail');
+
+test('the cheshire cat: the camera comes near while she asks the way and stands back for the empty bough', async ({
+  page,
+}) => {
+  test.skip(!demo, 'no cheshire-cat demo in this build');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'bough', 0.6);
+  expect(await cameraScale(page)).toBeCloseTo(1, 2);
+  await atCue(page, 'ways', 0.6);
+  const near = await cameraScale(page);
+  expect(near).toBeGreaterThan(1.1);
+  // Wide again for the signposts, and still for the first vanishing: the empty
+  // bough is the picture.
+  await atCue(page, 'signs', 0.9);
+  expect(await cameraScale(page)).toBeCloseTo(1, 2);
+  await atCue(page, 'vanish-1', 0.6);
+  expect(await cameraScale(page)).toBeCloseTo(1, 2);
+  // In again all through the slow vanishing, which ends as near as she came to
+  // ask the way; then back out for the grin in the moon.
+  await atCue(page, 'slowly', 0.6);
+  expect(await cameraScale(page)).toBeGreaterThan(1.05);
+  await atCue(page, 'grin', 0.05);
+  expect(await cameraScale(page)).toBeCloseTo(near, 2);
+  await atCue(page, 'grin', 0.9);
+  expect(await cameraScale(page)).toBeCloseTo(1, 2);
+  // Scrolling back lands on the same frame it was on going forward.
+  await atCue(page, 'ways', 0.6);
+  expect(await cameraScale(page)).toBeCloseTo(near, 3);
+  // Nearer, the Cat still keeps above the sentences.
+  const cat = await page.locator('.cc__cat').boundingBox();
+  const top = await page.evaluate(() =>
+    Math.min(
+      ...[...document.querySelectorAll('.demo-beat[data-active] .line')].map(
+        (line) => line.getBoundingClientRect().top,
+      ),
+    ),
+  );
+  expect(top).toBeGreaterThan((cat?.y ?? 0) + (cat?.height ?? 0) - 8);
+});
+
+test('the cheshire cat: the grin outlasts the body when it vanishes, and comes back before it', async ({
+  page,
+}) => {
+  test.skip(!demo, 'no cheshire-cat demo in this build');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'vanish-1', 0.32);
+  expect(await tailShown(page)).toBeLessThan(0.05);
+  expect(await grinOpacity(page)).toBeGreaterThan(0.9);
+  await atCue(page, 'vanish-1', 0.8);
+  expect(await grinOpacity(page)).toBeLessThan(0.05);
+  await atCue(page, 'baby', 0.11);
+  expect(await grinOpacity(page)).toBeGreaterThan(0.5);
+  expect(await tailShown(page)).toBeLessThan(0.05);
+  await atCue(page, 'baby', 0.6);
+  expect(await tailShown(page)).toBeGreaterThan(0.95);
+});
+
+test('the cheshire cat: sent to another bough, the grin stays a moment on the old one and the camera follows', async ({
+  page,
+}) => {
+  test.skip(!demo, 'no cheshire-cat demo in this build');
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'puss', 0.6);
+  const boughOf = () =>
+    page.evaluate(() =>
+      [...document.querySelectorAll('.cc__bough')].findIndex((bough) =>
+        bough.contains(document.querySelector('.art[data-art="cheshire-cat/on-bough"]')),
+      ),
+    );
+  const focusX = () =>
+    page.evaluate(() =>
+      Number.parseFloat(
+        getComputedStyle(document.querySelector('.cc__wood') as Element).getPropertyValue(
+          '--cam-fx',
+        ),
+      ),
+    );
+  expect(await boughOf()).toBe(1);
+  const viewport = page.viewportSize() ?? { width: 1280, height: 800 };
+  await page.mouse.click(viewport.width * 0.15, viewport.height * 0.3);
+  // The body has gone and the grin is still on the old bough.
+  await expect.poll(() => tailShown(page), { timeout: 3000 }).toBeLessThan(0.05);
+  expect(await boughOf()).toBe(1);
+  expect(await grinOpacity(page)).toBeGreaterThan(0.5);
+  // Then it is on the other bough, whole, and the camera has gone with it.
+  await expect.poll(boughOf, { timeout: 4000 }).toBe(0);
+  await expect.poll(() => tailShown(page), { timeout: 4000 }).toBeGreaterThan(0.95);
+  await expect.poll(focusX, { timeout: 4000 }).toBeLessThan(-20);
+});
+
+test('the cheshire cat: Alice stands at the wood’s edge, from behind, clear of the sentences', async ({
+  page,
+}) => {
+  test.skip(!demo, 'no cheshire-cat demo in this build');
+  await page.goto(demo?.url ?? '');
+  await expect(page.locator('.cc__alice .art')).toHaveAttribute('data-art', 'alice/from-behind');
+  for (const cue of ['bough', 'ways', 'slowly']) {
+    await atCue(page, cue, 0.85);
+    const covered = await page.evaluate(() => {
+      const alice = document.querySelector('.cc__alice')?.getBoundingClientRect();
+      if (!alice) {
+        return 1;
+      }
+      // Her head and shoulders: the top third of the figure, inside the frame.
+      const head = {
+        top: Math.max(0, alice.top),
+        bottom: Math.min(innerHeight, alice.top + alice.height / 3),
+        left: Math.max(0, alice.left),
+        right: Math.min(innerWidth, alice.right),
+      };
+      let area = 0;
+      for (const line of document.querySelectorAll('.demo-beat[data-active] .line')) {
+        const r = line.getBoundingClientRect();
+        area +=
+          Math.max(0, Math.min(r.right, head.right) - Math.max(r.left, head.left)) *
+          Math.max(0, Math.min(r.bottom, head.bottom) - Math.max(r.top, head.top));
+      }
+      return area / Math.max(1, (head.right - head.left) * (head.bottom - head.top));
+    });
+    expect(covered, cue).toBeLessThan(0.15);
+  }
+});
+
+test('the cheshire cat, reduced motion: the camera cuts to each beat’s frame and a sent Cat is there at once', async ({
+  browser,
+}) => {
+  test.skip(!demo, 'no cheshire-cat demo in this build');
+  const context = await browser.newContext({ reducedMotion: 'reduce' });
+  const page = await context.newPage();
+  await page.goto(demo?.url ?? '');
+  await atCue(page, 'puss', 0);
+  await expect.poll(() => cameraScale(page), { timeout: 8000 }).toBeGreaterThan(1.1);
+  await atCue(page, 'signs', 0);
+  await expect.poll(() => cameraScale(page), { timeout: 8000 }).toBeCloseTo(1, 2);
+  await atCue(page, 'bough', 0.5);
+  const viewport = page.viewportSize() ?? { width: 1280, height: 800 };
+  await page.mouse.click(viewport.width * 0.15, viewport.height * 0.3);
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() =>
+          [...document.querySelectorAll('.cc__bough')].findIndex((bough) =>
+            bough.contains(document.querySelector('.art[data-art="cheshire-cat/on-bough"]')),
+          ),
+        ),
+      { timeout: 1000 },
+    )
+    .toBe(0);
+  expect(await tailShown(page)).toBeGreaterThan(0.95);
+  await context.close();
+});

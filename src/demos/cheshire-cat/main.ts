@@ -92,7 +92,7 @@ function mount(shell: DemoShell): void {
     `<div class="cc__pig" data-facing="left">${figure('pig/trotting')}</div>` +
     '<div class="cc__mist"></div>' +
     '<div class="cc__trees cc__trees--near"></div>' +
-    `<div class="cc__alice">${figure('alice/silhouette')}</div>` +
+    `<div class="cc__alice">${figure('alice/from-behind')}</div>` +
     `<div class="cc__moon-grin">${GRIN_SVG}</div>`;
   const boughs = [...wood.querySelectorAll<HTMLElement>('.cc__bough')];
   const catBox = wood.querySelector<HTMLElement>('.art[data-art="cheshire-cat/on-bough"]');
@@ -228,6 +228,80 @@ function mount(shell: DemoShell): void {
     );
   };
 
+  // --- The camera: how near Alice stands to the Cat. One number, the push, on
+  // the story's timeline: 0 is the wood as the scene opens, 1 is close on the
+  // Cat. The wood is scaled about the Cat's bough, whichever bough the reader
+  // has sent it to; a narrow frame, where the Cat already fills the width, comes
+  // in less. The near trunks, the moon and Alice are in the wood and come with it.
+  const narrow = matchMedia('(orientation: portrait) and (max-width: 899px)').matches;
+  const reach = narrow ? 0.15 : 0.25;
+  const camera = { push: 0 };
+  const focus = { x: 0, y: 0, tx: 0, ty: 0 };
+  const applyCamera = (): void => {
+    const scale = 1 + camera.push * reach;
+    wood.style.setProperty('--cam-s', scale.toFixed(4));
+    wood.style.setProperty('--cam-fx', `${focus.x.toFixed(1)}px`);
+    wood.style.setProperty('--cam-fy', `${focus.y.toFixed(1)}px`);
+  };
+  /** Where the Cat sits on its bough, from the wood's own layout (untouched by
+      the camera), as an offset from the wood's middle. The point is the bough
+      under its paws, so the Cat grows up into the wood as the camera comes in and
+      the sentences below it keep their distance. */
+  function refocus(): void {
+    const bough = catBox?.closest<HTMLElement>('.cc__bough');
+    if (!bough || !catBox) {
+      return;
+    }
+    focus.tx = bough.offsetLeft - wood.clientWidth / 2;
+    focus.ty = bough.offsetTop + catBox.offsetHeight * 0.85 - wood.clientHeight / 2;
+    if (reducedMotion) {
+      focus.x = focus.tx;
+      focus.y = focus.ty;
+      applyCamera();
+    }
+  }
+  refocus();
+  focus.x = focus.tx;
+  focus.y = focus.ty;
+  applyCamera();
+  window.addEventListener(
+    'resize',
+    () => {
+      refocus();
+      focus.x = focus.tx;
+      focus.y = focus.ty;
+      applyCamera();
+    },
+    { passive: true },
+  );
+  const dolly = (at: number, push: number, duration: number): void => {
+    master.to(
+      camera,
+      {
+        push,
+        duration: reducedMotion ? 0.01 : duration,
+        ease: 'sine.inOut',
+        onUpdate: applyCamera,
+      },
+      at,
+    );
+  };
+  // On the bough: the wood as it opens, then nearer while she asks the way, and
+  // held there for the answer.
+  dolly(iPuss + 0.05, 1, 0.8);
+  // The signposts want the wood wide; at "we're all mad here" it leans in on her.
+  dolly(iSigns, 0, 0.6);
+  dolly(iMad + 0.1, 0.5, 0.7);
+  dolly(iCroquet + 0.5, 0, 0.5);
+  // The first vanishings are seen from where she stands: the empty bough is the
+  // picture. "She walked on": the camera walks in, and the Cat is there again.
+  dolly(iAgain - 0.1, 0.5, 0.6);
+  // The slow one: back in as near as she came to ask the way, all the while it
+  // goes, so the grin is left large; no nearer, or the moon leaves the frame.
+  dolly(iSlowly + 0.25, 1, 0.75);
+  // A grin without a cat: back out to the wood and the moon it rises into.
+  dolly(iGrin + 0.15, 0, 0.6);
+
   // --- The story's own moments.
   if (!reducedMotion) {
     master.to(grin, { '--wide': 0.4, duration: 0.3 }, iPuss + 0.3);
@@ -244,14 +318,16 @@ function mount(shell: DemoShell): void {
   master.to(treeGrins, { opacity: 1, duration: 0.6 }, iMad + 0.3);
   master.to(wood, { '--mad': 0, '--tilt': 0, duration: 0.8 }, iCroquet + 0.5);
   master.to(treeGrins, { opacity: 0, duration: 0.5 }, iCroquet + 0.5);
+  // Even the quick ones are the Cat's own: the body goes and the grin stays a
+  // moment after it; coming back, the grin is there first and the Cat under it.
   show(iVanish1, 0, 0.25, 'power3.in');
-  master.to(presence, { grin: 0, duration: 0.15, onUpdate: apply }, iVanish1 + 0.2);
-  show(iBaby, 1, 0.2, 'power3.out');
-  master.to(presence, { grin: 1, duration: 0.15, onUpdate: apply }, iBaby);
-  show(iAgain - 0.3, 0, 0.2, 'power3.in');
-  master.to(presence, { grin: 0, duration: 0.15, onUpdate: apply }, iAgain - 0.15);
-  show(iAgain + 0.3, 1, 0.2, 'power3.out');
-  master.to(presence, { grin: 1, duration: 0.1, onUpdate: apply }, iAgain + 0.3);
+  master.to(presence, { grin: 0, duration: 0.15, onUpdate: apply }, iVanish1 + 0.4);
+  master.to(presence, { grin: 1, duration: 0.12, onUpdate: apply }, iBaby);
+  show(iBaby + 0.1, 1, 0.2, 'power3.out');
+  show(iAgain - 0.4, 0, 0.2, 'power3.in');
+  master.to(presence, { grin: 0, duration: 0.12, onUpdate: apply }, iAgain - 0.15);
+  master.to(presence, { grin: 1, duration: 0.1, onUpdate: apply }, iAgain + 0.25);
+  show(iAgain + 0.35, 1, 0.2, 'power3.out');
   // The slow one waits a moment for the reader's choice of end, then goes. Under
   // reduced motion the beat is shown settled, so the vanishing waits until just
   // after that: the choice is made over the whole Cat, and the next beat shows it gone.
@@ -475,30 +551,26 @@ function mount(shell: DemoShell): void {
       return;
     }
     teleporting = true;
-    const vanishTime = reducedMotion ? 0 : 0.35;
-    gsap.to(presence, {
-      body: 0,
-      grin: 0,
-      duration: vanishTime,
-      ease: 'power3.in',
-      onUpdate: apply,
-    });
-    gsap.delayedCall(vanishTime + 0.15, () => {
-      bough.append(catBox);
-      gsap.to(presence, {
-        body: 1,
-        grin: 1,
-        duration: reducedMotion ? 0 : 0.4,
-        ease: 'power3.out',
-        onUpdate: apply,
+    // The body goes, and the grin stays on the old bough a moment after it; on
+    // the new one the grin comes first and the Cat under it.
+    const time = (seconds: number): number => (reducedMotion ? 0 : seconds);
+    gsap
+      .timeline({
         onComplete: () => {
           teleporting = false;
           const next = pendingBough;
           pendingBough = undefined;
           sendTo(next);
         },
-      });
-    });
+      })
+      .to(presence, { body: 0, duration: time(0.3), ease: 'power3.in', onUpdate: apply })
+      .to(presence, { grin: 0, duration: time(0.2), onUpdate: apply }, time(0.45))
+      .call(() => {
+        bough.append(catBox);
+        refocus();
+      })
+      .to(presence, { grin: 1, duration: time(0.2), onUpdate: apply }, `+=${time(0.1)}`)
+      .to(presence, { body: 1, duration: time(0.35), ease: 'power3.out', onUpdate: apply });
   };
   wood.addEventListener('click', (event) => {
     if (master.time() >= iVanish1) {
@@ -545,6 +617,7 @@ function mount(shell: DemoShell): void {
       callShown();
       if (master.time() >= iVanish1 && currentBough() !== boughs[1]) {
         boughs[1]?.append(catBox as Node);
+        refocus();
       }
     },
     [],
@@ -685,6 +758,12 @@ function mount(shell: DemoShell): void {
   shell.onFrame((dt) => {
     if (reducedMotion) {
       return;
+    }
+    // The camera's focus follows the Cat to whichever bough it is on.
+    if (Math.abs(focus.tx - focus.x) + Math.abs(focus.ty - focus.y) > 0.5) {
+      focus.x = mix(focus.x, focus.tx, Math.min(1, dt * 3));
+      focus.y = mix(focus.y, focus.ty, Math.min(1, dt * 3));
+      applyCamera();
     }
     // Alice looks toward whichever bough the Cat is on.
     const on = currentBough();

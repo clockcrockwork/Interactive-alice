@@ -910,7 +910,7 @@ and the look up are cuts with a blink, and no blink is under way where a beat se
 ### The Cheshire Cat: depth and a mask
 
 A night wood in layers: far trunks, mid trunks with the bough, mist, two near trunks
-that frame the wood at its edges, a moon, and Alice's silhouette in front looking up. The layers slide sideways at their
+that frame the wood at its edges, a moon, and Alice in front, from behind, looking up. The layers slide sideways at their
 own rates with the pointer, so the wood has depth. The Cat sits on the bough with its
 tail swinging. Its body is under an SVG mask holding a wide gradient; sliding the
 gradient along the body hides it from the tail end, so a vanishing can be a snap or a
@@ -921,7 +921,7 @@ wobble.
 
 The moon keeps the smile: at the end the grin rises into it and the moon becomes a
 crescent, and the stars, which twinkle all night, gather under it into a grin of their
-own. At *we're all mad here* every tree grins too. Alice's silhouette turns to face
+own. At *we're all mad here* every tree grins too. Alice turns to face
 whichever bough the Cat is on. At *It turned into a pig* the kitchen's pig trots across
 the wood floor behind her.
 
@@ -949,6 +949,12 @@ stands still on the wood floor at its sentence and is gone by the next; the moon
 picture and the wider grin are cuts held for a moment.
 
 **Which end goes first.** At the slow vanishing the reader chooses which end goes first. Two props stand in for the one: *Vanish tail first* slides the mask along the bough as the story has it, and *Vanish head first* slants it in from the top so the ears go, then the eyes, the face, the body, and the tail last; the grin is outside the mask either way and stays, and still rises into the moon. A tap on the Cat's head or its tail during that beat chooses the same way. The choice is kept for the rest of the page, so the quick vanishings and the final one use it too, and may be changed before each. Under reduced motion both orders are two cuts, the chosen end and then the rest, with the grin staying.
+
+**How near she stands.** The camera is one number on the story's timeline, how near Alice stands to the Cat, and the wood is scaled about the bough under its paws, so the Cat grows up into the wood and the sentences below it keep their distance. It comes in while she asks the way and holds for the answer; goes wide for the signposts; leans in at *we're all mad here* and out again; stands still for the first vanishings, where the empty bough is the picture; walks in at *She walked on* to find the Cat again; comes in all through the slow vanishing, so the grin is left large; and goes back out for the grin to rise into the moon. Never nearer than a quarter, so the moon stays in the frame and the wood's engraving stays sharp; on a tall, narrow frame, where the Cat already fills the width, less. When the reader sends the Cat to another bough the camera's focus follows it there. Under reduced motion each beat is its settled frame and a sent Cat is there at once.
+
+**The grin goes last, and comes first.** Every vanishing is the Cat's own: the body goes and the grin stays a moment after it, on the bough or where the reader's tap took the Cat from; coming back, the grin is there first and the Cat under it.
+
+**Alice in the wood.** Alice is the engraved figure the court sees from behind (`alice/from-behind`), sunk into the night by a colour filter, standing at the frame's near left edge clear of the sentences; on a tall, narrow frame half out of it, her head and shoulders between the bough and the sentences. She was a flat silhouette; the engraved figure, darkened, keeps the quiet of a shape in the dark and is the same Alice the scenes before and after show. On a wide frame the signposts stand in from both edges, clear of her.
 
 ### No Room: a long table in CSS 3D, and the clock that is the sun
 

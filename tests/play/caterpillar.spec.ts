@@ -185,6 +185,37 @@ test('the caterpillar: a tape-measure reads her height, and landing on three mak
     .toBeLessThan(0.01);
 });
 
+test('the caterpillar: the ruler reading stays inside the frame in both locales and motion modes', async ({
+  page,
+}) => {
+  const viewport = page.viewportSize();
+  expect(viewport).not.toBeNull();
+  if (!viewport) return;
+
+  for (const locale of ['en-simple', 'ja']) {
+    const demo = demos.find(
+      (candidate) => candidate.demo === 'caterpillar' && candidate.locale === locale,
+    );
+    test.skip(!demo, `no caterpillar demo in ${locale}`);
+    await page.goto(demo?.url ?? '');
+
+    for (const reducedMotion of ['no-preference', 'reduce'] as const) {
+      await page.emulateMedia({ reducedMotion });
+      for (const cue of ['sides', 'nibble', 'sides']) {
+        await atCue(page, cue, 0.5);
+        const reading = await page.locator('.ct__tape-read').boundingBox();
+        expect(reading, `${locale} ${reducedMotion} ${cue}`).not.toBeNull();
+        if (!reading) continue;
+        expect(reading.x, `${locale} ${reducedMotion} ${cue} left edge`).toBeGreaterThanOrEqual(0);
+        expect(
+          reading.x + reading.width,
+          `${locale} ${reducedMotion} ${cue} right edge`,
+        ).toBeLessThanOrEqual(viewport.width);
+      }
+    }
+  }
+});
+
 test('the caterpillar: "Explain yourself!" puffs a question, not a ring', async ({ page }) => {
   const demo = demos.find((candidate) => candidate.demo === 'caterpillar');
   test.skip(!demo, 'no caterpillar demo in this build');

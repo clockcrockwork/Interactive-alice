@@ -408,6 +408,13 @@
     }
   }
 
+  @media (max-width: 340px) {
+    /* The final Japanese tail phrase reaches the undo control at 320px. */
+    .mt__prop--undo {
+      inset-inline-end: 0.75rem;
+    }
+  }
+
   /* The excuses. The Magpie's scarf winds on; the Canary comes out to call, and
      its chicks hop to it from behind the party. */
   .mt__scarf {

@@ -483,13 +483,48 @@ function mount(shell: DemoShell): void {
     for (let i = Math.floor(SAMPLES * KNOT_FROM); i <= Math.ceil(SAMPLES * KNOT_TO); i += 1) {
       knotY = Math.max(knotY, knotted[i]?.[1] ?? 0);
     }
+    const controlPan = (): number => {
+      if (!lite) return 0;
+      const stageTop = shell.stage.getBoundingClientRect().top;
+      const controls = [
+        ...shell.root.querySelectorAll<HTMLElement>(
+          '.mt__prop--read, .mt__prop--pull, .mt__prop--undo',
+        ),
+      ].map((element) => {
+        const box = element.getBoundingClientRect();
+        return { left: box.left, right: box.right, top: box.top - stageTop };
+      });
+      let needed = 0;
+      for (const path of [plain, knotted]) {
+        chunks.forEach((chunk, index) => {
+          const [x, y] = pointOn(path, indexAt(chunk.s));
+          const width = emWidth(pieces[index]?.text ?? '', shell.profile.glyphWidth) * chunk.size;
+          const halfWidth = width / 2 + chunk.size * 0.6;
+          const bottom = y + chunk.size * 0.65;
+          for (const control of controls) {
+            if (
+              x + chunk.dx + halfWidth <= control.left ||
+              x + chunk.dx - halfWidth >= control.right
+            ) {
+              continue;
+            }
+            needed = Math.max(needed, bottom + 8 - control.top);
+          }
+        });
+      }
+      return Math.max(0, needed);
+    };
+    // On a narrow screen, account for every tail chunk and both tail paths
+    // against the read/pull/undo overlays while the camera turns to the bend
+    // and knot.
+    const lastVersePan = lite ? Math.max(verseEnds.at(-1) ?? 0, controlPan()) : 0;
     // The tail's first verse never goes up under the bar, however far it pans.
     pans = [
       0,
       ...verseEnds,
-      Math.min(keepMouse, Math.max(0, bendY + 40 - room)),
+      Math.max(lastVersePan, Math.min(keepMouse, Math.max(0, bendY + 40 - room))),
       // The knot is the picture of its beat: the party may slip up under the captions.
-      Math.min(keepMouse + 60, Math.max(0, knotY + 30 - room)),
+      Math.max(lastVersePan, Math.min(keepMouse + 60, Math.max(0, knotY + 30 - room))),
       0,
     ].map((value) => Math.min(value, tailCeiling));
     applyPan();

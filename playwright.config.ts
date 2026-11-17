@@ -10,7 +10,14 @@ const candidates = [
   '/opt/pw-browsers/chromium/chrome-linux/chrome',
 ].filter((path): path is string => typeof path === 'string' && path.length > 0);
 const executablePath = candidates.find((path) => existsSync(path));
-const chromium = executablePath ? { launchOptions: { executablePath } } : {};
+const chromium = {
+  launchOptions: {
+    ...(executablePath ? { executablePath } : {}),
+    // The app explicitly handles BFCache restoration; keep that browser lifecycle
+    // enabled in Chromium so its regression test exercises the real pageshow path.
+    ignoreDefaultArgs: ['--disable-back-forward-cache'],
+  },
+};
 
 export default defineConfig({
   testDir: 'tests',

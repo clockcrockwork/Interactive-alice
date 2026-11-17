@@ -1,0 +1,620 @@
+{
+  "$schema": "../../schema/chapter-structure.schema.json",
+  "chapter": 12,
+  "sourceFile": "text/raw/ch12-alices-evidence.txt",
+  "sections": [
+    {
+      "id": "the-jury-box"
+    },
+    {
+      "id": "nothing-whatever"
+    },
+    {
+      "id": "rule-forty-two"
+    },
+    {
+      "id": "the-letter"
+    },
+    {
+      "id": "sentence-first"
+    },
+    {
+      "id": "pack-of-cards"
+    },
+    {
+      "id": "on-the-bank"
+    },
+    {
+      "id": "the-sisters-dream"
+    }
+  ],
+  "segments": [
+    {
+      "id": "ch12.s0010",
+      "section": "the-jury-box",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0020",
+      "section": "the-jury-box",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0030",
+      "section": "the-jury-box",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0040",
+      "section": "the-jury-box",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0050",
+      "section": "the-jury-box",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0060",
+      "section": "the-jury-box",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0070",
+      "section": "the-jury-box",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0080",
+      "section": "the-jury-box",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0090",
+      "section": "the-jury-box",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0100",
+      "section": "the-jury-box",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0110",
+      "section": "the-jury-box",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0120",
+      "section": "the-jury-box",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0130",
+      "section": "nothing-whatever",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0140",
+      "section": "nothing-whatever",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0150",
+      "section": "nothing-whatever",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0160",
+      "section": "nothing-whatever",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0170",
+      "section": "nothing-whatever",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0180",
+      "section": "nothing-whatever",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0190",
+      "section": "nothing-whatever",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0200",
+      "section": "nothing-whatever",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0210",
+      "section": "nothing-whatever",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0220",
+      "section": "nothing-whatever",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0230",
+      "section": "rule-forty-two",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0240",
+      "section": "rule-forty-two",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0250",
+      "section": "rule-forty-two",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0260",
+      "section": "rule-forty-two",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0270",
+      "section": "rule-forty-two",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0280",
+      "section": "rule-forty-two",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0290",
+      "section": "rule-forty-two",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch12.s0300",
+      "section": "rule-forty-two",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0310",
+      "section": "rule-forty-two",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0320",
+      "section": "rule-forty-two",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0330",
+      "section": "rule-forty-two",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0340",
+      "section": "rule-forty-two",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0350",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0360",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0370",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0380",
+      "section": "the-letter",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0390",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0400",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0410",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0420",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "knave-of-hearts"
+    },
+    {
+      "id": "ch12.s0430",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "knave-of-hearts"
+    },
+    {
+      "id": "ch12.s0440",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0450",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0460",
+      "section": "the-letter",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0470",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch12.s0480",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0490",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0500",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0510",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0520",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0530",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0540",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0550",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch12.s0560",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0570",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0580",
+      "section": "the-letter",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0590",
+      "section": "the-letter",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0600",
+      "section": "sentence-first",
+      "kind": "dialogue",
+      "speaker": "king-of-hearts"
+    },
+    {
+      "id": "ch12.s0610",
+      "section": "sentence-first",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0620",
+      "section": "sentence-first",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch12.s0630",
+      "section": "sentence-first",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch12.s0640",
+      "section": "sentence-first",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0650",
+      "section": "sentence-first",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0660",
+      "section": "sentence-first",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch12.s0670",
+      "section": "sentence-first",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0680",
+      "section": "sentence-first",
+      "kind": "dialogue",
+      "speaker": "queen-of-hearts"
+    },
+    {
+      "id": "ch12.s0690",
+      "section": "sentence-first",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0700",
+      "section": "sentence-first",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0710",
+      "section": "sentence-first",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0720",
+      "section": "sentence-first",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0730",
+      "section": "pack-of-cards",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0740",
+      "section": "pack-of-cards",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0750",
+      "section": "pack-of-cards",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0760",
+      "section": "pack-of-cards",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0770",
+      "section": "on-the-bank",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0780",
+      "section": "on-the-bank",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0790",
+      "section": "on-the-bank",
+      "kind": "dialogue",
+      "speaker": "alices-sister"
+    },
+    {
+      "id": "ch12.s0800",
+      "section": "on-the-bank",
+      "kind": "dialogue",
+      "speaker": "alices-sister"
+    },
+    {
+      "id": "ch12.s0810",
+      "section": "on-the-bank",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch12.s0820",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0830",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0840",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0850",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0860",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0870",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0880",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0890",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0900",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0910",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0920",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0930",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0940",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0950",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s0960",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0970",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0980",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s0990",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s1000",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s1010",
+      "section": "the-sisters-dream",
+      "kind": "sound"
+    },
+    {
+      "id": "ch12.s1020",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s1030",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s1040",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s1050",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    },
+    {
+      "id": "ch12.s1060",
+      "section": "the-sisters-dream",
+      "kind": "narration"
+    }
+  ]
+}

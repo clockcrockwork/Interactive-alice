@@ -21,7 +21,8 @@ text/characters.json          every speaker a structure file may name
 ## Rules
 
 - **Ids are permanent.** Rewording keeps the id. Ids step by ten so a sentence can
-  be inserted without renumbering any language.
+  be inserted without renumbering any language. The one exception, a renumber
+  when a whole passage cannot fit, has strict conditions: `docs/text-pipeline.md` §2.
 - **`en-simple` is the base text**, itself an adaptation for children. Every other
   language is translated from it, never from the 1865 prose.
 - One segment is one line of text, normally one sentence. A paired or repeated cry

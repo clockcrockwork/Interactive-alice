@@ -1,0 +1,418 @@
+{
+  "$schema": "../../schema/chapter-structure.schema.json",
+  "chapter": 2,
+  "sourceFile": "text/raw/ch02-the-pool-of-tears.txt",
+  "sections": [
+    {
+      "id": "curiouser"
+    },
+    {
+      "id": "pool"
+    },
+    {
+      "id": "the-mouse"
+    },
+    {
+      "id": "to-the-shore"
+    }
+  ],
+  "segments": [
+    {
+      "id": "ch02.s0010",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0020",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0030",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0031",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0032",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0033",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0034",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0035",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0036",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0037",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0040",
+      "section": "curiouser",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0050",
+      "section": "curiouser",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0060",
+      "section": "curiouser",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0070",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0080",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0090",
+      "section": "curiouser",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0100",
+      "section": "curiouser",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0110",
+      "section": "curiouser",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0120",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "white-rabbit"
+    },
+    {
+      "id": "ch02.s0130",
+      "section": "curiouser",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0131",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0132",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0133",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0134",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0135",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0136",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0137",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0138",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0140",
+      "section": "curiouser",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0141",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0142",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0143",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0144",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0145",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0146",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0147",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0148",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0149",
+      "section": "curiouser",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0150",
+      "section": "curiouser",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0160",
+      "section": "curiouser",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0170",
+      "section": "pool",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0180",
+      "section": "pool",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0190",
+      "section": "pool",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0200",
+      "section": "pool",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0210",
+      "section": "pool",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0220",
+      "section": "the-mouse",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0230",
+      "section": "the-mouse",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0240",
+      "section": "the-mouse",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0250",
+      "section": "the-mouse",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0260",
+      "section": "the-mouse",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0270",
+      "section": "the-mouse",
+      "kind": "thought",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0280",
+      "section": "the-mouse",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0290",
+      "section": "the-mouse",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0300",
+      "section": "the-mouse",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0310",
+      "section": "the-mouse",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0320",
+      "section": "the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch02.s0330",
+      "section": "the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch02.s0340",
+      "section": "the-mouse",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0350",
+      "section": "the-mouse",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0360",
+      "section": "the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch02.s0370",
+      "section": "the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch02.s0380",
+      "section": "the-mouse",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0390",
+      "section": "the-mouse",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0400",
+      "section": "the-mouse",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0410",
+      "section": "the-mouse",
+      "kind": "dialogue",
+      "speaker": "alice"
+    },
+    {
+      "id": "ch02.s0420",
+      "section": "the-mouse",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0430",
+      "section": "the-mouse",
+      "kind": "dialogue",
+      "speaker": "mouse"
+    },
+    {
+      "id": "ch02.s0440",
+      "section": "to-the-shore",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0450",
+      "section": "to-the-shore",
+      "kind": "narration"
+    },
+    {
+      "id": "ch02.s0460",
+      "section": "to-the-shore",
+      "kind": "narration"
+    }
+  ]
+}

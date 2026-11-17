@@ -1,0 +1,52 @@
+{
+  "batch": "mock-turtle-undersea-school-20261103",
+  "style": "IA-ENGRAVED-CUTOUT-V1",
+  "use": "Optional low-contrast decorative backdrop behind the Mock Turtle's separate underwater classroom figures; it does not replace the CSS water, sand, depth, or caustic effects.",
+  "assets": [
+    {
+      "id": "mock-turtle-school-wide",
+      "asset": "scenery/mock-turtle-school-wide.generated.webp",
+      "width": 1400,
+      "height": 788,
+      "bytes": 228106,
+      "sha256": "e5cc0e2f1968a6cf7dc21d39f056ed986fefef16f736f20a1450e9e56a5490be",
+      "source": {
+        "file": "/workspace/generated_images/exec-1ab8df5b-58ec-473b-b19d-ef84e4ef6bc0.png",
+        "sha256": "91b712e8ef1869bca929bf40edaa4908b914e05a1be525f1123dcb4e50569a51",
+        "bytes": 3412033
+      },
+      "generation": {
+        "tool": "built-in image_gen",
+        "transparent_background": false,
+        "generated_at": "2026-11-03T06:03:26Z",
+        "references": [
+          "scenery/wildflower-highlands.generated.webp",
+          "scenery/ground.generated.webp"
+        ],
+        "prompt": "Create a wide landscape 16:9 background illustration for the underwater classroom scene in an antique Alice storybook. Use the supplied countryside engraving only as a style reference: delicate 1865 Victorian wood engraving, warm paper highlights, fine cross-hatching, restrained charcoal gray ink. Scene: looking through quiet deep water into an open undersea school hall, faint distant stone arches and a few slender sea plants and shell forms framing the far left and right, a soft sandy floor in the lower quarter, faint bubbles and underwater light rays near the top. Keep the wide center and middle rows low-detail and open so separate small sea-creature pupils at desks remain the clear foreground. Restrained monochrome, no blue or other color, no people, no animals or fish, no desks, no lettering, no school signs, no rectangular border, no photographic depth of field, no text, no watermark."
+      },
+      "delivery": "ImageMagick resized to 1400x788 and WebP q79 method 6."
+    },
+    {
+      "id": "mock-turtle-school-phone",
+      "asset": "scenery/mock-turtle-school-phone.generated.webp",
+      "width": 800,
+      "height": 1421,
+      "bytes": 206932,
+      "sha256": "c45db8975104df71df38bdf0dc25f9f145616c2b65a57072a6e72361df2968fc",
+      "source": {
+        "file": "/workspace/generated_images/exec-607c431b-2b78-4f24-a5a3-1298803d20df.png",
+        "sha256": "1ec7de42da1637965f6b42a99edbc9ce63b28d4acb1b997bb0571401fe424eab",
+        "bytes": 3236899
+      },
+      "generation": {
+        "tool": "built-in image_gen",
+        "transparent_background": false,
+        "generated_at": "2026-11-03T06:04:06Z",
+        "reference": "scenery/mock-turtle-school-wide.generated.webp",
+        "prompt": "Adapt the provided antique engraved underwater-school background into a tall portrait 9:16 composition for a phone screen. Keep the same fine 1865 Victorian wood-engraving crosshatching, restrained charcoal ink and warm ivory monochrome. Arrange the faded stone arches and delicate sea plants along the outer left and right margins, with bubbles and soft etched light near the top. Let distant water and a softly hatched sandy seabed meet in the lower part. Preserve a broad open quiet center, especially through the upper-middle and middle rows, so story captions and separate little sea-creature pupils at desks remain legible. This is only the background; do not add any people, animals, fish, desks, books, letters, colored elements, borders, or text."
+      },
+      "delivery": "ImageMagick resized to 800x1422 and WebP q79 method 6."
+    }
+  ]
+}

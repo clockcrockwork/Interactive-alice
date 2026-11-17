@@ -1,0 +1,54 @@
+{
+  "asset": "mushroom.any.candidate-v1.webp",
+  "status": "scene-scoped-engraved-introduction-browser-unverified",
+  "semanticRole": "caterpillar/mushroom",
+  "intent": "Introduce the engraved mushroom inside the Caterpillar scene while retaining its original 400x320 layout box, visible stem baseline, independent character motion and nibble buttons.",
+  "generatedAt": "2026-10-21",
+  "generator": "OpenAI built-in image_gen",
+  "model": "not exposed by generation tool",
+  "sourceMasterSha256": "ea0fca3bd5cfc81c3993df10d2eb553b7c3a91eb85be6ad223c87c5d5314323f",
+  "sourceMasterStorage": "Outside Git in generation source storage.",
+  "promptRecord": "Full generation prompt and prompt hash were not available to this intake. Intent and reference roles are recorded from the generation handoff.",
+  "styleId": "IA-ENGRAVED-CUTOUT-V1",
+  "styleSpecification": {
+    "path": "docs/generated-art-style.md",
+    "sha256": "93d40b219be3755199b333b48260709907d69ab02ea239ee7a4b37c084f7d0ba"
+  },
+  "references": [
+    {
+      "asset": "src/assets/images/figures/mushroom.any.webp",
+      "role": "Layout, cap-support and stem-baseline reference",
+      "sha256": "443b9d17141f7dacfc5388bc19bc95aecd3296f39964364a52bca85d2a0c9dc6"
+    },
+    {
+      "asset": "src/assets/images/figures/white-rabbit--herald.any.generated.webp",
+      "role": "Engraved print-style reference only; not mushroom geometry",
+      "sha256": "a792c03bf4181596764f704be694e7bb0d48641c3b3ae08e0b4c3f74bee75518"
+    }
+  ],
+  "sha256": "abebeefbc0a8b6864eaf7d0687bbdd139699933b8808a0c5f15e66a698a2528e",
+  "bytes": 519918,
+  "width": 1402,
+  "height": 1122,
+  "format": "WebP quality 92, method 6, with lossless alpha",
+  "transforms": "Encoding only, without crop, resize, paint, cleanup or raster transform. The original 1402x1122 canvas and alpha bytes are retained. RGB uses lossy WebP compression.",
+  "alphaEncodingUnchanged": true,
+  "alphaAbove32Bounds": [3, 28, 1398, 1108],
+  "placement": {
+    "logicalBox": [400, 320],
+    "footY": 1107,
+    "uniformScale": 0.28520499108734404,
+    "x": 0.071301247771828,
+    "y": 4.278074866310135,
+    "scope": "Only the mushroom image inside the existing .ct__mushroom > .art; no Caterpillar wrapper changes."
+  },
+  "limitations": [
+    "Used on normal engraved Caterpillar pages; artPreview=mushroom adds an optional comparison. Flat/paper defaults and other scenes are unchanged.",
+    "Neutral, breathing and charged support are checked by source-only offline composition; the new cap and spot layout are not required to reproduce the prototype.",
+    "Stem-ground alignment is measured. Runtime motion, phone/desktop edge quality and source linework remain browser-unverified.",
+    "Source generation is a new illustration using references, not a pixel-preserving edit.",
+    "Original baked or vector mushroom remains until loading and decoding succeed, on either failure and whenever the comparison checkbox is unchecked.",
+    "No browser visual QA pass is claimed; the existing local Chromium launch restriction remains."
+  ],
+  "rights": "Project-owned generated candidate; no licence grant. No third-party artwork copied into runtime."
+}

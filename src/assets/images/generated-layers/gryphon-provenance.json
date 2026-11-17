@@ -1,0 +1,123 @@
+{
+  "status": "provisional whole adapters in quadrille and Trial dream, plus chapter articulated and identical neutral Duchess landing assembly; static geometry reviewed, browser playback not verified",
+  "generator": "built-in image_gen",
+  "reference": "Corrected one-tail engraved master exec-e840ae08-7ebb-4d8e-9d48-b2cfde608afc.png; original vector from src/demos/art/vectors.ts and shore palette from src/demos/lobster-quadrille/shore.css",
+  "encoding": "WebP quality92 method6 exact=True; unchanged source canvas and verified byte-identical alpha channel; no resize, crop or programmatic recolouring",
+  "palette": {
+    "body": "#a3886d",
+    "feathers": "#cfb999",
+    "note": "Fixed shore-tint engraving, not runtime CSS-recolourable. Original flat/paper and unsupported consumers remain vector."
+  },
+  "geometry": {
+    "logicalBox": [240, 220],
+    "wholeSourceSize": [1306, 1205],
+    "wholeSourceFootY": 1172,
+    "wholeScale": "min(240/1306,220/1205)",
+    "note": "Alpha>32 sole baseline. The source fringe extends at most 9 source pixels below it; runtime .art--generated allows transparent canvas overflow, without changing the logical layout box."
+  },
+  "chapterRig": {
+    "status": "implemented provisional adapter; shared art routing and runtime CSS import owned by integration",
+    "originalPivots": [[118, 176], [200, 176]],
+    "originalRaisedPawCenters": [[144, 70], [178, 68]],
+    "wholeMasterEyeSource": [1015, 252],
+    "parts": {
+      "body": {
+        "sourceSize": [1305, 1205],
+        "factor": 1,
+        "sourceOffset": [0, 0]
+      },
+      "near": {
+        "sourceSize": [1305, 1205],
+        "factor": 1,
+        "sourceOffset": [0, 0],
+        "sourcePivot": [795, 660],
+        "hideRotationDegrees": -137
+      },
+      "far": {
+        "sourceSize": [1416, 1111],
+        "factor": 0.91,
+        "sourceOffset": [38, 217],
+        "sourcePivot": [1005, 770],
+        "hideRotationDegrees": -158,
+        "hideSourceLiftY": -130
+      }
+    },
+    "drawOrder": ["body", "far", "near"],
+    "mapping": "All source placements and pivot points are converted to the shared logical 240x220 root. Each image uses uniform scaling only. Far leg lift and both rotations derive solely from the existing reversible scene --hide value.",
+    "fallback": "All three chapter images must decode before generated legs appear and original sibling GRYPHON_PAWS hides. Pending or failed loads retain original body and paws.",
+    "review": "Offline runtime-derived proof checked at --hide 0, 0.35, 0.7 and 1: four resting legs, covered shoulder joins, two paws covering the visible eye at full hide. No claim of browser or real timeline verification.",
+    "neutralLanding": {
+      "demo": "duchess",
+      "sameAssembly": "Shares the exact chapter body, two forelegs, source transforms and draw order through one drawing branch. Only data-gryphon-scene differs. The chapter opening and Duchess landing therefore use identical generated illustration geometry.",
+      "motion": "Existing shared shore CSS rotates the whole actor -88 degrees at sleep1/hide0. Chapter limb transforms are scoped to mock-turtle only; Duchess keeps both mapped limbs neutral and adds no paw overlay or motion.",
+      "atomicFallback": "All three images must decode; until then the original whole vector remains. No sibling original paws exist in Duchess.",
+      "bytes": 479810,
+      "extraBytesVersusWhole": 17900,
+      "browser": "Regression registered but not executed in this environment."
+    }
+  },
+  "assets": [
+    {
+      "part": "whole",
+      "status": "provisional whole-actor source for quadrille and Trial",
+      "sourceFile": "exec-c589e234-b720-4410-97fd-70484b7407fd.png",
+      "sourceSha256": "efb54c69aa2c438a2b272a96c7f851f291284cb034cfdce0fb34848d9406e523",
+      "file": "src/assets/images/generated-layers/gryphon~whole.shore.generated.webp",
+      "sha256": "150f23f1b2c211600a19e10617d1098433634e3100bdd1ba5a6dd2487f048d29",
+      "bytes": 461910,
+      "width": 1306,
+      "height": 1205,
+      "alphaBoundsGt0": [0, 35, 1305, 1181],
+      "alphaBoundsGt32": [25, 47, 1294, 1172],
+      "prompt": "Use case: precise-object-edit. Asset type: layered animated storybook character, palette-corrected whole master. Edit target: supplied transparent Gryphon master. Change ONLY the painted colors to the scene's muted shore palette: lion body and legs centered on warm grey-brown sepia #a3886d (not orange/gold), eagle head/chest/wing feathers centered on aged-paper #cfb999, engraved ink details #594536 and #2a211a, pale highlights #f2e8d8, beak a muted taupe #a3886d. Preserve fine engraved/etched hatch detail and lighting. CRITICAL invariants: identical character identity, pose, silhouette, anatomy, wing shape, one single curled tail only, four grounded legs, head facing right; preserve placement and proportions on the existing 1306 by 1205 transparent canvas. Do not crop, zoom, rotate, move, add, remove, or redraw any limb or feature. The entire background remains truly transparent with no painted shadow or ground. No text, labels, swatches, border, or watermark. Output one whole figure only, suitable as the exact source for subsequent separate animation cutouts."
+    },
+    {
+      "part": "base",
+      "status": "provisional chapter articulated layer",
+      "sourceFile": "exec-954fa623-9389-47fa-bbdc-0c544cf7df13.png",
+      "sourceSha256": "7bc853fddfdcad519bc9dd62bf906be5d3557d1585b69e07fd03aac98f657bed",
+      "file": "src/assets/images/generated-layers/gryphon~body.shore.generated.webp",
+      "sha256": "7b9b8593bb8a6fb972fcf009edbb6dd8ae7129c277150cc22ec9e1c7fed063f6",
+      "bytes": 391178,
+      "width": 1305,
+      "height": 1205,
+      "alphaBoundsGt0": [16, 42, 1305, 1149],
+      "alphaBoundsGt32": [27, 45, 1295, 1144],
+      "prompt": "Use case: precise-object-edit. Asset type: animation body layer for engraved storybook Gryphon. Edit target: supplied palette-corrected whole Gryphon. Produce its PAWLESS BODY LAYER, not a new pose. Remove ONLY BOTH FRONT LEGS beneath the feathered chest: the nearer foreleg from near pixel (800,700) to its paw near (920,1120), and the farther foreleg from near (1010,815) to its paw near (1160,1100). Where those front legs were, the background must be genuinely transparent, with a coherent feathered lower chest/body edge and no jagged empty holes. Retain exactly the two hind legs under the lion rump on the LEFT half, the whole head and beak, all wing feathers, body, belly, and the one curled tail. Preserve the supplied 1306×1205 canvas, exact figure placement, pose, scale, texture, linework and muted #a3886d body / #cfb999 feather palette. This is a game sprite body awaiting two separately articulated front legs, so do not add front paws, stubs, extra wings or tails. No ground, shadows, text, checkerboard, labels or watermark. One transparent body cutout only."
+    },
+    {
+      "part": "near",
+      "status": "provisional chapter articulated layer",
+      "sourceFile": "exec-021a9f24-b839-45e0-a7ab-6845b96ce673.png",
+      "sourceSha256": "a604a5e22d39e14c4cc2657dcca8bc09eba9ab7b93a8a48a0290b13b1312946c",
+      "file": "src/assets/images/generated-layers/gryphon~foreleg-near.shore.generated.webp",
+      "sha256": "45c4f0b4d6787fd9d238f8bbda6515292634c7d12cdcf6bf401536c357cc545a",
+      "bytes": 52434,
+      "width": 1305,
+      "height": 1205,
+      "alphaBoundsGt0": [65, 99, 1283, 1175],
+      "alphaBoundsGt32": [685, 595, 1025, 1173],
+      "prompt": "Use case: precise-object-edit. Asset type: independent nearer foreleg animation cutout. Edit target: supplied palette-corrected Gryphon whole master. Keep ONLY the NEARER FRONT LEG, the thick foreground front limb that starts under the central feathered chest around pixel (810,700), extends down/right and ends with the large paw around (925,1120). This is NOT either hind leg on the left and NOT the far-right front limb. Preserve its exact original shape, bent resting pose, fine fur/engraved texture, muted grey-brown #a3886d palette and pale clawed paw. Retain a small overlapping shoulder tuft at its upper end around (800,700), but no wing or chest. Make EVERY other original part completely transparent, including the entire body, head, wings, two hind legs, tail, and other front leg. Keep the unchanged full 1306×1205 transparent canvas and this cutout's exact original pixel position; do not crop, center, zoom, rotate, mirror or redraw it into a different limb. Exactly one leg and one paw only. No ground/shadow/text/checkerboard/labels/watermark."
+    },
+    {
+      "part": "far",
+      "status": "provisional chapter articulated layer",
+      "sourceFile": "exec-961eb654-4853-4947-9e11-d56f2c795f8b.png",
+      "sourceSha256": "ee39af65adef5e00e6365d1fe18cf135ceb0046fbad4f06f0066513b5f21df73",
+      "file": "src/assets/images/generated-layers/gryphon~foreleg-far.shore.generated.webp",
+      "sha256": "fa558ec93eb80b3e7e9cbfb28ef16478eb0581a76e056e223bd43116df7a17f5",
+      "bytes": 36198,
+      "width": 1416,
+      "height": 1111,
+      "alphaBoundsGt0": [194, 63, 1337, 1031],
+      "alphaBoundsGt32": [961, 650, 1334, 1019],
+      "prompt": "Use case: precise-object-edit. Asset type: independent farther foreleg animation cutout. Edit target: supplied palette-corrected Gryphon whole master. Keep ONLY the FARTHER FRONT LEG, the rightmost front limb under the right side of the chest: it starts near pixel (1005,815), angles down/right, and ends in the rightmost grounded paw around (1170,1100). This is NOT the larger nearer front leg ending around (925,1120), and NOT either hind leg. Reconstruct only the tiny upper shoulder overlap hidden by the chest feather edge, ending near (1000,800); keep the rest of this original limb, its pose, exact fur/engraved texture, muted grey-brown #a3886d palette and clawed paw unchanged. Make EVERY other original part fully transparent: body, head, wings, hind legs, tail and nearer front leg. Keep the unchanged full 1306×1205 transparent canvas and this cutout's exact original pixel position; do not crop, center, zoom, rotate, mirror or turn it into a new leg. Exactly one leg and one paw only. No ground/shadow/text/checkerboard/labels/watermark."
+    }
+  ],
+  "wholeConsumers": {
+    "demos": ["lobster-quadrille", "trial"],
+    "trial": "Original ghost wrapper owns 0.75 opacity, sepia(0.6), blur(0.3px), drift, pause, reduced motion and dream/real crossfade. No limb animation or paw overlay exists.",
+    "palette": "The whole source is fixed to shore grey-brown/aged-paper tint. Trial previously used default sepia-dark/sepia-light vector or baked colours, so this is an intentional illustration tint change, not exact live token parity. The original palette-aware vector remains pending/error and flat/paper fallback.",
+    "browser": "Regression registered but not executed in this environment."
+  }
+}

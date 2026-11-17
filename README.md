@@ -50,6 +50,12 @@ production is built and deployed by the host from a separate branch.
 - [`docs/deployment.md`](docs/deployment.md) — preview and production
 - [`CLAUDE.md`](CLAUDE.md) — the short list of rules, and where each decision lives
 
+## Generated-art review
+
+The Draft integration has a [single checkpoint list](docs/generated-assets-review/checkpoints.md)
+for reviewing characters, props, colour variants and known verification limits.
+Candidate integration does not imply final visual acceptance.
+
 ## Rights and licensing
 
 This repository is **public for source visibility and build transparency**, but the
@@ -67,6 +73,25 @@ keeps its own licence terms; see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.
 
 Specification complete for the text layer and the engineering baseline. The first
 implementation milestone is the Rabbit Hole PoC, issue #1.
+
+Nineteen authored scenes make up the public experience, beginning with the golden
+afternoon at `/` and continuing under `/demos/` —
+bank, the fall down the rabbit hole
+in WebGL, the hall that grows around Alice as she drinks, the pool of tears on a
+Canvas sea, the Caucus-race as a ring the camera orbits, the Mouse's tale set as a
+tail, the Rabbit's house as a
+dollhouse the camera leaves, Bill's trip up the chimney, the Caterpillar's meadow
+that scales with her height, the Duchess's kitchen where a baby becomes a pig, the
+Cheshire Cat masked away grin last, the tea-table where it is always six, the Dormouse's tale on a treacle spiral in SVG, the
+Queen's croquet-ground with its live mallets, the walk with the Duchess and her morals,
+the Mock Turtle's school in the sea, the Lobster Quadrille the reader joins, the
+witness-box where Alice grows too big for the court, and the trial's pack of cards in
+CSS 3D with her sister's dream after it. Where two adjacent demos are one moment of the book,
+the end of one is staged to lead into the opening of the next. Scenes use the
+engraved palette and yellow Alice from `docs/visual-design.md`. Ordinary scrolling
+alone advances through the complete story; the quiet language switch stays in the
+scene bar. Earlier art comparisons remain available to internal tests, not visitors.
+See [`docs/concept-demos.md`](docs/concept-demos.md).
 
 ## Text and translation
 

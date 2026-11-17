@@ -1,0 +1,18 @@
+@layer tokens, base, layout, scene, utilities;
+
+@layer scene {
+  /* Each card already has both arms. Keep the vector overlay only as fallback. */
+  svg[data-generated-rig="runner/alice"][data-rig-ready] .cr__arm--hold,
+  svg[data-generated-rig="runner/alice"][data-rig-ready] [data-runner-pose="carry"],
+  .cr__runner[data-holding]
+    svg[data-generated-rig="runner/alice"][data-rig-ready]
+    [data-runner-pose="rest"] {
+    display: none;
+  }
+
+  .cr__runner[data-holding]
+    svg[data-generated-rig="runner/alice"][data-rig-ready]
+    [data-runner-pose="carry"] {
+    display: inline;
+  }
+}

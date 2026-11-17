@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-31",
+  "id": "pig-baby-caught",
+  "scope": "Pig and Pepper first-person caught stage only; companion generated plates handle turning and piglet. Original vector remains as a flat/paper style fallback.",
+  "generator": "OpenAI image_gen; model not exposed",
+  "source": "pig-baby-storybook-source.png",
+  "sourceSha256": "197040d2c2aa54f14cfb30c6bb882fa0167ea85ceae68939306bd179123f2e3b",
+  "asset": "figures/pig-baby--caught.any.generated.webp",
+  "assetSha256": "96852c3c1433e7f9862d609fdd3581d9a64d50a115504846d5f029c5790ec3bc",
+  "bytes": 536302,
+  "dimensions": [1187, 1326],
+  "alphaBounds": [0, 5, 1187, 1326],
+  "logicalBox": [200, 200],
+  "promptSummary": "A fully clothed Victorian storybook infant in a bonnet and embroidered romper, starfish pose with arms and legs out, warm engraved linework, isolated on transparency.",
+  "edits": "WebP q92 and alpha q100 conversion only. No raster resizing, cropping, recolouring or cleanup.",
+  "verification": "Visible in first-catch desktop and mobile screenshots; companion turning and piglet plates checked in the same morph sequence.",
+  "intent": "Replace the simple caught-stage vector with a fully clothed, engraved storybook infant while keeping the existing interaction and staged morph."
+}

@@ -1,0 +1,42 @@
+{
+  "status": "unapproved-rig-separation-study-not-runtime",
+  "generatedAt": "2026-10-21",
+  "generator": "OpenAI built-in image_gen",
+  "sourceReferenceSha256": "05ee0aec4986548051dcd77183fc1a9007492092c6393282ef21c4eda271dafd",
+  "styleId": "IA-ENGRAVED-CUTOUT-V1",
+  "transforms": "Lossless WebP encoding only. No resampling, recolouring, cleanup or alpha changes. HTML uses reversible placement transforms for comparison only.",
+  "limitations": [
+    "Separate reference edits did not preserve original coordinates or arm scale.",
+    "No validated shoulder pivot or seam under rotation.",
+    "Not connected to the animation or held-jar anchor."
+  ],
+  "assets": [
+    {
+      "asset": "base.webp",
+      "width": 1206,
+      "height": 1305,
+      "alphaAbove32Bounds": [98, 37, 1151, 1282],
+      "sourceSha256": "0529f610b1c9f713e94012a38562499ad8f15158cc3051b6273ceb5617e6c3e8",
+      "sha256": "0d1bb55c3981fcb1abef5cce74049fc2e0c5b4259cf7084ab7c687ba209850dd",
+      "bytes": 1402370
+    },
+    {
+      "asset": "left-arm.webp",
+      "width": 1206,
+      "height": 1305,
+      "alphaAbove32Bounds": [81, 131, 618, 702],
+      "sourceSha256": "57240e5287aa0fb25d5f4280b83d538ee2fa3cfe82d24de10dbb73debd737c7c",
+      "sha256": "074709c86a6f872115e23185f8220ae893ce75854da70c9cf997902e72aeb6db",
+      "bytes": 193634
+    },
+    {
+      "asset": "right-arm.webp",
+      "width": 1206,
+      "height": 1305,
+      "alphaAbove32Bounds": [634, 266, 1174, 600],
+      "sourceSha256": "264bfa7de51902eba2d9d89c51a5e7fdfba2802b810d5cf42fba4dafa0de9106",
+      "sha256": "b993e0d30d5233e6faf9dbda9caaeac1b791561b52c3c0d5d92d6f76a1f204e3",
+      "bytes": 114336
+    }
+  ]
+}

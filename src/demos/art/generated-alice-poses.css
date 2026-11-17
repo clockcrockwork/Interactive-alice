@@ -1,0 +1,13 @@
+@layer tokens, base, layout, scene, utilities;
+
+@layer scene {
+  /* The tea-party uses two separately placed hands. The kitchen cradle has a
+     first-person, matched pair plate of its own. */
+  .lq__hand--left:has([data-generated-rig="alice/hand-left"][data-rig-ready]) {
+    inset-inline-start: calc(50% - clamp(3.5rem, 11vmin, 6rem) - clamp(2.5rem, 8vmin, 4.5rem));
+  }
+
+  .lq__hand--right:has([data-generated-rig="alice/hand-right"][data-rig-ready]) {
+    inset-inline-end: calc(50% - clamp(3.5rem, 11vmin, 6rem) - clamp(2.5rem, 8vmin, 4.5rem));
+  }
+}

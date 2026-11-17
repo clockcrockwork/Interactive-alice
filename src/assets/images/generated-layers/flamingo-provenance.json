@@ -1,0 +1,64 @@
+{
+  "status": "Provisional croquet checkpoint: corrected source and static joint composition reviewed; browser unverified.",
+  "master": {
+    "sourceFile": "exec-4b5ed7cc-2974-4edf-a35d-b057bc6eb9e2.png",
+    "sourceSha256": "c39e8bf920344b786d7ccff17624f64e3685a9a28e0e85809a69bdf353fe3f67",
+    "width": 1060,
+    "height": 1484
+  },
+  "images": [
+    {
+      "part": "body",
+      "sourceFile": "exec-9407e780-427c-46c8-9446-b40ca346b7fa.png",
+      "sourceSha256": "b042a6b71f026171ec4112534879e2069b2933b87dc9eaa36c46ee501b6ba401",
+      "sourceBytes": 965646,
+      "file": "src/assets/images/generated-layers/flamingo~body.any.generated.webp",
+      "sha256": "3b0346dc304ea92d38f4ef7b12b2621a551d8bf361b722f9ad74636f64c76fd9",
+      "bytes": 191940,
+      "width": 1060,
+      "height": 1484,
+      "alphaBounds": [59, 63, 996, 1444],
+      "alphaBoundsGt32": [120, 229, 992, 1402],
+      "alphaExtrema": [0, 255],
+      "alphaSha256": "ad7b280e630117c7bcc345cb325682537d53e6c0a855907027a518ac12fdb2e7",
+      "encoding": "WebP quality 92 method 6; canvas, dimensions, and exact alpha unchanged; no crop, resize, recolour, or cleanup",
+      "generation": "image_gen by parent; separated from croquet master exec-4b5ed7cc-2974-4edf-a35d-b057bc6eb9e2.png",
+      "promptHash": null,
+      "promptAvailability": "Exact prompt and generation seed unavailable to this worker.",
+      "jointAlpha": 253,
+      "deliveryAlphaVerifiedEqualToSource": true
+    },
+    {
+      "part": "head",
+      "sourceFile": "exec-8a9ad345-5073-469c-8214-e02aa7acbb98.png",
+      "sourceSha256": "6e131e071c6b3b6710bce376a41e57d3b82c2c79d08673ceecea23425fbf2883",
+      "sourceBytes": 201212,
+      "file": "src/assets/images/generated-layers/flamingo~head.any.generated.webp",
+      "sha256": "8515e0a96e6d976879d3215d46260bc55c15c98a9b132e832393182187a243d8",
+      "bytes": 40090,
+      "width": 1060,
+      "height": 1484,
+      "alphaBounds": [47, 182, 1030, 1444],
+      "alphaBoundsGt32": [372, 186, 720, 498],
+      "alphaExtrema": [0, 255],
+      "alphaSha256": "85b4cb79d5569f4b46522e5c48dddd47e2008ab1b29ce3ca34912c339b307425",
+      "encoding": "WebP quality 92 method 6; canvas, dimensions, and exact alpha unchanged; no crop, resize, recolour, or cleanup",
+      "generation": "image_gen by parent; separated from croquet master exec-4b5ed7cc-2974-4edf-a35d-b057bc6eb9e2.png",
+      "promptHash": null,
+      "promptAvailability": "Exact prompt and generation seed unavailable to this worker.",
+      "jointAlpha": 253,
+      "deliveryAlphaVerifiedEqualToSource": true
+    }
+  ],
+  "rejectedSource": {
+    "sourceFile": "exec-6bbaab92-ebcc-46e7-9068-87e4f09965ad.png",
+    "sourceSha256": "08a0adc62fa621de4edf38721b096eeabdbb21d273c07790b7698c015e0bd1bf",
+    "reason": "Initial head contained a long short-neck stump. It visibly dangled at 24 to 70 degree joint rotation. Replaced through image_gen, not hand-edited."
+  },
+  "sourceJoint": {
+    "x": 650,
+    "y": 310,
+    "deliveryScale": 0.2830188679245283,
+    "mapping": "Uniform same-canvas placement into original 300 by 420 SVG viewBox. Head and body use the same map."
+  }
+}

@@ -1,10 +1,10 @@
-import { existsSync, mkdtempSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import type { SceneMapping } from '../src/runtime/pacing.ts';
-import { escapeHtml, generatePages, generatePagesFrom, writePages } from './pages.ts';
+import { escapeHtml, generatePages, generatePagesFrom, htmlOpen, writePages } from './pages.ts';
 import { loadProject } from './project.ts';
 
 // A URL pathname is not a filesystem path on Windows; go through the helper.
@@ -45,6 +45,23 @@ function withPendingFirstPart() {
 }
 
 describe('publishability', () => {
+  it('links every generated page to visitor-accessible credits', () => {
+    for (const page of pages) {
+      const depth = page.path.split('/').length - 1;
+      expect(page.html).toContain(`href="${depth === 0 ? './' : '../'.repeat(depth)}credits.html"`);
+    }
+  });
+
+  it('emits a credits page from the canonical rights files', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'alice-credits-'));
+    const paths = writePages(root, dir);
+    expect(paths).toContain(join(dir, 'credits.html'));
+    const credit = readFileSync(join(dir, 'credits.html'), 'utf8');
+    expect(credit).toContain('Lewis Carroll');
+    expect(credit).toContain('Modern Web Guidance');
+    expect(credit).toContain('Apache License 2.0');
+  });
+
   it('keeps the locale entry when a part is not translated yet, without linking it', () => {
     const { pages, manifest, skipped } = generatePagesFrom(withoutText('ja', 1));
 
@@ -287,6 +304,24 @@ describe('the page graph', () => {
       const page = pages.find((candidate) => candidate.path === entry.path);
       expect(page?.html).toContain(`data-locale="${entry.locale}"`);
       expect(page?.html).toContain(`lang="${entry.locale}"`);
+    }
+  });
+
+  it("carries its locale's profile on the root of every page, the home page the base locale's", () => {
+    for (const entry of manifest.pages) {
+      const page = pages.find((candidate) => candidate.path === entry.path);
+      const locale = entry.locale ?? project.baseLocale;
+      const settings = project.locales[locale];
+      expect(settings, entry.path).toBeDefined();
+      if (settings) {
+        expect(page?.html, entry.path).toContain(htmlOpen(locale, settings));
+      }
+    }
+    // The profile is written whole: every field the registry declares.
+    for (const [locale, settings] of Object.entries(project.locales)) {
+      expect(htmlOpen(locale, settings)).toMatch(
+        /data-set-apart="[a-z ]+" data-word-unit="[a-z]+" data-emphasis="[a-z]+" data-glyph-width="[a-z]+" data-numbers="[\w-]+"/,
+      );
     }
   });
 

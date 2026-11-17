@@ -1,7 +1,113 @@
 {
   "$schema": "../schema/characters.schema.json",
   "characters": [
-    { "id": "alice", "devLabel": "Alice" },
-    { "id": "white-rabbit", "devLabel": "the White Rabbit" }
+    {
+      "id": "alice",
+      "devLabel": "Alice"
+    },
+    {
+      "id": "white-rabbit",
+      "devLabel": "the White Rabbit"
+    },
+    {
+      "id": "dormouse",
+      "devLabel": "the Dormouse"
+    },
+    {
+      "id": "march-hare",
+      "devLabel": "the March Hare"
+    },
+    {
+      "id": "hatter",
+      "devLabel": "the Hatter"
+    },
+    {
+      "id": "king-of-hearts",
+      "devLabel": "the King of Hearts"
+    },
+    {
+      "id": "queen-of-hearts",
+      "devLabel": "the Queen of Hearts"
+    },
+    {
+      "id": "alices-sister",
+      "devLabel": "Alice's sister"
+    },
+    {
+      "id": "mouse",
+      "devLabel": "the Mouse"
+    },
+    {
+      "id": "dodo",
+      "devLabel": "the Dodo"
+    },
+    {
+      "id": "cheshire-cat",
+      "devLabel": "the Cheshire Cat"
+    },
+    {
+      "id": "bill",
+      "devLabel": "Bill the Lizard"
+    },
+    {
+      "id": "caterpillar",
+      "devLabel": "the Caterpillar"
+    },
+    {
+      "id": "pigeon",
+      "devLabel": "the Pigeon"
+    },
+    {
+      "id": "two",
+      "devLabel": "Two, a gardener"
+    },
+    {
+      "id": "five",
+      "devLabel": "Five, a gardener"
+    },
+    {
+      "id": "executioner",
+      "devLabel": "the executioner"
+    },
+    {
+      "id": "gryphon",
+      "devLabel": "the Gryphon"
+    },
+    {
+      "id": "mock-turtle",
+      "devLabel": "the Mock Turtle"
+    },
+    {
+      "id": "fish-footman",
+      "devLabel": "the Fish-Footman"
+    },
+    {
+      "id": "frog-footman",
+      "devLabel": "the Frog-Footman"
+    },
+    {
+      "id": "duchess",
+      "devLabel": "the Duchess"
+    },
+    {
+      "id": "cook",
+      "devLabel": "the cook"
+    },
+    {
+      "id": "lory",
+      "devLabel": "the Lory"
+    },
+    {
+      "id": "knave-of-hearts",
+      "devLabel": "the Knave of Hearts"
+    },
+    {
+      "id": "duck",
+      "devLabel": "the Duck"
+    },
+    {
+      "id": "pat",
+      "devLabel": "Pat"
+    }
   ]
 }

@@ -1,0 +1,395 @@
+{
+  "$schema": "../../schema/experience-demo.schema.json",
+  "id": "witnesses",
+  "titleChapter": 11,
+  "ground": "dark",
+  "joinsPrevious": true,
+  "realia": ["marks"],
+  "shots": [
+    {
+      "id": "looking-round-the-court",
+      "beats": [
+        {
+          "id": "throne",
+          "cue": "throne",
+          "segments": [
+            "ch11.s0010",
+            "ch11.s0020",
+            "ch11.s0030"
+          ]
+        },
+        {
+          "id": "knave",
+          "cue": "knave",
+          "segments": [
+            "ch11.s0040",
+            "ch11.s0050"
+          ]
+        },
+        {
+          "id": "tarts",
+          "cue": "tarts",
+          "segments": [
+            "ch11.s0060",
+            "ch11.s0070"
+          ]
+        },
+        {
+          "id": "judge",
+          "cue": "judge",
+          "segments": [
+            "ch11.s0080",
+            "ch11.s0090"
+          ]
+        },
+        {
+          "id": "jurors",
+          "cue": "jury",
+          "segments": [
+            "ch11.s0100",
+            "ch11.s0110"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-accusation-read",
+      "beats": [
+        {
+          "id": "herald",
+          "cue": "herald",
+          "segments": [
+            "ch11.s0120",
+            "ch11.s0130"
+          ]
+        },
+        {
+          "id": "verses",
+          "cue": "accusation",
+          "segments": [
+            "ch11.s0140",
+            "ch11.s0150"
+          ]
+        },
+        {
+          "id": "not-yet",
+          "segments": [
+            "ch11.s0160",
+            "ch11.s0170",
+            "ch11.s0180"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-hatter",
+      "beats": [
+        {
+          "id": "call-the-first-witness",
+          "cue": "hatter",
+          "segments": [
+            "ch11.s0190",
+            "ch11.s0200",
+            "ch11.s0210"
+          ]
+        },
+        {
+          "id": "three-dates",
+          "cue": "dates",
+          "segments": [
+            "ch11.s0220",
+            "ch11.s0230",
+            "ch11.s0240",
+            "ch11.s0250",
+            "ch11.s0260",
+            "ch11.s0270"
+          ]
+        },
+        {
+          "id": "take-off-your-hat",
+          "cue": "hat",
+          "segments": [
+            "ch11.s0280",
+            "ch11.s0290",
+            "ch11.s0300",
+            "ch11.s0310",
+            "ch11.s0320"
+          ]
+        },
+        {
+          "id": "growing-again",
+          "cue": "grow",
+          "segments": [
+            "ch11.s0330",
+            "ch11.s0340",
+            "ch11.s0350",
+            "ch11.s0360",
+            "ch11.s0370"
+          ]
+        },
+        {
+          "id": "the-twinkling",
+          "cue": "twinkling",
+          "segments": [
+            "ch11.s0380",
+            "ch11.s0390",
+            "ch11.s0400",
+            "ch11.s0410",
+            "ch11.s0420"
+          ]
+        },
+        {
+          "id": "on-one-knee",
+          "cue": "knee",
+          "segments": [
+            "ch11.s0430",
+            "ch11.s0440",
+            "ch11.s0450"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-guinea-pigs",
+      "beats": [
+        {
+          "id": "suppressed",
+          "cue": "suppress",
+          "segments": [
+            "ch11.s0460",
+            "ch11.s0470",
+            "ch11.s0480",
+            "ch11.s0490"
+          ]
+        },
+        {
+          "id": "stand-down",
+          "cue": "down",
+          "segments": [
+            "ch11.s0500",
+            "ch11.s0510",
+            "ch11.s0520",
+            "ch11.s0530",
+            "ch11.s0540"
+          ]
+        },
+        {
+          "id": "without-his-shoes",
+          "cue": "shoes",
+          "segments": [
+            "ch11.s0550",
+            "ch11.s0560"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-cook",
+      "beats": [
+        {
+          "id": "the-next-witness",
+          "cue": "cook",
+          "segments": [
+            "ch11.s0570",
+            "ch11.s0580",
+            "ch11.s0590"
+          ]
+        },
+        {
+          "id": "pepper-mostly",
+          "cue": "pepper",
+          "segments": [
+            "ch11.s0600",
+            "ch11.s0610",
+            "ch11.s0620",
+            "ch11.s0630",
+            "ch11.s0640"
+          ]
+        },
+        {
+          "id": "collar-that-dormouse",
+          "cue": "collar",
+          "segments": [
+            "ch11.s0650",
+            "ch11.s0660",
+            "ch11.s0670",
+            "ch11.s0680"
+          ]
+        },
+        {
+          "id": "alice-is-called",
+          "cue": "called",
+          "segments": [
+            "ch11.s0690",
+            "ch11.s0700",
+            "ch11.s0710",
+            "ch11.s0720"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-jury-box",
+      "beats": [
+        {
+          "id": "here",
+          "cue": "here",
+          "segments": [
+            "ch12.s0010",
+            "ch12.s0020",
+            "ch12.s0030",
+            "ch12.s0040",
+            "ch12.s0050"
+          ]
+        },
+        {
+          "id": "i-beg-your-pardon",
+          "cue": "pardon",
+          "segments": [
+            "ch12.s0060",
+            "ch12.s0070",
+            "ch12.s0080"
+          ]
+        },
+        {
+          "id": "the-lizard-upside-down",
+          "cue": "lizard",
+          "segments": [
+            "ch12.s0090",
+            "ch12.s0100",
+            "ch12.s0110",
+            "ch12.s0120"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nothing-whatever",
+      "beats": [
+        {
+          "id": "nothing",
+          "cue": "nothing",
+          "segments": [
+            "ch12.s0130",
+            "ch12.s0140",
+            "ch12.s0150",
+            "ch12.s0160",
+            "ch12.s0170"
+          ]
+        },
+        {
+          "id": "important-unimportant",
+          "cue": "important",
+          "segments": [
+            "ch12.s0180",
+            "ch12.s0190",
+            "ch12.s0200",
+            "ch12.s0210",
+            "ch12.s0220"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rule-forty-two",
+      "beats": [
+        {
+          "id": "silence",
+          "cue": "rule",
+          "segments": [
+            "ch12.s0230",
+            "ch12.s0240",
+            "ch12.s0250",
+            "ch12.s0260"
+          ]
+        },
+        {
+          "id": "a-mile-high",
+          "cue": "mile",
+          "segments": [
+            "ch12.s0270",
+            "ch12.s0280",
+            "ch12.s0290",
+            "ch12.s0300"
+          ]
+        },
+        {
+          "id": "the-oldest-rule",
+          "cue": "oldest",
+          "segments": [
+            "ch12.s0310",
+            "ch12.s0320",
+            "ch12.s0330",
+            "ch12.s0340"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "the-letter",
+      "beats": [
+        {
+          "id": "a-paper-picked-up",
+          "cue": "paper",
+          "segments": [
+            "ch12.s0350",
+            "ch12.s0360",
+            "ch12.s0370",
+            "ch12.s0380"
+          ]
+        },
+        {
+          "id": "not-his-handwriting",
+          "cue": "handwriting",
+          "segments": [
+            "ch12.s0390",
+            "ch12.s0400",
+            "ch12.s0410",
+            "ch12.s0420",
+            "ch12.s0430"
+          ]
+        },
+        {
+          "id": "the-first-clever-thing",
+          "cue": "clever",
+          "segments": [
+            "ch12.s0440",
+            "ch12.s0450",
+            "ch12.s0460",
+            "ch12.s0470"
+          ]
+        },
+        {
+          "id": "begin-at-the-beginning",
+          "cue": "read",
+          "segments": [
+            "ch12.s0480",
+            "ch12.s0490",
+            "ch12.s0500",
+            "ch12.s0510"
+          ]
+        },
+        {
+          "id": "the-verses",
+          "cue": "verses",
+          "segments": [
+            "ch12.s0520",
+            "ch12.s0530",
+            "ch12.s0540",
+            "ch12.s0550"
+          ]
+        },
+        {
+          "id": "not-an-atom-of-meaning",
+          "cue": "meaning",
+          "segments": [
+            "ch12.s0560",
+            "ch12.s0570",
+            "ch12.s0580",
+            "ch12.s0590"
+          ]
+        }
+      ]
+    }
+  ]
+}

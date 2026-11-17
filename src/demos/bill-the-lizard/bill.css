@@ -1,0 +1,805 @@
+/* Bill the Lizard: the reader is Bill. Down the chimney in layered parallax,
+   a foot from below, up like a sky-rocket, and down by the hedge. */
+
+@layer tokens, base, layout, scene, utilities;
+
+@layer tokens {
+  :root {
+    /* The book's palette: a paper sky, the shaft in deep sepia, soot in ink.
+       The roof, timber, wall and garden repeat the Rabbit's house's values
+       (src/demos/rabbit-house/house.css) so the rooftop is the one it left. */
+    --bl-sky: var(--world-sky);
+    --bl-sky-high: var(--world-sky-deep);
+    --bl-sky-low: var(--paper-base);
+    --bl-cloud: var(--paper-base);
+    --bl-brick: var(--sepia-deep);
+    --bl-brick-dark: oklch(from var(--sepia-deep) calc(l - 0.1) c h);
+    --bl-soot: var(--ink-primary);
+    --bl-roof: var(--sepia-dark);
+    --bl-roof-deep: var(--sepia-deep);
+    --bl-timber: oklch(from var(--sepia-deep) calc(l - 0.08) c h);
+    --bl-wall: var(--paper-warm);
+    --bl-wall-shade: var(--paper-aged);
+    --bl-glass: oklch(from var(--world-sky) calc(l + 0.06) c h / 0.6);
+    --bl-grass: var(--world-leaf);
+    --bl-hedge: var(--world-leaf-deep);
+    --bl-hedge-deep: oklch(from var(--world-leaf-deep) calc(l - 0.06) c h);
+    --bl-hedge-light: color-mix(in oklch, var(--world-leaf-deep), var(--world-leaf) 40%);
+    --bl-lizard: var(--world-leaf);
+    --bl-shade: oklch(from var(--ink-primary) l c h / 0.5);
+    /* The brandy and its cork in printed sepia; the stars of his daze in the
+       world's glow, outlined in ink so they read over the hedge. */
+    --bl-brandy: var(--sepia-deep);
+    --bl-cork: var(--sepia-mid);
+    --bl-star: var(--world-glow);
+  }
+}
+
+@layer scene {
+  /* The last beat's captions sit at the top, clear of the link to the next scene. */
+  .demo--bill-the-lizard {
+    --demo-end-lift: 0rem;
+  }
+
+  .demo--bill-the-lizard .demo-beat {
+    inset-block-end: 8vh;
+  }
+
+  /* On the rim the captions sit on the slates, clear of the garden and the flue. */
+  .demo--bill-the-lizard .demo-beat[data-cue="roof"] {
+    inset-block-end: 30vh;
+  }
+
+  /* The foot comes up from below, Bill comes down onto the crowd: the captions
+     go to the top for those. */
+  .demo--bill-the-lizard
+  .demo-beat:is(
+    [data-cue="foot"],
+    [data-cue="kick"],
+    [data-cue="launch"],
+    [data-cue="land"],
+    [data-cue="brandy"]
+  ) {
+    inset-block: calc(var(--demo-bar-height) + 0.6rem) auto;
+  }
+
+  .demo--bill-the-lizard .line[data-speaker="bill"] {
+    color: var(--world-leaf-deep);
+    --demo-say-style: italic;
+  }
+
+  /* The world moves; the camera is Bill. Each layer follows the camera at its
+     own rate, so the chimney rushes and the sky barely turns. Unitless px. */
+  .bl__world {
+    --cam: 0;
+    --spin: 0;
+    --shaft: 0;
+    --shaft-o: 0;
+    --brick: 50px;
+    overflow: hidden;
+    container-type: size;
+    pointer-events: none;
+    background: var(--bl-sky);
+  }
+
+  /* The spin turns a square as wide as the frame's diagonal, so no corner of the
+     frame ever shows past it; the view inside is the frame again. */
+  .bl__spin {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    inline-size: hypot(100cqw, 100cqh);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    rotate: calc(var(--spin) * 1deg);
+    background: var(--bl-sky);
+  }
+
+  .bl__view {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 50%;
+    inline-size: 100cqw;
+    block-size: 100cqh;
+    translate: -50% -50%;
+    background: linear-gradient(
+      to bottom,
+      var(--bl-sky-high),
+      var(--bl-sky) 60%,
+      var(--bl-sky-low)
+    );
+  }
+
+  /* Camera height: negative is down the chimney, positive is up in the air. A
+     layer slides with the camera at its rate; wide enough to spin without edges. */
+  .bl__layer {
+    position: absolute;
+    inset-inline: -60%;
+    block-size: 400vh;
+    inset-block-start: -150vh;
+    translate: 0 calc(var(--cam) * var(--rate, 1) * 1px);
+  }
+
+  .bl__clouds {
+    --rate: 0.12;
+    background:
+      radial-gradient(ellipse 12vmin 5vmin at 20% 42%, var(--bl-cloud) 60%, transparent 61%),
+      radial-gradient(ellipse 16vmin 6vmin at 70% 38%, var(--bl-cloud) 60%, transparent 61%),
+      radial-gradient(ellipse 10vmin 4vmin at 45% 30%, var(--bl-cloud) 60%, transparent 61%),
+      radial-gradient(ellipse 14vmin 5vmin at 85% 26%, var(--bl-cloud) 60%, transparent 61%),
+      radial-gradient(ellipse 18vmin 7vmin at 30% 22%, var(--bl-cloud) 60%, transparent 61%),
+      radial-gradient(ellipse 13vmin 5vmin at 58% 16%, var(--bl-cloud) 60%, transparent 61%),
+      radial-gradient(ellipse 20vmin 8vmin at 40% 9%, var(--bl-cloud) 60%, transparent 61%),
+      radial-gradient(ellipse 15vmin 6vmin at 76% 4%, var(--bl-cloud) 60%, transparent 61%);
+  }
+
+  .bl__house {
+    --rate: 0.6;
+  }
+
+  .bl__roof {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 40%;
+    block-size: 30%;
+    background: linear-gradient(to bottom, var(--bl-roof), var(--bl-roof-deep));
+    clip-path: polygon(0 40%, 50% 0, 100% 40%, 100% 100%, 0 100%);
+  }
+
+  .bl__stack {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: 36%;
+    inline-size: min(28vw, 22rem);
+    block-size: 30%;
+    translate: -50% 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--bl-brick) 0 3vmin,
+      var(--bl-brick-dark) 3vmin 3.4vmin
+    );
+  }
+
+  .bl__hedge {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 70%;
+    block-size: 30%;
+    background:
+      radial-gradient(circle at 10% 20%, var(--bl-hedge) 8vmin, transparent 8.2vmin),
+      radial-gradient(circle at 35% 10%, var(--bl-hedge-deep) 9vmin, transparent 9.2vmin),
+      radial-gradient(circle at 62% 18%, var(--bl-hedge) 8vmin, transparent 8.2vmin),
+      radial-gradient(circle at 88% 12%, var(--bl-hedge-light) 9vmin, transparent 9.2vmin),
+      linear-gradient(to bottom, transparent 10%, var(--bl-hedge-deep) 10%);
+  }
+
+  /* The shaft: a treadmill of bricks one frame tall plus a course either side,
+     slid by the camera's depth modulo one course, so it never runs out. The
+     flue between its sooty sides is wide enough for the foot on any frame. */
+  .bl__chimney {
+    --flue: max(40%, 52vmin);
+    position: absolute;
+    inset-inline: 0;
+    inset-block: calc(-1 * var(--brick));
+    translate: 0 calc(var(--shaft) * 1px - var(--brick));
+    opacity: var(--shaft-o);
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--bl-brick) 0 calc(var(--brick) * 0.88),
+      var(--bl-brick-dark) calc(var(--brick) * 0.88) var(--brick)
+    );
+  }
+
+  .bl__chimney::before,
+  .bl__chimney::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inline-size: calc((100% - var(--flue)) / 2);
+    background: var(--bl-soot);
+  }
+
+  .bl__chimney::before {
+    inset-inline-start: 0;
+  }
+
+  .bl__chimney::after {
+    inset-inline-end: 0;
+  }
+
+  /* The soot is its own layer, so its fall repaints only itself. */
+  .bl__soots {
+    position: absolute;
+    inset: 0;
+    opacity: var(--shaft-o);
+    will-change: transform;
+  }
+
+  .bl__world[data-deep] .bl__layer {
+    visibility: hidden;
+  }
+
+  /* The rooftop from the rim: it grows past the eyes as Bill drops in. */
+  .bl__rooftop {
+    --dive: 0;
+    position: absolute;
+    inset: 0;
+    transform-origin: 50% 92%;
+    transform: scale(calc(1 + var(--dive) * 2.4));
+    opacity: calc(1 - var(--dive));
+  }
+
+  .bl__rooftop svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .bl__soot {
+    position: absolute;
+    inset-inline-start: var(--x, 50%);
+    inset-block-start: var(--y, 50%);
+    inline-size: 1.2vmin;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--bl-soot);
+    animation: bl-soot 2.6s linear infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  /* Her foot, up the middle of the shaft from below: `--rise` is the timeline's. */
+  .bl__foot {
+    --rise: 0;
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-end: 0;
+    inline-size: clamp(9rem, 38vmin, 24rem);
+    translate: -50% calc((1 - var(--rise)) * 105%);
+    filter: drop-shadow(0 -10px 20px var(--bl-shade));
+  }
+
+  .bl__foot svg {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* On a tall frame the foot takes half the width, inside a flue as wide. */
+  @media (max-aspect-ratio: 1 / 1) {
+    .bl__foot {
+      inline-size: 50vw;
+    }
+
+    .bl__chimney {
+      --flue: max(40%, 54vw);
+    }
+  }
+
+  /* The launch: a gold blink, the interaction's own, gone in a beat; the cut to
+     the garden is a paper one. */
+  .bl__flash {
+    background: var(--paper-base);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .bl__flash--kick {
+    background: var(--ix-gold);
+  }
+
+  .bl__prop {
+    inset-inline-end: var(--space-2);
+    inset-block-end: calc(var(--space-2) + 2.4rem);
+  }
+
+  .bl__kick-target {
+    position: absolute;
+    inset: 0;
+    pointer-events: auto;
+    cursor: pointer;
+    visibility: hidden;
+  }
+
+  .bl__kick-target[data-shown] {
+    visibility: visible;
+  }
+
+  /* --- The garden, from the hedge: a frame of its own, laid out in its own
+     units so the figures keep their places on any screen. */
+  .bl__garden {
+    --bill-x: 0.5;
+    --bill-y: -0.2;
+    --bill-r: 0;
+    --head: 22;
+    --sit: 0;
+    --hx: 0.77;
+    --hy: 0.38;
+    --crowd-x: 0.34;
+    --land-x: 0.64;
+    --near: 0;
+    --lift: 0;
+    --tip: 0;
+    --out: 0;
+    --drop: 0;
+    --bill-w: clamp(4rem, 21cqmin, 12rem);
+    --pig-w: clamp(3rem, 13cqmin, 8rem);
+    container-type: size;
+    opacity: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      var(--bl-sky-high),
+      var(--bl-sky) 40%,
+      var(--bl-sky-low) 62%,
+      var(--bl-grass) 62%
+    );
+  }
+
+  .bl__g-hedge {
+    position: absolute;
+    inset-inline: 0;
+    inset-block: 54% 19%;
+    background:
+      radial-gradient(circle at 4% 30%, var(--bl-hedge) 7cqmin, transparent 7.2cqmin),
+      radial-gradient(circle at 15% 22%, var(--bl-hedge-light) 8cqmin, transparent 8.2cqmin),
+      radial-gradient(circle at 27% 30%, var(--bl-hedge) 7cqmin, transparent 7.2cqmin),
+      radial-gradient(circle at 39% 20%, var(--bl-hedge-deep) 8cqmin, transparent 8.2cqmin),
+      radial-gradient(circle at 51% 28%, var(--bl-hedge-light) 7cqmin, transparent 7.2cqmin),
+      radial-gradient(circle at 63% 18%, var(--bl-hedge) 8cqmin, transparent 8.2cqmin),
+      radial-gradient(circle at 75% 28%, var(--bl-hedge-deep) 7cqmin, transparent 7.2cqmin),
+      radial-gradient(circle at 87% 20%, var(--bl-hedge-light) 8cqmin, transparent 8.2cqmin),
+      radial-gradient(circle at 98% 28%, var(--bl-hedge) 7cqmin, transparent 7.2cqmin),
+      linear-gradient(to bottom, transparent 30%, var(--bl-hedge) 30%, var(--bl-hedge-deep));
+  }
+
+  .bl__g-house {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-end: 19%;
+    block-size: 62%;
+    aspect-ratio: 300 / 500;
+  }
+
+  .bl__g-house svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .bl__g-rabbit {
+    position: absolute;
+    inset-inline-start: 24%;
+    inset-block-end: 19%;
+    inline-size: clamp(2.6rem, 10cqmin, 6rem);
+    translate: -50% 0;
+  }
+
+  .bl__g-rabbit svg {
+    display: block;
+    inline-size: 100%;
+  }
+
+  .bl__crowd {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    transform: translate(calc(var(--crowd-x) * 100cqw - 50%), calc(81cqh - 100%));
+  }
+
+  .bl__crowd-inner {
+    display: flex;
+    transform-origin: 50% 100%;
+  }
+
+  .bl__crowd .art {
+    inline-size: var(--pig-w);
+    margin-inline-end: calc(var(--pig-w) * -0.22);
+  }
+
+  .bl__crowd .guinea-pig__paw,
+  .bl__nurse .guinea-pig__paw {
+    transform-box: fill-box;
+    transform-origin: 100% 100%;
+    transition: transform var(--demo-quick) var(--demo-ease);
+  }
+
+  /* The guinea-pig with the brandy raises a paw under his head. */
+  .bl__nurse .guinea-pig__paw {
+    transform: rotate(calc(var(--lift) * 45deg));
+  }
+
+  /* Paws up, ready to catch him; and up again, cheering, if they did. */
+  .bl__garden:is([data-ready], [data-outcome="catch"]) .bl__crowd .guinea-pig__paw {
+    transform: rotate(45deg);
+  }
+
+  .bl__faller {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: var(--bill-w);
+    aspect-ratio: 120 / 100;
+    transform: translate(calc(var(--bill-x) * 100cqw - 50%), calc(var(--bill-y) * 100cqh - 100%));
+  }
+
+  .bl__shake,
+  .bl__bounce,
+  .bl__sit,
+  .bl__body {
+    position: absolute;
+    inset: 0;
+  }
+
+  .bl__sit {
+    transform-origin: 20% 95%;
+    rotate: calc(var(--sit) * -28deg);
+  }
+
+  .bl__body {
+    transform-origin: 50% 50%;
+    rotate: calc(var(--bill-r) * 1deg);
+  }
+
+  .bl__body .art,
+  .bl__body svg {
+    display: block;
+    inline-size: 100%;
+  }
+
+  .bl__body .bill__head {
+    transform-box: fill-box;
+    transform-origin: 12% 72%;
+    transform: rotate(calc(var(--head) * 1deg));
+  }
+
+  /* What happens at his head: the stars of the daze over it, the brandy at his
+     mouth. Placed by the demo, which turns his head's place with him. */
+  .bl__at-head {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    transform: translate(calc(var(--hx) * var(--bill-w)), calc(var(--hy) * var(--bill-w)));
+  }
+
+  .bl__stars {
+    position: absolute;
+    will-change: transform;
+    inset-inline-start: calc(var(--bill-w) * -0.3);
+    inset-block-start: calc(var(--bill-w) * -0.62);
+    inline-size: calc(var(--bill-w) * 0.6);
+    aspect-ratio: 2;
+    animation: bl-orbit 2.4s linear infinite;
+    filter: drop-shadow(0 0 1px var(--ink-primary));
+  }
+
+  .bl__stars i {
+    position: absolute;
+    inline-size: 32%;
+    aspect-ratio: 1;
+    background: var(--bl-star);
+    clip-path: polygon(
+      50% 0,
+      61% 35%,
+      98% 35%,
+      68% 57%,
+      79% 91%,
+      50% 70%,
+      21% 91%,
+      32% 57%,
+      2% 35%,
+      39% 35%
+    );
+    transition: opacity var(--demo-calm) var(--demo-ease);
+  }
+
+  .bl__stars i:nth-child(1) {
+    inset-inline-start: 0;
+    inset-block-start: 30%;
+  }
+
+  .bl__stars i:nth-child(2) {
+    inset-inline-start: 34%;
+    inset-block-start: 0;
+  }
+
+  .bl__stars i:nth-child(3) {
+    inset-inline-end: 0;
+    inset-block-start: 34%;
+  }
+
+  .bl__garden[data-daze="0"] .bl__stars i,
+  .bl__garden[data-daze="1"] .bl__stars i:nth-child(n + 2),
+  .bl__garden[data-daze="2"] .bl__stars i:nth-child(3) {
+    opacity: 0;
+  }
+
+  .bl__drops {
+    position: absolute;
+    inset-inline-start: calc(var(--bill-w) * 0.12);
+    inset-block-start: calc(var(--bill-w) * 0.06);
+  }
+
+  .bl__drops b {
+    position: absolute;
+    inline-size: calc(var(--bill-w) * 0.06);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--bl-brandy);
+    opacity: 0;
+  }
+
+  .bl__drops b:nth-child(1) {
+    translate: calc(var(--bill-w) * 0.1) calc(var(--bill-w) * -0.06);
+  }
+
+  .bl__drops b:nth-child(2) {
+    translate: calc(var(--bill-w) * 0.2) calc(var(--bill-w) * 0.02);
+  }
+
+  .bl__drops b:nth-child(3) {
+    translate: calc(var(--bill-w) * 0.14) calc(var(--bill-w) * 0.12);
+  }
+
+  .bl__drops b:nth-child(4) {
+    translate: calc(var(--bill-w) * 0.26) calc(var(--bill-w) * -0.1);
+  }
+
+  /* The story's brandy: drops at his mouth, a still. */
+  .bl__garden[data-spill] .bl__drops b {
+    opacity: 0.9;
+  }
+
+  .bl__faller[data-splutter] .bl__drops b {
+    animation: bl-drop 0.8s ease-out forwards;
+  }
+
+  .bl__faller[data-splutter] .bl__shake {
+    animation: bl-shake 0.5s linear 1;
+  }
+
+  .bl__garden[data-outcome="catch"] .bl__bounce {
+    animation: bl-bounce 0.8s ease-out 1;
+  }
+
+  .bl__garden[data-outcome="catch"] .bl__crowd-inner {
+    animation: bl-squash 0.5s ease-out 1;
+  }
+
+  /* Tap him to hold up his head: pointer play, the button is the keyboard's way. */
+  .bl__bill-hit {
+    position: absolute;
+    inset: -30%;
+    cursor: pointer;
+  }
+
+  .bl__bill-hit[data-live] {
+    pointer-events: auto;
+  }
+
+  /* The clump of hedge he goes into if nobody catches him. */
+  .bl__clump {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: clamp(5rem, 24cqmin, 13rem);
+    aspect-ratio: 200 / 140;
+    transform: translate(calc(var(--land-x) * 100cqw - 50%), calc(80cqh - 100%));
+    opacity: var(--out);
+  }
+
+  .bl__clump svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .bl__leaves {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    transform: translate(calc(var(--land-x) * 100cqw), 66cqh);
+  }
+
+  .bl__leaf {
+    position: absolute;
+    inline-size: 1.8cqmin;
+    aspect-ratio: 2;
+    border-radius: 50%;
+    background: var(--bl-hedge-light);
+    opacity: 0;
+  }
+
+  .bl__garden[data-outcome="miss"] .bl__leaf {
+    animation: bl-leaf 1.2s ease-out forwards;
+  }
+
+  /* The guinea-pig with the brandy: in from the house to his head, which is on
+     the left while he lies on his back; the paw under his head and the bottle at
+     his mouth. */
+  .bl__nurse {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
+    inline-size: var(--pig-w);
+    transform: translate(
+      calc(var(--bill-x) * 100cqw - (0.7 + (1 - var(--near)) * 7) * var(--bill-w) - 50%),
+      calc(81cqh - 100%)
+    );
+    opacity: clamp(0, var(--near) * 4, 1);
+  }
+
+  .bl__nurse-pig {
+    scale: -1 1;
+  }
+
+  .bl__nurse-pig .art {
+    display: block;
+    inline-size: 100%;
+  }
+
+  .bl__bottle {
+    position: absolute;
+    inset-inline-end: -2%;
+    inset-block-start: -30%;
+    inline-size: 24%;
+    transform-origin: 50% 100%;
+    rotate: calc(var(--tip) * 105deg);
+  }
+
+  .bl__bottle svg {
+    display: block;
+    inline-size: 100%;
+  }
+
+  /* Drag the crowd under him: a sideways drag, so the page still scrolls. */
+  .bl__drag {
+    position: absolute;
+    inset: 0;
+    cursor: grab;
+    touch-action: pan-y;
+  }
+
+  .bl__drag[data-live] {
+    pointer-events: auto;
+  }
+
+  .bl__world:not([data-shaft]) .bl__soot {
+    animation: none;
+    opacity: 0;
+  }
+
+  .demo[data-paused] :is(.bl__soot, .bl__stars) {
+    animation-play-state: paused;
+  }
+
+  @keyframes bl-soot {
+    from {
+      transform: translateY(-30vh) scale(0.6);
+      opacity: 0;
+    }
+    30% {
+      opacity: 0.9;
+    }
+    to {
+      transform: translateY(40vh) scale(1.2);
+      opacity: 0;
+    }
+  }
+
+  @keyframes bl-orbit {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes bl-drop {
+    0% {
+      opacity: 0.9;
+      transform: translate(0, 0);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(calc(var(--bill-w) * 0.3), calc(var(--bill-w) * 0.2));
+    }
+  }
+
+  @keyframes bl-shake {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    20% {
+      transform: translate(-4%, 0) rotate(-4deg);
+    }
+    40% {
+      transform: translate(4%, 0) rotate(3deg);
+    }
+    60% {
+      transform: translate(-3%, 0) rotate(-2deg);
+    }
+    80% {
+      transform: translate(2%, 0);
+    }
+  }
+
+  @keyframes bl-bounce {
+    0% {
+      transform: translateY(0);
+    }
+    30% {
+      transform: translateY(-38%);
+    }
+    55% {
+      transform: translateY(0);
+    }
+    75% {
+      transform: translateY(-12%);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes bl-squash {
+    0%,
+    100% {
+      transform: scale(1, 1);
+    }
+    35% {
+      transform: scale(1.06, 0.88);
+    }
+  }
+
+  @keyframes bl-leaf {
+    0% {
+      opacity: 1;
+      transform: translate(0, 0) rotate(0deg);
+    }
+    40% {
+      opacity: 1;
+      transform: translate(calc(var(--dx) * 0.7px), calc(var(--dy) * -1px))
+        rotate(calc(var(--spin) * 0.5deg));
+    }
+    100% {
+      opacity: 1;
+      transform: translate(calc(var(--dx) * 1px), calc(15cqh + var(--land) * 1px))
+        rotate(calc(var(--spin) * 1deg));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bl__soot {
+      animation: none;
+      transform: translateY(calc(var(--ly, 0) * 30vh));
+      opacity: 0.6;
+    }
+
+    /* The daze holds still over his head; the brandy is drops at his mouth;
+       the catch and the thump are their own stills, the leaves already down. */
+    .bl__stars,
+    .bl__faller[data-splutter] .bl__shake,
+    .bl__garden[data-outcome="catch"] :is(.bl__bounce, .bl__crowd-inner) {
+      animation: none;
+    }
+
+    .bl__faller[data-splutter] .bl__drops b {
+      animation: none;
+      opacity: 0.9;
+    }
+
+    .bl__garden[data-outcome="miss"] .bl__leaf {
+      animation: none;
+      opacity: 1;
+      transform: translate(calc(var(--dx) * 1px), calc(15cqh + var(--land) * 1px))
+        rotate(calc(var(--spin) * 1deg));
+    }
+
+    .bl__crowd .guinea-pig__paw,
+    .bl__nurse .guinea-pig__paw {
+      transition: none;
+    }
+  }
+}

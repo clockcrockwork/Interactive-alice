@@ -1,0 +1,33 @@
+@layer tokens, base, layout, scene, utilities;
+
+@layer scene {
+  /* Preserve the original rotated ellipse's 4% / -6% travel. Ready parts use
+     view-box origins, so percentages would otherwise refer to the full canvas. */
+  svg[data-generated-rig="diving-rabbit"][data-rig-ready] [data-part^="foot"] {
+    animation-name: generated-diving-kick;
+  }
+
+  .demo[data-paused] svg[data-generated-rig="diving-rabbit"][data-rig-ready] [data-part^="foot"] {
+    animation-play-state: paused;
+  }
+
+  @keyframes generated-diving-kick {
+    from {
+      transform: rotate(-10deg) translateY(1.1972210107484877px);
+    }
+    to {
+      transform: rotate(12deg) translateY(-1.7958315161227316px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    svg[data-generated-rig="diving-rabbit"][data-rig-ready] [data-part^="foot"] {
+      animation: none;
+      transform: rotate(-10deg);
+    }
+
+    svg[data-generated-rig="diving-rabbit"][data-rig-ready] [data-part="foot-right"] {
+      transform: rotate(12deg) translateY(-1.7958315161227316px);
+    }
+  }
+}

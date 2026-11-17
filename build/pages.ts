@@ -6,10 +6,17 @@
  * mapping. See docs/frontend-architecture.md §3.
  */
 
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { overlapsOf, planScene, type ScenePlan } from '../src/runtime/pacing.ts';
-import { chaptersOf, loadProject, type Part, type Project, type SegmentMeta } from './project.ts';
+import {
+  chaptersOf,
+  type LocaleSettings,
+  loadProject,
+  type Part,
+  type Project,
+  type SegmentMeta,
+} from './project.ts';
 
 export interface GeneratedPage {
   /** Path relative to the generated root, e.g. "ja/rabbit-hole/index.html". */
@@ -26,6 +33,21 @@ export const escapeHtml = (value: string): string =>
 const span = (value: number): string => value.toFixed(6);
 
 const up = (depth: number): string => '../'.repeat(depth);
+
+/**
+ * The root element of every generated page in a locale: its language, direction and
+ * locale profile from `text/locales.json`, so the stylesheets and the runtime read
+ * what the language IS (how it breaks lines, sets words apart, splits a line into
+ * units, sets speech apart, how wide its glyphs are, how it writes numbers) and never
+ * infer it from the language's name. One function for the story's pages and the
+ * demos' alike. See docs/text-experience-binding.md, Language differences.
+ */
+export const htmlOpen = (locale: string, settings: LocaleSettings): string =>
+  `<html lang="${locale}" dir="${settings.dir}" data-line-break="${settings.lineBreak}" ` +
+  `data-significant-spaces="${settings.significantSpaces}" ` +
+  `data-set-apart="${settings.setApart.join(' ')}" data-word-unit="${settings.wordUnit}" ` +
+  `data-emphasis="${settings.emphasis}" data-glyph-width="${settings.glyphWidth}" ` +
+  `data-numbers="${escapeHtml(settings.numbers)}">`;
 
 /** Chapters a part's scenes stage, in order. */
 function chaptersOfPart(project: Project, scenes: readonly string[]): number[] {
@@ -191,7 +213,7 @@ function renderPart(project: Project, partId: string, locale: string, scenes: st
   // Two directories deep: <locale>/<part>/index.html
   const root = up(3);
   return `<!doctype html>
-<html lang="${locale}" dir="${settings.dir}" data-line-break="${settings.lineBreak}" data-significant-spaces="${settings.significantSpaces}">
+${htmlOpen(locale, settings)}
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -205,6 +227,7 @@ function renderPart(project: Project, partId: string, locale: string, scenes: st
       <h1 class="story__title">${escapeHtml(heading)}</h1>
 ${body}
     </main>
+    <footer class="site-credits"><a href="../../credits.html">Credits / Licenses</a></footer>
   </body>
 </html>
 `;
@@ -273,7 +296,7 @@ function renderLocaleEntry(
     .join('\n');
 
   return `<!doctype html>
-<html lang="${locale}" dir="${settings.dir}" data-line-break="${settings.lineBreak}" data-significant-spaces="${settings.significantSpaces}">
+${htmlOpen(locale, settings)}
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -288,6 +311,7 @@ function renderLocaleEntry(
 ${links}
       </ul>
     </main>
+    <footer class="site-credits"><a href="../credits.html">Credits / Licenses</a></footer>
   </body>
 </html>
 `;
@@ -305,6 +329,13 @@ function renderHome(
 ): string {
   // One directory up from the generated root to the shared stylesheet.
   const root = up(1);
+  // The concept demos' index is the base locale's, so its link is worded in it;
+  // that index links every other language's (build/demos.ts).
+  const base = project.locales[project.baseLocale];
+  const baseStrings = project.ui.get(project.baseLocale);
+  if (!base || !baseStrings) {
+    throw new Error(`no UI strings for the base locale ${project.baseLocale}`);
+  }
   const links = entries
     .map(({ locale, available }) => {
       const settings = project.locales[locale];
@@ -331,8 +362,10 @@ function renderHome(
     })
     .join('\n');
 
+  // The home page speaks in the base locale (its one sentence is the demos link), so
+  // it carries the base locale's profile like every other page.
   return `<!doctype html>
-<html lang="en">
+${htmlOpen(project.baseLocale, base)}
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -346,7 +379,9 @@ function renderHome(
       <ul class="home__locales">
 ${links}
       </ul>
+      <p class="home__demos"><a href="./demos/" lang="${project.baseLocale}" dir="${base.dir}">${escapeHtml(baseStrings.demosTitle)}</a></p>
     </main>
+    <footer class="site-credits"><a href="./credits.html">Credits / Licenses</a></footer>
   </body>
 </html>
 `;
@@ -532,7 +567,34 @@ export function writePages(root: string, outDir: string): string[] {
   rmSync(outDir, { recursive: true, force: true });
   mkdirSync(outDir, { recursive: true });
   const written: string[] = [];
-  for (const page of pages) {
+  // A visitor-accessible credits document is generated from the canonical
+  // repository notices, rather than maintaining a second legal text copy.
+  const creditSource = readFileSync(join(root, 'CREDITS.md'), 'utf8');
+  const noticeSource = readFileSync(join(root, 'THIRD_PARTY_NOTICES.md'), 'utf8');
+  const apacheLicense = readFileSync(
+    join(root, 'third_party', 'modern-web-guidance-LICENSE.txt'),
+    'utf8',
+  );
+  const legalPage: GeneratedPage = {
+    path: 'credits.html',
+    html: `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Credits &amp; Licenses · Interactive Alice</title>
+    <style>body{max-width:72ch;margin:2rem auto;padding:0 1.25rem;font:1rem/1.65 system-ui,sans-serif}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}a{color:inherit}</style>
+  </head>
+  <body>
+    <main><h1>Credits &amp; Licenses</h1><p><a href="./">Back to Interactive Alice</a></p>
+    <section aria-label="Credits"><pre>${escapeHtml(creditSource)}</pre></section>
+    <section aria-label="Third-party notices"><pre>${escapeHtml(noticeSource)}</pre></section>
+    <section aria-label="Apache 2.0 license"><pre>${escapeHtml(apacheLicense)}</pre></section>
+    </main>
+  </body>
+</html>`,
+  };
+  for (const page of [...pages, legalPage]) {
     const file = join(outDir, page.path);
     mkdirSync(dirname(file), { recursive: true });
     writeFileSync(file, page.html, 'utf8');

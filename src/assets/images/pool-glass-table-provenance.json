@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-21",
+  "generator": "OpenAI built-in image_gen; model not exposed",
+  "promptHash": null,
+  "intent": "Original engraved oval glass table on four legs, with transparent gaps and no baked key. The existing Pool Canvas draws the gold key separately.",
+  "source": {
+    "filename": "exec-3ac96c72-be0a-4797-b102-dcd8165f8e51.png",
+    "bytes": 1084598,
+    "sha256": "6331d3eb10a232ebc1f30985b64ee5154b40cf10f1073e944a6a63fc3947e5d2",
+    "dimensions": [1254, 1254]
+  },
+  "encoding": {
+    "format": "WebP",
+    "quality": 92,
+    "method": 6,
+    "exact": true,
+    "sourceCanvasUnchanged": true,
+    "alphaPreservedExactly": true,
+    "crop": false,
+    "resize": false,
+    "repaint": false
+  },
+  "asset": {
+    "path": "figures/pool-glass-table.any.generated.webp",
+    "bytes": 284686,
+    "sha256": "ad7e1ac0a9401e7c9d8d09d1daf3b3ae1e54d47d1c83c9baf19706fb71411174",
+    "dimensions": [1254, 1254]
+  },
+  "measurements": {
+    "alphaBoundsAbove0": [0, 0, 1230, 1254],
+    "alphaBoundsAbove1": [29, 194, 1225, 1096],
+    "alphaBoundsAbove32": [31, 203, 1223, 1093],
+    "topCentreSourcePx": [627, 366],
+    "topWidthSourcePx": 1192,
+    "keyContactSourcePx": [722.36, 366],
+    "centreGapAlpha": 0,
+    "topContactAlpha": 151
+  },
+  "placement": {
+    "anchorX": "viewportWidth * 0.88",
+    "anchorY": "horizonY + (viewportHeight - horizonY) * 0.26",
+    "unit": "min(viewportWidth, viewportHeight)",
+    "uniformScale": "unit * 0.11 / 1192",
+    "sourceOriginX": "anchorX - 627 * uniformScale",
+    "sourceOriginY": "anchorY - unit * 0.06 * 0.9 + unit * 0.05 * 0.5 - 366 * uniformScale",
+    "keyUnchanged": true,
+    "drawFullSourceCanvas": true,
+    "originalKeyReferenceAtUnit1000": [8.8, -29]
+  },
+  "originalReference": {
+    "source": "src/demos/pool-of-tears/sea.ts:469-517 before integration",
+    "localViewBox": [-60, -65, 120, 120],
+    "topCornersAtUnit1000": [[-55, -60], [55, -60], [46.2, 2], [-46.2, 2]],
+    "frontFeetYAtUnit1000": 50,
+    "referenceSvgSha256": "24ec1d8908258404dae6c5de4420371c10be057f3ff700ad4cb988d1f75e3c94"
+  },
+  "verification": {
+    "sourcePixelsInspected": true,
+    "exactAlphaCompared": true,
+    "measuredComposition": "docs/generated-assets-review/pool-glass-table-20261021.png",
+    "browserExecuted": false,
+    "fullGatesExecuted": false,
+    "visualCaveat": "The generated oval is shallower than the original perspective trapezoid. Matching width and key plane uniformly leaves visible top y about -44.04..-13.96 and front feet about 38.09 at unit 1000, versus original -60..2 and 50. This is not pixel-equivalent perspective or browser-verified acceptance."
+  }
+}

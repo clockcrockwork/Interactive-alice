@@ -30,6 +30,15 @@ test('keyboard scroll keys need an extra action at scene boundaries', async ({ p
   test.setTimeout(60_000);
   await page.goto('./');
   await page.keyboard.press('End');
+  // The browser animates a keyboard End scroll; the boundary only counts once the
+  // document has actually arrived at its end, which `settled` does not wait for.
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2,
+      ),
+    )
+    .toBe(true);
   await settled(page);
   const next = page.waitForURL((url) => /\/demos\/rabbit-hole\/$/.test(url.pathname));
   await page.keyboard.press('PageDown');

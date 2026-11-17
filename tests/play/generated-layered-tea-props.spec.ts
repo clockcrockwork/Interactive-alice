@@ -452,14 +452,24 @@ for (const locale of ['', 'ja/']) {
       expect(flying.scale).toBeGreaterThan(0.5);
       if (motion === 'reduce') expect(flying.scale).toBeCloseTo(1.2, 2);
       else expect(flying.scale).toBeLessThan(1.2);
+      // Returning to a cue lands on a whole-pixel scroll offset, so the same pose can
+      // differ by a fraction of a CSS pixel. Translation gets half a pixel; the
+      // linear part of the matrix must still match closely.
+      const samePose = (matrix: number[]) => {
+        expect(matrix).toHaveLength(flying.matrix.length);
+        matrix.forEach((value, i) => {
+          const tolerance = i === 12 || i === 13 ? 0.5 : 0.005;
+          expect(Math.abs(value - (flying.matrix[i] ?? Number.NaN))).toBeLessThanOrEqual(tolerance);
+        });
+      };
       await atCue(page, 'catch', 0.7);
       expect((await pose()).opacity).toBe(0);
       await atCue(page, 'off', 0.7);
-      expect((await pose()).matrix).toEqual(flying.matrix);
+      samePose((await pose()).matrix);
       await atCue(page, 'nurse', 0.7);
       expect((await pose()).opacity).toBe(0);
       await atCue(page, 'off', 0.7);
-      expect((await pose()).matrix).toEqual(flying.matrix);
+      samePose((await pose()).matrix);
       expect(errors).toEqual([]);
     });
   }

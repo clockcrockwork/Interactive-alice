@@ -597,6 +597,16 @@ export interface LocaleUIStrings {
      * One line under the demo index heading.
      */
     demosIntro: string;
+    openingVerse1: string;
+    openingVerse2: string;
+    openingVerse3: string;
+    openingVerse4: string;
+    openingVerse5: string;
+    openingVerse6: string;
+    openingCredit: string;
+    openingLoading: string;
+    openingReadAgain: string;
+    openingFullPoem: string;
     /**
      * Link from a scene to the previous scene in story order.
      */

@@ -1,0 +1,65 @@
+/* Static entry page: this stylesheet does not depend on the scene bundle. */
+.opening-poem {
+  display: none;
+}
+
+:root[data-opening-pending] .opening-poem {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  overflow: auto;
+  overscroll-behavior: contain;
+  --opening-inset: clamp(1rem, 6vw, 3rem);
+  padding: max(var(--opening-inset), env(safe-area-inset-top))
+    max(var(--opening-inset), env(safe-area-inset-right))
+    max(var(--opening-inset), env(safe-area-inset-bottom))
+    max(var(--opening-inset), env(safe-area-inset-left));
+  background: var(--paper-base, #f2e8d8);
+  color: var(--ink-primary, #2a211a);
+}
+
+:root[data-opening-pending] :is(.demo, .demo *) {
+  visibility: hidden;
+}
+
+.opening-poem__page {
+  box-sizing: border-box;
+  inline-size: min(100%, 34rem);
+  margin: auto;
+  padding: clamp(1.25rem, 5vw, 2.5rem);
+  border: 1px solid var(--sepia-mid, #a3886d);
+  border-block-start: 3px double var(--sepia-mid, #a3886d);
+  background: var(--paper-warm, #e4d3ba);
+}
+
+.opening-poem__verse {
+  margin: 0;
+  font-family: Georgia, "Yu Mincho", "Hiragino Mincho ProN", serif;
+  font-size: clamp(1rem, 3.1vw, 1.4rem);
+  line-height: 1.65;
+}
+
+.opening-poem__credit,
+.opening-poem__status {
+  margin-block: 1rem 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.opening-poem__again {
+  max-inline-size: min(100%, 24rem);
+  padding: 0.5rem 0.75rem;
+  pointer-events: auto;
+  border-radius: 0.5rem;
+  color: var(--ink-primary, #2a211a);
+  background: var(--paper-base, #f2e8d8);
+}
+
+.opening-poem__again summary {
+  cursor: pointer;
+}
+
+.opening-poem__again[open] .opening-poem__verse {
+  margin-block-start: 1rem;
+}

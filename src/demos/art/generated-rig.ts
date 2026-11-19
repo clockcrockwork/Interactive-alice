@@ -12,7 +12,7 @@ import './generated-rig.css';
 const decoded = new Map<string, Promise<boolean>>();
 const pending = new WeakMap<SVGElement, Promise<boolean>>();
 
-function decode(src: string): Promise<boolean> {
+export function decodeGeneratedSource(src: string): Promise<boolean> {
   let result = decoded.get(src);
   if (!result) {
     const image = new Image();
@@ -35,7 +35,7 @@ export function hydrateGeneratedRig(rig: SVGElement): Promise<boolean> {
     (image) => image.getAttribute('href') ?? '',
   );
   const result = Promise.all(
-    sources.map((src) => (src ? decode(src) : Promise.resolve(false))),
+    sources.map((src) => (src ? decodeGeneratedSource(src) : Promise.resolve(false))),
   ).then((loaded) => {
     const ready = loaded.length > 0 && loaded.every(Boolean);
     if (ready) rig.setAttribute('data-rig-ready', '');

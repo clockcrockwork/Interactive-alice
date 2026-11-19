@@ -12,6 +12,7 @@
 
 import gsap from 'gsap';
 import { figure, svgFigure } from '../art/art.ts';
+import { decodeGeneratedSource, hydrateGeneratedRig } from '../art/generated-rig.ts';
 import { scenery } from '../art/generated-scenery.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import { createStride, fieldHtml } from './field.ts';
@@ -416,4 +417,59 @@ function mount(shell: DemoShell): void {
   });
 }
 
-attachDemo({ mount });
+const shell = attachDemo({ mount });
+
+/** Opening only: images in the bank and its near scenery, not the later field. */
+async function settleOpening(): Promise<void> {
+  const pending = () => document.documentElement.hasAttribute('data-opening-pending');
+  const notify = () => {
+    if (pending()) document.dispatchEvent(new Event('alice:opening-settled'));
+  };
+  if (!shell) {
+    notify();
+    return;
+  }
+  try {
+    const candidates = shell.root.querySelectorAll<
+      SVGSVGElement | SVGImageElement | HTMLImageElement
+    >(':is(.rb__bank, .rb__scenery-front) :is(svg[data-generated-rig], image[href], img)');
+    // The renderer already selects the art style. Ignore responsive alternatives
+    // that are display:none, but do not exclude visibility:hidden: the loader sets it.
+    // After the deadline, only retain late art recovery; do not gate the scene again.
+    const needsGate = pending();
+    const openingImages = [...candidates].filter(
+      (image) =>
+        image.getClientRects().length > 0 &&
+        !(image instanceof SVGImageElement && image.closest('svg[data-generated-rig]')) &&
+        (needsGate || image.closest('[data-art="alices-sister"]')),
+    );
+    await Promise.allSettled(
+      openingImages.map(async (image) => {
+        if (image instanceof HTMLImageElement) return image.decode();
+        if (image instanceof SVGSVGElement) return hydrateGeneratedRig(image);
+        const source = image.getAttribute('href');
+        if (!source || !(await decodeGeneratedSource(source))) {
+          const sister = image.closest('[data-art="alices-sister"]');
+          if (!sister) return;
+          // Preserve the wrapper because the ambient animation is already bound to it.
+          const fallback = document.createElement('template');
+          fallback.innerHTML = figure('alices-sister', '', 'flat');
+          const vector = fallback.content.querySelector('svg');
+          if (!vector) return;
+          sister.removeAttribute('data-generated');
+          sister.classList.remove('art--cut', 'art--generated');
+          sister.replaceChildren(vector);
+        }
+      }),
+    );
+    if (!pending()) return;
+    // Allow the generated-rig CSS and the initial scene frame to take effect.
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+    );
+  } finally {
+    notify();
+  }
+}
+
+void settleOpening();

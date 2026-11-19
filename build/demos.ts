@@ -45,6 +45,44 @@ export const demoBootScript =
   'if(t===window||(t&&t.tagName==="SCRIPT"&&t.type==="module"))show()},true);' +
   'addEventListener("unhandledrejection",show,{once:true})})()</script>';
 
+/** Installed before the scene module: a delayed or failed module cannot block this. */
+const openingBootScript = `
+<script>
+(() => {
+  const root = document.documentElement;
+  const lifetime = new AbortController();
+  const { signal } = lifetime;
+  root.setAttribute('data-opening-pending', '');
+  function reveal() {
+    clearTimeout(deadline);
+    lifetime.abort();
+    root.removeAttribute('data-opening-pending');
+    root.removeAttribute('data-demo-booting');
+  }
+  // A timeout is a safety exit, not a minimum display time or a readiness signal.
+  const deadline = setTimeout(reveal, 8000);
+  document.addEventListener('alice:opening-settled', reveal, { signal });
+  addEventListener('error', (event) => {
+    if (event.target instanceof HTMLScriptElement && event.target.type === 'module') reveal();
+  }, { capture: true, signal });
+})();
+</script>`;
+
+const openingSource = 'https://www.gutenberg.org/ebooks/11';
+
+function openingVerse(ui: DemoProject['ui'], original = false): string {
+  const lines = [
+    ui.openingVerse1,
+    ui.openingVerse2,
+    ui.openingVerse3,
+    ui.openingVerse4,
+    ui.openingVerse5,
+    ui.openingVerse6,
+  ];
+  return `<blockquote class="opening-poem__verse" cite="${openingSource}"${original ? ' lang="en"' : ''}>${lines.map(escapeHtml).join('<br>')}</blockquote>
+        <p class="opening-poem__credit">${escapeHtml(ui.openingCredit)}</p>`;
+}
+
 /**
  * The arriving page's half of the turn between pages, inline in the head because
  * `pagereveal` fires before any module script runs. It names the page's own kind of
@@ -528,6 +566,7 @@ function renderDemo(
   all: readonly DemoProject[] = [project],
 ): string {
   const title = titleOf(project, demo);
+  const opening = demo.id === 'riverbank';
   const next = nextDemo(project, demo.id);
   const last = next === DEMO_INDEX;
   const ui = project.ui;
@@ -586,11 +625,22 @@ ${htmlOpen(project.locale, project.settings)}
     <link rel="stylesheet" href="${root}styles/base.css" />
     ${ALICE_SCRIPT}
     ${demoBootScript}
+    ${opening ? `<link rel="stylesheet" href="${root}demos/riverbank/opening.css" />${openingBootScript}` : ''}
     ${arrivalScript(transitionKindFor(`/demos/${demo.id}/`))}
     <script type="module" src="${root}demos/${demo.id}/main.ts"></script>
     <script type="application/json" id="demo-ui">${escapeHtml(JSON.stringify(forScript)).replace(/&quot;/g, '"')}</script>
   </head>
   <body class="demo-body" data-demo="${demo.id}"${demo.ground ? ` data-ground="${demo.ground}"` : ''}>
+    ${
+      opening
+        ? `<section class="opening-poem" data-opening-poem aria-label="${escapeHtml(ui.openingVerse1)}">
+      <div class="opening-poem__page">
+        ${openingVerse(ui, project.locale === 'en-simple')}
+        <p class="opening-poem__status" role="status">${escapeHtml(ui.openingLoading)}</p>
+      </div>
+    </section>`
+        : ''
+    }
     <main class="demo demo--${demo.id}" id="demo" data-demo="${demo.id}"${realiaAttr}>
       <header class="demo__bar">
         ${backLink}
@@ -603,6 +653,15 @@ ${htmlOpen(project.locale, project.settings)}
 ${renderTrack(project, demo)}
       </div>
       <footer class="demo__end"${last ? ' data-last' : ''}>
+        ${
+          opening
+            ? `<details class="opening-poem__again" data-demo-reading>
+          <summary>${escapeHtml(ui.openingReadAgain)}</summary>
+          ${openingVerse(ui, project.locale === 'en-simple')}
+          <a href="${openingSource}" hreflang="en">${escapeHtml(ui.openingFullPoem)}</a>
+        </details>`
+            : ''
+        }
         <a class="demo__next" href="${nextHref}">${escapeHtml(last ? ui.demoStart : ui.demoNext)}</a>${
           last
             ? ''

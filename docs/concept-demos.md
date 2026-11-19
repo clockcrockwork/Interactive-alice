@@ -32,6 +32,22 @@ the public work, in reading order; each uses the technique that best serves its 
 /demos/ja/<id>/          each published scene in Japanese (§1, Locales)
 ```
 
+### The opening leaf
+
+The Riverbank entry and its direct language links show the first stanza of
+Lewis Carroll’s 1865 prefatory poem while the scene starts. The English verse
+is the public-domain original; the Japanese is an original translation for
+this project. Both are baked from the locale copy into the entry HTML, not
+fetched after JavaScript starts. The first stanza can be reopened at the end
+of the Riverbank, with a link to the full original.
+
+The entry only waits for its own scene module to mount and the first bank’s
+visible artwork to decode. The later field and subsequent scenes are not
+readiness gates. The leaf has no motion or minimum viewing time. An image
+failure leaves the existing scene fallback in place; a failed module or an
+eight-second deadline releases the page, and with JavaScript off the readable
+story is available immediately.
+
 ### Colour, and which Alice
 
 The demos draw from the palette of [`visual-design.md`](visual-design.md): Wonderland

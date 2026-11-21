@@ -5,7 +5,7 @@ import type { Plugin } from 'vite';
 import { type FigureAssetContext, figureAssetSources } from '../src/demos/art/art.ts';
 import { sceneryAssetSources } from '../src/demos/art/scenery-assets.ts';
 import type { DemoPageEntry } from './demos.ts';
-import { type DemoId, SCENE_IMAGE_USAGE } from './scene-image-usage.ts';
+import { type DemoId, SCENE_IMAGE_USAGE, type SceneMediaCondition } from './scene-image-usage.ts';
 
 export interface OutputAsset {
   type: string;
@@ -21,6 +21,8 @@ interface SelectedSource {
   uses: string[];
   conditions: string[];
   referenceKinds: string[];
+  media?: SceneMediaCondition;
+  unconditional: boolean;
 }
 
 const PUBLIC_CONTEXT: FigureAssetContext = {
@@ -53,13 +55,26 @@ const addSource = (
   use: string,
   condition: string,
   referenceKind: string,
+  media?: SceneMediaCondition,
 ): void => {
   const current = selected.get(sourcePath) ?? {
     sourcePath,
     uses: [],
     conditions: [],
     referenceKinds: [],
+    ...(media ? { media } : {}),
+    unconditional: !media,
   };
+  if (!media) {
+    current.media = undefined;
+    current.unconditional = true;
+  } else if (
+    !current.unconditional &&
+    current.media &&
+    (current.media.minWidth !== media.minWidth || current.media.maxWidth !== media.maxWidth)
+  ) {
+    throw new Error(`scene image source has conflicting responsive conditions: ${sourcePath}`);
+  } else if (!current.unconditional && !current.media) current.media = media;
   if (!current.uses.includes(use)) current.uses.push(use);
   if (!current.conditions.includes(condition)) current.conditions.push(condition);
   if (!current.referenceKinds.includes(referenceKind)) current.referenceKinds.push(referenceKind);
@@ -79,6 +94,7 @@ function selectedSceneSources(id: string, root: string): SelectedSource[] {
         `figure:${figure.id} (${figure.use})`,
         'explicit yellow engraved renderer selection',
         `figure-${figure.render}`,
+        figure.media,
       );
     }
   }
@@ -98,6 +114,11 @@ function selectedSceneSources(id: string, root: string): SelectedSource[] {
           : scenery === 'riverbank-sun' || scenery === 'rabbit-mound'
             ? 'scenery-img'
             : 'scenery-svg-image',
+        scenery === 'wildflower-highlands'
+          ? url.includes('-phone.')
+            ? { maxWidth: 700 }
+            : { minWidth: 701 }
+          : undefined,
       );
     }
   }
@@ -108,6 +129,7 @@ function selectedSceneSources(id: string, root: string): SelectedSource[] {
       direct.use,
       direct.condition,
       'css-background',
+      direct.media,
     );
   }
   for (const direct of declaration.directImages) {
@@ -117,6 +139,7 @@ function selectedSceneSources(id: string, root: string): SelectedSource[] {
       direct.use,
       direct.condition,
       'direct-dom-image',
+      direct.media,
     );
   }
   return [...selected.values()].sort((a, b) => a.sourcePath.localeCompare(b.sourcePath));
@@ -165,6 +188,26 @@ function sceneManifest(
   if (missing.length)
     throw new Error(`public scenes missing image-usage declaration: ${missing.join(', ')}`);
 
+  const unrepresented = Object.keys(SCENE_IMAGE_USAGE).filter(
+    (id) => !publicRoutes.some((route) => route.demo === id),
+  );
+  if (unrepresented.length) {
+    throw new Error(
+      `image-usage scenes are not present in public routes: ${unrepresented.join(', ')}`,
+    );
+  }
+  const expectedScenes = new Set(Object.keys(SCENE_IMAGE_USAGE));
+  const locales = new Set(publicRoutes.map((route) => route.locale));
+  const localeGaps = [...locales].flatMap((locale) => {
+    const actual = new Set(
+      publicRoutes.filter((route) => route.locale === locale).map((route) => route.demo),
+    );
+    return [...expectedScenes].filter((id) => !actual.has(id)).map((id) => `${locale}:${id}`);
+  });
+  if (localeGaps.length) {
+    throw new Error(`public locale is missing scene image routes: ${localeGaps.join(', ')}`);
+  }
+
   const incompleteScenes = [...new Set(publicRoutes.map((route) => route.demo))]
     .filter((id) => SCENE_IMAGE_USAGE[id as DemoId]?.status !== 'source-audited')
     .sort();
@@ -197,6 +240,7 @@ function sceneManifest(
                 uses: source.uses,
                 conditions: source.conditions,
                 referenceKinds: source.referenceKinds,
+                ...(source.media ? { media: source.media } : {}),
               },
             ];
           })
@@ -246,11 +290,11 @@ function sceneManifest(
     sourceBytes: [...sourceBytes.values()].reduce((sum, bytes) => sum + bytes, 0),
     routes: routesOutput,
     limitations: [
-      'Partial, source-audited route manifest; not a whole-book preload list.',
-      'Raster references are selected through the explicit figure/scenery render selectors or declared direct source paths, then joined to exact emitted originalFileNames.',
-      'CSS backgrounds are declared separately from DOM figures and responsive sources stay separate candidate assets.',
+      'Source-audited route image manifest; build coverage and emitted-source resolution are complete for the published demo scenes.',
+      'Raster references are selected through explicit figure/scenery render selectors or declared direct source paths, then joined to exact emitted originalFileNames.',
+      'CSS backgrounds are declared separately from DOM figures; responsive candidates carry structured media predicates.',
       'Inline SVG, CSS gradients, procedural Canvas/WebGL, fonts and sound files are not raster image assets in this manifest.',
-      'Scene timing, first visible paint, decode retention and browser cache behavior are not measured by this build artifact.',
+      'Source audit and selector correspondence are build-verified, but scene timing, first visible paint, decode retention and deployed browser cache behavior are not measured by this build artifact.',
     ],
   };
 }

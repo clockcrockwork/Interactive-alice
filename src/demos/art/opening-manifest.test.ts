@@ -14,6 +14,7 @@ interface FixtureAsset {
   url: string;
   uses: string[];
   conditions: string[];
+  media?: { minWidth?: number; maxWidth?: number };
 }
 
 interface FixtureRoute {
@@ -40,12 +41,14 @@ const source = (
   path: string,
   file: string,
   conditions: string[] = ['engraved selector'],
+  media?: { minWidth?: number; maxWidth?: number },
 ): FixtureAsset => ({
   sourcePath: `src/assets/images/${path}`,
   fileName: `assets/${file}`,
   url: `./assets/${file}`,
   uses: ['scene art'],
   conditions,
+  ...(media ? { media } : {}),
 });
 
 const picture = (): FixtureManifest => ({
@@ -65,12 +68,18 @@ const picture = (): FixtureManifest => ({
       status: 'source-audited',
       assets: [
         source('figures/alice.any.generated.webp', 'alice.any.generated-AbCdEf12.webp'),
-        source('scenery/highlands-phone.webp', 'highlands-phone.generated-QwErTy12.webp', [
-          'picture source media=(max-width:700px)',
-        ]),
-        source('scenery/highlands-wide.webp', 'highlands-wide.generated-ZxCvBn12.webp', [
-          'picture img default above 700px',
-        ]),
+        source(
+          'scenery/highlands-phone.webp',
+          'highlands-phone.generated-QwErTy12.webp',
+          ['picture source media=(max-width:700px)'],
+          { maxWidth: 700 },
+        ),
+        source(
+          'scenery/highlands-wide.webp',
+          'highlands-wide.generated-ZxCvBn12.webp',
+          ['picture img default above 700px'],
+          { minWidth: 701 },
+        ),
       ],
     },
     {
@@ -79,12 +88,18 @@ const picture = (): FixtureManifest => ({
       status: 'source-audited',
       assets: [
         source('figures/alice.any.generated.webp', 'alice.any.generated-AbCdEf12.webp'),
-        source('scenery/highlands-phone.webp', 'highlands-phone.generated-QwErTy12.webp', [
-          'picture source media=(max-width:700px)',
-        ]),
-        source('scenery/highlands-wide.webp', 'highlands-wide.generated-ZxCvBn12.webp', [
-          'picture img default above 700px',
-        ]),
+        source(
+          'scenery/highlands-phone.webp',
+          'highlands-phone.generated-QwErTy12.webp',
+          ['picture source media=(max-width:700px)'],
+          { maxWidth: 700 },
+        ),
+        source(
+          'scenery/highlands-wide.webp',
+          'highlands-wide.generated-ZxCvBn12.webp',
+          ['picture img default above 700px'],
+          { minWidth: 701 },
+        ),
       ],
     },
   ],
@@ -120,6 +135,17 @@ describe('whole-book opening manifest gate', () => {
     expect(wide.urls).toHaveLength(2);
     expect(wide.urls.some((url) => url.includes('highlands-wide'))).toBe(true);
     expect(wide.urls.some((url) => url.includes('highlands-phone'))).toBe(false);
+  });
+
+  it('rejects malformed structured media conditions', () => {
+    const invalid = picture();
+    const asset = routeAssets(invalid, 0)[0];
+    if (!asset) throw new Error('fixture has no asset');
+    asset.media = { maxWidth: -1 };
+    expect(selectCompleteManifestImages(invalid, responseUrl, pageUrl, 390)).toEqual({
+      kind: 'invalid',
+      reason: 'invalid responsive raster media condition',
+    });
   });
 
   it('never warms an incomplete build, even when its known scene entries are populated', () => {

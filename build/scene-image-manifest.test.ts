@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { figureAssetSources } from '../src/demos/art/art.ts';
 import { DEMO_ORDER } from './demos.ts';
@@ -8,17 +10,35 @@ import {
 } from './scene-image-manifest.ts';
 import { SCENE_IMAGE_USAGE } from './scene-image-usage.ts';
 
-describe('partial scene image manifest contract', () => {
-  it('declares every public demo, while identifying scenes not yet audited', () => {
+describe('complete scene image manifest contract', () => {
+  it('declares and source-audits every published scene before preload eligibility', () => {
     expect(Object.keys(SCENE_IMAGE_USAGE).sort()).toEqual([...DEMO_ORDER].sort());
     const audited = Object.entries(SCENE_IMAGE_USAGE)
       .filter(([, usage]) => usage.status === 'source-audited')
       .map(([id]) => id)
       .sort();
-    expect(audited).toEqual(['cheshire-cat', 'rabbit-hole', 'riverbank']);
+    expect(audited).toEqual([...DEMO_ORDER].sort());
     expect(
-      Object.values(SCENE_IMAGE_USAGE).filter((usage) => usage.status === 'not-audited'),
-    ).toHaveLength(16);
+      Object.values(SCENE_IMAGE_USAGE).some((usage) => usage.status !== 'source-audited'),
+    ).toBe(false);
+    for (const id of DEMO_ORDER) {
+      expect(
+        sceneImageSourcesForBuild(id, process.cwd()).length,
+        `${id} needs declared raster coverage`,
+      ).toBeGreaterThan(0);
+    }
+  });
+
+  it('resolves all scene selectors to existing exact source files', () => {
+    const root = process.cwd();
+    for (const id of DEMO_ORDER) {
+      for (const selected of sceneImageSourcesForBuild(id, root)) {
+        expect(existsSync(join(root, selected.sourcePath)), `${id}: ${selected.sourcePath}`).toBe(
+          true,
+        );
+        expect(selected.referenceKinds.length, `${id}: ${selected.sourcePath}`).toBeGreaterThan(0);
+      }
+    }
   });
 
   it('selects explicit yellow sources through the same HTML and SVG renderers', () => {
@@ -95,6 +115,22 @@ describe('partial scene image manifest contract', () => {
           !path.endsWith('alice--falling-overhead.yellow.generated.webp'),
       ),
     ).toBe(false);
+  });
+
+  it('records the width predicates for responsive scene images and optional figures', () => {
+    const root = process.cwd();
+    const caucus = sceneImageSourcesForBuild('caucus-race', root).find((source) =>
+      source.sourcePath.includes('wildflower-highlands-phone'),
+    );
+    const poolPhone = sceneImageSourcesForBuild('pool-of-tears', root).find((source) =>
+      source.sourcePath.includes('pool-underwater-phone'),
+    );
+    const mockTurtle = sceneImageSourcesForBuild('mock-turtle', root).find((source) =>
+      source.sourcePath.endsWith('dancer--whiting.any.generated.webp'),
+    );
+    expect(caucus?.media).toEqual({ maxWidth: 700 });
+    expect(poolPhone?.media).toEqual({ maxWidth: 700 });
+    expect(mockTurtle?.media).toEqual({ minWidth: 701 });
   });
 
   it('resolves manifest and hashed asset URLs from response URLs under subdirectory hosting', () => {

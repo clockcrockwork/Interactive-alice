@@ -6,6 +6,7 @@ export interface ManifestImage {
   url: string;
   uses: string[];
   conditions: string[];
+  media?: { minWidth?: number; maxWidth?: number };
 }
 
 export interface CompleteManifestSelection {
@@ -135,6 +136,21 @@ export function selectCompleteManifestImages(
       ) {
         return { kind: 'invalid', reason: 'invalid raster asset entry' };
       }
+      if (assetValue.media !== undefined) {
+        const minWidth = record(assetValue.media) ? assetValue.media.minWidth : undefined;
+        const maxWidth = record(assetValue.media) ? assetValue.media.maxWidth : undefined;
+        if (
+          !record(assetValue.media) ||
+          Object.keys(assetValue.media).some((key) => key !== 'minWidth' && key !== 'maxWidth') ||
+          (minWidth !== undefined &&
+            (typeof minWidth !== 'number' || !Number.isInteger(minWidth) || minWidth < 0)) ||
+          (maxWidth !== undefined &&
+            (typeof maxWidth !== 'number' || !Number.isInteger(maxWidth) || maxWidth < 0)) ||
+          (typeof minWidth === 'number' && typeof maxWidth === 'number' && minWidth > maxWidth)
+        ) {
+          return { kind: 'invalid', reason: 'invalid responsive raster media condition' };
+        }
+      }
       if (
         !assetValue.sourcePath.startsWith(ASSET_ROOT) ||
         assetValue.sourcePath.includes('..') ||
@@ -195,18 +211,15 @@ export function selectCompleteManifestImages(
     if (existingSource && existingSource !== asset.sourcePath)
       return { kind: 'invalid', reason: 'one asset URL refers to multiple source paths' };
     urlSources.set(resolved.href, asset.sourcePath);
-    const responsive = asset.conditions.some(
-      (condition) =>
-        condition.startsWith('picture source media=') ||
-        condition.startsWith('picture img default above '),
-    );
-    if (!responsive) {
+    if (!asset.media) {
       urls.add(resolved.href);
       continue;
     }
-    const phone = asset.conditions.some((condition) => condition.includes('max-width:700px'));
-    const wide = asset.conditions.some((condition) => condition.includes('above 700px'));
-    if ((viewportWidth <= 700 && phone) || (viewportWidth > 700 && wide)) urls.add(resolved.href);
+    if (
+      (asset.media.minWidth === undefined || viewportWidth >= asset.media.minWidth) &&
+      (asset.media.maxWidth === undefined || viewportWidth <= asset.media.maxWidth)
+    )
+      urls.add(resolved.href);
   }
   return { kind: 'ready', urls: [...urls].sort() };
 }

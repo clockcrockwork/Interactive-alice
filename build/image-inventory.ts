@@ -5,12 +5,15 @@ interface BundleItem {
   fileName: string;
   name?: string;
   source?: string | Uint8Array;
+  originalFileName?: string | null;
+  originalFileNames?: string[] | null;
 }
 
 export interface EmittedImageAsset {
   url: string;
   fileName: string;
   sourceName: string | null;
+  sourcePaths: string[];
   bytes: number;
 }
 
@@ -41,6 +44,8 @@ export function emittedImageInventory(bundle: Record<string, BundleItem>): Emitt
       url: `./${output.fileName}`,
       fileName: output.fileName,
       sourceName: output.name ?? null,
+      sourcePaths:
+        output.originalFileNames ?? (output.originalFileName ? [output.originalFileName] : []),
       bytes:
         typeof output.source === 'string'
           ? Buffer.byteLength(output.source)

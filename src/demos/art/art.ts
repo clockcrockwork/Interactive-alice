@@ -81,9 +81,8 @@ export const aliceVariant = (): AliceVariant =>
   document.documentElement.dataset.alice === 'blue' ? 'blue' : 'yellow';
 
 /** Only the page's own Alice is put on a page: a hidden <img> would still be fetched. */
-const forThisPage = (sources: Sources): Sources => {
+const forThisPage = (sources: Sources, variant: AliceVariant): Sources => {
   if (inBrowser && !sources.any) {
-    const variant = aliceVariant();
     return { [variant]: sources[variant] };
   }
   return sources;
@@ -98,6 +97,7 @@ export function bakedFor(
   id: string,
   style: ArtStyle = pageStyle(),
   demo: string | undefined = pageDemo(),
+  variant: AliceVariant = inBrowser ? aliceVariant() : 'yellow',
 ): Sources | undefined {
   const sources = BAKED[id];
   if (
@@ -107,7 +107,7 @@ export function bakedFor(
   ) {
     return undefined;
   }
-  return forThisPage(sources);
+  return forThisPage(sources, variant);
 }
 
 export interface CutOuts {
@@ -123,14 +123,18 @@ export function cutOutsFor(
   id: string,
   style: ArtStyle = pageStyle(),
   demo: string | undefined = pageDemo(),
+  variant: AliceVariant = inBrowser ? aliceVariant() : 'yellow',
 ): CutOuts | undefined {
   const baked = BAKED_PARTS[id];
   if (!baked || style !== 'engraved' || !demo || !CUT_OUTS[id]?.demos.includes(demo)) {
     return undefined;
   }
   return {
-    base: forThisPage(baked.base),
-    parts: Object.entries(baked.parts).map(([part, sources]) => [part, forThisPage(sources)]),
+    base: forThisPage(baked.base, variant),
+    parts: Object.entries(baked.parts).map(([part, sources]) => [
+      part,
+      forThisPage(sources, variant),
+    ]),
   };
 }
 
@@ -257,12 +261,12 @@ export function figure(
       // it: its visible soles, rather than its transparent padding, meet h.
       return `<span class="art art--cut art--generated ${className}" data-art="${id}" data-generated=""><svg viewBox="0 0 ${w} ${h}" focusable="false">${drawing}</svg></span>`;
     }
-    const cut = cutOutsFor(id, style, demo);
+    const cut = cutOutsFor(id, style, demo, variant);
     if (cut) {
       return `<span class="art art--cut ${className}" data-art="${id}">${cutOutSvg(entry, cut)}</span>`;
     }
     // A baked picture rides beside the vector; art.css shows one by `data-art`.
-    const baked = bakedFor(id, style, demo);
+    const baked = bakedFor(id, style, demo, variant);
     if (baked) {
       return `<span class="art art--baked ${className}" data-art="${id}">${entry.markup}${imgTags(baked, 'art__image art__image--baked')}</span>`;
     }
@@ -334,7 +338,7 @@ export function svgFigure(
       return `<g class="art art--cut art--generated ${className}" ${at} data-generated="">${paint}<rect width="${width}" height="${height}" fill="url(#${paintId})"/></g>`;
     }
     const drawing = `<g transform="scale(${width / boxW} ${height / boxH})">${entry.fragment ?? entry.markup}</g>`;
-    const baked = bakedFor(id, style, demo);
+    const baked = bakedFor(id, style, demo, variant);
     if (baked) {
       const sources = baked.any ? { any: baked.any } : { [variant]: baked[variant] };
       return `<g class="art art--baked ${className}" ${at}>${drawing}${imageTags(sources, 'art__image art__image--baked', width, height)}</g>`;
@@ -346,18 +350,72 @@ export function svgFigure(
 
 const imageCache = new Map<string, Promise<HTMLImageElement | undefined>>();
 
+export type FigureRenderKind = 'html' | 'svg' | 'canvas';
+
+export interface FigureAssetContext {
+  demo: string;
+  style: ArtStyle;
+  variant: AliceVariant;
+  render: FigureRenderKind;
+}
+
+const RASTER_URL = /\.(?:avif|gif|jpe?g|png|webp)(?:[?#].*)?$/i;
+
+/**
+ * Return the raster references selected by this exact render path. HTML/SVG
+ * selection goes through the same figure renderers as the scene; Canvas uses
+ * the same source rule as loadArtImage. The request is explicit so build-time
+ * inventory never depends on SSR defaults or the browser's current page state.
+ */
+export function figureAssetSources(id: string, context: FigureAssetContext): string[] {
+  if (context.render === 'canvas') {
+    const sources = canvasArtSources(id, context.style, context.demo, context.variant);
+    const source = sources?.[context.variant] ?? sources?.any;
+    return source ? [source.src] : [];
+  }
+  const markup =
+    context.render === 'svg'
+      ? svgFigure(id, 0, 0, 1, 1, '', context.style, context.demo, context.variant)
+      : figure(id, '', context.style, context.demo, context.variant);
+  const selected: string[] = [];
+  for (const match of markup.matchAll(/<(?:img|image)\b([^>]*)>/g)) {
+    const attrs = match[1] ?? '';
+    const selectedVariant = attrs.match(/\bdata-variant=["']([^"']+)["']/)?.[1];
+    if (selectedVariant && selectedVariant !== 'any' && selectedVariant !== context.variant)
+      continue;
+    for (const source of attrs.matchAll(/\b(?:src|href)=["']([^"']+)["']/g)) {
+      if (RASTER_URL.test(source[1] ?? '')) selected.push(source[1] ?? '');
+    }
+  }
+  return [...new Set(selected)];
+}
+
+function canvasArtSources(
+  id: string,
+  style: ArtStyle,
+  demo: string,
+  variant: AliceVariant,
+): Sources | undefined {
+  const entry = ART[id];
+  return entry?.kind === 'image' ? entry.sources : bakedFor(id, style, demo, variant);
+}
+
 /**
  * A figure for a Canvas context: the cut-out image for the current Alice (an image
  * entry, or a baked picture in the engraved style), or nothing, in which case the
  * canvas draws its own vector stand-in. Resolved once.
  */
-export function loadArtImage(id: string): Promise<HTMLImageElement | undefined> {
-  const entry = ART[id];
-  const sources = entry?.kind === 'image' ? entry.sources : bakedFor(id);
+export function loadArtImage(
+  id: string,
+  style: ArtStyle = pageStyle(),
+  demo: string | undefined = pageDemo(),
+  variant: AliceVariant = inBrowser ? aliceVariant() : 'yellow',
+): Promise<HTMLImageElement | undefined> {
+  const sources = canvasArtSources(id, style, demo ?? '', variant);
   if (!sources) {
     return Promise.resolve(undefined);
   }
-  const source = sources[aliceVariant()] ?? sources.any;
+  const source = sources[variant] ?? sources.any;
   if (!source) {
     return Promise.resolve(undefined);
   }

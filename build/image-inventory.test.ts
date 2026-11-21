@@ -8,6 +8,7 @@ describe('production image inventory', () => {
         type: 'asset',
         fileName: 'assets/riverbank-sun-a1b2.webp',
         name: 'riverbank-sun.generated.webp',
+        originalFileNames: ['src/assets/images/scenery/riverbank-sun.generated.webp'],
         source: new Uint8Array([1, 2, 3]),
       },
       'assets/scene-main-abcd.js': {
@@ -29,6 +30,7 @@ describe('production image inventory', () => {
         url: './assets/riverbank-sun-a1b2.webp',
         fileName: 'assets/riverbank-sun-a1b2.webp',
         sourceName: 'riverbank-sun.generated.webp',
+        sourcePaths: ['src/assets/images/scenery/riverbank-sun.generated.webp'],
         bytes: 3,
       },
     ]);

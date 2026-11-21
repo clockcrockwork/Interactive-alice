@@ -118,6 +118,25 @@
     translate: -50% -50%;
   }
 
+  /* The cutout's opening sits just below centre; align that with the dark
+     fallback opening, then place the shared Rabbit and Alice layers over it. */
+  .field__mound {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: var(--field-foot);
+    inline-size: clamp(17rem, 62vw, 40rem);
+    aspect-ratio: 1080 / 412;
+    translate: -58% -68%;
+    pointer-events: none;
+  }
+
+  .field__mound > .scenery {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: contain;
+  }
+
   /* The Rabbit goes down below the hole's middle line, so its near lip is in
      front of him. */
   .field__burrow {

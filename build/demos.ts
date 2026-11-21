@@ -50,6 +50,15 @@ const openingBootScript = `
 <script>
 (() => {
   const root = document.documentElement;
+  let firstOpening = true;
+  try {
+    firstOpening = sessionStorage.getItem('alice-opening-seen') !== '1';
+    sessionStorage.setItem('alice-opening-seen', '1');
+  } catch {
+    // Storage can be unavailable (private mode or a restricted file origin).
+    // The entry still works; its scene readiness never depends on this value.
+  }
+  if (!firstOpening) return;
   const lifetime = new AbortController();
   const { signal } = lifetime;
   root.setAttribute('data-opening-pending', '');

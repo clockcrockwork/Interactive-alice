@@ -163,9 +163,7 @@ test.describe('the riverbank: across the field', () => {
     }
   });
 
-  test('a page turned or a daisy picked says what happened, never the button again', async ({
-    page,
-  }) => {
+  test('a daisy picked says what happened, never the button again', async ({ page }) => {
     await page.goto(demo?.url ?? '');
     const ui = await page.evaluate(
       () =>
@@ -175,9 +173,6 @@ test.describe('the riverbank: across the field', () => {
         >,
     );
     const status = page.locator('.demo__status');
-    await page.locator('.rb__prop--turn').click();
-    await expect(page.locator('.rb__book')).toHaveAttribute('data-page', '1');
-    await expect(status).toHaveText(ui.demoPageEmpty ?? '');
     await page.locator('.rb__prop--pick').click();
     await expect(page.locator('.rb__chain')).toHaveAttribute('data-chain', '1');
     await expect(status).toHaveText(ui.demoChainLonger ?? '');

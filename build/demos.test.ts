@@ -58,6 +58,15 @@ describe('the concept-demo pages', () => {
     }
   });
 
+  it('sets the opening gate once per tab and does not cache scene readiness', () => {
+    const rootEntry = all.pages.find((page) => page.path === 'index.html');
+    const japanese = all.pages.find((page) => page.path === 'demos/ja/riverbank/index.html');
+    expect(rootEntry?.html).toContain("sessionStorage.getItem('alice-opening-seen')");
+    expect(rootEntry?.html).toContain("sessionStorage.setItem('alice-opening-seen', '1')");
+    expect(japanese?.html).toContain("sessionStorage.getItem('alice-opening-seen')");
+    expect(rootEntry?.html).not.toContain("sessionStorage.getItem('alice-assets-ready')");
+  });
+
   it('generates one Riverbank entry and one route per demo without a public index', () => {
     expect(pages.map((page) => page.path)).toEqual([
       'index.html',

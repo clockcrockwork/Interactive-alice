@@ -22,6 +22,14 @@ const sources = {
     '../../assets/images/scenery/wildflower-highlands.generated.webp',
     import.meta.url,
   ).href,
+  'rabbit-mound': new URL(
+    '../../assets/images/scenery/rabbit-mound.generated.webp',
+    import.meta.url,
+  ).href,
+  'riverbank-sun': new URL(
+    '../../assets/images/scenery/riverbank-sun.generated.webp',
+    import.meta.url,
+  ).href,
 } as const;
 
 const wildflowerHighlandsPhone = new URL(
@@ -41,6 +49,8 @@ const boxes = {
   'edge-right': [3, 4],
   ground: [3, 1],
   'wildflower-highlands': [3, 1],
+  'rabbit-mound': [1080, 412],
+  'riverbank-sun': [156, 145],
 } as const;
 
 /** Flat/paper pages fetch no new images; pending/failed images paint nothing. */
@@ -51,6 +61,10 @@ export function scenery(
   if (style !== 'engraved') return '';
   if (id === 'wildflower-highlands') {
     return `<picture class="scenery scenery--wildflower-highlands" aria-hidden="true"><source media="(max-width: 700px)" srcset="${wildflowerHighlandsPhone}"><img src="${sources[id]}" alt="" decoding="async"></picture>`;
+  }
+  if (id === 'rabbit-mound' || id === 'riverbank-sun') {
+    const [width, height] = boxes[id];
+    return `<img class="scenery scenery--${id}" src="${sources[id]}" width="${width}" height="${height}" alt="" decoding="async">`;
   }
   if (id === 'court-wall') {
     // Retain the existing wide rear plane. Mirrored bays share one decoded file;

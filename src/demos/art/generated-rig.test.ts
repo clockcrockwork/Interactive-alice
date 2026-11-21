@@ -58,6 +58,45 @@ describe('generated rig atomic loading', () => {
     expect(attributes.has('data-rig-failed')).toBe(true);
   });
 
+  it('caps concurrent generated image fetches and decodes at four', async () => {
+    const active: string[] = [];
+    const releases: Array<() => void> = [];
+    let maximum = 0;
+    let completed = 0;
+    vi.stubGlobal(
+      'Image',
+      class {
+        naturalWidth = 100;
+        src = '';
+        decode() {
+          active.push(this.src);
+          maximum = Math.max(maximum, active.length);
+          return new Promise<void>((resolve) => {
+            releases.push(() => {
+              active.splice(active.indexOf(this.src), 1);
+              completed += 1;
+              resolve();
+            });
+          });
+        }
+      },
+    );
+    const { rig } = rigWith(Array.from({ length: 9 }, (_, i) => `bounded-${i}`));
+    const result = hydrateGeneratedRig(rig);
+    expect(active).toHaveLength(4);
+    while (completed < 9) {
+      if (releases.length > 0) {
+        releases.splice(0).forEach((release) => {
+          release();
+        });
+      }
+      await Promise.resolve();
+      await Promise.resolve();
+    }
+    expect(await result).toBe(true);
+    expect(maximum).toBe(4);
+  });
+
   it('does not reveal an empty or malformed rig', async () => {
     for (const sources of [[], ['']]) {
       const { rig, attributes } = rigWith(sources);

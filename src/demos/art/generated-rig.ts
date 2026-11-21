@@ -11,17 +11,38 @@ import './generated-rig.css';
 
 const decoded = new Map<string, Promise<boolean>>();
 const pending = new WeakMap<SVGElement, Promise<boolean>>();
+const decodeQueue: Array<() => void> = [];
+const MAX_ACTIVE_IMAGE_DECODES = 4;
+let activeImageDecodes = 0;
+
+function pumpDecodeQueue(): void {
+  while (activeImageDecodes < MAX_ACTIVE_IMAGE_DECODES && decodeQueue.length > 0) {
+    activeImageDecodes += 1;
+    decodeQueue.shift()?.();
+  }
+}
 
 export function decodeGeneratedSource(src: string): Promise<boolean> {
   let result = decoded.get(src);
   if (!result) {
-    const image = new Image();
-    image.decoding = 'async';
-    image.src = src;
-    result = image.decode().then(
-      () => image.naturalWidth > 0,
-      () => false,
-    );
+    result = new Promise<boolean>((resolve) => {
+      decodeQueue.push(() => {
+        const image = new Image();
+        image.decoding = 'async';
+        image.src = src;
+        void image
+          .decode()
+          .then(
+            () => resolve(image.naturalWidth > 0),
+            () => resolve(false),
+          )
+          .finally(() => {
+            activeImageDecodes -= 1;
+            pumpDecodeQueue();
+          });
+      });
+      pumpDecodeQueue();
+    });
     decoded.set(src, result);
   }
   return result;

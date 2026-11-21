@@ -3,6 +3,7 @@ import { scrollTo } from './demo-helpers.ts';
 
 const bankArt = /\/assets\/tree\.generated-[\w-]+\.webp$/;
 const sisterArt = /\/assets\/alices-sister\.any\.generated-[\w-]+\.webp$/;
+const rabbitMound = /\/assets\/rabbit-mound\.generated-[\w-]+\.webp$/;
 const sceneModule = /\/assets\/main-[\w-]+\.js$/;
 
 function gate() {
@@ -64,6 +65,28 @@ test('the opening verse appears before the scene script and stays through the fi
     script.release();
     art.release();
     sister.release();
+  }
+});
+
+test('the entry waits for later field images too, not only the visible riverbank', async ({
+  page,
+}) => {
+  const mound = gate();
+  await page.route(rabbitMound, async (route) => {
+    await mound.hold;
+    await route.continue();
+  });
+  try {
+    await page.goto('./');
+    const poem = page.locator('[data-opening-poem]');
+    await expect(poem).toBeVisible();
+    await expect(page.locator('.field__mound img')).toHaveJSProperty('complete', false);
+    await expect(poem).toBeVisible();
+    mound.release();
+    await expect(poem).toBeHidden();
+    await expect(page.locator('.field__mound img')).toHaveJSProperty('naturalWidth', 1080);
+  } finally {
+    mound.release();
   }
 });
 
@@ -166,6 +189,17 @@ test('the reread summary keeps native keyboard control and protects the reading 
 test('a later scene does not use the opening gate', async ({ page }) => {
   await page.goto('./demos/rabbit-hole/');
   await expect(page.locator('[data-opening-poem]')).toHaveCount(0);
+  await expect(page.locator('.demo__stage')).toBeVisible();
+});
+
+test('the verse is not shown again when Riverbank is re-entered in the same tab', async ({
+  page,
+}) => {
+  await page.goto('./');
+  await expect(page.locator('[data-opening-poem]')).toBeHidden();
+  await page.goto('./demos/riverbank/');
+  await expect(page.locator('[data-opening-poem]')).toHaveCount(1);
+  await expect(page.locator('[data-opening-poem]')).toBeHidden();
   await expect(page.locator('.demo__stage')).toBeVisible();
 });
 

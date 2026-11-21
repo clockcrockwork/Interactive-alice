@@ -25,6 +25,7 @@ export function fieldHtml(): string {
     `<div class="scenery-edge scenery-edge--left">${scenery('edge-left')}<div class="scenery-edge__mobile">${scenery('edge-right')}</div></div>` +
     `<div class="scenery-edge scenery-edge--right">${scenery('edge-right')}</div>` +
     '<div class="field__hole"></div>' +
+    `<div class="field__mound">${scenery('rabbit-mound')}</div>` +
     `<div class="field__burrow"><div class="field__rabbit">${figure('white-rabbit/diving')}</div></div>` +
     '</div>' +
     `<div class="field__alice"><div class="field__runner">${figure('alice/running-away')}</div></div>`

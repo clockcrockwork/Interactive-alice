@@ -605,6 +605,10 @@ export interface LocaleUIStrings {
     openingVerse6: string;
     openingCredit: string;
     openingLoading: string;
+    openingBookReady: string;
+    openingSceneReady: string;
+    openingFailed: string;
+    openingTimedOut: string;
     openingReadAgain: string;
     openingFullPoem: string;
     /**

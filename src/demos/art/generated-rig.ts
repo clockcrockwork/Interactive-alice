@@ -10,6 +10,7 @@ import './generated-footmen.css';
 import './generated-rig.css';
 
 const decoded = new Map<string, Promise<boolean>>();
+const verifiedDecoded = new Map<string, Promise<boolean>>();
 const pending = new WeakMap<SVGElement, Promise<boolean>>();
 const decodeQueue: Array<() => void> = [];
 const MAX_ACTIVE_IMAGE_DECODES = 4;
@@ -46,6 +47,78 @@ export function decodeGeneratedSource(src: string): Promise<boolean> {
     decoded.set(src, result);
   }
   return result;
+}
+
+/** Fetch and decode one same-origin immutable raster, retaining only its outcome. */
+export function decodeVerifiedImageSource(src: string, signal: AbortSignal): Promise<boolean> {
+  let result = verifiedDecoded.get(src);
+  if (!result) {
+    result = new Promise<boolean>((resolve) => {
+      decodeQueue.push(() => {
+        void (async () => {
+          let objectUrl: string | undefined;
+          try {
+            const requested = new URL(src, location.href);
+            if (requested.origin !== location.origin || !/^https?:$/.test(requested.protocol)) {
+              resolve(false);
+              return;
+            }
+            const response = await fetch(requested.href, {
+              credentials: 'same-origin',
+              cache: 'force-cache',
+              redirect: 'error',
+              signal,
+            });
+            const cacheControl = response.headers.get('cache-control') ?? '';
+            if (
+              !response.ok ||
+              response.redirected ||
+              response.url !== requested.href ||
+              response.url !== src ||
+              !/\bimmutable\b/i.test(cacheControl) ||
+              !response.headers.get('content-type')?.toLowerCase().startsWith('image/')
+            ) {
+              resolve(false);
+              return;
+            }
+            const blob = await response.blob();
+            objectUrl = URL.createObjectURL(blob);
+            const image = new Image();
+            image.decoding = 'async';
+            image.src = objectUrl;
+            await image.decode();
+            resolve(image.naturalWidth > 0);
+          } catch {
+            resolve(false);
+          } finally {
+            if (objectUrl) URL.revokeObjectURL(objectUrl);
+          }
+        })().finally(() => {
+          activeImageDecodes -= 1;
+          pumpDecodeQueue();
+        });
+      });
+      pumpDecodeQueue();
+    });
+    verifiedDecoded.set(src, result);
+  }
+  // A timeout from one document must not poison a later document's retry.
+  const cached = result;
+  void cached.then((ok) => {
+    if (!ok && verifiedDecoded.get(src) === cached) verifiedDecoded.delete(src);
+  });
+  return result;
+}
+
+export async function decodeVerifiedImageSources(
+  sources: Iterable<string>,
+  signal: AbortSignal,
+): Promise<Map<string, boolean>> {
+  const unique = [...new Set([...sources].filter(Boolean))];
+  const results = await Promise.all(
+    unique.map(async (src) => [src, await decodeVerifiedImageSource(src, signal)] as const),
+  );
+  return new Map(results);
 }
 
 /**

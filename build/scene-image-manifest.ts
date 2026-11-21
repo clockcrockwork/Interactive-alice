@@ -240,7 +240,7 @@ function sceneManifest(
         new Set(publicRoutes.map((route) => route.demo)).size - incompleteScenes.length,
       incompleteScenes,
     },
-    preloadEligible: false,
+    preloadEligible: incompleteScenes.length === 0,
     urlBasis:
       'Resolve each asset.url with new URL(asset.url, manifestResponse.url). Manifest file is at the output base; Vite base is relative (./).',
     sourceBytes: [...sourceBytes.values()].reduce((sum, bytes) => sum + bytes, 0),

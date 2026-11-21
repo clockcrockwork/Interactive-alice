@@ -67,6 +67,15 @@ describe('the concept-demo pages', () => {
     expect(rootEntry?.html).not.toContain("sessionStorage.getItem('alice-assets-ready')");
   });
 
+  it('passes the output-root-relative image manifest URL to every generated route', () => {
+    const rootEntry = all.pages.find((page) => page.path === 'index.html');
+    const baseDirect = all.pages.find((page) => page.path === 'demos/rabbit-hole/index.html');
+    const japanese = all.pages.find((page) => page.path === 'demos/ja/rabbit-hole/index.html');
+    expect(rootEntry?.html).toContain('data-image-manifest="demo-image-usage.json"');
+    expect(baseDirect?.html).toContain('data-image-manifest="../../demo-image-usage.json"');
+    expect(japanese?.html).toContain('data-image-manifest="../../../demo-image-usage.json"');
+  });
+
   it('generates one Riverbank entry and one route per demo without a public index', () => {
     expect(pages.map((page) => page.path)).toEqual([
       'index.html',

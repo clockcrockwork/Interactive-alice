@@ -11,8 +11,13 @@
 
 import gsap from 'gsap';
 import { figure, svgFigure } from '../art/art.ts';
-import { decodeImageSources, hydrateGeneratedRig } from '../art/generated-rig.ts';
+import {
+  decodeImageSources,
+  decodeVerifiedImageSources,
+  hydrateGeneratedRig,
+} from '../art/generated-rig.ts';
 import { scenery } from '../art/generated-scenery.ts';
+import { type OpeningPreparation, prepareOpeningFromManifest } from '../art/opening-manifest.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import { createStride, fieldHtml } from './field.ts';
 import { flowerArt, SISTER_READING_SRC, WATCH_HTML } from './figures.ts';
@@ -381,11 +386,26 @@ const shell = attachDemo({ mount });
 /** Resolve this scene's actual rendered art, including layers used in later beats. */
 async function settleOpening(): Promise<void> {
   const pending = () => document.documentElement.hasAttribute('data-opening-pending');
-  const notify = () => {
-    if (pending()) document.dispatchEvent(new Event('alice:opening-settled'));
+  const notify = (state: OpeningPreparation) => {
+    if (!pending()) return;
+    document.documentElement.dataset.openingState = state;
+    const status = document.querySelector<HTMLElement>('[data-opening-status]');
+    const message =
+      state === 'full-ready'
+        ? status?.dataset.fullReady
+        : state === 'partial'
+          ? status?.dataset.partial
+          : state === 'timed-out'
+            ? status?.dataset.timedOut
+            : status?.dataset.failed;
+    if (status && message) status.textContent = message;
+    document.dispatchEvent(new Event('alice:opening-settled'));
   };
+  // A Riverbank reload or a later return in this tab gets no poem and does not
+  // repeat the whole-book warmup. This document still mounts its normal atomic rigs.
+  if (!pending()) return;
   if (!shell) {
-    notify();
+    notify('failed');
     return;
   }
   try {
@@ -400,23 +420,47 @@ async function settleOpening(): Promise<void> {
     // Rabbit and running field (including its later hidden beats). Responsive
     // alternatives and unreferenced files never enter the list. The shared decode
     // queue also serves generated rigs and the future scene-manifest path.
-    const decoded = await decodeImageSources([...htmlSources, ...svgSources]);
-    for (const [index, image] of images.entries()) {
-      if (
-        !decoded.get(htmlSources[index] ?? '') &&
-        image.classList.contains('rb__sister-reading')
-      ) {
-        sisterFallback(image);
+    const localPreparation = (async (): Promise<boolean> => {
+      const decoded = await decodeImageSources([...htmlSources, ...svgSources]);
+      for (const [index, image] of images.entries()) {
+        if (
+          !decoded.get(htmlSources[index] ?? '') &&
+          image.classList.contains('rb__sister-reading')
+        ) {
+          sisterFallback(image);
+        }
       }
+      const rigResults = await Promise.all(rigs.map((rig) => hydrateGeneratedRig(rig)));
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      );
+      return [...decoded.values()].every(Boolean) && rigResults.every(Boolean);
+    })();
+
+    const globalPreparation = await prepareOpeningFromManifest({
+      manifestHref: document.body.dataset.imageManifest ?? '',
+      pageUrl: location.href,
+      viewportWidth: window.innerWidth,
+      entryReady: Promise.resolve(
+        shell.root.isConnected && shell.root.dataset.demo === 'riverbank',
+      ),
+      decode: decodeVerifiedImageSources,
+    });
+    if (globalPreparation === 'timed-out') {
+      notify('timed-out');
+      return;
     }
-    await Promise.allSettled(rigs.map((rig) => hydrateGeneratedRig(rig)));
+    const localReady = await localPreparation;
     if (!pending()) return;
-    // Allow the generated-rig CSS and the initial scene frame to take effect.
-    await new Promise<void>((resolve) =>
-      requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-    );
+    const state =
+      localReady && globalPreparation === 'full-ready'
+        ? 'full-ready'
+        : localReady && globalPreparation === 'partial'
+          ? 'partial'
+          : 'failed';
+    notify(state);
   } finally {
-    notify();
+    if (pending()) notify('failed');
   }
 }
 

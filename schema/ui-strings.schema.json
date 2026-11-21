@@ -34,6 +34,10 @@
         "openingVerse6",
         "openingCredit",
         "openingLoading",
+        "openingBookReady",
+        "openingSceneReady",
+        "openingFailed",
+        "openingTimedOut",
         "openingReadAgain",
         "openingFullPoem",
         "demoBack",
@@ -292,6 +296,22 @@
           "minLength": 1
         },
         "openingLoading": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openingBookReady": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openingSceneReady": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openingFailed": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openingTimedOut": {
           "type": "string",
           "minLength": 1
         },

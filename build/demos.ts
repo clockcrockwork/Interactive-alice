@@ -23,6 +23,7 @@ import type {
 } from '../src/types/schema.ts';
 import { escapeHtml, type GeneratedPage, htmlOpen } from './pages.ts';
 import type { LocaleSettings } from './project.ts';
+import { manifestUrlFromPage } from './scene-image-manifest.ts';
 import { assertValid } from './schema.ts';
 
 const PROJECT_NAME = 'Interactive Alice';
@@ -68,11 +69,22 @@ const openingBootScript = `
     root.removeAttribute('data-opening-pending');
     root.removeAttribute('data-demo-booting');
   }
+  function settle(state, message) {
+    if (!root.hasAttribute('data-opening-pending')) return;
+    root.dataset.openingState = state;
+    const status = document.querySelector('[data-opening-status]');
+    if (status && message && status.dataset[message]) status.textContent = status.dataset[message];
+    reveal();
+  }
   // A timeout is a safety exit, not a minimum display time or a readiness signal.
-  const deadline = setTimeout(reveal, 8000);
-  document.addEventListener('alice:opening-settled', reveal, { signal });
+  const deadline = setTimeout(() => settle('timed-out', 'timedOut'), 8000);
+  document.addEventListener('alice:opening-settled', () => {
+    settle(root.dataset.openingState || 'failed');
+  }, { signal });
   addEventListener('error', (event) => {
-    if (event.target instanceof HTMLScriptElement && event.target.type === 'module') reveal();
+    if (event.target instanceof HTMLScriptElement && event.target.type === 'module') {
+      settle('failed', 'failed');
+    }
   }, { capture: true, signal });
 })();
 </script>`;
@@ -583,6 +595,8 @@ function renderDemo(
   // demos/<id>/index.html, or demos/<locale>/<id>/index.html, and one more up out
   // of the generated tree to src/, where styles, assets and the demo code live.
   const root = rootRoute ? '../' : up(demoDir(project).split('/').length + 2);
+  const outputPath = rootRoute ? 'index.html' : `${demoDir(project)}/${demo.id}/index.html`;
+  const imageManifest = manifestUrlFromPage(outputPath);
   const routePrefix = rootRoute ? './demos/' : '../';
   const nextHref = last
     ? project.base
@@ -639,13 +653,13 @@ ${htmlOpen(project.locale, project.settings)}
     <script type="module" src="${root}demos/${demo.id}/main.ts"></script>
     <script type="application/json" id="demo-ui">${escapeHtml(JSON.stringify(forScript)).replace(/&quot;/g, '"')}</script>
   </head>
-  <body class="demo-body" data-demo="${demo.id}"${demo.ground ? ` data-ground="${demo.ground}"` : ''}>
+  <body class="demo-body" data-demo="${demo.id}" data-image-manifest="${imageManifest}"${demo.ground ? ` data-ground="${demo.ground}"` : ''}>
     ${
       opening
         ? `<section class="opening-poem" data-opening-poem aria-label="${escapeHtml(ui.openingVerse1)}">
       <div class="opening-poem__page">
         ${openingVerse(ui, project.locale === 'en-simple')}
-        <p class="opening-poem__status" role="status">${escapeHtml(ui.openingLoading)}</p>
+        <p class="opening-poem__status" data-opening-status data-full-ready="${escapeHtml(ui.openingBookReady)}" data-partial="${escapeHtml(ui.openingSceneReady)}" data-failed="${escapeHtml(ui.openingFailed)}" data-timed-out="${escapeHtml(ui.openingTimedOut)}" role="status">${escapeHtml(ui.openingLoading)}</p>
       </div>
     </section>`
         : ''

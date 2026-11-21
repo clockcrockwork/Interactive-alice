@@ -192,6 +192,87 @@ test('a later scene does not use the opening gate', async ({ page }) => {
   await expect(page.locator('.demo__stage')).toBeVisible();
 });
 
+test('a complete synthetic manifest warms its exact URLs once before releasing the poem', async ({
+  page,
+}) => {
+  const manifestGate = gate();
+  await page.route('**/assets/**', async (route) => {
+    const response = await route.fetch();
+    await route.fulfill({
+      response,
+      headers: { ...response.headers(), 'cache-control': 'public, max-age=31536000, immutable' },
+    });
+  });
+  await page.route('**/demo-image-usage.json', async (route) => {
+    await manifestGate.hold;
+    const response = await route.fetch();
+    const manifest = (await response.json()) as {
+      coverage: Record<string, unknown>;
+      preloadEligible: boolean;
+      routes: Array<{
+        path: string;
+        demo: string;
+        status: string;
+        assets: Array<Record<string, unknown>> | null;
+      }>;
+    };
+    const riverbank = manifest.routes.find((entry) => entry.demo === 'riverbank');
+    const raster = riverbank?.assets?.find((asset) =>
+      String(asset.sourcePath).endsWith('/tree.generated.webp'),
+    );
+    if (!raster || !riverbank) throw new Error('Riverbank fixture has no emitted tree raster');
+    for (const entry of manifest.routes) {
+      entry.status = 'source-audited';
+      entry.assets = entry === riverbank ? [raster] : [];
+    }
+    manifest.coverage = {
+      status: 'complete',
+      publicSceneCount: new Set(manifest.routes.map((entry) => entry.demo)).size,
+      auditedSceneCount: new Set(manifest.routes.map((entry) => entry.demo)).size,
+      incompleteScenes: [],
+    };
+    manifest.preloadEligible = true;
+    await route.fulfill({ response, json: manifest });
+  });
+
+  try {
+    await page.goto('./');
+    await expect(page.locator('[data-opening-poem]')).toBeVisible();
+    manifestGate.release();
+    await expect(page.locator('html')).toHaveAttribute('data-opening-state', 'full-ready');
+    await expect(page.locator('[data-opening-status]')).toHaveText(
+      'The story’s pictures are ready.',
+    );
+    await expect(page.locator('[data-opening-poem]')).toBeHidden();
+    await page.goto('./demos/rabbit-hole/');
+    await expect(page.locator('[data-opening-poem]')).toHaveCount(0);
+  } finally {
+    manifestGate.release();
+  }
+});
+
+test('partial coverage never starts whole-book image fetches', async ({ page }) => {
+  await page.addInitScript(() => {
+    const state = window as Window & { __openingFetches?: string[] };
+    state.__openingFetches = [];
+    const nativeFetch = window.fetch.bind(window);
+    window.fetch = (input, init) => {
+      const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+      state.__openingFetches?.push(url);
+      return nativeFetch(input, init);
+    };
+  });
+  await page.goto('./');
+  await expect(page.locator('html')).toHaveAttribute('data-opening-state', 'partial');
+  const assetFetches = await page.evaluate(() =>
+    ((window as Window & { __openingFetches?: string[] }).__openingFetches ?? []).filter((url) =>
+      /\/assets\/.*-[\w-]{8}\.(?:webp|png|jpe?g|avif)$/i.test(url),
+    ),
+  );
+  expect(assetFetches).toEqual([]);
+  await expect(page.locator('[data-opening-poem]')).toBeHidden();
+});
+
 test('the verse is not shown again when Riverbank is re-entered in the same tab', async ({
   page,
 }) => {

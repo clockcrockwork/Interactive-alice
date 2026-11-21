@@ -61,7 +61,8 @@ export function createStride(alice: HTMLElement, reduced: boolean) {
   let phase = 0;
   let amp = 0;
   let written = '';
-  const sprite = alice.querySelector<HTMLImageElement>('.field__chase-sprite');
+  const runner = alice.querySelector<HTMLElement>('.field__runner');
+  const sprite = runner?.querySelector<HTMLImageElement>('.field__chase-sprite');
   const useSprite = Boolean(
     sprite && artStyle() === 'engraved' && aliceVariant() === 'yellow' && !reduced,
   );
@@ -79,11 +80,12 @@ export function createStride(alice: HTMLElement, reduced: boolean) {
       .then((ok) => {
         if (
           ok &&
+          runner?.isConnected &&
           sprite.isConnected &&
           sprite.naturalWidth === 864 &&
           sprite.naturalHeight === 576
         ) {
-          alice.dataset.chaseReady = '';
+          runner.dataset.chaseReady = '';
         }
       });
   }

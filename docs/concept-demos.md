@@ -32,6 +32,29 @@ the public work, in reading order; each uses the technique that best serves its 
 /demos/ja/<id>/          each published scene in Japanese (§1, Locales)
 ```
 
+### The opening leaf
+
+The first Riverbank entry in a tab shows the first stanza of Lewis Carroll’s
+1865 prefatory poem while the scene starts. The English verse is the public-
+domain original; the Japanese is an original translation for this project.
+Both are baked from the locale copy into the entry HTML, not fetched after
+JavaScript starts. The first stanza can be reopened at the end of Riverbank,
+with a link to the full original. A session key controls only whether to show
+the poem again; every page still resolves its own referenced scene images.
+
+The Riverbank opening decodes the art in its scene DOM, including the later
+field and its rabbit, mound and running-Alice images. Generated SVG rigs use
+one bounded four-image decode queue; failed pictures keep the scene's fallback
+art. The eight-second safety exit never signals readiness. The first opening
+leaf has no motion or minimum viewing time, and with JavaScript off the story's
+text remains readable. Later scenes do not show a second full-screen opening
+leaf. This is not yet a readiness manifest for all nineteen scenes: each later
+page currently prepares its own rendered scene as the browser loads it.
+Production builds also emit `demo-image-inventory.json`, a machine-readable list
+of exact hashed raster outputs and compressed byte sizes. It includes files from
+shared registries and preview-only code, so it is a bundle inventory, not an
+approved scene-use list and must not be used as a preload manifest.
+
 ### Colour, and which Alice
 
 The demos draw from the palette of [`visual-design.md`](visual-design.md): Wonderland
@@ -473,23 +496,19 @@ back to Riverbank.
 
 The bank is paper and sepia: a paper sky with the sun where the rabbit hole keeps it,
 grass in the world's leaf tint, the river slow at the bottom in its water tint, a tree,
-and under it Alice's sister with a book on her lap and Alice beside her. The book is a
-real object, drawn in the DOM so a leaf can turn about the spine: its pages are paper
-with lines of ghost text-shapes and nothing else. The heat is a faint shimmer of glow
-over the bank, and through it Alice's lids drop. The White Rabbit runs past from right
+and under it Alice's sister reading an open book as one engraved illustration, with
+Alice beside her. The heat is a faint shimmer of glow over the bank, and through it
+Alice's lids drop. The White Rabbit runs past from right
 to left along the bank; the camera drifts after him, the near grass moving faster than
 the far bank; he stops, and his watch comes out of his pocket as a close-up, a gold
 case with a paper face and the minute hand in Wonderland red; she jumps to her feet, a
 cut from sitting to standing; and the camera runs after him across the field.
 
-**Interaction.** *Turn a page*, or a tap on the book, turns a leaf and finds nothing in
-it; the story turns one itself at *what is the good of a book like that*. *Pick a
-daisy*, or a tap on a flower, picks it and it joins the chain in her hand, until *too
+**Interaction.** *Pick a daisy*, or a tap on a flower, picks it and it joins the chain in her hand, until *too
 much work*, when the chain falls to the grass; scrolling back lifts it. *Look at the
 watch*, or a tap on it, spins the hands for a moment. Each says what happened in the
-status line (no pictures on the page, a longer chain, the hands spinning), never the
-button's own words; the story's own turn says nothing. The pointer leans the bank a
-little. None of it is needed: scroll alone reaches the hedge.
+status line (a longer chain, the hands spinning), never the button's own words. The
+pointer leans the bank a little. None of it is needed: scroll alone reaches the hedge.
 
 At *Alice ran after him across the field* the bank, the tree, her sister and the river
 slide away and the field comes up. Its ground and hedge run on past its edge and fade
@@ -1447,7 +1466,7 @@ line fades and keeps its text; a settled beat shows its sentences, and small scr
 the kitchen's pig turns stage by stage and a poke advances it, the pots stick to the
 glass and *Duck!* clears them; the Mock Turtle's subjects on the sand are the words of
 his own sentences, the wave takes them and comforting him heaves the sea;
-the riverbank's page turns and finds nothing and its daisies chain; the tale's verses
+the riverbank's daisies chain; the tale's verses
 are the beats' own sentences laid along the tail, in order and shrinking, the knot
 will not undo and a tapped bird leaves; the tea-table moves round and the watch can be
 buttered;

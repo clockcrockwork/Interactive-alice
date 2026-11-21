@@ -16,6 +16,7 @@ import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { createStride, fieldHtml } from '../riverbank/field.ts';
 import { attachDemo, type Beat, type DemoShell, mix } from '../shell/shell.ts';
+import { installFallingMaster, shouldShowFallingMaster } from './falling-master.ts';
 import { heldSvg, jarMarkup, mapSheetMarkup } from './figures.ts';
 import { installGeneratedPreview } from './generated-preview.ts';
 import './rabbit-hole.css';
@@ -140,6 +141,7 @@ function mount(shell: DemoShell): void {
   const runnerBox = surface.querySelector<HTMLElement>('.field__alice');
   const runner = surface.querySelector<HTMLElement>('.field__runner');
   const alice = props.querySelector<HTMLElement>('.rh__alice');
+  const fallingMaster = installFallingMaster(alice, reducedMotion);
   const hand = props.querySelector<HTMLElement>('.rh__hand');
   const jarTrack = props.querySelector<HTMLElement>('.rh__jar-track');
   const jar = props.querySelector<HTMLElement>('.rh__jar');
@@ -789,6 +791,10 @@ function mount(shell: DemoShell): void {
   const stride = runnerBox ? createStride(runnerBox, reducedMotion) : undefined;
   shell.onFrame((dt, elapsed) => {
     elapsedSeen = elapsed;
+    // An absolute-time gate is stable for forward and backward scrub/seek.
+    // Keep the vector when the reader is holding a shelf object so the old hand
+    // anchor does not float over the overhead pose.
+    fallingMaster?.setActive(shouldShowFallingMaster(master.time(), iDrop + 0.4, iJar, holding));
     // Scrolling fast is falling fast: the dust streaks and she tumbles a little.
     const progress = shell.progress();
     const velocity = Math.abs(progress - lastProgress) / Math.max(dt, 0.001);

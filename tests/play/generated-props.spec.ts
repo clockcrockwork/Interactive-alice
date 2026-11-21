@@ -559,7 +559,10 @@ for (const locale of ['', 'ja/']) {
             }
           }
         }
-        if (scene === 'riverbank') await expect(page.locator('.rb__book')).toHaveCount(1);
+        if (scene === 'riverbank') {
+          await expect(page.locator('.rb__sister-reading')).toHaveCount(1);
+          await expect(page.locator('.rb__book')).toHaveCount(0);
+        }
         if (scene === 'croquet') {
           const roses = page.locator('.cq__rose');
           await expect(roses).toHaveCount(10);

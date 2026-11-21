@@ -23,6 +23,7 @@ import type {
 } from '../src/types/schema.ts';
 import { escapeHtml, type GeneratedPage, htmlOpen } from './pages.ts';
 import type { LocaleSettings } from './project.ts';
+import { manifestUrlFromPage } from './scene-image-manifest.ts';
 import { assertValid } from './schema.ts';
 
 const PROJECT_NAME = 'Interactive Alice';
@@ -44,6 +45,64 @@ export const demoBootScript =
   'addEventListener("error",function(e){var t=e.target;' +
   'if(t===window||(t&&t.tagName==="SCRIPT"&&t.type==="module"))show()},true);' +
   'addEventListener("unhandledrejection",show,{once:true})})()</script>';
+
+/** Installed before the scene module: a delayed or failed module cannot block this. */
+const openingBootScript = `
+<script>
+(() => {
+  const root = document.documentElement;
+  let firstOpening = true;
+  try {
+    firstOpening = sessionStorage.getItem('alice-opening-seen') !== '1';
+    sessionStorage.setItem('alice-opening-seen', '1');
+  } catch {
+    // Storage can be unavailable (private mode or a restricted file origin).
+    // The entry still works; its scene readiness never depends on this value.
+  }
+  if (!firstOpening) return;
+  const lifetime = new AbortController();
+  const { signal } = lifetime;
+  root.setAttribute('data-opening-pending', '');
+  function reveal() {
+    clearTimeout(deadline);
+    lifetime.abort();
+    root.removeAttribute('data-opening-pending');
+    root.removeAttribute('data-demo-booting');
+  }
+  function settle(state, message) {
+    if (!root.hasAttribute('data-opening-pending')) return;
+    root.dataset.openingState = state;
+    const status = document.querySelector('[data-opening-status]');
+    if (status && message && status.dataset[message]) status.textContent = status.dataset[message];
+    reveal();
+  }
+  // A timeout is a safety exit, not a minimum display time or a readiness signal.
+  const deadline = setTimeout(() => settle('timed-out', 'timedOut'), 8000);
+  document.addEventListener('alice:opening-settled', () => {
+    settle(root.dataset.openingState || 'failed');
+  }, { signal });
+  addEventListener('error', (event) => {
+    if (event.target instanceof HTMLScriptElement && event.target.type === 'module') {
+      settle('failed', 'failed');
+    }
+  }, { capture: true, signal });
+})();
+</script>`;
+
+const openingSource = 'https://www.gutenberg.org/ebooks/11';
+
+function openingVerse(ui: DemoProject['ui'], original = false): string {
+  const lines = [
+    ui.openingVerse1,
+    ui.openingVerse2,
+    ui.openingVerse3,
+    ui.openingVerse4,
+    ui.openingVerse5,
+    ui.openingVerse6,
+  ];
+  return `<blockquote class="opening-poem__verse" cite="${openingSource}"${original ? ' lang="en"' : ''}>${lines.map(escapeHtml).join('<br>')}</blockquote>
+        <p class="opening-poem__credit">${escapeHtml(ui.openingCredit)}</p>`;
+}
 
 /**
  * The arriving page's half of the turn between pages, inline in the head because
@@ -528,6 +587,7 @@ function renderDemo(
   all: readonly DemoProject[] = [project],
 ): string {
   const title = titleOf(project, demo);
+  const opening = demo.id === 'riverbank';
   const next = nextDemo(project, demo.id);
   const last = next === DEMO_INDEX;
   const ui = project.ui;
@@ -535,6 +595,8 @@ function renderDemo(
   // demos/<id>/index.html, or demos/<locale>/<id>/index.html, and one more up out
   // of the generated tree to src/, where styles, assets and the demo code live.
   const root = rootRoute ? '../' : up(demoDir(project).split('/').length + 2);
+  const outputPath = rootRoute ? 'index.html' : `${demoDir(project)}/${demo.id}/index.html`;
+  const imageManifest = manifestUrlFromPage(outputPath);
   const routePrefix = rootRoute ? './demos/' : '../';
   const nextHref = last
     ? project.base
@@ -586,11 +648,22 @@ ${htmlOpen(project.locale, project.settings)}
     <link rel="stylesheet" href="${root}styles/base.css" />
     ${ALICE_SCRIPT}
     ${demoBootScript}
+    ${opening ? `<link rel="stylesheet" href="${root}demos/riverbank/opening.css" />${openingBootScript}` : ''}
     ${arrivalScript(transitionKindFor(`/demos/${demo.id}/`))}
     <script type="module" src="${root}demos/${demo.id}/main.ts"></script>
     <script type="application/json" id="demo-ui">${escapeHtml(JSON.stringify(forScript)).replace(/&quot;/g, '"')}</script>
   </head>
-  <body class="demo-body" data-demo="${demo.id}"${demo.ground ? ` data-ground="${demo.ground}"` : ''}>
+  <body class="demo-body" data-demo="${demo.id}" data-image-manifest="${imageManifest}"${demo.ground ? ` data-ground="${demo.ground}"` : ''}>
+    ${
+      opening
+        ? `<section class="opening-poem" data-opening-poem aria-label="${escapeHtml(ui.openingVerse1)}">
+      <div class="opening-poem__page">
+        ${openingVerse(ui, project.locale === 'en-simple')}
+        <p class="opening-poem__status" data-opening-status data-full-ready="${escapeHtml(ui.openingBookReady)}" data-partial="${escapeHtml(ui.openingSceneReady)}" data-failed="${escapeHtml(ui.openingFailed)}" data-timed-out="${escapeHtml(ui.openingTimedOut)}" role="status">${escapeHtml(ui.openingLoading)}</p>
+      </div>
+    </section>`
+        : ''
+    }
     <main class="demo demo--${demo.id}" id="demo" data-demo="${demo.id}"${realiaAttr}>
       <header class="demo__bar">
         ${backLink}
@@ -603,6 +676,15 @@ ${htmlOpen(project.locale, project.settings)}
 ${renderTrack(project, demo)}
       </div>
       <footer class="demo__end"${last ? ' data-last' : ''}>
+        ${
+          opening
+            ? `<details class="opening-poem__again" data-demo-reading>
+          <summary>${escapeHtml(ui.openingReadAgain)}</summary>
+          ${openingVerse(ui, project.locale === 'en-simple')}
+          <a href="${openingSource}" hreflang="en">${escapeHtml(ui.openingFullPoem)}</a>
+        </details>`
+            : ''
+        }
         <a class="demo__next" href="${nextHref}">${escapeHtml(last ? ui.demoStart : ui.demoNext)}</a>${
           last
             ? ''

@@ -26,6 +26,20 @@
         "localeNone",
         "demosTitle",
         "demosIntro",
+        "openingVerse1",
+        "openingVerse2",
+        "openingVerse3",
+        "openingVerse4",
+        "openingVerse5",
+        "openingVerse6",
+        "openingCredit",
+        "openingLoading",
+        "openingBookReady",
+        "openingSceneReady",
+        "openingFailed",
+        "openingTimedOut",
+        "openingReadAgain",
+        "openingFullPoem",
         "demoBack",
         "demoStart",
         "demoNext",
@@ -252,6 +266,62 @@
           "type": "string",
           "minLength": 1,
           "description": "One line under the demo index heading."
+        },
+        "openingVerse1": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openingVerse2": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openingVerse3": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openingVerse4": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openingVerse5": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openingVerse6": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openingCredit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openingLoading": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openingBookReady": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openingSceneReady": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openingFailed": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openingTimedOut": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openingReadAgain": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openingFullPoem": {
+          "type": "string",
+          "minLength": 1
         },
         "demoBack": {
           "type": "string",

@@ -1586,19 +1586,17 @@ test('the tea-party → the dormouse: it ends looking down into the cup the tale
     .toBeLessThan(0.05);
 });
 
-test('the riverbank: a page turns and finds nothing, picked daisies chain in her hand, and the chain falls at "too much work"', async ({
+test('the riverbank: the reading sister is one picture, picked daisies chain in her hand, and the chain falls at "too much work"', async ({
   page,
 }) => {
   const demo = demos.find((candidate) => candidate.demo === 'riverbank');
   test.skip(!demo, 'no riverbank demo in this build');
   await page.goto(demo?.url ?? '');
-  await expect(page.locator('.rb__prop--turn')).toBeVisible({ timeout: 8000 });
-  await expect.poll(() => customProperty(page, '.rb__book', '--page')).toBe(0);
-  await page.locator('.rb__prop--turn').click();
-  await expect(page.locator('.rb__book')).toHaveAttribute('data-page', '1');
-  await expect.poll(() => customProperty(page, '.rb__book', '--page')).toBe(1);
-  // The pages are paper and lines of ghost text-shapes: no picture in any of them.
-  await expect(page.locator('.rb__book img, .rb__book svg')).toHaveCount(0);
+  await expect(page.locator('.rb__sister-reading')).toHaveAttribute(
+    'src',
+    /alices-sister-reading\.any\.generated/,
+  );
+  await expect(page.locator('.rb__book')).toHaveCount(0);
   // A daisy by the button, and one by a tap on the flower itself.
   await page.locator('.rb__prop--pick').click();
   await expect(page.locator('.rb__chain')).toHaveAttribute('data-chain', '1');
@@ -1610,7 +1608,7 @@ test('the riverbank: a page turns and finds nothing, picked daisies chain in her
   await atCue(page, 'sleepy', 0.9);
   await expect(page.locator('.rb__chain')).toHaveAttribute('data-dropped', '', { timeout: 8000 });
   await expect(page.locator('.rb__prop--pick')).toBeHidden();
-  await atCue(page, 'book', 0.5);
+  await atCue(page, 'good', 0.5);
   await expect(page.locator('.rb__chain')).not.toHaveAttribute('data-dropped', '', {
     timeout: 8000,
   });

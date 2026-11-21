@@ -2,8 +2,7 @@
  * A Golden Afternoon: the concept demo.
  *
  * The bank in paper and sepia: the river slow at the bottom, a tree, her sister
- * reading under it and Alice beside her. The book is a real object with pages to
- * turn, and there is nothing in them. The heat shimmers and her eyes droop. Then
+ * reading under it and Alice beside her. The heat shimmers and her eyes droop. Then
  * the White Rabbit runs past from right to left, stops for his watch, and the
  * camera runs after him across the field until the hedge comes up with the hole
  * under it, the Rabbit nose-down in it and Alice from behind running after him:
@@ -12,10 +11,16 @@
 
 import gsap from 'gsap';
 import { figure, svgFigure } from '../art/art.ts';
+import {
+  decodeImageSources,
+  decodeVerifiedImageSources,
+  hydrateGeneratedRig,
+} from '../art/generated-rig.ts';
 import { scenery } from '../art/generated-scenery.ts';
+import { type OpeningPreparation, prepareOpeningFromManifest } from '../art/opening-manifest.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import { createStride, fieldHtml } from './field.ts';
-import { BOOK_HTML, DAISY_SVG, WATCH_SVG } from './figures.ts';
+import { flowerArt, SISTER_READING_SRC, WATCH_HTML } from './figures.ts';
 import './riverbank.css';
 
 const DAISIES = 10;
@@ -35,22 +40,22 @@ function mount(shell: DemoShell): void {
   // --- Layers, back to front: sky, the bank with everyone on it, the river, the
   // field that slides in at the end, the Rabbit, the near grass, heat, a blink.
   const sky = shell.layer('rb__sky');
-  sky.innerHTML = '<div class="rb__sun"></div>';
+  sky.innerHTML = `<div class="rb__sun">${scenery('riverbank-sun')}</div>`;
   const bank = shell.layer('rb__bank');
   const daisies = Array.from({ length: DAISIES }, (_, i) => {
     const x = 42 + ((i * 5.3) % 50) + random() * 4;
     const y = 47 + ((i * 7.1) % 14) + random() * 3;
     const s = 0.7 + random() * 0.5;
-    return `<button type="button" class="rb__daisy" data-daisy="${i}" aria-label="${shell.ui.demoPickDaisy ?? ''}" style="--x: ${x.toFixed(1)}; --y: ${y.toFixed(1)}; --s: ${s.toFixed(2)}">${DAISY_SVG}</button>`;
+    return `<button type="button" class="rb__daisy" data-daisy="${i}" aria-label="${shell.ui.demoPickDaisy ?? ''}" style="--x: ${x.toFixed(1)}; --y: ${y.toFixed(1)}; --s: ${s.toFixed(2)}">${flowerArt(i)}</button>`;
   }).join('');
   bank.innerHTML =
     '<div class="rb__ground"></div>' +
     `<div class="rb__tree">${scenery('tree')}</div>` +
     `<div class="rb__scenery-ground">${scenery('ground')}</div>` +
     `<div class="rb__scenery-ground rb__scenery-ground--near">${scenery('ground')}</div>` +
-    `<div class="rb__sister">${figure('alices-sister')}<button type="button" class="rb__book" aria-label="${shell.ui.demoTurnPage ?? ''}">${BOOK_HTML}</button></div>` +
+    `<div class="rb__sister"><img class="rb__sister-reading" src="${SISTER_READING_SRC}" width="1000" height="661" alt="" decoding="async" /><span class="rb__sister-fallback">${figure('alices-sister')}</span></div>` +
     `<div class="rb__alice"><div class="rb__sitting">${figure('alice/sitting')}</div><div class="rb__standing"><svg viewBox="0 0 80 110" focusable="false">${svgFigure('alice/standing', 0, 0, 80, 110)}</svg></div>` +
-    `<div class="rb__chain">${Array.from({ length: CHAIN_MAX }, (_, i) => `<span class="rb__link" style="--i: ${i}">${DAISY_SVG}</span>`).join('')}</div></div>` +
+    `<div class="rb__chain">${Array.from({ length: CHAIN_MAX }, (_, i) => `<span class="rb__link" style="--i: ${i}">${flowerArt(i)}</span>`).join('')}</div></div>` +
     `<div class="rb__daisies">${daisies}</div>`;
   shell.layer('rb__river');
   // The field: the rabbit hole's first frame, fading into the bank at its leading
@@ -58,7 +63,7 @@ function mount(shell: DemoShell): void {
   const field = shell.layer('rb__field');
   field.innerHTML = fieldHtml();
   const runway = shell.layer('rb__runway');
-  runway.innerHTML = `<div class="rb__rabbit">${figure('white-rabbit/running')}<button type="button" class="rb__watch" aria-label="${shell.ui.demoLookWatch ?? ''}">${WATCH_SVG}</button></div>`;
+  runway.innerHTML = `<div class="rb__rabbit">${figure('white-rabbit/running')}<button type="button" class="rb__watch" aria-label="${shell.ui.demoLookWatch ?? ''}">${WATCH_HTML}</button></div>`;
   shell.layer('rb__near');
   const sceneryFront = shell.layer('rb__scenery-front');
   sceneryFront.innerHTML =
@@ -67,8 +72,10 @@ function mount(shell: DemoShell): void {
   const heat = shell.layer('rb__heat');
   const flash = shell.layer('rb__flash');
 
-  const book = bank.querySelector<HTMLButtonElement>('.rb__book');
-  const leaf = bank.querySelector<HTMLElement>('.rb__leaf');
+  const sister = bank.querySelector<HTMLElement>('.rb__sister');
+  sister?.querySelector<HTMLImageElement>('.rb__sister-reading')?.addEventListener('error', () => {
+    sister.dataset.imageFailed = '';
+  });
   const alice = bank.querySelector<HTMLElement>('.rb__alice');
   const chain = bank.querySelector<HTMLElement>('.rb__chain');
   const links = [...bank.querySelectorAll<HTMLElement>('.rb__link')];
@@ -96,46 +103,6 @@ function mount(shell: DemoShell): void {
     }
   };
   const near = (at: number, width = 0.2): boolean => Math.abs(master.time() - at) < width;
-
-  // --- The book: turn a page and find nothing in it. The story turns one itself
-  // at "what is the good of a book like that".
-  let pages = 0;
-  let storyTurned = false;
-  const turnPage = (): void => {
-    if (!book || !leaf) {
-      return;
-    }
-    pages += 1;
-    book.style.setProperty('--page', String(pages));
-    book.dataset.page = String(pages);
-    leaf.removeAttribute('data-turning');
-    void leaf.offsetWidth;
-    leaf.setAttribute('data-turning', '');
-    shell.sound.play('paper', 0.6);
-  };
-  leaf?.addEventListener('animationend', () => leaf.removeAttribute('data-turning'));
-  const turnButton = shell.prop(shell.ui.demoTurnPage ?? '', 'rb__prop rb__prop--turn');
-  // What the reader did is said; the story's own turn is not.
-  const turnByReader = (): void => {
-    turnPage();
-    shell.status(shell.ui.demoPageEmpty ?? '');
-  };
-  turnButton.addEventListener('click', turnByReader);
-  book?.addEventListener('click', turnByReader);
-  const storyTurn = when(iGood + 0.35);
-  master.call(
-    () => {
-      const past = master.time() >= storyTurn;
-      if (past && !storyTurned) {
-        storyTurned = true;
-        turnPage();
-      } else if (!past) {
-        storyTurned = false;
-      }
-    },
-    [],
-    storyTurn,
-  );
 
   // --- The daisies: pick them and they chain in her hand; at "too much work" the
   // chain falls out of it. Scrolling back lifts it again.
@@ -172,10 +139,8 @@ function mount(shell: DemoShell): void {
   const showPlay = (): void => {
     const playing = master.time() < tooMuchWork;
     if (playing) {
-      turnButton.show();
       pickButton.show();
     } else {
-      turnButton.hide();
       pickButton.hide();
     }
     bank.toggleAttribute('data-play', playing);
@@ -416,4 +381,91 @@ function mount(shell: DemoShell): void {
   });
 }
 
-attachDemo({ mount });
+const shell = attachDemo({ mount });
+
+/** Resolve this scene's actual rendered art, including layers used in later beats. */
+async function settleOpening(): Promise<void> {
+  const pending = () => document.documentElement.hasAttribute('data-opening-pending');
+  const notify = (state: OpeningPreparation) => {
+    if (!pending()) return;
+    document.documentElement.dataset.openingState = state;
+    const status = document.querySelector<HTMLElement>('[data-opening-status]');
+    const message =
+      state === 'full-ready'
+        ? status?.dataset.fullReady
+        : state === 'partial'
+          ? status?.dataset.partial
+          : state === 'timed-out'
+            ? status?.dataset.timedOut
+            : status?.dataset.failed;
+    if (status && message) status.textContent = message;
+    document.dispatchEvent(new Event('alice:opening-settled'));
+  };
+  // A Riverbank reload or a later return in this tab gets no poem and does not
+  // repeat the whole-book warmup. This document still mounts its normal atomic rigs.
+  if (!pending()) return;
+  if (!shell) {
+    notify('failed');
+    return;
+  }
+  try {
+    const images = [...shell.root.querySelectorAll<HTMLImageElement>('img')];
+    const svgImages = [...shell.root.querySelectorAll<SVGImageElement>('svg image[href]')].filter(
+      (image) => !image.closest('svg[data-generated-rig]'),
+    );
+    const rigs = [...shell.root.querySelectorAll<SVGSVGElement>('svg[data-generated-rig]')];
+    const htmlSources = images.map((image) => image.currentSrc || image.src);
+    const svgSources = svgImages.map((image) => image.getAttribute('href') ?? '');
+    // The DOM contains the whole scene, so this includes the bank, foreground,
+    // Rabbit and running field (including its later hidden beats). Responsive
+    // alternatives and unreferenced files never enter the list. The shared decode
+    // queue also serves generated rigs and the future scene-manifest path.
+    const localPreparation = (async (): Promise<boolean> => {
+      const decoded = await decodeImageSources([...htmlSources, ...svgSources]);
+      for (const [index, image] of images.entries()) {
+        if (
+          !decoded.get(htmlSources[index] ?? '') &&
+          image.classList.contains('rb__sister-reading')
+        ) {
+          sisterFallback(image);
+        }
+      }
+      const rigResults = await Promise.all(rigs.map((rig) => hydrateGeneratedRig(rig)));
+      await new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      );
+      return [...decoded.values()].every(Boolean) && rigResults.every(Boolean);
+    })();
+
+    const globalPreparation = await prepareOpeningFromManifest({
+      manifestHref: document.body.dataset.imageManifest ?? '',
+      pageUrl: location.href,
+      viewportWidth: window.innerWidth,
+      entryReady: Promise.resolve(
+        shell.root.isConnected && shell.root.dataset.demo === 'riverbank',
+      ),
+      decode: decodeVerifiedImageSources,
+    });
+    if (globalPreparation === 'timed-out') {
+      notify('timed-out');
+      return;
+    }
+    const localReady = await localPreparation;
+    if (!pending()) return;
+    const state =
+      localReady && globalPreparation === 'full-ready'
+        ? 'full-ready'
+        : localReady && globalPreparation === 'partial'
+          ? 'partial'
+          : 'failed';
+    notify(state);
+  } finally {
+    if (pending()) notify('failed');
+  }
+}
+
+function sisterFallback(image: HTMLImageElement): void {
+  image.closest<HTMLElement>('.rb__sister')?.setAttribute('data-image-failed', '');
+}
+
+void settleOpening();

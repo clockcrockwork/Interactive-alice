@@ -101,6 +101,42 @@ test.describe('the riverbank: across the field', () => {
       .toBeLessThan(0.02);
   });
 
+  test('the yellow engraved rear sprite decodes before replacing the vector and follows the stride phase', async ({
+    page,
+  }) => {
+    await page.addInitScript(() => localStorage.setItem('alice-demos:art', 'engraved'));
+    await page.goto(demo?.url ?? '');
+    await atCue(page, 'field', 0.3);
+    const runner = page.locator('.field__runner');
+    const sprite = runner.locator('.field__chase-sprite');
+    await expect(sprite).toHaveAttribute('src', /alice--chase-stride\.yellow\.generated\.webp/);
+    await expect
+      .poll(() => sprite.evaluate((image: HTMLImageElement) => image.naturalWidth))
+      .toBe(864);
+    await expect(runner).toHaveAttribute('data-chase-ready', '');
+    await expect(runner.locator(':scope > .art')).toHaveCSS('visibility', 'hidden');
+
+    const frames = new Set<string>();
+    for (let i = 0; i < 14; i += 1) {
+      await page.mouse.wheel(0, 42);
+      await page.waitForTimeout(45);
+      frames.add((await sprite.getAttribute('data-frame')) ?? '');
+    }
+    expect(frames).toEqual(new Set(['0', '1']));
+    const box = await runner.boundingBox();
+    expect(box?.height).toBeGreaterThan(150);
+    expect(box?.height).toBeLessThan(260);
+  });
+
+  test('a failed chase sprite leaves the existing articulated vector visible', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('alice-demos:art', 'engraved'));
+    await page.route(/alice--chase-stride\.yellow\.generated/, (route) => route.abort());
+    await page.goto(demo?.url ?? '');
+    const runner = page.locator('.field__runner');
+    await expect(runner.locator(':scope > .art')).toHaveCSS('visibility', 'visible');
+    await expect(runner).not.toHaveAttribute('data-chase-ready', '');
+  });
+
   test('a fast scroll makes the running Rabbit glance back', async ({ page }) => {
     await page.goto(demo?.url ?? '');
     await atCue(page, 'rabbit', 0.4);
@@ -163,9 +199,7 @@ test.describe('the riverbank: across the field', () => {
     }
   });
 
-  test('a page turned or a daisy picked says what happened, never the button again', async ({
-    page,
-  }) => {
+  test('a daisy picked says what happened, never the button again', async ({ page }) => {
     await page.goto(demo?.url ?? '');
     const ui = await page.evaluate(
       () =>
@@ -175,9 +209,6 @@ test.describe('the riverbank: across the field', () => {
         >,
     );
     const status = page.locator('.demo__status');
-    await page.locator('.rb__prop--turn').click();
-    await expect(page.locator('.rb__book')).toHaveAttribute('data-page', '1');
-    await expect(status).toHaveText(ui.demoPageEmpty ?? '');
     await page.locator('.rb__prop--pick').click();
     await expect(page.locator('.rb__chain')).toHaveAttribute('data-chain', '1');
     await expect(status).toHaveText(ui.demoChainLonger ?? '');

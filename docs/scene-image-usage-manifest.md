@@ -54,8 +54,9 @@ images remain an escape/settled failure state, never a full-ready state.
 
 Vite's `preview` server sends `Cache-Control: no-cache`, so it intentionally
 cannot prove the full-ready cache contract. This branch adds a Vercel rule for
-Vite's hashed raster filenames under `/assets/` only; HTML, route documents and
-the unhashed manifest are not made immutable. The repository's deployment notes
+`.webp` files under `/assets/`; all current Vite raster outputs there are
+content-hashed. HTML, route documents and the unhashed manifest are not made
+immutable. The repository's deployment notes
 identify Lolipop Deploy Now static artifact hosting as production, but do not
 establish whether it honors repository cache rules. That host's headers, browser
 cache reuse, and full-readiness behavior remain unverified. No project dashboard

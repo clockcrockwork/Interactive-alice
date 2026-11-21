@@ -27,10 +27,15 @@ export const previewSource = (
       };
 
 export function installGeneratedPreview(root: HTMLElement, ui: Record<string, string>): void {
-  if (!isLocalPreviewHost(window.location.hostname) || artStyle() !== 'engraved') return;
+  if (
+    !isLocalPreviewHost(window.location.hostname) ||
+    artStyle() !== 'engraved' ||
+    !previewEnabled(window.location.search)
+  )
+    return;
   const figure = root.querySelector<HTMLElement>('.rh__alice > .art');
   if (!figure) return;
-  const compare = previewEnabled(window.location.search);
+  const compare = true;
   const image = document.createElement('img');
   const source = previewSource(aliceVariant());
   image.width = source.width;

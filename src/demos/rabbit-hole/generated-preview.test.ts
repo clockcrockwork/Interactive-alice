@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { fallingMasterEligible } from './falling-master.ts';
 import { previewEnabled, previewSource } from './generated-preview.ts';
 
 describe('rabbit-hole generated fall artwork', () => {
@@ -20,5 +21,16 @@ describe('generated preview colour sources', () => {
     expect(source.src).toContain(`alice--falling-overhead.${variant}.generated.webp`);
     expect(source.width).toBe(1206);
     expect(source.height).toBe(height);
+  });
+});
+
+describe('production overhead falling plate scope', () => {
+  it('uses the engraved yellow whole-body plate only for ordinary non-reduced falling', () => {
+    expect(fallingMasterEligible('engraved', 'yellow', false)).toBe(true);
+    expect(fallingMasterEligible('engraved', 'blue', false)).toBe(false);
+    expect(fallingMasterEligible('flat', 'yellow', false)).toBe(false);
+    expect(fallingMasterEligible('paper', 'yellow', false)).toBe(false);
+    expect(fallingMasterEligible('engraved', 'yellow', true)).toBe(false);
+    expect(fallingMasterEligible('engraved', 'yellow', false, true)).toBe(false);
   });
 });

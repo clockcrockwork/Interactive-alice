@@ -2650,6 +2650,18 @@
       "width": 156,
       "height": 145,
       "styleSpecification": "IA-ENGRAVED-CUTOUT-V1"
+    },
+    {
+      "file": "figures/alice--chase-stride.yellow.generated.webp",
+      "what": "Two-frame, whole-body rear-view Alice chase sprite atlas for the shared Riverbank/Rabbit Hole field; each cell is 432x576, displayed in the existing 120x220 runner box.",
+      "generator": "OpenAI built-in image_gen; supplied from clockcrockwork/Interactive-alice branch art/riverbank-raster-candidates at commit e9793b05705fd80ee11af364c30b338d608d4aab (blob 16deeab1e100612ff9663e7ea34d57d1965080c3).",
+      "intent": "Provide two coherent rear-facing running poses for the yellow Alice at the shared chapter join while retaining the vector for reduced motion and load failure.",
+      "date": "2026-11-21",
+      "edits": "Transferred as the exact candidate blob; no pixel edits or re-encoding after review. Whole-body two-frame atlas, not an independently articulated parts rig.",
+      "bytes": 101994,
+      "width": 864,
+      "height": 576,
+      "sha256": "7b5721aa7a5bc7d983476fa3d344acaa7d009345269ba3dec2ec059c9389b6f6"
     }
   ]
 }

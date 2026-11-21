@@ -16,6 +16,7 @@ import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { createStride, fieldHtml } from '../riverbank/field.ts';
 import { attachDemo, type Beat, type DemoShell, mix } from '../shell/shell.ts';
+import { installFallingMaster } from './falling-master.ts';
 import { heldSvg, jarMarkup, mapSheetMarkup } from './figures.ts';
 import { installGeneratedPreview } from './generated-preview.ts';
 import './rabbit-hole.css';
@@ -140,6 +141,7 @@ function mount(shell: DemoShell): void {
   const runnerBox = surface.querySelector<HTMLElement>('.field__alice');
   const runner = surface.querySelector<HTMLElement>('.field__runner');
   const alice = props.querySelector<HTMLElement>('.rh__alice');
+  const fallingMaster = installFallingMaster(alice, reducedMotion);
   const hand = props.querySelector<HTMLElement>('.rh__hand');
   const jarTrack = props.querySelector<HTMLElement>('.rh__jar-track');
   const jar = props.querySelector<HTMLElement>('.rh__jar');
@@ -226,6 +228,12 @@ function mount(shell: DemoShell): void {
   // --- Alice.
   if (alice) {
     master.to(alice, { opacity: 1, duration: 0.5 }, iDrop + 0.4);
+    if (fallingMaster) {
+      master.call(() => fallingMaster.show(), [], iDrop + 0.4);
+      // The overhead still is only for the ordinary fall. The shelf/jar, upside
+      // down reading, and curtsey beats return to the articulated vector figure.
+      master.call(() => fallingMaster.hide(), [], iJar);
+    }
     // "Where people walk upside down": the whole view rolls over, she curtseys to
     // the people there while she is the wrong way up, and it rolls back. Under
     // reduced motion each roll is a cut with a blink, placed so the settled

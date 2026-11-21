@@ -1,48 +1,67 @@
 import { expect, test } from '@playwright/test';
 import { atCue } from '../demo-helpers.ts';
 
-for (const variant of ['yellow', 'blue'] as const) {
-  test(`Rabbit-hole fall uses the ${variant} overhead Alice plate and keeps the tumble`, async ({
-    page,
-  }) => {
-    await page.addInitScript((alice) => {
-      localStorage.setItem('alice-demos:alice', alice);
-      localStorage.setItem('alice-demos:art', 'engraved');
-    }, variant);
-    await page.goto('/demos/rabbit-hole/');
-    await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
-    const figure = page.locator('.rh__alice > .art');
-    const image = figure.locator('img[data-generated-master]');
-    await expect(image).toBeVisible();
-    await expect(figure).toHaveAttribute('data-generated-preview', '');
-    await expect(figure.locator(':scope > svg')).toHaveCSS('visibility', 'hidden');
-    await expect(image).toHaveAttribute(
-      'src',
-      new RegExp(`alice--falling-overhead\\.${variant}\\.generated`),
-    );
-    await expect.poll(() => image.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBe(1206);
-
-    await atCue(page, 'drop', 0.55);
-    const motion = await image.evaluate((el) => ({
-      animation: getComputedStyle(el).animationName,
-      figureRotation: getComputedStyle(el.parentElement ?? document.documentElement).rotate,
-    }));
-    expect(motion.animation).toBe('rh-sway');
-    expect(motion.figureRotation).not.toBe('none');
+test('ordinary yellow engraved fall uses the production overhead plate without preview markers', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('alice-demos:alice', 'yellow');
+    localStorage.setItem('alice-demos:art', 'engraved');
   });
-}
+  await page.goto('/demos/rabbit-hole/');
+  await expect(page.locator('.demo')).toHaveAttribute('data-attached', '');
+  const alice = page.locator('.rh__alice');
+  const figure = alice.locator(':scope > .art');
+  await expect(page.locator('[data-generated-master]')).toHaveCount(0);
+  await atCue(page, 'drop', 0.55);
+  const image = figure.locator('img[data-production-master]');
+  await expect(image).toBeVisible();
+  await expect(alice).toHaveAttribute('data-falling-raster', '');
+  await expect(figure.locator(':scope > svg')).toHaveCSS('visibility', 'hidden');
+  await expect(image).toHaveAttribute('src', /alice--falling-overhead\.yellow\.generated/);
+  await expect.poll(() => image.evaluate((el: HTMLImageElement) => el.naturalWidth)).toBe(1206);
+  await expect.poll(() => image.evaluate((el: HTMLImageElement) => el.naturalHeight)).toBe(1304);
+  const rotation = await alice.evaluate((el) => getComputedStyle(el).transform);
+  expect(rotation).not.toBe('none');
 
-test('a failed overhead plate reveals the articulated vector fallback', async ({ page }) => {
+  // The jar and upside-down curtsey keep their original moving vector figure.
+  await atCue(page, 'jar', 0.1);
+  await expect(alice).not.toHaveAttribute('data-falling-raster', '');
+  await expect(figure.locator(':scope > svg')).toHaveCSS('visibility', 'visible');
+  await expect(page.locator('[data-jar]')).toBeAttached();
+});
+
+test('blue variant and reduced motion keep the articulated vector in production', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('alice-demos:alice', 'blue');
+    localStorage.setItem('alice-demos:art', 'engraved');
+  });
+  await page.goto('/demos/rabbit-hole/');
+  await atCue(page, 'drop', 0.55);
+  await expect(page.locator('.rh__alice[data-falling-raster]')).toHaveCount(0);
+  await expect(page.locator('.rh__alice [data-production-master]')).toHaveCount(0);
+
+  await page.evaluate(() => localStorage.setItem('alice-demos:alice', 'yellow'));
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.reload();
+  await atCue(page, 'drop', 0.55);
+  await expect(page.locator('.rh__alice [data-production-master]')).toHaveCount(0);
+});
+
+test('a failed production plate keeps the ordinary falling vector visible', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('alice-demos:art', 'engraved'));
   await page.route(/alice--falling-overhead\.yellow\.generated/, (route) => route.abort());
   await page.goto('/demos/rabbit-hole/');
-  const figure = page.locator('.rh__alice > .art');
-  await expect(figure.locator('img[data-generated-master]')).toBeHidden();
-  await expect(figure).not.toHaveAttribute('data-generated-preview', '');
-  await expect(figure.locator(':scope > svg')).toBeVisible();
+  await atCue(page, 'drop', 0.55);
+  const alice = page.locator('.rh__alice');
+  const figure = alice.locator(':scope > .art');
+  await expect(alice).not.toHaveAttribute('data-falling-raster', '');
+  await expect(figure.locator(':scope > svg')).toHaveCSS('visibility', 'visible');
 });
 
-test('the explicit comparison can restore the original articulated figure', async ({ page }) => {
+test('the opt-in local comparison is separate from production fall selection', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('alice-demos:art', 'engraved'));
   await page.goto('/demos/rabbit-hole/?artPreview=overhead');
   const figure = page.locator('.rh__alice > .art');

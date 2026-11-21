@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fallingMasterEligible } from './falling-master.ts';
+import { fallingMasterEligible, shouldShowFallingMaster } from './falling-master.ts';
 import { previewEnabled, previewSource } from './generated-preview.ts';
 
 describe('rabbit-hole generated fall artwork', () => {
@@ -32,5 +32,15 @@ describe('production overhead falling plate scope', () => {
     expect(fallingMasterEligible('paper', 'yellow', false)).toBe(false);
     expect(fallingMasterEligible('engraved', 'yellow', true)).toBe(false);
     expect(fallingMasterEligible('engraved', 'yellow', false, true)).toBe(false);
+  });
+
+  it('derives active state from absolute time in either scrub direction and yields to held props', () => {
+    expect(shouldShowFallingMaster(4.39, 4.4, 5, false)).toBe(false);
+    expect(shouldShowFallingMaster(4.6, 4.4, 5, false)).toBe(true);
+    expect(shouldShowFallingMaster(4.6, 4.4, 5, true)).toBe(false);
+    expect(shouldShowFallingMaster(5, 4.4, 5, false)).toBe(false);
+    // A reverse scrub re-enters the same interval without relying on callback order.
+    expect(shouldShowFallingMaster(4.6, 4.4, 5, false)).toBe(true);
+    expect(shouldShowFallingMaster(4.39, 4.4, 5, false)).toBe(false);
   });
 });

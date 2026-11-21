@@ -29,6 +29,13 @@ test('ordinary yellow engraved fall uses the production overhead plate without p
   await expect(alice).not.toHaveAttribute('data-falling-raster', '');
   await expect(figure.locator(':scope > svg')).toHaveCSS('visibility', 'visible');
   await expect(page.locator('[data-jar]')).toBeAttached();
+
+  // Seeking back through the jar boundary restores the fall plate from absolute
+  // timeline time, then hides it again before the interval.
+  await atCue(page, 'drop', 0.55);
+  await expect(alice).toHaveAttribute('data-falling-raster', '');
+  await atCue(page, 'drop', 0.1);
+  await expect(alice).not.toHaveAttribute('data-falling-raster', '');
 });
 
 test('blue variant and reduced motion keep the articulated vector in production', async ({

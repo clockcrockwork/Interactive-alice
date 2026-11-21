@@ -16,7 +16,7 @@ import gsap from 'gsap';
 import { figure } from '../art/art.ts';
 import { createStride, fieldHtml } from '../riverbank/field.ts';
 import { attachDemo, type Beat, type DemoShell, mix } from '../shell/shell.ts';
-import { installFallingMaster } from './falling-master.ts';
+import { installFallingMaster, shouldShowFallingMaster } from './falling-master.ts';
 import { heldSvg, jarMarkup, mapSheetMarkup } from './figures.ts';
 import { installGeneratedPreview } from './generated-preview.ts';
 import './rabbit-hole.css';
@@ -228,12 +228,6 @@ function mount(shell: DemoShell): void {
   // --- Alice.
   if (alice) {
     master.to(alice, { opacity: 1, duration: 0.5 }, iDrop + 0.4);
-    if (fallingMaster) {
-      master.call(() => fallingMaster.show(), [], iDrop + 0.4);
-      // The overhead still is only for the ordinary fall. The shelf/jar, upside
-      // down reading, and curtsey beats return to the articulated vector figure.
-      master.call(() => fallingMaster.hide(), [], iJar);
-    }
     // "Where people walk upside down": the whole view rolls over, she curtseys to
     // the people there while she is the wrong way up, and it rolls back. Under
     // reduced motion each roll is a cut with a blink, placed so the settled
@@ -797,6 +791,10 @@ function mount(shell: DemoShell): void {
   const stride = runnerBox ? createStride(runnerBox, reducedMotion) : undefined;
   shell.onFrame((dt, elapsed) => {
     elapsedSeen = elapsed;
+    // An absolute-time gate is stable for forward and backward scrub/seek.
+    // Keep the vector when the reader is holding a shelf object so the old hand
+    // anchor does not float over the overhead pose.
+    fallingMaster?.setActive(shouldShowFallingMaster(master.time(), iDrop + 0.4, iJar, holding));
     // Scrolling fast is falling fast: the dust streaks and she tumbles a little.
     const progress = shell.progress();
     const velocity = Math.abs(progress - lastProgress) / Math.max(dt, 0.001);

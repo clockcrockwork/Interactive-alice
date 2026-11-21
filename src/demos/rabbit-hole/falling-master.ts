@@ -14,6 +14,13 @@ export const fallingMasterEligible = (
   previewMode = false,
 ): boolean => style === 'engraved' && variant === 'yellow' && !reducedMotion && !previewMode;
 
+export const shouldShowFallingMaster = (
+  time: number,
+  start: number,
+  cut: number,
+  holding: boolean,
+): boolean => time >= start && time < cut && !holding;
+
 /**
  * The approved yellow overhead plate replaces the vector only for the ordinary,
  * early fall. The outer Alice element remains the scene's moving/tumbling rig;
@@ -22,7 +29,7 @@ export const fallingMasterEligible = (
 export function installFallingMaster(
   alice: HTMLElement | null,
   reducedMotion: boolean,
-): { show(): void; hide(): void } | undefined {
+): { setActive(active: boolean): void } | undefined {
   if (
     !alice ||
     !fallingMasterEligible(
@@ -74,12 +81,8 @@ export function installFallingMaster(
     });
 
   return {
-    show(): void {
-      requested = true;
-      apply();
-    },
-    hide(): void {
-      requested = false;
+    setActive(active: boolean): void {
+      requested = active;
       apply();
     },
   };

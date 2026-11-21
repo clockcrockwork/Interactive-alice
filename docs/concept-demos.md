@@ -50,6 +50,10 @@ leaf has no motion or minimum viewing time, and with JavaScript off the story's
 text remains readable. Later scenes do not show a second full-screen opening
 leaf. This is not yet a readiness manifest for all nineteen scenes: each later
 page currently prepares its own rendered scene as the browser loads it.
+Production builds also emit `demo-image-inventory.json`, a machine-readable list
+of exact hashed raster outputs and compressed byte sizes. It includes files from
+shared registries and preview-only code, so it is a bundle inventory, not an
+approved scene-use list and must not be used as a preload manifest.
 
 ### Colour, and which Alice
 

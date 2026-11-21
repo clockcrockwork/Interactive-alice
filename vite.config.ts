@@ -2,6 +2,7 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import { writeDemoPages } from './build/demos.ts';
+import { imageInventoryPlugin } from './build/image-inventory.ts';
 import { writePages } from './build/pages.ts';
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -20,6 +21,7 @@ export default defineConfig({
   root: generated,
   publicDir: false,
   plugins: [
+    imageInventoryPlugin,
     {
       name: 'alice:pages',
       buildStart() {

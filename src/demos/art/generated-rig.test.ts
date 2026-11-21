@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { hydrateGeneratedRig, watchGeneratedRigs } from './generated-rig.ts';
+import { decodeImageSources, hydrateGeneratedRig, watchGeneratedRigs } from './generated-rig.ts';
 
 function rigWith(sources: string[]) {
   const attributes = new Map<string, string>();
@@ -94,6 +94,48 @@ describe('generated rig atomic loading', () => {
       await Promise.resolve();
     }
     expect(await result).toBe(true);
+    expect(maximum).toBe(4);
+  });
+
+  it('uses the same four-source queue for DOM and manifest image lists', async () => {
+    const active: string[] = [];
+    const releases: Array<() => void> = [];
+    let maximum = 0;
+    let completed = 0;
+    vi.stubGlobal(
+      'Image',
+      class {
+        naturalWidth = 100;
+        src = '';
+        decode() {
+          active.push(this.src);
+          maximum = Math.max(maximum, active.length);
+          return new Promise<void>((resolve) => {
+            releases.push(() => {
+              active.splice(active.indexOf(this.src), 1);
+              completed += 1;
+              resolve();
+            });
+          });
+        }
+      },
+    );
+    const result = decodeImageSources([
+      ...Array.from({ length: 8 }, (_, i) => `scene-or-manifest-${i}`),
+      'scene-or-manifest-0',
+      '',
+    ]);
+    expect(active).toHaveLength(4);
+    while (completed < 8) {
+      for (const release of releases.splice(0)) {
+        release();
+      }
+      await Promise.resolve();
+      await Promise.resolve();
+    }
+    const decoded = await result;
+    expect(decoded.size).toBe(8);
+    expect(decoded.get('scene-or-manifest-0')).toBe(true);
     expect(maximum).toBe(4);
   });
 

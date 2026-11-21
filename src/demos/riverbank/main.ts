@@ -11,7 +11,7 @@
 
 import gsap from 'gsap';
 import { figure, svgFigure } from '../art/art.ts';
-import { decodeGeneratedSource, hydrateGeneratedRig } from '../art/generated-rig.ts';
+import { decodeImageSources, hydrateGeneratedRig } from '../art/generated-rig.ts';
 import { scenery } from '../art/generated-scenery.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import { createStride, fieldHtml } from './field.ts';
@@ -394,38 +394,21 @@ async function settleOpening(): Promise<void> {
       (image) => !image.closest('svg[data-generated-rig]'),
     );
     const rigs = [...shell.root.querySelectorAll<SVGSVGElement>('svg[data-generated-rig]')];
-    const runPool = async (tasks: Array<() => Promise<unknown>>, limit = 4): Promise<void> => {
-      let next = 0;
-      await Promise.all(
-        Array.from({ length: Math.min(limit, tasks.length) }, async () => {
-          while (next < tasks.length) {
-            const index = next;
-            next += 1;
-            await tasks[index]?.().catch(() => undefined);
-          }
-        }),
-      );
-    };
-    const imageTasks = [
-      ...images.map((image) => async () => {
-        try {
-          await image.decode();
-        } catch {
-          if (image.classList.contains('rb__sister-reading')) {
-            sisterFallback(image);
-          }
-        }
-      }),
-      ...svgImages.map((image) => async () => {
-        const source = image.getAttribute('href');
-        if (source) await decodeGeneratedSource(source);
-      }),
-    ];
+    const htmlSources = images.map((image) => image.currentSrc || image.src);
+    const svgSources = svgImages.map((image) => image.getAttribute('href') ?? '');
     // The DOM contains the whole scene, so this includes the bank, foreground,
     // Rabbit and running field (including its later hidden beats). Responsive
-    // alternatives and unreferenced files never enter the list. Rigs are decoded
-    // in a second pass so their source queue cannot deadlock the four workers.
-    await runPool(imageTasks);
+    // alternatives and unreferenced files never enter the list. The shared decode
+    // queue also serves generated rigs and the future scene-manifest path.
+    const decoded = await decodeImageSources([...htmlSources, ...svgSources]);
+    for (const [index, image] of images.entries()) {
+      if (
+        !decoded.get(htmlSources[index] ?? '') &&
+        image.classList.contains('rb__sister-reading')
+      ) {
+        sisterFallback(image);
+      }
+    }
     await Promise.allSettled(rigs.map((rig) => hydrateGeneratedRig(rig)));
     if (!pending()) return;
     // Allow the generated-rig CSS and the initial scene frame to take effect.

@@ -48,6 +48,19 @@ export function decodeGeneratedSource(src: string): Promise<boolean> {
   return result;
 }
 
+/**
+ * Decode a source list through the same bounded queue used by articulated rigs.
+ * Callers may pass either the current document's image URLs or a future build
+ * manifest; duplicate URLs share one request/decode promise.
+ */
+export async function decodeImageSources(sources: Iterable<string>): Promise<Map<string, boolean>> {
+  const unique = [...new Set([...sources].filter(Boolean))];
+  const results = await Promise.all(
+    unique.map(async (src) => [src, await decodeGeneratedSource(src)] as const),
+  );
+  return new Map(results);
+}
+
 /** No partial reveal: an error leaves all original vector parts in place. */
 export function hydrateGeneratedRig(rig: SVGElement): Promise<boolean> {
   const existing = pending.get(rig);

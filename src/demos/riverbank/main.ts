@@ -20,7 +20,7 @@ import { scenery } from '../art/generated-scenery.ts';
 import { type OpeningPreparation, prepareOpeningFromManifest } from '../art/opening-manifest.ts';
 import { attachDemo, type DemoShell, mix, seeded } from '../shell/shell.ts';
 import { createStride, fieldHtml } from './field.ts';
-import { flowerArt, SISTER_READING_SRC, WATCH_HTML } from './figures.ts';
+import { flowerArt, prepareWatchImage, SISTER_READING_SRC, WATCH_HTML } from './figures.ts';
 import './riverbank.css';
 
 const DAISIES = 10;
@@ -82,6 +82,7 @@ function mount(shell: DemoShell): void {
   const daisyEls = [...bank.querySelectorAll<HTMLButtonElement>('.rb__daisy')];
   const rabbit = runway.querySelector<HTMLElement>('.rb__rabbit');
   const watch = runway.querySelector<HTMLButtonElement>('.rb__watch');
+  if (watch) prepareWatchImage(watch);
   const runnerBox = field.querySelector<HTMLElement>('.field__alice');
   const runner = field.querySelector<HTMLElement>('.field__runner');
   const root = shell.root;

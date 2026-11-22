@@ -15,6 +15,20 @@ export const WATCH_BODY_SRC = new URL(
   import.meta.url,
 ).href;
 
+/** Reveal the case image only after this mounted image decodes at its source size. */
+export function prepareWatchImage(button: HTMLButtonElement): void {
+  const image = button.querySelector<HTMLImageElement>('.rb__watch-body');
+  if (!image) return;
+  void image.decode().then(
+    () => {
+      if (image.isConnected && image.naturalWidth === 1104 && image.naturalHeight === 1213) {
+        button.dataset.watchImageReady = '';
+      }
+    },
+    () => {},
+  );
+}
+
 /** The watch out of his waistcoat pocket, seen close: a gold case, a paper
  * face, an ink hour hand and the minute hand in Wonderland red. */
 export const WATCH_HTML = `
@@ -23,6 +37,10 @@ export const WATCH_HTML = `
   <svg viewBox="0 0 200 220" focusable="false">
   <path d="M100 6 C70 6 60 20 60 20" stroke="var(--ix-gold)" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="8 6"/>
   <rect x="90" y="14" width="20" height="18" rx="4" fill="var(--ix-gold)" stroke="var(--sepia-dark)" stroke-width="2"/>
+  <g class="rb__watch-fallback">
+    <circle cx="100" cy="120" r="88" fill="var(--ix-gold)" stroke="var(--sepia-dark)" stroke-width="3"/>
+    <circle cx="100" cy="120" r="74" fill="var(--paper-base)" stroke="var(--sepia-mid)" stroke-width="2"/>
+  </g>
   <g stroke="var(--ink-ghost)" stroke-width="3" stroke-linecap="round">
     <path d="M100 52 v10 M100 178 v10 M32 120 h10 M158 120 h10"/>
     <path d="M134 61 l-5 9 M66 61 l5 9 M134 179 l-5 -9 M66 179 l5 -9 M159 86 l-9 5 M41 86 l9 5 M159 154 l-9 -5 M41 154 l9 -5" stroke-width="2"/>

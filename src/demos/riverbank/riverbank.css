@@ -425,6 +425,19 @@
   .rb__watch-body {
     object-fit: contain;
     filter: drop-shadow(0 0.5vmin 0.8vmin var(--rb-shade));
+    opacity: 0;
+  }
+
+  .rb__watch[data-watch-image-ready] .rb__watch-body {
+    opacity: 1;
+  }
+
+  .rb__watch-fallback {
+    visibility: visible;
+  }
+
+  .rb__watch[data-watch-image-ready] .rb__watch-fallback {
+    visibility: hidden;
   }
 
   .rb__hands {

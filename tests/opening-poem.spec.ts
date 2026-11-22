@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { scrollTo } from './demo-helpers.ts';
 
 const bankArt = /\/assets\/tree\.generated-[\w-]+\.webp$/;
-const sisterArt = /\/assets\/alices-sister\.any\.generated-[\w-]+\.webp$/;
+const sisterArt = /\/assets\/alices-sister-reading\.any\.generated-[\w-]+\.webp$/;
 const rabbitMound = /\/assets\/rabbit-mound\.generated-[\w-]+\.webp$/;
 const sceneModule = /\/assets\/main-[\w-]+\.js$/;
 
@@ -45,8 +45,11 @@ test('the opening verse appears before the scene script and stays through the fi
     const requestedArt = page.waitForRequest(bankArt);
     const requestedSister = page.waitForRequest(sisterArt);
     script.release();
-    await Promise.all([requestedArt, requestedSister]);
+    const [treeRequest, sisterRequest] = await Promise.all([requestedArt, requestedSister]);
+    expect(treeRequest.url()).toMatch(bankArt);
+    expect(sisterRequest.url()).toMatch(sisterArt);
     await expect(page.locator('#demo')).toHaveAttribute('data-attached', '');
+    await expect(page.locator('.rb__sister-reading')).toHaveJSProperty('complete', false);
     await expect(poem).toBeVisible();
     await expect(page.locator('.rb__tree [data-generated-rig]')).not.toHaveAttribute(
       'data-rig-ready',
@@ -61,6 +64,7 @@ test('the opening verse appears before the scene script and stays through the fi
     sister.release();
     await expect(poem).toBeHidden();
     await expect(page.locator('.demo__stage')).toBeVisible();
+    await expect(page.locator('.rb__sister-reading')).toHaveJSProperty('naturalWidth', 1000);
   } finally {
     script.release();
     art.release();
@@ -77,7 +81,7 @@ test('the entry waits for later field images too, not only the visible riverbank
     await route.continue();
   });
   try {
-    await page.goto('./');
+    await page.goto('./', { waitUntil: 'commit' });
     const poem = page.locator('[data-opening-poem]');
     await expect(poem).toBeVisible();
     await expect(page.locator('.field__mound img')).toHaveJSProperty('complete', false);
@@ -90,22 +94,38 @@ test('the entry waits for later field images too, not only the visible riverbank
   }
 });
 
-test('the Japanese opening continues if its opening pictures cannot be loaded', async ({
+test('the Japanese opening shows its fallback if the current reading illustration fails', async ({
   page,
 }) => {
-  await page.route(bankArt, (route) => route.abort());
+  const requestedSister = page.waitForRequest(sisterArt);
   await page.route(sisterArt, (route) => route.abort());
   await page.goto('./demos/ja/riverbank/');
+  const sisterRequest = await requestedSister;
+  expect(sisterRequest.url()).toMatch(sisterArt);
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
   await expect(page.locator('[data-opening-poem] blockquote')).not.toHaveAttribute('lang');
-  await expect(page.locator('.rb__tree [data-generated-rig]')).toHaveAttribute(
-    'data-rig-failed',
-    '',
-  );
+  await expect(page.locator('.rb__sister')).toHaveAttribute('data-image-failed', '');
+  await expect(page.locator('.rb__sister-reading')).toBeHidden();
+  await expect(page.locator('.rb__sister-fallback')).toBeVisible();
   await expect(page.locator('.rb__sister [data-art="alices-sister"] svg')).toHaveCount(1);
-  await expect(page.locator('.rb__sister [data-art="alices-sister"] image')).toHaveCount(0);
   await expect(page.locator('[data-opening-poem]')).toBeHidden();
   await expect(page.locator('.demo__stage')).toBeVisible();
+});
+
+test('a failed tree raster keeps the CSS tree fallback available', async ({ page }) => {
+  const requestedTree = page.waitForRequest(bankArt);
+  await page.route(bankArt, (route) => route.abort());
+  await page.goto('./demos/ja/riverbank/');
+  const treeRequest = await requestedTree;
+  expect(treeRequest.url()).toMatch(bankArt);
+  const treeRig = page.locator('.rb__tree [data-generated-rig="scenery/tree"]');
+  await expect(treeRig).toHaveAttribute('data-rig-failed', '');
+  await expect(treeRig.locator('[data-rig-generated]')).toBeHidden();
+  await expect
+    .poll(() =>
+      page.locator('.rb__tree').evaluate((tree) => getComputedStyle(tree).backgroundImage),
+    )
+    .not.toBe('none');
 });
 
 test('a failed entry script releases the readable fallback', async ({ page }) => {
@@ -141,6 +161,7 @@ test('late scene setup can still replace failed sister artwork after the safety 
   page,
 }) => {
   const script = gate();
+  const requestedSister = page.waitForRequest(sisterArt);
   await page.clock.install();
   await page.route(sceneModule, async (route) => {
     await script.hold;
@@ -154,11 +175,14 @@ test('late scene setup can still replace failed sister artwork after the safety 
     await page.clock.runFor(8_100);
     await expect(poem).toBeHidden();
     script.release();
+    const sisterRequest = await requestedSister;
+    expect(sisterRequest.url()).toMatch(sisterArt);
     await expect(page.locator('#demo')).toHaveAttribute('data-attached', '');
     const sister = page.locator('.rb__sister [data-art="alices-sister"]');
     await expect(sister.locator('svg')).toHaveCount(1);
-    await expect(sister).not.toHaveAttribute('data-generated');
-    await expect(sister.locator('image')).toHaveCount(0);
+    await expect(page.locator('.rb__sister')).toHaveAttribute('data-image-failed', '');
+    await expect(page.locator('.rb__sister-reading')).toBeHidden();
+    await expect(page.locator('.rb__sister-fallback')).toBeVisible();
     await expect(poem).toBeHidden();
   } finally {
     script.release();
@@ -192,10 +216,11 @@ test('a later scene does not use the opening gate', async ({ page }) => {
   await expect(page.locator('.demo__stage')).toBeVisible();
 });
 
-test('a complete synthetic manifest warms its exact URLs once before releasing the poem', async ({
+test('a one-raster complete synthetic manifest exercises the opening state gate', async ({
   page,
 }) => {
   const manifestGate = gate();
+  // Route interception makes this a state-transition fixture, not cache or cold-delivery evidence.
   await page.route('**/assets/**', async (route) => {
     const response = await route.fetch();
     await route.fulfill({
@@ -262,8 +287,66 @@ test('partial coverage never starts whole-book image fetches', async ({ page }) 
       return nativeFetch(input, init);
     };
   });
+
+  const requestedEntryArt = page.waitForRequest(sisterArt);
+  await page.route('**/demo-image-usage.json', async (route) => {
+    const response = await route.fetch();
+    const manifest = (await response.json()) as {
+      coverage: {
+        status: string;
+        publicSceneCount: number;
+        auditedSceneCount: number;
+        incompleteScenes: string[];
+      };
+      preloadEligible: boolean;
+      routes: Array<{
+        path: string;
+        demo: string;
+        locale: string;
+        status: string;
+        assets: Array<Record<string, unknown>> | null;
+      }>;
+    };
+    const incompleteScene = 'dormouse';
+    const sceneIds = new Set(manifest.routes.map((entry) => entry.demo));
+    const incompleteRoutes = manifest.routes.filter((entry) => entry.demo === incompleteScene);
+    expect(new Set(incompleteRoutes.map((entry) => entry.locale))).toEqual(
+      new Set(['en-simple', 'ja']),
+    );
+    for (const entry of incompleteRoutes) {
+      entry.status = 'not-audited';
+      entry.assets = null;
+    }
+    const auditedSceneIds = new Set(
+      manifest.routes
+        .filter((entry) => entry.status === 'source-audited')
+        .map((entry) => entry.demo),
+    );
+    manifest.coverage = {
+      status: 'partial',
+      publicSceneCount: sceneIds.size,
+      auditedSceneCount: auditedSceneIds.size,
+      incompleteScenes: [incompleteScene],
+    };
+    manifest.preloadEligible = false;
+    expect(manifest.coverage).toEqual({
+      status: 'partial',
+      publicSceneCount: 19,
+      auditedSceneCount: 18,
+      incompleteScenes: [incompleteScene],
+    });
+    expect(incompleteRoutes.map((entry) => [entry.status, entry.assets])).toEqual([
+      ['not-audited', null],
+      ['not-audited', null],
+    ]);
+    await route.fulfill({ response, json: manifest });
+  });
+
   await page.goto('./');
+  const entryArtRequest = await requestedEntryArt;
+  expect(entryArtRequest.url()).toMatch(sisterArt);
   await expect(page.locator('html')).toHaveAttribute('data-opening-state', 'partial');
+  await expect(page.locator('.rb__sister-reading')).toHaveJSProperty('naturalWidth', 1000);
   const assetFetches = await page.evaluate(() =>
     ((window as Window & { __openingFetches?: string[] }).__openingFetches ?? []).filter((url) =>
       /\/assets\/.*-[\w-]{8}\.(?:webp|png|jpe?g|avif)$/i.test(url),

@@ -88,7 +88,10 @@ test.describe('the riverbank: across the field', () => {
     await page.mouse.move(640, 380);
     const swings: number[] = [];
     for (let i = 0; i < 12; i += 1) {
-      await page.mouse.wheel(0, 40);
+      await page.mouse.wheel(0, 60);
+      await page.waitForTimeout(60);
+      swings.push(Math.abs(await customProperty(page, '.field__alice', '--swing')));
+      await page.mouse.wheel(0, -60);
       await page.waitForTimeout(60);
       swings.push(Math.abs(await customProperty(page, '.field__alice', '--swing')));
     }
@@ -109,30 +112,43 @@ test.describe('the riverbank: across the field', () => {
     await atCue(page, 'field', 0.3);
     const runner = page.locator('.field__runner');
     const sprite = runner.locator('.field__chase-sprite');
-    await expect(sprite).toHaveAttribute('src', /alice--chase-stride\.yellow\.generated\.webp/);
+    await expect(sprite).toHaveAttribute(
+      'src',
+      /alice--chase-stride\.yellow\.generated-[\w-]+\.webp/,
+    );
     await expect
       .poll(() => sprite.evaluate((image: HTMLImageElement) => image.naturalWidth))
       .toBe(864);
     await expect(runner).toHaveAttribute('data-chase-ready', '');
     await expect(runner.locator(':scope > .art')).toHaveCSS('visibility', 'hidden');
+    // The WebP contains two adjacent running frames; clip the atlas to the
+    // articulated runner's box so the neighboring stride never appears beside her.
+    await expect(runner).toHaveCSS('overflow-x', 'hidden');
 
     const frames = new Set<string>();
-    for (let i = 0; i < 14; i += 1) {
-      await page.mouse.wheel(0, 42);
+    for (let i = 0; i < 12; i += 1) {
+      // Stay inside the beat instead of reaching the document bottom before both
+      // sheet cells have had a chance to be selected.
+      await page.mouse.wheel(0, 60);
+      await page.waitForTimeout(45);
+      frames.add((await sprite.getAttribute('data-frame')) ?? '');
+      await page.mouse.wheel(0, -60);
       await page.waitForTimeout(45);
       frames.add((await sprite.getAttribute('data-frame')) ?? '');
     }
     expect(frames).toEqual(new Set(['0', '1']));
-    const box = await runner.boundingBox();
-    expect(box?.height).toBeGreaterThan(150);
-    expect(box?.height).toBeLessThan(260);
+    const layoutHeight = await runner.evaluate((element) => element.clientHeight);
+    expect(layoutHeight).toBeGreaterThan(150);
+    expect(layoutHeight).toBeLessThan(260);
   });
 
   test('a failed chase sprite leaves the existing articulated vector visible', async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('alice-demos:art', 'engraved'));
     await page.route(/alice--chase-stride\.yellow\.generated/, (route) => route.abort());
     await page.goto(demo?.url ?? '');
+    await atCue(page, 'field', 0.3);
     const runner = page.locator('.field__runner');
+    await expect(runner.locator('.field__chase-sprite')).toHaveJSProperty('naturalWidth', 0);
     await expect(runner.locator(':scope > .art')).toHaveCSS('visibility', 'visible');
     await expect(runner).not.toHaveAttribute('data-chase-ready', '');
   });

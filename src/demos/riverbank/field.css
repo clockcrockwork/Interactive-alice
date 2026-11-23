@@ -184,6 +184,7 @@
   .field__runner {
     position: relative;
     aspect-ratio: 120 / 220;
+    overflow: hidden;
     transform-origin: 50% 100%;
     filter: drop-shadow(0 0.6vmin 0.8vmin var(--field-shade));
   }

@@ -595,15 +595,15 @@ function mount(shell: DemoShell): void {
     sendTo(others[Math.floor(random() * others.length)]);
   });
   const callButton = shell.prop(shell.ui.demoCallCat ?? '', 'cc__prop cc__prop--call');
+  const callAfterJoin = iBough + (reducedMotion ? 0.55 : 0.75);
   callButton.addEventListener('click', () => {
     const others = boughs.filter((b) => b !== currentBough());
     sendTo(others[Math.floor(random() * others.length)]);
   });
-  // *Call the Cat* and its hint belong to the wood before the first vanishing,
-  // whichever way the scroll crosses into or out of it (under reduced motion the
-  // first beat is seen settled, past the first moment of the page).
+  // The opening close-up stays over the wood until its first-beat fade is done.
+  // Offer the call only when the Cat can be seen answering it.
   const callShown = (): void => {
-    if (master.time() < iVanish1) {
+    if (master.time() >= callAfterJoin && master.time() < iVanish1) {
       callButton.show();
       hint.dataset.shown = '';
     } else {
@@ -612,6 +612,7 @@ function mount(shell: DemoShell): void {
     }
   };
   master.call(callShown, [], 0.02);
+  master.call(callShown, [], callAfterJoin);
   master.call(
     () => {
       callShown();
@@ -623,8 +624,7 @@ function mount(shell: DemoShell): void {
     [],
     iVanish1,
   );
-  callButton.show();
-  hint.dataset.shown = '';
+  callShown();
 
   // --- Signposts: press one and the wood walks that way for a moment.
   const walk = (direction: number): void => {

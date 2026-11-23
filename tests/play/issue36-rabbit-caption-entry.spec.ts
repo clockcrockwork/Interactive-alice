@@ -121,7 +121,11 @@ test('deep-or-slow entry, hold, and exit keep the printed lines separate', async
   ]) {
     for (const locale of ['ja', 'en-simple']) {
       for (const mode of ['webgl', 'flat']) {
-        const context = await browser.newContext({ viewport, reducedMotion: 'no-preference' });
+        const context = await browser.newContext({
+          baseURL: test.info().project.use.baseURL,
+          viewport,
+          reducedMotion: 'no-preference',
+        });
         const page = await context.newPage();
         if (mode === 'flat') {
           await page.addInitScript(() => {
@@ -137,12 +141,7 @@ test('deep-or-slow entry, hold, and exit keep the printed lines separate', async
           });
         }
         try {
-          await page.goto(
-            new URL(
-              locale === 'ja' ? '/demos/ja/rabbit-hole/' : '/demos/rabbit-hole/',
-              'http://localhost:4180',
-            ).toString(),
-          );
+          await page.goto(locale === 'ja' ? '/demos/ja/rabbit-hole/' : '/demos/rabbit-hole/');
           await page.waitForFunction(
             () =>
               Boolean(window.__aliceDemo) &&
@@ -272,7 +271,11 @@ test('short stages keep transformed paper and readable text inside the frame', a
   ]) {
     for (const locale of ['ja', 'en-simple']) {
       for (const mode of ['webgl', 'flat']) {
-        const context = await browser.newContext({ viewport, reducedMotion: 'no-preference' });
+        const context = await browser.newContext({
+          baseURL: test.info().project.use.baseURL,
+          viewport,
+          reducedMotion: 'no-preference',
+        });
         const page = await context.newPage();
         await page.addInitScript(() => {
           const style = document.createElement('style');
@@ -293,12 +296,7 @@ test('short stages keep transformed paper and readable text inside the frame', a
           });
         }
         try {
-          await page.goto(
-            new URL(
-              locale === 'ja' ? '/demos/ja/rabbit-hole/' : '/demos/rabbit-hole/',
-              'http://localhost:4180',
-            ).toString(),
-          );
+          await page.goto(locale === 'ja' ? '/demos/ja/rabbit-hole/' : '/demos/rabbit-hole/');
           await page.waitForFunction(
             () =>
               Boolean(window.__aliceDemo) &&

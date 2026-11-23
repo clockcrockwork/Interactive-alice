@@ -108,6 +108,20 @@
     --demo-end-lift: 0rem;
   }
 
+  /* The flat-well notice sits over the illustrated grass at the opening. Keep
+     this one notice legible there without changing the shared shell's other notes. */
+  .demo--rabbit-hole .demo__note--flat-well {
+    padding: 0.25rem 0.5rem;
+    color: var(--ink-primary);
+    background: var(--paper-base);
+    border-radius: 0.3rem;
+  }
+
+  /* When both notices are present, stack the flat-well note above reduced motion. */
+  .demo--rabbit-hole[data-motion="reduced"] .demo__note--flat-well {
+    inset-block-end: calc(var(--space-2) + 4.4rem);
+  }
+
   .demo--rabbit-hole .demo-beat:is([data-cue="surface"], [data-cue="tunnel"], [data-cue="end"]) {
     inset-block-start: calc(var(--demo-bar-height) + 1.5rem);
   }

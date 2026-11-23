@@ -129,6 +129,11 @@ function mount(shell: DemoShell): void {
     shell.root.dataset.mode = 'flat';
     if (shell.ui.demoFlatWell) {
       shell.note(shell.ui.demoFlatWell);
+      shell.root.querySelectorAll<HTMLElement>('.demo__note').forEach((note) => {
+        if (note.textContent === shell.ui.demoFlatWell) {
+          note.classList.add('demo__note--flat-well');
+        }
+      });
     }
   };
   if (!well) {

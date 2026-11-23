@@ -117,9 +117,19 @@
     border-radius: 0.3rem;
   }
 
-  /* When both notices are present, stack the flat-well note above reduced motion. */
-  .demo--rabbit-hole[data-motion="reduced"] .demo__note--flat-well {
-    inset-block-end: calc(var(--space-2) + 4.4rem);
+  /* A short frame has no room for both notices below the three readable lines.
+     Keep the flat-well notice below the controls, and stack reduced-motion text
+     beneath it, before the captions enter. */
+  @media (max-height: 760px) {
+    .demo--rabbit-hole .demo__note--flat-well {
+      inset-block-start: calc(var(--demo-bar-height) + var(--space-2));
+      inset-block-end: auto;
+    }
+
+    .demo--rabbit-hole[data-motion="reduced"] .demo__note:not(.demo__note--flat-well) {
+      inset-block-start: calc(var(--demo-bar-height) + 4.5rem);
+      inset-block-end: auto;
+    }
   }
 
   .demo--rabbit-hole .demo-beat:is([data-cue="surface"], [data-cue="tunnel"], [data-cue="end"]) {

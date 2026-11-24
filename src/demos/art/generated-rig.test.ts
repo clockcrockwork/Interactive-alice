@@ -204,6 +204,52 @@ describe('generated rig atomic loading', () => {
     expect(maximum).toBe(4);
   });
 
+  it('requires a fresh immutable cache policy before accepting a verified image', async () => {
+    vi.stubGlobal('location', new URL('https://book.example/story/'));
+    const policies = new Map([
+      ['/assets/good-AbCdEf12.webp', 'public, max-age=31536000, immutable'],
+      ['/assets/private-AbCdEf12.webp', 'private, max-age=31536000, immutable'],
+      ['/assets/no-store-AbCdEf12.webp', 'public, no-store, max-age=31536000, immutable'],
+      ['/assets/stale-AbCdEf12.webp', 'max-age=0, immutable'],
+      ['/assets/value-AbCdEf12.webp', 'private="immutable", max-age=31536000'],
+      ['/assets/no-cache-AbCdEf12.webp', 'public, no-cache, max-age=31536000, immutable'],
+      ['/assets/quoted-age-AbCdEf12.webp', 'public, max-age="31536000", immutable'],
+    ]);
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: string | URL | Request) => {
+        const url =
+          typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+        const policy = policies.get(new URL(url).pathname);
+        return {
+          ok: true,
+          redirected: false,
+          url,
+          headers: new Headers({
+            'cache-control': policy ?? '',
+            'content-type': 'image/webp',
+          }),
+          blob: async () => new Blob(['image']),
+        } as Response;
+      }),
+    );
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:verified-cache-policy');
+    vi.stubGlobal(
+      'Image',
+      class {
+        naturalWidth = 100;
+        decode() {
+          return Promise.resolve();
+        }
+      },
+    );
+
+    const sources = [...policies.keys()].map((path) => `https://book.example${path}`);
+    const decoded = await decodeVerifiedImageSources(sources, new AbortController().signal);
+
+    expect([...decoded.values()]).toEqual([true, true, false, false, false, false, false]);
+  });
+
   it('rejects a redirect or a response without immutable raster headers', async () => {
     vi.stubGlobal('location', new URL('https://book.example/story/'));
     let redirected = true;

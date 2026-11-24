@@ -16,6 +16,79 @@ const decodeQueue: Array<() => void> = [];
 const MAX_ACTIVE_IMAGE_DECODES = 4;
 let activeImageDecodes = 0;
 
+interface CacheControlDirective {
+  name: string;
+  value?: string;
+  valueWasQuoted?: boolean;
+}
+
+function parseCacheControl(value: string): CacheControlDirective[] | undefined {
+  if (!value.trim()) return [];
+
+  const parts: string[] = [];
+  let start = 0;
+  let quoted = false;
+  let escaped = false;
+  for (let index = 0; index < value.length; index += 1) {
+    const character = value[index];
+    if (escaped) {
+      escaped = false;
+    } else if (quoted && character === '\\') {
+      escaped = true;
+    } else if (character === '"') {
+      quoted = !quoted;
+    } else if (character === ',' && !quoted) {
+      parts.push(value.slice(start, index));
+      start = index + 1;
+    }
+  }
+  if (quoted || escaped) return undefined;
+  parts.push(value.slice(start));
+
+  const directives: CacheControlDirective[] = [];
+  const token = /^[!#$%&'*+.^_`|~0-9A-Za-z?-]+$/;
+  for (const part of parts) {
+    const separator = part.indexOf('=');
+    const name = (separator < 0 ? part : part.slice(0, separator)).trim().toLowerCase();
+    if (!token.test(name)) return undefined;
+    if (separator < 0) {
+      directives.push({ name });
+      continue;
+    }
+
+    const raw = part.slice(separator + 1).trim();
+    if (!raw) return undefined;
+    if (raw.startsWith('"')) {
+      if (!/^"(?:\\.|[^"\\])*"$/.test(raw)) return undefined;
+      directives.push({ name, value: raw.slice(1, -1), valueWasQuoted: true });
+    } else {
+      if (!token.test(raw)) return undefined;
+      directives.push({ name, value: raw });
+    }
+  }
+  return directives;
+}
+
+/** Check browser-cache freshness eligibility; this does not prove a cache hit or CDN policy. */
+function hasFreshImmutableCachePolicy(value: string): boolean {
+  const directives = parseCacheControl(value);
+  if (!directives || directives.some(({ name }) => name === 'no-store' || name === 'no-cache')) {
+    return false;
+  }
+  const immutable = directives.filter(({ name }) => name === 'immutable');
+  const maxAge = directives.filter(({ name }) => name === 'max-age');
+  const seconds = maxAge[0]?.value;
+  return (
+    immutable.length === 1 &&
+    immutable[0]?.value === undefined &&
+    maxAge.length === 1 &&
+    maxAge[0]?.valueWasQuoted !== true &&
+    seconds !== undefined &&
+    /^\d+$/.test(seconds) &&
+    BigInt(seconds) > 0n
+  );
+}
+
 function pumpDecodeQueue(): void {
   while (activeImageDecodes < MAX_ACTIVE_IMAGE_DECODES && decodeQueue.length > 0) {
     activeImageDecodes += 1;
@@ -75,7 +148,7 @@ export function decodeVerifiedImageSource(src: string, signal: AbortSignal): Pro
               response.redirected ||
               response.url !== requested.href ||
               response.url !== src ||
-              !/\bimmutable\b/i.test(cacheControl) ||
+              !hasFreshImmutableCachePolicy(cacheControl) ||
               !response.headers.get('content-type')?.toLowerCase().startsWith('image/')
             ) {
               resolve(false);

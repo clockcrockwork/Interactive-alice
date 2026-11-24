@@ -10,11 +10,25 @@
  * at rest is a girl standing still.
  */
 
-import { figure } from '../art/art.ts';
+import { aliceVariant, figure } from '../art/art.ts';
+import { decodeGeneratedSource } from '../art/generated-rig.ts';
 import { scenery } from '../art/generated-scenery.ts';
+import { artStyle } from '../art/treatments.ts';
 import './field.css';
 
+const CHASE_SPRITE = new URL(
+  '../../assets/images/figures/alice--chase-stride.yellow.generated.webp',
+  import.meta.url,
+).href;
+
 export function fieldHtml(): string {
+  const chaseSprite =
+    typeof document !== 'undefined' &&
+    artStyle() === 'engraved' &&
+    aliceVariant() === 'yellow' &&
+    !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ? `<img class="field__chase-sprite" src="${CHASE_SPRITE}" width="864" height="576" alt="" aria-hidden="true" decoding="async" data-frame="0">`
+      : '';
   return (
     '<div class="field__land">' +
     `<div class="field__highlands">${scenery('wildflower-highlands')}</div>` +
@@ -25,14 +39,18 @@ export function fieldHtml(): string {
     `<div class="scenery-edge scenery-edge--left">${scenery('edge-left')}<div class="scenery-edge__mobile">${scenery('edge-right')}</div></div>` +
     `<div class="scenery-edge scenery-edge--right">${scenery('edge-right')}</div>` +
     '<div class="field__hole"></div>' +
+    `<div class="field__mound">${scenery('rabbit-mound')}</div>` +
     `<div class="field__burrow"><div class="field__rabbit">${figure('white-rabbit/diving')}</div></div>` +
     '</div>' +
-    `<div class="field__alice"><div class="field__runner">${figure('alice/running-away')}</div></div>`
+    `<div class="field__alice"><div class="field__runner">${figure('alice/running-away')}${chaseSprite}</div></div>`
   );
 }
 
 /** Strides per beat of scroll at full running pace. */
 const STRIDES_PER_BEAT = 5;
+
+/** Keep the two whole-body frames in step with the existing stride phase. */
+export const strideFrameForPhase = (phase: number): 0 | 1 => (Math.sin(phase) >= -1e-12 ? 0 : 1);
 
 /**
  * Her legs and arms, driven by the scroll. `step` takes how many beats the page
@@ -43,6 +61,34 @@ export function createStride(alice: HTMLElement, reduced: boolean) {
   let phase = 0;
   let amp = 0;
   let written = '';
+  const runner = alice.querySelector<HTMLElement>('.field__runner');
+  const sprite = runner?.querySelector<HTMLImageElement>('.field__chase-sprite');
+  const useSprite = Boolean(
+    sprite && artStyle() === 'engraved' && aliceVariant() === 'yellow' && !reduced,
+  );
+  if (sprite && !useSprite) sprite.remove();
+  if (sprite && useSprite) {
+    void decodeGeneratedSource(CHASE_SPRITE)
+      .then((ok) =>
+        ok
+          ? sprite.decode().then(
+              () => true,
+              () => false,
+            )
+          : false,
+      )
+      .then((ok) => {
+        if (
+          ok &&
+          runner?.isConnected &&
+          sprite.isConnected &&
+          sprite.naturalWidth === 864 &&
+          sprite.naturalHeight === 576
+        ) {
+          runner.dataset.chaseReady = '';
+        }
+      });
+  }
   const write = (left: number, right: number, swing: number, bob: number): void => {
     const key = `${left.toFixed(3)}|${right.toFixed(3)}|${swing.toFixed(3)}|${bob.toFixed(3)}`;
     if (key === written) {
@@ -69,6 +115,7 @@ export function createStride(alice: HTMLElement, reduced: boolean) {
       amp += (pace - amp) * Math.min(1, dt * 6);
       phase += Math.abs(beatsMoved) * STRIDES_PER_BEAT * Math.PI * 2;
       const s = Math.sin(phase);
+      if (sprite && useSprite) sprite.dataset.frame = String(strideFrameForPhase(phase));
       write(Math.max(0, s) * amp, Math.max(0, -s) * amp, s * amp, Math.abs(s) * amp);
     },
   };

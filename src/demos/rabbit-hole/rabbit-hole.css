@@ -663,6 +663,10 @@
     visibility: hidden;
   }
 
+  .rh__alice[data-falling-raster] > .art > svg {
+    visibility: hidden;
+  }
+
   /* Preserve the original rig's box and the master's own aspect ratio. Its height,
      not its width, matches the old drawing so the overhead silhouette can spread. */
   .rh__generated-master {
@@ -673,6 +677,21 @@
     block-size: 100%;
     inline-size: auto;
     max-inline-size: none;
+  }
+
+  .rh__falling-master {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 50%;
+    translate: -50% 0;
+    block-size: 100%;
+    inline-size: auto;
+    max-inline-size: none;
+    display: none;
+  }
+
+  .rh__alice[data-falling-raster] > .art > .rh__falling-master {
+    display: block;
   }
 
   .rh__generated-master[hidden] {

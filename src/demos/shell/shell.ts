@@ -642,11 +642,14 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
     },
     { signal },
   );
+  const reading = root.querySelector<HTMLDetailsElement>('details[data-demo-reading]');
+  const inReadingArea = (target: EventTarget | null): boolean =>
+    target instanceof Node && !!reading?.contains(target);
   const scrollKeys = new Set(['ArrowDown', 'PageDown', ' ', 'End', 'ArrowUp', 'PageUp', 'Home']);
   window.addEventListener(
     'wheel',
     (event) => {
-      if (Math.abs(event.deltaY) < 18) return;
+      if (inReadingArea(event.target) || Math.abs(event.deltaY) < 18) return;
       autoArmed = true;
       if (event.deltaY > 0 && atEnd()) follow('next');
       else if (event.deltaY < 0 && atStart()) follow('previous');
@@ -658,7 +661,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
   window.addEventListener(
     'touchstart',
     (event) => {
-      touchY = event.touches[0]?.clientY;
+      touchY = inReadingArea(event.target) ? undefined : event.touches[0]?.clientY;
       edgeTravel = 0;
     },
     { passive: true, signal },
@@ -692,8 +695,9 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
       if (!scrollKeys.has(event.key)) return;
       const target = event.target;
       if (
-        target instanceof HTMLElement &&
-        target.closest('button, a, input, select, textarea, [contenteditable="true"]')
+        inReadingArea(target) ||
+        (target instanceof HTMLElement &&
+          target.closest('button, a, input, select, textarea, summary, [contenteditable="true"]'))
       )
         return;
       autoArmed = true;
@@ -727,7 +731,7 @@ export function attachDemo(options: ShellOptions = {}): DemoShell | undefined {
       return;
     }
     const atEnd = activeIndex === beats.length - 1 && trigger.progress > 0.995;
-    dwell = atEnd ? Math.min(AUTO_DWELL, dwell + dt) : 0;
+    dwell = atEnd && !reading?.open ? Math.min(AUTO_DWELL, dwell + dt) : 0;
     const fill = dwell / AUTO_DWELL;
     // Reduced motion: the ring fills in quarters rather than sweeping.
     nextLink.style.setProperty(

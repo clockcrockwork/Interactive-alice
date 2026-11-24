@@ -118,6 +118,25 @@
     translate: -50% -50%;
   }
 
+  /* The cutout's opening sits just below centre; align that with the dark
+     fallback opening, then place the shared Rabbit and Alice layers over it. */
+  .field__mound {
+    position: absolute;
+    inset-inline-start: 50%;
+    inset-block-start: var(--field-foot);
+    inline-size: clamp(17rem, 62vw, 40rem);
+    aspect-ratio: 1080 / 412;
+    translate: -58% -68%;
+    pointer-events: none;
+  }
+
+  .field__mound > .scenery {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: contain;
+  }
+
   /* The Rabbit goes down below the hole's middle line, so its near lip is in
      front of him. */
   .field__burrow {
@@ -163,12 +182,43 @@
   }
 
   .field__runner {
+    position: relative;
+    aspect-ratio: 120 / 220;
     transform-origin: 50% 100%;
     filter: drop-shadow(0 0.6vmin 0.8vmin var(--field-shade));
   }
 
-  .field__runner .art {
+  .field__runner > .art {
+    inline-size: 100%;
+    block-size: 100%;
     translate: 0 calc(var(--bob) * -3%);
+  }
+
+  .field__runner .field__chase-sprite {
+    position: absolute;
+    z-index: 1;
+    inset-block-start: 11%;
+    inset-inline-start: -7.7%;
+    inline-size: 245%;
+    block-size: 89%;
+    max-inline-size: none;
+    object-fit: fill;
+    pointer-events: none;
+    opacity: 0;
+    translate: 0 calc(var(--bob) * -3%);
+    transform: translateX(calc(var(--frame-offset, 0%) * -1));
+  }
+
+  .field__runner .field__chase-sprite[data-frame="1"] {
+    --frame-offset: 48.6%;
+  }
+
+  .field__runner[data-chase-ready] > .art {
+    visibility: hidden;
+  }
+
+  .field__runner[data-chase-ready] .field__chase-sprite {
+    opacity: 1;
   }
 
   .field__runner [data-part^="leg"],

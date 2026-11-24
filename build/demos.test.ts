@@ -45,6 +45,37 @@ describe('the concept-demo pages', () => {
     expect(demoBootScript).toContain('unhandledrejection');
   });
 
+  it('bakes the localized opening poem into Riverbank only', () => {
+    const rootEntry = all.pages.find((page) => page.path === 'index.html');
+    const japanese = all.pages.find((page) => page.path === 'demos/ja/riverbank/index.html');
+    expect(rootEntry?.html).toContain(project.ui.openingVerse1);
+    expect(japanese?.html).toContain(loadDemoProject(root, 'ja').ui.openingVerse1);
+    for (const page of all.pages.filter(
+      (candidate) =>
+        !candidate.path.endsWith('/riverbank/index.html') && candidate.path !== 'index.html',
+    )) {
+      expect(page.html, page.path).not.toContain('data-opening-poem');
+    }
+  });
+
+  it('sets the opening gate once per tab and does not cache scene readiness', () => {
+    const rootEntry = all.pages.find((page) => page.path === 'index.html');
+    const japanese = all.pages.find((page) => page.path === 'demos/ja/riverbank/index.html');
+    expect(rootEntry?.html).toContain("sessionStorage.getItem('alice-opening-seen')");
+    expect(rootEntry?.html).toContain("sessionStorage.setItem('alice-opening-seen', '1')");
+    expect(japanese?.html).toContain("sessionStorage.getItem('alice-opening-seen')");
+    expect(rootEntry?.html).not.toContain("sessionStorage.getItem('alice-assets-ready')");
+  });
+
+  it('passes the output-root-relative image manifest URL to every generated route', () => {
+    const rootEntry = all.pages.find((page) => page.path === 'index.html');
+    const baseDirect = all.pages.find((page) => page.path === 'demos/rabbit-hole/index.html');
+    const japanese = all.pages.find((page) => page.path === 'demos/ja/rabbit-hole/index.html');
+    expect(rootEntry?.html).toContain('data-image-manifest="demo-image-usage.json"');
+    expect(baseDirect?.html).toContain('data-image-manifest="../../demo-image-usage.json"');
+    expect(japanese?.html).toContain('data-image-manifest="../../../demo-image-usage.json"');
+  });
+
   it('generates one Riverbank entry and one route per demo without a public index', () => {
     expect(pages.map((page) => page.path)).toEqual([
       'index.html',

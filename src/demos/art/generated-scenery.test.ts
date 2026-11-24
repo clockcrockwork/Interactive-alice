@@ -41,6 +41,18 @@ describe('outdoor engraved scenery', () => {
     expect(scenery('wildflower-highlands', 'flat')).toBe('');
     expect(scenery('wildflower-highlands', 'paper')).toBe('');
   });
+  it('uses the selected Riverbank cutouts as raster artwork', () => {
+    const sun = scenery('riverbank-sun', 'engraved');
+    const mound = scenery('rabbit-mound', 'engraved');
+    expect(sun).toContain('scenery--riverbank-sun');
+    expect(sun).toContain('riverbank-sun.generated.webp');
+    expect(mound).toContain('scenery--rabbit-mound');
+    expect(mound).toContain('rabbit-mound.generated.webp');
+    expect(sun).toContain('alt="" decoding="async"');
+    expect(mound).toContain('alt="" decoding="async"');
+    expect(scenery('riverbank-sun', 'flat')).toBe('');
+    expect(scenery('rabbit-mound', 'paper')).toBe('');
+  });
   it('keeps both chapter joins on the shared field and decorates the existing moving land', () => {
     const field = read('../riverbank/field.ts');
     expect(field).toContain("scenery('tree')");

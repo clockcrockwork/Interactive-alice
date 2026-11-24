@@ -91,6 +91,40 @@
     background: linear-gradient(to bottom, var(--world-sky) 0%, var(--paper-base) 55%);
   }
 
+  /* While the shared hedge engraving is pending or unavailable, keep its
+     placeholder inside the silhouette and closer to the book's printed foliage. */
+  .demo--rabbit-hole
+    .rh__surface
+    .field__hedge:has(svg[data-generated-rig="scenery/hedge"]:not([data-rig-ready])) {
+    background:
+      radial-gradient(
+        ellipse 0.78vh 0.34vh at 50% 50%,
+        var(--field-hedge-light) 0 58%,
+        transparent 66%
+      )
+      calc(50vw - 0.8vh) 4.65vh / 2.5vh 1vh repeat-x,
+      radial-gradient(
+        ellipse 0.72vh 0.32vh at 50% 50%,
+        var(--field-hedge-deep) 0 58%,
+        transparent 66%
+      )
+      calc(50vw - 0.2vh) 5.75vh / 2.9vh 1vh repeat-x,
+      radial-gradient(
+        ellipse 0.9vh 0.36vh at 50% 50%,
+        var(--field-hedge-light) 0 58%,
+        transparent 66%
+      )
+      calc(50vw - 1.1vh) 6.85vh / 3.2vh 1vh repeat-x,
+      radial-gradient(ellipse 4.7vh 2.8vh at 50% 100%, var(--field-hedge) 0 74%, transparent 78%)
+      calc(50vw - 4.8vh) 0 / 9.6vh 5.4vh repeat-x,
+      linear-gradient(
+        to bottom,
+        transparent 23%,
+        var(--field-hedge) 24%,
+        var(--field-hedge-deep) 100%
+      );
+  }
+
   .rh__sun {
     position: absolute;
     inset-inline-start: 78%;

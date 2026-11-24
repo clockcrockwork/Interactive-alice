@@ -14,6 +14,16 @@ describe('two-frame rear-facing chase sprite', () => {
 });
 
 describe('chase sprite handoff', () => {
+  it('keeps the existing inline Alice available before the chase atlas is ready', () => {
+    const css = readFileSync(new URL('./field.css', import.meta.url), 'utf8').replace(/\s+/g, ' ');
+    expect(css).toContain(
+      '.field__runner:has(.field__chase-sprite):not([data-chase-ready]) > .art.art--baked > svg',
+    );
+    expect(css).toContain(
+      '.field__runner:has(.field__chase-sprite):not([data-chase-ready]) > .art.art--baked > .art__image--baked',
+    );
+  });
+
   const mount = (spriteDecode: () => Promise<void>) => {
     const dataset: Record<string, string> = {};
     const sprite = {

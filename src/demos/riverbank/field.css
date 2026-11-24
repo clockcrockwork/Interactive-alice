@@ -184,6 +184,7 @@
   .field__runner {
     position: relative;
     aspect-ratio: 120 / 220;
+    overflow: hidden;
     transform-origin: 50% 100%;
     filter: drop-shadow(0 0.6vmin 0.8vmin var(--field-shade));
   }
@@ -192,6 +193,19 @@
     inline-size: 100%;
     block-size: 100%;
     translate: 0 calc(var(--bob) * -3%);
+  }
+
+  /* The engraved baked wrapper hides its SVG by default. Keep its original
+     animated vector visible for chase-enabled runners until the two-frame atlas
+     is decoded, so a slow or failed image request cannot leave an empty Alice. */
+  .field__runner:has(.field__chase-sprite):not([data-chase-ready]) > .art.art--baked > svg {
+    display: block;
+  }
+
+  .field__runner:has(.field__chase-sprite):not([data-chase-ready])
+    > .art.art--baked
+    > .art__image--baked {
+    display: none;
   }
 
   .field__runner .field__chase-sprite {

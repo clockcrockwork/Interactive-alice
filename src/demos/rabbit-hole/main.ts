@@ -36,9 +36,13 @@ function depthCaption(
     return false;
   }
   const t = beat.index;
+  // Let each slip clear the one above it as it comes out of the depth; all settle
+  // back into the original reading stack once the third line arrives.
+  const entryY = (index: number): number =>
+    40 + (beat.el.dataset.beat === 'deep-or-slow' ? index * 60 : 0);
   master.fromTo(
     beat.lines,
-    { opacity: 0, z: -700, y: 40 },
+    { opacity: 0, z: -700, y: entryY },
     { opacity: 1, z: 0, y: 0, duration: 0.38, stagger: 0.1, ease: 'power2.out' },
     t + 0.04,
   );
@@ -129,6 +133,11 @@ function mount(shell: DemoShell): void {
     shell.root.dataset.mode = 'flat';
     if (shell.ui.demoFlatWell) {
       shell.note(shell.ui.demoFlatWell);
+      shell.root.querySelectorAll<HTMLElement>('.demo__note').forEach((note) => {
+        if (note.textContent === shell.ui.demoFlatWell) {
+          note.classList.add('demo__note--flat-well');
+        }
+      });
     }
   };
   if (!well) {

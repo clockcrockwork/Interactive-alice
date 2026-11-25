@@ -104,3 +104,9 @@ that fact in the pull request; see `docs/deployment.md` §4.
 
 When implementation proves a documented decision wrong, change the document in
 the same body of work. Do not let code and docs disagree on purpose.
+
+## Optional system QA
+
+For an explicitly requested independent product QA task, read [the projected System QA workflow](docs/agent-workflows/system-qa.md) (Claude Code: /system-qa). This is not a new required product gate or an authorization to merge, deploy or modify production. Existing product requirements, tests, operating rules and human acceptance retain authority. Read docs/testing.md and existing test-work skill. First charter: one scene's forward/reverse reconstruction, optional interaction, reduced motion and phone viewport, with a built isolated preview and existing Playwright tests. Keep manual visual/performance gates separate; follow the exact-SHA browser run policy.
+
+Projection integrity: run node scripts/agent/check-projection-integrity.mjs and node scripts/agent/verify-projection.js from the repository root; trusted canonical projection is the source, never hand-edit generated files. Before ready-for-review, confirm the merged canonical revision, reproject and run relevant existing gates. A receipt check does not establish product quality.

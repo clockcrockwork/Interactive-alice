@@ -6,7 +6,15 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!dist", "!src/generated", "!text/raw"]
+    "includes": [
+      "**",
+      "!dist",
+      "!src/generated",
+      "!text/raw",
+      "!scripts/agent/verify-projection.js",
+      "!scripts/agent/check-system-qa.mjs",
+      "!agent-commons.lock.json"
+    ]
   },
   "formatter": {
     "enabled": true,
